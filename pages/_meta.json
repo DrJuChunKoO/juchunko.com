@@ -1,15 +1,17 @@
 {
-  "index": "Introduction",
-  "another": "Another Page",
-  "advanced": "Advanced (A Folder)",
+  "index": "🏠 首頁",
+  "manual": "使用說明📖",
+  "tools": "工具一覽🧰",
+  "keyword": "詞彙說明📒",
+  "call": "召喚寶博🪄",
   "about": {
-    "title": "About",
+    "title": "關於 🤓",
     "type": "page"
   },
   "contact": {
-    "title": "Contact ↗",
+    "title": "聯絡 ↗",
     "type": "page",
-    "href": "https://twitter.com/shuding_",
-    "newWindow": true
+    "href": "/call",
+    "newWindow": false
   }
 }
