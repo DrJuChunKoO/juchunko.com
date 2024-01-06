@@ -4,3 +4,4 @@ coverage
 
 # Ignore all HTML files:
 **/*.html
+/pages/**/*.mdx

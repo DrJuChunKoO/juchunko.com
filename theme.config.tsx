@@ -16,6 +16,7 @@ const config: DocsThemeConfig = {
   nextThemes: {
     defaultTheme: "dark",
   },
+  gitTimestamp: <></>,
 };
 
 export default config;

@@ -1,9 +1,13 @@
 {
-  "index": "🏠 首頁",
-  "manual": "使用說明📖",
-  "tools": "工具一覽🧰",
-  "keyword": "詞彙說明📒",
-  "call": "召喚寶博🪄",
+  "index": {
+    "title": "首頁 🏠",
+    "type": "page",
+    "display": "hidden"
+  },
+  "docs": {
+    "title": "寶博宇宙 🪐",
+    "type": "page"
+  },
   "about": {
     "title": "關於 🤓",
     "type": "page"
