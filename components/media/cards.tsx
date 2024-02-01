@@ -39,14 +39,7 @@ export function YoutubeCard({ videoId, title, description }: { videoId: string; 
               exit="exit"
               variants={variants}
               className="fixed inset-0 z-40 bg-white/50 text-black backdrop-blur dark:bg-black/50 dark:text-white"
-              onClick={() => setIsOpen(null)}>
-              <motion.button
-                variants={button}
-                className="absolute right-4 top-4 z-20 cursor-pointer rounded-full border border-black/20 bg-white/80 p-2  dark:border-white/20 dark:bg-black/80"
-                onClick={() => setIsOpen(null)}>
-                <X size={32} strokeWidth={1} />
-              </motion.button>
-            </motion.div>
+              onClick={() => setIsOpen(null)}></motion.div>
             <RemoveScroll className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center">
               <motion.div layoutId={videoId} className="pointer-events-auto z-10 flex w-[90%] max-w-[1000px] flex-col">
                 <div className="overflow-hidden rounded-lg shadow-2xl">
@@ -57,6 +50,12 @@ export function YoutubeCard({ videoId, title, description }: { videoId: string; 
                   <div className="mt-2 text-sm">{description}</div>
                 </div>
               </motion.div>
+              <motion.button
+                variants={button}
+                className="absolute right-4 top-4 z-20 cursor-pointer rounded-full border border-black/20 bg-white/80 p-2  dark:border-white/20 dark:bg-black/80"
+                onClick={() => setIsOpen(null)}>
+                <X size={32} strokeWidth={1} />
+              </motion.button>
             </RemoveScroll>
           </>
         )}
