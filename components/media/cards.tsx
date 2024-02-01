@@ -29,7 +29,7 @@ export function YoutubeCard({
       <motion.button layoutId={videoId} onClick={() => setIsOpen(true)} className="cursor-pointer text-left">
         <motion.img src={`https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`} className="aspect-video object-cover" />
         <motion.div className="mt-2 text-xl font-bold">{title}</motion.div>
-        <motion.div className="mt-1">{children}</motion.div>
+        <motion.div className="mt-1 line-clamp-2">{children}</motion.div>
       </motion.button>
       <AnimatePresence>
         {isOpen && (
