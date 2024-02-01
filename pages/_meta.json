@@ -1,15 +1,15 @@
 {
   "index": {
-    "title": "首頁 🏠",
+    "title": "首頁",
     "type": "page",
     "display": "hidden"
   },
   "docs": {
-    "title": "寶博宇宙 🪐",
+    "title": "寶博宇宙",
     "type": "page"
   },
   "about": {
-    "title": "關於 🤓",
+    "title": "關於",
     "type": "page"
   }
 }
