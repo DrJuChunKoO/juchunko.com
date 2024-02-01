@@ -6,10 +6,7 @@
   },
   "docs": {
     "title": "寶博宇宙",
-    "type": "page"
-  },
-  "about": {
-    "title": "關於",
-    "type": "page"
+    "type": "page",
+    "display": "hidden"
   }
 }
