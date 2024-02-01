@@ -14,6 +14,10 @@
   }
 }
 
+body {
+  @apply !pr-[--removed-body-scroll-bar-size];
+}
+
 @layer components {
   blockquote {
     @apply !not-italic;
