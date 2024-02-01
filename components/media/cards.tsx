@@ -1,19 +1,9 @@
 import { useState } from 'react'
 import { YouTubeEmbed } from '@next/third-parties/google'
 import { motion, AnimatePresence } from 'framer-motion'
-import { twMerge } from 'tailwind-merge'
 import { X } from 'lucide-react'
-export function Cards({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-  return (
-    <div
-      className={twMerge(
-        'grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] items-start gap-x-4 gap-y-6',
-        className,
-      )}>
-      {children}
-    </div>
-  )
-}
+import { RemoveScroll } from 'react-remove-scroll'
+
 export function YoutubeCard({ videoId, title, description }: { videoId: string; title: string; description: string }) {
   const [isOpen, setIsOpen] = useState(null)
   const variants = {
@@ -34,11 +24,12 @@ export function YoutubeCard({ videoId, title, description }: { videoId: string; 
         className="relative z-0 cursor-pointer bg-transparent @container">
         <motion.img
           src={`https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`}
-          className="block aspect-video object-cover"
+          className="block aspect-video w-full object-cover"
         />
         <div className="mt-2.5 text-lg font-bold leading-tight">{title}</div>
         <div className="mt-1 line-clamp-2 text-sm">{description}</div>
       </motion.div>
+
       <AnimatePresence>
         {isOpen && (
           <>
@@ -56,7 +47,7 @@ export function YoutubeCard({ videoId, title, description }: { videoId: string; 
                 <X size={32} strokeWidth={1} />
               </motion.button>
             </motion.div>
-            <div className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center">
+            <RemoveScroll className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center">
               <motion.div layoutId={videoId} className="pointer-events-auto z-10 flex w-[90%] max-w-[1000px] flex-col">
                 <div className="overflow-hidden rounded-lg shadow-2xl">
                   <YouTubeEmbed videoid={videoId} />
@@ -66,7 +57,7 @@ export function YoutubeCard({ videoId, title, description }: { videoId: string; 
                   <div className="mt-2 text-sm">{description}</div>
                 </div>
               </motion.div>
-            </div>
+            </RemoveScroll>
           </>
         )}
       </AnimatePresence>
