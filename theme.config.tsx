@@ -1,16 +1,22 @@
 import { DocsThemeConfig } from 'nextra-theme-docs'
+import { useRouter } from 'next/router'
 
 const config: DocsThemeConfig = {
   logo: <span className="nx-font-semibold">JUCHUNKO</span>,
   project: {
-    link: 'https://github.com/maylogger/juchunko.com',
+    link: 'https://github.com/dAAAb/juchunko.com',
   },
-  chat: {
-    link: 'https://discord.com',
+  docsRepositoryBase: 'https://github.com/dAAAb/juchunko.com',
+  useNextSeoProps() {
+    const { asPath } = useRouter()
+    if (asPath !== '/') {
+      return {
+        titleTemplate: '%s – JUCHUNKO.COM',
+      }
+    }
   },
-  docsRepositoryBase: 'https://github.com/maylogger/juchunko.com',
   footer: {
-    text: '©2024 JUCHUNKO Corp. All rights reserved.',
+    text: '©2024 JUCHUNKO.COM All rights reserved.',
   },
   nextThemes: {
     defaultTheme: 'dark',
