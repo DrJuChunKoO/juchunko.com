@@ -11,11 +11,5 @@
   "about": {
     "title": "關於 🤓",
     "type": "page"
-  },
-  "contact": {
-    "title": "聯絡 ↗",
-    "type": "page",
-    "href": "/call",
-    "newWindow": false
   }
 }
