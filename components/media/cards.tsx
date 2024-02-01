@@ -38,15 +38,17 @@ export function YoutubeCard({ videoId, title, description }: { videoId: string; 
                 variants={variants}
                 className="absolute inset-0 bg-white/50 text-black backdrop-blur dark:bg-black/50 dark:text-white"></motion.div>
               <RemoveScroll className="fixed inset-0 z-50 overflow-auto">
-                <div className="sticky top-0 flex h-0">
+                <div className="sticky top-0 z-10 flex h-0">
                   <motion.button
                     variants={button}
-                    className="absolute right-5 top-5 cursor-pointer rounded-full border border-black/20 bg-white/80 p-2  dark:border-white/20 dark:bg-black/80"
+                    className="absolute right-5 top-5 cursor-pointer rounded-full border border-black/20 bg-white/50 p-2  backdrop-blur dark:border-white/20 dark:bg-black/50"
                     onClick={() => setIsOpen(null)}>
                     <X size={32} strokeWidth={1} />
                   </motion.button>
                 </div>
-                <div onClick={() => setIsOpen(null)} className="flex min-h-full w-full items-center justify-center p-5">
+                <div
+                  onClick={() => setIsOpen(null)}
+                  className="relative z-0 flex min-h-full w-full items-center justify-center p-5">
                   <motion.div
                     onClick={(e) => e.stopPropagation()}
                     layoutId={videoId}
