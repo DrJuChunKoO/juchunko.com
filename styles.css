@@ -28,6 +28,6 @@
     @apply !mt-2;
   }
   .button {
-    @apply inline-flex items-center justify-center whitespace-nowrap rounded-full bg-slate-800 px-4 py-2 font-medium text-white dark:bg-white dark:text-black;
+    @apply inline-flex items-center justify-center whitespace-nowrap rounded-full bg-slate-800/10 px-4 py-2 font-medium  dark:bg-white/10;
   }
 }
