@@ -31,7 +31,7 @@
     @apply inline-flex items-center justify-center whitespace-nowrap rounded-full bg-slate-800/10 px-4 py-2 font-medium  dark:bg-white/10;
   }
   lite-youtube {
-    @apply !min-w-0 !max-w-none overflow-hidden;
+    @apply !min-w-0 !max-w-none overflow-hidden before:!hidden;
   }
   [data-ntpc='YouTubeEmbed'] {
     @apply aspect-video;
