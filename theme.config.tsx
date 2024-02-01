@@ -6,7 +6,7 @@ const config: DocsThemeConfig = {
   project: {
     link: 'https://github.com/dAAAb/juchunko.com',
   },
-  docsRepositoryBase: 'https://github.com/dAAAb/juchunko.com',
+  docsRepositoryBase: 'https://github.com/dAAAb/juchunko.com/blob/main',
   useNextSeoProps() {
     const { asPath } = useRouter()
     if (asPath !== '/') {
