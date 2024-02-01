@@ -14,7 +14,7 @@
   }
 }
 
-@layer base {
+@layer components {
   blockquote {
     @apply !not-italic;
   }
@@ -26,5 +26,8 @@
   }
   blockquote p + p {
     @apply !mt-2;
+  }
+  .button {
+    @apply inline-flex items-center justify-center whitespace-nowrap rounded-full bg-slate-800 px-4 py-2 font-medium text-white dark:bg-white dark:text-black;
   }
 }
