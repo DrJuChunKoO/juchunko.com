@@ -31,7 +31,7 @@
     @apply inline-flex items-center justify-center whitespace-nowrap rounded-full bg-slate-800/10 px-4 py-2 font-medium  dark:bg-white/10;
   }
   lite-youtube {
-    @apply !max-w-full overflow-hidden rounded-lg;
+    @apply my-5 !max-w-full overflow-hidden rounded-lg;
   }
   article > main img {
     @apply !rounded-lg;
