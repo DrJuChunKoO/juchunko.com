@@ -40,22 +40,26 @@ export function YoutubeCard({ videoId, title, description }: { videoId: string; 
               variants={variants}
               className="fixed inset-0 z-40 bg-white/50 text-black backdrop-blur dark:bg-black/50 dark:text-white"
               onClick={() => setIsOpen(null)}></motion.div>
-            <RemoveScroll className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center">
-              <motion.div layoutId={videoId} className="pointer-events-auto z-10 flex w-[90%] max-w-[1000px] flex-col">
-                <div className="overflow-hidden rounded-lg shadow-2xl">
-                  <YouTubeEmbed videoid={videoId} />
-                </div>
-                <div className="pt-5">
-                  <div className="text-lg font-bold leading-tight">{title}</div>
-                  <div className="mt-2 text-sm">{description}</div>
-                </div>
-              </motion.div>
-              <motion.button
-                variants={button}
-                className="absolute right-4 top-4 z-20 cursor-pointer rounded-full border border-black/20 bg-white/80 p-2  dark:border-white/20 dark:bg-black/80"
-                onClick={() => setIsOpen(null)}>
-                <X size={32} strokeWidth={1} />
-              </motion.button>
+            <RemoveScroll className="pointer-events-none fixed inset-0 z-50 overflow-auto p-5">
+              <div className="flex min-h-full items-center justify-center p-5">
+                <motion.div
+                  layoutId={videoId}
+                  className="pointer-events-auto z-10 flex w-[90%] max-w-[1000px] flex-col">
+                  <div className="overflow-hidden rounded-lg shadow-2xl">
+                    <YouTubeEmbed videoid={videoId} />
+                  </div>
+                  <div className="pt-5">
+                    <div className="text-lg font-bold leading-tight">{title}</div>
+                    <div className="mt-2 text-sm">{description}</div>
+                  </div>
+                </motion.div>
+                <motion.button
+                  variants={button}
+                  className="absolute right-4 top-4 z-20 cursor-pointer rounded-full border border-black/20 bg-white/80 p-2  dark:border-white/20 dark:bg-black/80"
+                  onClick={() => setIsOpen(null)}>
+                  <X size={32} strokeWidth={1} />
+                </motion.button>
+              </div>
             </RemoveScroll>
           </>
         )}
