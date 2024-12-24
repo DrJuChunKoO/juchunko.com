@@ -26,12 +26,12 @@ const config: DocsThemeConfig = {
   logo: () => <span className="nx-font-semibold">{localeTranslation('logo')}</span>,
   banner: {
     key: 'congress-reform-facts',
-    text: <a href="/docs/act/congress-reform-facts">國會改革事實專區 →</a>,
+    text: <a href="/docs/act/1220-facts">國民黨 1220 三法修法事實專區 →</a>,
   },
   project: {
-    link: 'https://github.com/dAAAb/juchunko.com',
+    link: 'https://github.com/DrJuChunKoO/juchunko.com',
   },
-  docsRepositoryBase: 'https://github.com/dAAAb/juchunko.com/blob/main',
+  docsRepositoryBase: 'https://github.com/DrJuChunKoO/juchunko.com/blob/main',
   useNextSeoProps() {
     const { asPath } = useRouter()
     if (asPath !== '/') {
