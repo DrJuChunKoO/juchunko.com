@@ -19,7 +19,7 @@ export async function POST(req: Request) {
   const { messages, filename, prompt } = await req.json()
   const date = new Date().toLocaleDateString()
   const fileData = await fetch(
-    `https://raw.githubusercontent.com/dAAAb/juchunko.com/main/pages${filename}.zh-TW.mdx?d=${encodeURIComponent(date)}`,
+    `https://raw.githubusercontent.com/DrJuChunKoO/juchunko.com/main/pages${filename}.zh-TW.mdx?d=${encodeURIComponent(date)}`,
     {
       cache: 'force-cache',
     },

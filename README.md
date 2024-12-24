@@ -21,5 +21,5 @@
 網站持續開發更新中，也歡迎眾阿宅 Star 星星之力支援喔！感恩！
 
 - 🌏 https://juchunko.com
-- 🛠️ https://github.com/dAAAb/juchunko.com
+- 🛠️ https://github.com/DrJuChunKoO/juchunko.com
 - 🐖 https://juchunko.com/docs/works/checkpork
