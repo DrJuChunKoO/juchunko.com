@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@11labs/react':
+        specifier: ^0.0.4
+        version: 0.0.4(react@18.3.1)
       '@ai-sdk/openai':
         specifier: ^0.0.13
         version: 0.0.13(zod@3.23.8)
@@ -92,6 +95,14 @@ importers:
         version: 5.4.5
 
 packages:
+
+  '@11labs/client@0.0.4':
+    resolution: {integrity: sha512-BldXyZsTtiS8Db3RTDxuk1B+Gx7pj7xxUWS5MJA3CfvKegDJeX979l3s3ZJ4StBLM2VaOTf3b2c5NUTy41a3nQ==}
+
+  '@11labs/react@0.0.4':
+    resolution: {integrity: sha512-ZXkAfB3+BAb78Q3N8gM5NVk/RLpi8WCpZBYRzj+wquXw3CkIIzvdL5S3sieMqtDccdWLV3Wn4MC273RHdAdUUQ==}
+    peerDependencies:
+      react: '>=16.8.0'
 
   '@ai-sdk/openai@0.0.13':
     resolution: {integrity: sha512-V5Jjem+83sVxFNzhNUV25c7uXC33VKIhoo1qN098EMqTriEp9oNCRAaNXf95eVFbFs2bDLVZtkoACv++Go0BUA==}
@@ -2582,6 +2593,13 @@ packages:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
 
 snapshots:
+
+  '@11labs/client@0.0.4': {}
+
+  '@11labs/react@0.0.4(react@18.3.1)':
+    dependencies:
+      '@11labs/client': 0.0.4
+      react: 18.3.1
 
   '@ai-sdk/openai@0.0.13(zod@3.23.8)':
     dependencies:

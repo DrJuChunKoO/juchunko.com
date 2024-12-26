@@ -8,6 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@11labs/react": "^0.0.4",
     "@ai-sdk/openai": "^0.0.13",
     "@next/third-parties": "^14.2.3",
     "@tailwindcss/container-queries": "^0.1.1",
