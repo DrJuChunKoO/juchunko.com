@@ -16,12 +16,30 @@ const translations = {
     talkToAI: '與 AI 對話',
     notice: 'AI 可能會犯錯，請仔細檢查生成的內容',
     actions: [
-      `整理這頁的重點`,
-      `提供相關的背景資訊`,
-      `這頁的主要觀點是什麼`,
-      '可以給我這個主題的詳細解釋嗎',
-      '幫我生成一個這段內容的問答',
-      '可以告訴我和葛如鈞有關的新聞嗎',
+      {
+        text: '📝 整理重點',
+        prompt: '整理這頁的重點',
+      },
+      {
+        text: 'ℹ️ 提供背景資訊',
+        prompt: '請查看頁面內容並提供相關的背景資訊',
+      },
+      {
+        text: '🔍 主要觀點',
+        prompt: '這頁的主要觀點是什麼',
+      },
+      {
+        text: '📖 詳細解釋',
+        prompt: '請查看頁面內容並給我這個主題的詳細解釋嗎',
+      },
+      {
+        text: '❓ 生成問答',
+        prompt: '請查看頁面內容並幫我生成一個這段內容的問答',
+      },
+      {
+        text: '📰 最新新聞',
+        prompt: '可以告訴我和葛如鈞有關的新聞嗎',
+      },
     ],
     voiceChat: '語音對話',
     stopVoiceChat: '停止語音對話',
@@ -32,12 +50,30 @@ const translations = {
     talkToAI: 'Talk to AI',
     notice: 'AI may make mistakes, please check the generated content carefully',
     actions: [
-      'Summarize key points in English',
-      'Provide background info in English',
-      'Main perspective in English?',
-      'Detailed explanation in English?',
-      'Generate Q&A in English',
-      'Tell me news about Ju-Chun KO in English',
+      {
+        text: '📝 Summarize key points',
+        prompt: 'Summarize key points of this page in English',
+      },
+      {
+        text: 'ℹ️ Provide background info',
+        prompt: 'Provide background info of this content in English',
+      },
+      {
+        text: '🔍 Main perspective',
+        prompt: 'Main perspective of this content in English?',
+      },
+      {
+        text: '📖 Detailed explanation',
+        prompt: 'Detailed explanation of this content in English?',
+      },
+      {
+        text: '❓ Generate Q&A',
+        prompt: 'Generate Q&A of this content in English',
+      },
+      {
+        text: '📰 Latest news',
+        prompt: 'Tell me news about Ju-Chun KO in English',
+      },
     ],
     voiceChat: 'Voice Chat',
     stopVoiceChat: 'Stop Voice Chat',
@@ -217,6 +253,11 @@ export default function SpeechAI() {
               ))}
             </AnimatePresence>
             <AnimatePresence>
+              {isLoading && messages?.at(-1)?.role !== 'assistant' && (
+                <Message from="ai" content={'思考中⋯⋯'} showCopy={false} />
+              )}
+            </AnimatePresence>
+            <AnimatePresence>
               {!isLoading && (
                 <motion.div
                   className="flex flex-col gap-2 text-gray-800 dark:text-gray-100"
@@ -224,13 +265,13 @@ export default function SpeechAI() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 20 }}>
                   {localeTranslation('actions')
-                    .filter((x) => !messages.some((m) => m.content === x))
-                    .map((message, index) => (
+                    .filter((x) => !messages.some((m) => m.content === x.prompt))
+                    .map((item, index) => (
                       <button
-                        onClick={() => sendDefaultMessage(message)}
+                        onClick={() => sendDefaultMessage(item.prompt)}
                         className="flex items-center gap-0.5 pl-3 text-left text-sm opacity-75 transition-all hover:gap-1 hover:opacity-100 active:opacity-50"
                         key={index}>
-                        {message}
+                        {item.text}
                         <ArrowRight size={16} strokeWidth={1.5} />
                       </button>
                     ))}
