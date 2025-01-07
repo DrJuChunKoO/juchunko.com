@@ -54,7 +54,7 @@ export async function POST(req: Request) {
               query_embedding: embedding,
               match_threshold: 0.4,
             })
-            .select('title, url, body, time')
+            .select('title, url, summary, time')
             .limit(5)
           return {
             data,
