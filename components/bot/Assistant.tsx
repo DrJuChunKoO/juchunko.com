@@ -45,6 +45,13 @@ function localeTranslation(key: string) {
   return translations[locale][key] || translations['en-US'][key]
 }
 
+function LinkRenderer(props: any) {
+  return (
+    <a href={props.href} target="_blank" rel="noreferrer">
+      {props.children}
+    </a>
+  )
+}
 function Message({ from, content, showCopy = true }: { from: 'me' | 'ai'; content: string; showCopy?: boolean }) {
   const [copied, setCopied] = useState(false)
   async function copyToClipboard(text: string) {
@@ -86,7 +93,9 @@ function Message({ from, content, showCopy = true }: { from: 'me' | 'ai'; conten
               </button>
             </div>
           )}
-          <Markdown className="prose prose-sm prose-neutral break-words px-3 py-2 text-sm dark:prose-invert">
+          <Markdown
+            className="prose prose-sm prose-neutral break-words px-3 py-2 text-sm dark:prose-invert"
+            components={{ a: LinkRenderer }}>
             {content}
           </Markdown>
         </div>

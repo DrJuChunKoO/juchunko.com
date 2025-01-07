@@ -9,10 +9,11 @@
   },
   "dependencies": {
     "@11labs/react": "^0.0.4",
-    "@ai-sdk/openai": "^0.0.13",
+    "@ai-sdk/openai": "^1.0.13",
     "@next/third-parties": "^14.2.3",
+    "@supabase/supabase-js": "^2.47.10",
     "@tailwindcss/container-queries": "^0.1.1",
-    "ai": "^3.1.12",
+    "ai": "^4.0.27",
     "framer-motion": "^11.2.4",
     "lucide-react": "^0.378.0",
     "next": "^14.2.3",
@@ -22,11 +23,12 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-icons": "^5.2.1",
-    "react-markdown": "^9.0.1",
+    "react-markdown": "^9.0.3",
     "react-remove-scroll": "^2.5.10",
     "react-wrap-balancer": "^1.1.0",
     "tailwind-merge": "^2.3.0",
-    "usehooks-ts": "^3.1.0"
+    "usehooks-ts": "^3.1.0",
+    "zod": "^3.24.1"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.13",
