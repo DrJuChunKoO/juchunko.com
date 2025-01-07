@@ -254,16 +254,16 @@ export default function SpeechAI() {
             </AnimatePresence>
             <AnimatePresence>
               {isLoading && messages?.at(-1)?.role !== 'assistant' && (
-                <Message from="ai" content={'思考中⋯⋯'} showCopy={false} />
+                <Message from="ai" content={'思考中⋯'} showCopy={false} />
               )}
             </AnimatePresence>
             <AnimatePresence>
               {!isLoading && (
                 <motion.div
-                  className="flex flex-col gap-2 text-gray-800 dark:text-gray-100"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 20 }}>
+                  className="flex flex-col gap-2 overflow-hidden text-gray-800 dark:text-gray-100"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}>
                   {localeTranslation('actions')
                     .filter((x) => !messages.some((m) => m.content === x.prompt))
                     .map((item, index) => (

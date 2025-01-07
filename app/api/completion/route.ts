@@ -37,7 +37,10 @@ export async function POST(req: Request) {
       },
     ],
     maxSteps: 5,
-    experimental_transform: smoothStream(),
+    experimental_transform: smoothStream({
+      delayInMs: 80,
+      chunking: 'word',
+    }),
     tools: {
       searchNews: tool({
         description: '透過語意化搜尋找到相關新聞，可能會找到一些不相關或重複的新聞，請自行篩選',
