@@ -40,7 +40,7 @@ export async function POST(req: Request) {
     experimental_transform: smoothStream(),
     tools: {
       searchNews: tool({
-        description: '透過語意化搜尋找到相關新聞，可能會找到一些不相關的新聞，請自行篩選',
+        description: '透過語意化搜尋找到相關新聞，可能會找到一些不相關或重複的新聞，請自行篩選',
         parameters: z.object({
           keyword: z.string().describe('語意化搜尋的關鍵字，可以提供一些相似的詞來提高搜尋成功率'),
         }),
@@ -56,22 +56,24 @@ export async function POST(req: Request) {
               match_threshold: 0.4,
             })
             .select('title, url, summary, time, source')
-            .limit(5)
-          return {
-            data,
-            error: error ? 'An error occurred while searching for news articles' : undefined,
+            .limit(7)
+
+          if (error) {
+            console.error(error)
+            return 'An error occurred while searching for news articles'
           }
+          return data
         },
       }),
       latestNews: tool({
-        description: '取得有關科技立委葛如鈞的最新新聞',
+        description: '取得有關科技立委葛如鈞的最新新聞，可能會有重複的新聞，可以自行濃縮摘要並整合來源',
         parameters: z.object({}),
         execute: async () => {
           const { data, error } = await supabase
             .from('news')
             .select('title, url, summary, time, source')
             .order('time', { ascending: false })
-            .limit(5)
+            .limit(7)
           return {
             data,
             error: error ? 'An error occurred while fetching the latest news articles' : undefined,
