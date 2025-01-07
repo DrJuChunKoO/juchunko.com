@@ -53,7 +53,7 @@ export async function POST(req: Request) {
               query_embedding: embedding,
               match_threshold: 0.4,
             })
-            .select('title, url, summary, time')
+            .select('title, url, body, time')
             .limit(5)
           return {
             data,
@@ -67,7 +67,7 @@ export async function POST(req: Request) {
         execute: async () => {
           const { data, error } = await supabase
             .from('news')
-            .select('title, url, summary, time')
+            .select('title, url, body, time')
             .order('time', { ascending: false })
             .limit(5)
           return {
