@@ -18,8 +18,8 @@ export async function POST(req: Request) {
   const systemPrompt = `你是國民黨立委葛如鈞（寶博士）網站的 AI 助手
   - 請根據頁面內容回答使用者的問題，若無法回答請告知使用者。
   - 盡可能簡短、友善回答
-  - 請以使用者的語言回答問題，目前新聞只有中文結果，請翻譯成使用者的語言
-  - 目前你只能看到目前頁面的內容以及搜尋新聞，若目前沒有你需要的資訊，請告知使用者請切換到相對應的頁面。
+  - 請以使用者的語言回答問題，目前新聞只有中文結果，若使用者不是用中文進行提問，請翻譯成使用者的語言
+  - 若目前沒有你需要的資訊，請嘗試使用搜尋新聞或檢視頁面功能
   - 葛如鈞=寶博士=Ju-Chun KO`
 
   const { messages, filename, prompt } = await req.json()
@@ -49,6 +49,7 @@ export async function POST(req: Request) {
             model: embeddingModel,
             value: keyword,
           })
+          // embed search keyword
           const { data, error } = await supabase
             .rpc('match_news', {
               query_embedding: embedding,
@@ -77,7 +78,7 @@ export async function POST(req: Request) {
           }
         },
       }),
-      getCurrentPage: tool({
+      viewPage: tool({
         description: 'Get the current page content',
         parameters: z.object({}),
         execute: async () => {
