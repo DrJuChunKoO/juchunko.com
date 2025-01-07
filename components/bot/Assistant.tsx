@@ -14,6 +14,7 @@ const translations = {
     botName: 'AI 小助手',
     botFirstMessage: '👋 嗨，有什麼可以幫助你的？',
     talkToAI: '與 AI 對話',
+    notice: 'AI 可能會犯錯，請仔細檢查生成的內容',
     actions: [
       `整理這頁的重點`,
       `提供相關的背景資訊`,
@@ -29,6 +30,7 @@ const translations = {
     botName: 'AI Assistant',
     botFirstMessage: '👋 Hi, how can I help you?',
     talkToAI: 'Talk to AI',
+    notice: 'AI may make mistakes, please check the generated content carefully',
     actions: [
       'Summarize key points in English',
       'Provide background info in English',
@@ -205,6 +207,9 @@ export default function SpeechAI() {
           <motion.div
             className="h-[400px] overflow-y-scroll bg-white p-2 dark:bg-neutral-800"
             ref={messageContainerRef}>
+            <div className="flex items-center justify-center pb-2 text-xs text-neutral-400 dark:text-neutral-600">
+              {localeTranslation('notice')}
+            </div>
             <Message from="ai" content={localeTranslation('botFirstMessage')} showCopy={false} />
             <AnimatePresence>
               {messages.map((m, index) => (
