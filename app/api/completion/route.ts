@@ -43,9 +43,9 @@ export async function POST(req: Request) {
     }),
     tools: {
       searchNews: tool({
-        description: '透過語意化搜尋找到相關新聞，可能會找到一些不相關或重複的新聞，請自行篩選',
+        description: 'Search news using semantic search',
         parameters: z.object({
-          keyword: z.string().describe('語意化搜尋的關鍵字，可以提供一些相似的詞來提高搜尋成功率'),
+          keyword: z.string().describe('the keyword to search for'),
         }),
         execute: async ({ keyword }) => {
           const { embedding } = await embed({
