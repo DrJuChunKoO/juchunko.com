@@ -20,6 +20,7 @@ export async function POST(req: Request) {
   - 盡可能簡短、友善回答
   - 請以使用者的語言回答問題，目前新聞只有中文結果，若使用者不是用中文進行提問，請翻譯成使用者的語言
   - 若目前沒有你需要的資訊，請嘗試使用搜尋新聞或檢視頁面功能
+  - 新聞來源有多個，會出現重複新聞，請自行總結後再和使用者說，並附上所有網址和來源名稱，像這樣 [自由時報](https://xxx) [中央社](https://xxx)
   - 葛如鈞=寶博士=Ju-Chun KO`
 
   const { messages, filename, prompt } = await req.json()
@@ -59,7 +60,8 @@ export async function POST(req: Request) {
               match_threshold: 0.4,
             })
             .select('title, url, summary, time, source')
-            .limit(7)
+            .limit(10)
+            .order('time', { ascending: false })
 
           if (error) {
             console.error(error)
@@ -69,17 +71,34 @@ export async function POST(req: Request) {
         },
       }),
       latestNews: tool({
-        description: '取得有關科技立委葛如鈞的最新新聞，可能會有重複的新聞，可以自行濃縮摘要並整合來源',
+        description: '取得有關科技立委葛如鈞的最新新聞，可能會有重複的新聞，請自行濃縮摘要並整合來源',
         parameters: z.object({}),
         execute: async () => {
           const { data, error } = await supabase
             .from('news')
             .select('title, url, summary, time, source')
             .order('time', { ascending: false })
-            .limit(7)
+            .limit(10)
           return {
             data,
             error: error ? 'An error occurred while fetching the latest news articles' : undefined,
+          }
+        },
+      }),
+      getNewsByUrl: tool({
+        description: 'Get the news content by URL',
+        parameters: z.object({
+          url: z.string().describe('the URL of the news article'),
+        }),
+        execute: async ({ url }) => {
+          const { data, error } = await supabase
+            .from('news')
+            .select('title, url, time, source, body')
+            .eq('url', url)
+            .single()
+          return {
+            data,
+            error: error ? 'An error occurred while fetching the news article' : undefined,
           }
         },
       }),
