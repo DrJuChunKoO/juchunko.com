@@ -34,7 +34,7 @@ const getExistingNewsUrls = (content) => {
 
 // Function to add bold formatting to 葛如鈞 and adjust spacing
 const formatText = (text) => {
-  return pangu.spacing(text.replace(/葛如鈞/g, '**葛如鈞**'))
+  return pangu.spacing(text).replace(/葛如鈞/g, '**葛如鈞**')
 }
 
 async function updateNews() {
