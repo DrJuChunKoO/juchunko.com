@@ -17,7 +17,6 @@
     "isolatedModules": true,
     "moduleResolution": "node",
     "jsx": "preserve",
-    "module": "esnext",
     "resolveJsonModule": true,
     "paths": {
       "@/*": [
@@ -35,7 +34,8 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    "utils/newsUpdater.mjs"
   ],
   "exclude": [
     "node_modules"
