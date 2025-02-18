@@ -2,6 +2,7 @@ import { createOpenAI } from '@ai-sdk/openai'
 import { streamText, tool, smoothStream, embed } from 'ai'
 import z from 'zod'
 import { createClient } from '@supabase/supabase-js'
+import pangu from 'pangu'
 
 export const maxDuration = 30
 export const dynamic = 'force-dynamic'
@@ -67,7 +68,11 @@ export async function POST(req: Request) {
             console.error(error)
             return 'An error occurred while searching for news articles'
           }
-          return data
+          return data.map((item) => ({
+            ...item,
+            title: pangu.spacing(item.title),
+            summary: pangu.spacing(item.summary),
+          }))
         },
       }),
       latestNews: tool({
@@ -80,7 +85,11 @@ export async function POST(req: Request) {
             .order('time', { ascending: false })
             .limit(10)
           return {
-            data,
+            data: data?.map((item) => ({
+              ...item,
+              title: pangu.spacing(item.title),
+              summary: pangu.spacing(item.summary),
+            })),
             error: error ? 'An error occurred while fetching the latest news articles' : undefined,
           }
         },
@@ -97,7 +106,11 @@ export async function POST(req: Request) {
             .eq('url', url)
             .single()
           return {
-            data,
+            data: data && {
+              ...data,
+              title: pangu.spacing(data.title),
+              body: pangu.spacing(data.body),
+            },
             error: error ? 'An error occurred while fetching the news article' : undefined,
           }
         },
