@@ -121,7 +121,7 @@ async function updateNews() {
           }
 
           // Prepare new date section content
-          let newDateContent = '\n\n## ${date}\n\n'
+          let newDateContent = `\n\n## ${date}\n\n`
           items.forEach((item) => {
             newDateContent += `#### [${addBoldFormatting(item.title.trim())}](${item.url.trim()}) \`${item.source}\`\n\n`
             newDateContent += addBoldFormatting(item.summary.trim()) + '\n\n'
