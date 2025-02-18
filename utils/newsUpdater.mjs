@@ -2,6 +2,7 @@
 import 'dotenv/config'
 import { createClient } from '@supabase/supabase-js'
 import fs from 'fs'
+import pangu from 'pangu'
 
 const supabaseUrl = process.env.SUPABASE_URL
 const supabaseKey = process.env.SUPABASE_KEY
@@ -31,9 +32,9 @@ const getExistingNewsUrls = (content) => {
   return urls
 }
 
-// Function to add bold formatting to 葛如鈞
-const addBoldFormatting = (text) => {
-  return text.replace(/葛如鈞/g, '**葛如鈞**')
+// Function to add bold formatting to 葛如鈞 and adjust spacing
+const formatText = (text) => {
+  return pangu.spacing(text.replace(/葛如鈞/g, '**葛如鈞**'))
 }
 
 async function updateNews() {
@@ -98,8 +99,8 @@ async function updateNews() {
           // Prepare new items content
           let newItemsContent = '\n\n'
           items.forEach((item) => {
-            newItemsContent += `#### [${addBoldFormatting(item.title.trim())}](${item.url.trim()}) \`${item.source}\`\n\n`
-            newItemsContent += addBoldFormatting(item.summary.trim()) + '\n\n'
+            newItemsContent += `#### [${formatText(item.title.trim())}](${item.url.trim()}) \`${item.source}\`\n\n`
+            newItemsContent += formatText(item.summary.trim()) + '\n\n'
           })
 
           // Insert new items after the date header
@@ -123,8 +124,8 @@ async function updateNews() {
           // Prepare new date section content
           let newDateContent = `\n\n## ${date}\n\n`
           items.forEach((item) => {
-            newDateContent += `#### [${addBoldFormatting(item.title.trim())}](${item.url.trim()}) \`${item.source}\`\n\n`
-            newDateContent += addBoldFormatting(item.summary.trim()) + '\n\n'
+            newDateContent += `#### [${formatText(item.title.trim())}](${item.url.trim()}) \`${item.source}\`\n\n`
+            newDateContent += formatText(item.summary.trim()) + '\n\n'
           })
 
           // Insert the new date section at the correct position

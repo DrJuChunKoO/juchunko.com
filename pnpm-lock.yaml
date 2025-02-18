@@ -47,6 +47,9 @@ importers:
       openai:
         specifier: ^4.52.7
         version: 4.52.7
+      pangu:
+        specifier: ^4.0.7
+        version: 4.0.7
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -1779,6 +1782,10 @@ packages:
   p-limit@3.1.0:
     resolution: {integrity: sha512-TYOanM3wGwNGsZN2cVTYPArw454xnXj5qmWF1bEoAc4+cU/ol7GVh7odevjp1FNHduHc3KZMcFduxU5Xc6uJRQ==}
     engines: {node: '>=10'}
+
+  pangu@4.0.7:
+    resolution: {integrity: sha512-weZKJIwwy5gjt4STGVUH9bix3BGk7wZ2ahtIypwe3e/mllsrIZIvtfLx1dPX56GcpZFOCFKmeqI1qVuB9enRzA==}
+    hasBin: true
 
   parse-entities@4.0.0:
     resolution: {integrity: sha512-5nk9Fn03x3rEhGaX1FU6IDwG/k+GxLXlFAkgrbM1asuAFl3BhdQWvASaIsmwWypRNcZKHPYnIuOSfIWEyEQnPQ==}
@@ -4615,6 +4622,8 @@ snapshots:
   p-limit@3.1.0:
     dependencies:
       yocto-queue: 0.1.0
+
+  pangu@4.0.7: {}
 
   parse-entities@4.0.0:
     dependencies:
