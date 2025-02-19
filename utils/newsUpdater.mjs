@@ -43,7 +43,11 @@ const formatDateEnglish = (date) => {
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 }
 
-const formatText = (text) => pangu.spacing(text).replace(/葛如鈞/g, '**葛如鈞**')
+const formatText = (text) =>
+  pangu
+    .spacing(text)
+    .replace(/葛如鈞/g, '**葛如鈞**')
+    .replace(/Ju-Chun Ko/g, '**Ju-Chun Ko**')
 
 const getExistingNewsUrls = (content) => {
   const urls = new Set()
@@ -75,7 +79,15 @@ function groupNewsByDate(newsData, existingUrls) {
   })
   return newsByDate
 }
-
+function parseDate(dateStr) {
+  if (dateStr.includes('/')) {
+    // Handle YYYY/MM/DD format
+    return new Date(dateStr.replace(/\//g, '-')).getTime()
+  } else {
+    // Handle Month DD, YYYY format
+    return new Date(dateStr).getTime()
+  }
+}
 function createNewsContent(item, isEnglish = false) {
   const title = isEnglish && item.title_en ? item.title_en : formatText(item.title.trim())
   const summary = isEnglish && item.summary_en ? item.summary_en : formatText(item.summary.trim())
@@ -95,7 +107,8 @@ function insertNewsIntoContent(content, date, items, isEnglish = false) {
     return content.slice(0, insertPosition) + newItemsContent + content.slice(insertPosition)
   } else {
     const existingDates = (content.match(/## [\d/]+|## [A-Za-z]+ \d+, \d{4}/g) || []).map((date) => date.slice(3))
-    const allDates = [...existingDates, dateHeader].sort((a, b) => b.localeCompare(a))
+
+    const allDates = [...existingDates, dateHeader].sort((a, b) => parseDate(b) - parseDate(a))
     const dateIndex = allDates.indexOf(dateHeader)
 
     const insertPosition =
@@ -130,7 +143,7 @@ async function updateNews() {
 
     // Update Chinese content
     Object.entries(newsByDate)
-      .sort(([a], [b]) => b.localeCompare(a))
+      .sort(([a], [b]) => parseDate(b) - parseDate(a))
       .forEach(([date, items]) => {
         zhContent = insertNewsIntoContent(zhContent, date, items)
       })
@@ -149,10 +162,9 @@ async function updateNews() {
 
     // Update English content only for new items
     Object.entries(newsByDate)
-      .sort(([a], [b]) => b.localeCompare(a))
+      .sort(([a], [b]) => parseDate(b) - parseDate(a))
       .forEach(([date, items]) => {
-        const dateHeader = formatDateEnglish(date.replace(/\//g, '-'))
-        const englishItems = items.filter(item => item.title_en && item.summary_en)
+        const englishItems = items.filter((item) => item.title_en && item.summary_en)
         if (englishItems.length > 0) {
           enContent = insertNewsIntoContent(enContent, date, englishItems, true)
         }
