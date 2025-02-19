@@ -4,144 +4,162 @@ import { createClient } from '@supabase/supabase-js'
 import fs from 'fs'
 import pangu from 'pangu'
 
-const supabaseUrl = process.env.SUPABASE_URL
-const supabaseKey = process.env.SUPABASE_KEY
-const supabase = createClient(supabaseUrl, supabaseKey)
+// Constants
+const SUPABASE_CONFIG = {
+  url: process.env.SUPABASE_URL,
+  key: process.env.SUPABASE_KEY,
+}
 
-// Template for the news file
-const template = `# 新聞報導 📰
+const FILE_PATHS = {
+  zhTW: './pages/docs/news.zh-TW.mdx',
+  enUS: './pages/docs/news.en-US.mdx',
+}
+
+const TEMPLATE = {
+  zhTW: `# 新聞報導 📰
 
 和**葛如鈞**有關的新聞報導
 
 {/* Top */}
-`
+`,
+  enUS: `# News 📰
 
-// Function to format date as YYYY/MM/DD
-const formatDate = (date) => {
-  return date.split('T')[0].replace(/-/g, '/')
+News about **Ju-Chun KO**
+
+> The following news has been translated by AI. There may be some errors in names or other details; please excuse any inaccuracies.
+
+{/* Top */}
+`,
 }
 
-// Function to get existing news URLs
+// Initialize Supabase client
+const supabase = createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.key)
+
+// Utility functions
+const formatDate = (date) => date.split('T')[0].replace(/-/g, '/')
+
+const formatDateEnglish = (date) => {
+  const d = new Date(date)
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+}
+
+const formatText = (text) => pangu.spacing(text).replace(/葛如鈞/g, '**葛如鈞**')
+
 const getExistingNewsUrls = (content) => {
   const urls = new Set()
   const matches = content.match(/\]\((.*?)\)/g) || []
-  matches.forEach((match) => {
-    const url = match.slice(2, -1)
-    urls.add(url)
-  })
+  matches.forEach((match) => urls.add(match.slice(2, -1)))
   return urls
 }
 
-// Function to add bold formatting to 葛如鈞 and adjust spacing
-const formatText = (text) => {
-  return pangu.spacing(text).replace(/葛如鈞/g, '**葛如鈞**')
+// Core functions
+async function fetchNewsFromSupabase() {
+  const { data, error } = await supabase
+    .from('news')
+    .select('url, title, source, time, summary, title_en, summary_en')
+    .order('time', { ascending: false })
+    .limit(100)
+
+  if (error) throw error
+  return data
+}
+
+function groupNewsByDate(newsData, existingUrls) {
+  const newsByDate = {}
+  newsData.forEach((item) => {
+    if (!existingUrls.has(item.url)) {
+      const date = formatDate(item.time)
+      if (!newsByDate[date]) newsByDate[date] = []
+      newsByDate[date].push(item)
+    }
+  })
+  return newsByDate
+}
+
+function createNewsContent(item, isEnglish = false) {
+  const title = isEnglish && item.title_en ? item.title_en : formatText(item.title.trim())
+  const summary = isEnglish && item.summary_en ? item.summary_en : formatText(item.summary.trim())
+  return `#### [${title}](${item.url.trim()}) \`${item.source}\`\n\n${summary}\n\n`
+}
+
+function insertNewsIntoContent(content, date, items, isEnglish = false) {
+  const dateHeader = isEnglish ? formatDateEnglish(date.replace(/\//g, '-')) : date
+  const dateSection = content.includes(`## ${dateHeader}`)
+
+  if (dateSection) {
+    const dateSectionIndex = content.indexOf(`## ${dateHeader}`) + `## ${dateHeader}`.length
+    const nextSectionIndex = content.indexOf('##', dateSectionIndex + 1)
+    const insertPosition = nextSectionIndex === -1 ? content.length : nextSectionIndex
+
+    const newItemsContent = '\n\n' + items.map((item) => createNewsContent(item, isEnglish)).join('')
+    return content.slice(0, insertPosition) + newItemsContent + content.slice(insertPosition)
+  } else {
+    const existingDates = (content.match(/## [\d/]+|## [A-Za-z]+ \d+, \d{4}/g) || []).map((date) => date.slice(3))
+    const allDates = [...existingDates, dateHeader].sort((a, b) => b.localeCompare(a))
+    const dateIndex = allDates.indexOf(dateHeader)
+
+    const insertPosition =
+      dateIndex === allDates.length - 1 ? content.length : content.indexOf(`## ${allDates[dateIndex + 1]}`)
+
+    const newDateContent = `\n\n## ${dateHeader}\n\n` + items.map((item) => createNewsContent(item, isEnglish)).join('')
+
+    return content.slice(0, insertPosition) + newDateContent + content.slice(insertPosition)
+  }
 }
 
 async function updateNews() {
   try {
-    // Fetch news from Supabase
-    const { data, error } = await supabase
-      .from('news')
-      .select('url, title, source, time, summary')
-      .order('time', { ascending: false })
-      .limit(100)
+    // Fetch news data
+    const newsData = await fetchNewsFromSupabase()
 
-    if (error) throw error
-
-    // Read existing news file
-    let content = ''
+    // Process Chinese version
+    let zhContent = ''
     try {
-      content = fs.readFileSync('./pages/docs/news.zh-TW.mdx', 'utf8')
-    } catch (e) {
-      // If file doesn't exist, use template
-      content = template
+      zhContent = fs.readFileSync(FILE_PATHS.zhTW, 'utf8')
+    } catch {
+      zhContent = TEMPLATE.zhTW
     }
-    const existingUrls = getExistingNewsUrls(content)
 
-    // Group news by date
-    const newsByDate = {}
-    data.forEach((item) => {
-      if (!existingUrls.has(item.url)) {
-        const date = formatDate(item.time)
-        if (!newsByDate[date]) {
-          newsByDate[date] = []
-        }
-        newsByDate[date].push(item)
-      }
-    })
+    const existingUrls = getExistingNewsUrls(zhContent)
+    const newsByDate = groupNewsByDate(newsData, existingUrls)
 
-    // If no new content, keep existing content
     if (Object.keys(newsByDate).length === 0) {
       console.log('No new news items to add')
       return
     }
 
-    // For new file, use template
-    if (content === '') {
-      content = template
-    }
-    console.log(newsByDate)
-    // Get all existing dates from content
-    const existingDates = (content.match(/## \d{4}\/\d{2}\/\d{2}/g) || []).map((date) => date.slice(3))
-
-    // Add new news items grouped by date
+    // Update Chinese content
     Object.entries(newsByDate)
       .sort(([a], [b]) => b.localeCompare(a))
       .forEach(([date, items]) => {
-        // Check if date section exists in existing content
-        const dateSection = content.includes(`## ${date}`)
-        if (dateSection) {
-          // Find the position after the date header
-          const dateSectionIndex = content.indexOf(`## ${date}`) + `## ${date}`.length
-          const nextSectionIndex = content.indexOf('##', dateSectionIndex + 1)
-          const insertPosition = nextSectionIndex === -1 ? content.length : nextSectionIndex
+        zhContent = insertNewsIntoContent(zhContent, date, items)
+      })
 
-          // Prepare new items content
-          let newItemsContent = '\n\n'
-          items.forEach((item) => {
-            newItemsContent += `#### [${formatText(item.title.trim())}](${item.url.trim()}) \`${item.source}\`\n\n`
-            newItemsContent += formatText(item.summary.trim()) + '\n\n'
-          })
+    zhContent = zhContent.replaceAll('\n\n\n\n', '\n\n')
+    fs.writeFileSync(FILE_PATHS.zhTW, zhContent)
+    console.log('Chinese news file updated successfully')
 
-          // Insert new items after the date header
-          content = content.slice(0, insertPosition) + newItemsContent + content.slice(insertPosition)
-        } else {
-          // Find the correct position to insert the new date section
-          const allDates = [...existingDates, date].sort((a, b) => b.localeCompare(a))
-          const dateIndex = allDates.indexOf(date)
-          let insertPosition
+    // Process English version
+    let enContent = ''
+    try {
+      enContent = fs.readFileSync(FILE_PATHS.enUS, 'utf8')
+    } catch {
+      enContent = TEMPLATE.enUS
+    }
 
-          if (dateIndex === allDates.length - 1) {
-            // If it's the oldest date, append to the end
-            insertPosition = content.length
-          } else {
-            // Find the position of the next newer date
-            const nextDate = allDates[dateIndex + 1]
-            const nextDatePosition = content.indexOf(`## ${nextDate}`)
-            insertPosition = nextDatePosition === -1 ? content.length : nextDatePosition
-          }
-
-          // Prepare new date section content
-          let newDateContent = `\n\n## ${date}\n\n`
-          items.forEach((item) => {
-            newDateContent += `#### [${formatText(item.title.trim())}](${item.url.trim()}) \`${item.source}\`\n\n`
-            newDateContent += formatText(item.summary.trim()) + '\n\n'
-          })
-
-          // Insert the new date section at the correct position
-          content = content.slice(0, insertPosition) + newDateContent + content.slice(insertPosition)
+    // Update English content only for new items
+    Object.entries(newsByDate)
+      .sort(([a], [b]) => b.localeCompare(a))
+      .forEach(([date, items]) => {
+        const dateHeader = formatDateEnglish(date.replace(/\//g, '-'))
+        const englishItems = items.filter(item => item.title_en && item.summary_en)
+        if (englishItems.length > 0) {
+          enContent = insertNewsIntoContent(enContent, date, englishItems, true)
         }
       })
-    content = content.replaceAll('\n\n\n\n', '\n\n')
-    // Write the updated content
-    fs.writeFileSync('./pages/docs/news.zh-TW.mdx', content)
-    console.log('News file updated successfully')
 
-    // Update English version
-    fs.writeFileSync(
-      './pages/docs/news.en-US.mdx',
-      '# News 📰\n\nNews about **Ju-Chun KO**\n\n{/* Top */}\n' + content.split('{/* Top */}')[1],
-    )
+    enContent = enContent.replaceAll('\n\n\n\n', '\n\n')
+    fs.writeFileSync(FILE_PATHS.enUS, enContent)
     console.log('English news file updated successfully')
   } catch (error) {
     console.error('Error updating news:', error)
