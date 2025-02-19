@@ -48,8 +48,9 @@ export async function POST(req: Request) {
         description: 'Search news using semantic search',
         parameters: z.object({
           keyword: z.string().describe('the keyword to search for'),
+          inEnglish: z.boolean().describe('return the result in English'),
         }),
-        execute: async ({ keyword }) => {
+        execute: async ({ keyword, inEnglish }) => {
           const { embedding } = await embed({
             model: embeddingModel,
             value: keyword,
@@ -60,7 +61,7 @@ export async function POST(req: Request) {
               query_embedding: embedding,
               match_threshold: 0.4,
             })
-            .select('title, url, summary, time, source')
+            .select(inEnglish ? 'title_en, summary_en, url, time, source' : 'title, summary, url, time, source')
             .limit(10)
             .order('time', { ascending: false })
 
@@ -68,28 +69,34 @@ export async function POST(req: Request) {
             console.error(error)
             return 'An error occurred while searching for news articles'
           }
-          return data.map((item) => ({
-            ...item,
-            title: pangu.spacing(item.title),
-            summary: pangu.spacing(item.summary),
-          }))
+          return inEnglish
+            ? data
+            : data.map((item: any) => ({
+                ...item,
+                title: pangu.spacing(item.title!),
+                summary: pangu.spacing(item.summary),
+              }))
         },
       }),
       latestNews: tool({
         description: '取得有關科技立委葛如鈞的最新新聞，可能會有重複的新聞，請自行濃縮摘要並整合來源',
-        parameters: z.object({}),
-        execute: async () => {
+        parameters: z.object({
+          inEnglish: z.boolean().describe('return the result in English'),
+        }),
+        execute: async ({ inEnglish }) => {
           const { data, error } = await supabase
             .from('news')
-            .select('title, url, summary, time, source')
+            .select(inEnglish ? 'title_en, summary_en, url, time, source' : 'title, summary, url, time, source')
             .order('time', { ascending: false })
             .limit(10)
           return {
-            data: data?.map((item) => ({
-              ...item,
-              title: pangu.spacing(item.title),
-              summary: pangu.spacing(item.summary),
-            })),
+            data: inEnglish
+              ? data
+              : data?.map((item: any) => ({
+                  ...item,
+                  title: pangu.spacing(item.title),
+                  summary: pangu.spacing(item.summary),
+                })),
             error: error ? 'An error occurred while fetching the latest news articles' : undefined,
           }
         },
