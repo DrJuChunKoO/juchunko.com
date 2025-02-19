@@ -119,6 +119,7 @@ export async function POST(req: Request) {
         description: 'Get the current page content',
         parameters: z.object({}),
         execute: async () => {
+          if (filename === '/docs/news') return `新聞頁面包含大量新聞，請使用搜尋新聞功能或是 latestNews 來尋找新聞`
           const date = new Date().toLocaleDateString()
           const fileData = await fetch(
             `https://raw.githubusercontent.com/DrJuChunKoO/juchunko.com/main/pages${filename}.zh-TW.mdx?d=${encodeURIComponent(date)}`,
