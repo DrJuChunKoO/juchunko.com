@@ -78,6 +78,34 @@ export async function POST(req: Request) {
               }))
         },
       }),
+      searchWebsite: tool({
+        description: 'Search this website using semantic search',
+        parameters: z.object({
+          keyword: z.string().describe('the keyword to search for'),
+          language: z.enum(['zh', 'en']).describe('the language to search for'),
+        }),
+        execute: async ({ keyword, language }) => {
+          const { embedding } = await embed({
+            model: embeddingModel,
+            value: keyword,
+          })
+          // embed search keyword
+          const { data, error } = await supabase
+            .rpc('official_website', {
+              query_embedding: embedding,
+              match_threshold: 0.4,
+            })
+            .eq('language', language)
+            .select('title, paragraph')
+            .limit(10)
+
+          if (error) {
+            console.error(error)
+            return 'An error occurred while searching for news articles'
+          }
+          return data
+        },
+      }),
       latestNews: tool({
         description: '取得有關科技立委葛如鈞的最新新聞，可能會有重複的新聞，請自行濃縮摘要並整合來源',
         parameters: z.object({
