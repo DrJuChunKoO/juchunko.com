@@ -16,7 +16,7 @@ jobs:
         uses: tj-actions/changed-files@v45
         with:
           files: |
-            pages/**.mdx
+            **.mdx
       - name: Sync Changed Markdown to Supabase
         if: steps.changed-markdown-files.outputs.any_changed == 'true'
         env:
