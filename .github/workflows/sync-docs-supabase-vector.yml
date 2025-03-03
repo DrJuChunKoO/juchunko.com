@@ -17,6 +17,39 @@ jobs:
         with:
           files: |
             **.mdx
+
+      - name: Setup Node.js
+        if: steps.changed-markdown-files.outputs.any_changed == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup pnpm
+        if: steps.changed-markdown-files.outputs.any_changed == 'true'
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+          run_install: false
+
+      - name: Get pnpm store directory
+        if: steps.changed-markdown-files.outputs.any_changed == 'true'
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        if: steps.changed-markdown-files.outputs.any_changed == 'true'
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        if: steps.changed-markdown-files.outputs.any_changed == 'true'
+        run: pnpm install
+
       - name: Sync Changed Markdown to Supabase
         if: steps.changed-markdown-files.outputs.any_changed == 'true'
         env:
