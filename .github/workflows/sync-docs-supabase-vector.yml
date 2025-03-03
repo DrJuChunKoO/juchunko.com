@@ -1,0 +1,28 @@
+name: Auto Sync Docs to Supabase with Vectorization
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  changed_files:
+    runs-on: ubuntu-latest
+    name: Check changed-files
+    steps:
+      - uses: actions/checkout@v4
+      - name: Get all changed markdown files
+        id: changed-markdown-files
+        uses: tj-actions/changed-files@v45
+        with:
+          files: |
+            pages/**.mdx
+      - name: Sync Changed Markdown to Supabase
+        if: steps.changed-markdown-files.outputs.any_changed == 'true'
+        env:
+          ALL_CHANGED_FILES: ${{ steps.changed-markdown-files.outputs.all_changed_files }}
+        run: |
+          for file in ${ALL_CHANGED_FILES}; do
+            node utils/sync-docs-supabase-vector.mjs "$file"
+            echo "$file was changed"
+          done
