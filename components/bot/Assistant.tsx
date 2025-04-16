@@ -3,11 +3,11 @@ import { useEffect, useState, useRef } from 'react'
 import { motion, AnimatePresence, useMotionValue } from 'framer-motion'
 import { BotMessageSquare, Minus, Bot, RotateCcw, ArrowRight, Send, Copy, Check, X, Phone } from 'lucide-react'
 import { twMerge } from 'tailwind-merge'
-import { useCompletion } from 'ai/react'
+import { useCompletion } from '@ai-sdk/react'
 import { useLocalStorage } from 'usehooks-ts'
 import Markdown from 'react-markdown'
 import { usePathname } from 'next/navigation'
-import { useRouter } from 'next/router'
+import useRouter from 'next/router'
 import { Conversation } from './Conversation'
 const translations = {
   'zh-TW': {

@@ -5,7 +5,7 @@ import { useCallback } from 'react'
 import { Mic, Loader2, Phone, PhoneOff, UserRound } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { twMerge } from 'tailwind-merge'
-import { useRouter } from 'next/router'
+import useRouter from 'next/router'
 
 const translations = {
   'zh-TW': {

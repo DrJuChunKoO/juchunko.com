@@ -11,6 +11,7 @@
   "dependencies": {
     "@11labs/react": "^0.0.4",
     "@ai-sdk/openai": "^1.3.13",
+    "@ai-sdk/react": "^1.2.9",
     "@next/third-parties": "^14.2.3",
     "@supabase/supabase-js": "^2.47.10",
     "@tailwindcss/container-queries": "^0.1.1",
