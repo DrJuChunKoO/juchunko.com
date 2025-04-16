@@ -44,7 +44,7 @@ export async function POST(req: Request) {
     ],
     maxSteps: 8,
     experimental_transform: smoothStream({
-      delayInMs: 80,
+      delayInMs: 10,
       chunking: /[\u4E00-\u9FFF]|\S+\s+/,
     }),
     tools: {
