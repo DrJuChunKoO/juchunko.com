@@ -32,8 +32,6 @@ export async function POST(req: Request) {
   // Ask OpenAI for a streaming completion given the prompt
   const result = streamText({
     model: openai('gpt-4.1-nano'),
-    temperature: 0.6,
-    maxTokens: 8_192,
     messages: [
       { role: 'system', content: systemPrompt },
       ...messages,
