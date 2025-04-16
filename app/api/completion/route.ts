@@ -31,7 +31,7 @@ export async function POST(req: Request) {
   const { messages, filename, prompt } = await req.json()
   // Ask OpenAI for a streaming completion given the prompt
   const result = streamText({
-    model: openai('gpt-4o-mini'),
+    model: openai('gpt-4.1-nano'),
     temperature: 0.6,
     maxTokens: 8_192,
     messages: [
@@ -45,7 +45,7 @@ export async function POST(req: Request) {
     maxSteps: 8,
     experimental_transform: smoothStream({
       delayInMs: 80,
-      chunking: 'word',
+      chunking: /[\u4E00-\u9FFF]|\S+\s+/,
     }),
     tools: {
       searchNews: tool({
