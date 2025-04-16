@@ -31,7 +31,7 @@ export async function POST(req: Request) {
   const { messages, filename, prompt } = await req.json()
   // Ask OpenAI for a streaming completion given the prompt
   const result = streamText({
-    model: openai('gpt-4.1-nano'),
+    model: openai('gpt-4.1-mini'),
     messages: [
       { role: 'system', content: systemPrompt },
       ...messages,
