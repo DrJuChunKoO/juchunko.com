@@ -27,6 +27,10 @@ const config: DocsThemeConfig = {
   project: {
     link: 'https://github.com/DrJuChunKoO/juchunko.com',
   },
+  banner: {
+    key: 'ai-basic-act',
+    text: <a href="https://juchunko.com/docs/act/ai-basic-act">查看「AI 基本法」法案資訊 →</a>,
+  },
   docsRepositoryBase: 'https://github.com/DrJuChunKoO/juchunko.com/blob/main',
   useNextSeoProps() {
     const { asPath } = useRouter()
