@@ -7,7 +7,7 @@ import { useCompletion } from '@ai-sdk/react'
 import { useLocalStorage } from 'usehooks-ts'
 import Markdown from 'react-markdown'
 import { usePathname } from 'next/navigation'
-import useRouter from 'next/router'
+import { useRouter } from 'next/router'
 import { Conversation } from './Conversation'
 const translations = {
   'zh-TW': {
