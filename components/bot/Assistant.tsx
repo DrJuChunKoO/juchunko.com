@@ -3,8 +3,7 @@ import { useEffect, useState, useRef } from 'react'
 import { motion, AnimatePresence, useMotionValue } from 'framer-motion'
 import { BotMessageSquare, Minus, Bot, RotateCcw, ArrowRight, Send, Copy, Check, X, Phone } from 'lucide-react'
 import { twMerge } from 'tailwind-merge'
-import { useCompletion } from '@ai-sdk/react'
-import { useLocalStorage } from 'usehooks-ts'
+import { useChat } from '@ai-sdk/react'
 import Markdown from 'react-markdown'
 import { usePathname } from 'next/navigation'
 import { useRouter } from 'next/router'
@@ -153,23 +152,12 @@ export default function SpeechAI() {
   const submitButtonRef = useRef<HTMLButtonElement>(null)
   const [active, setActive] = useState(false)
   const [showVoiceModal, setShowVoiceModal] = useState(false)
-  const [messages, setMessages] = useLocalStorage<
-    {
-      content: string
-      role: 'user' | 'assistant'
-    }[]
-  >(`speech-ai-messages-${filename}`, [])
-  const { completion, input, setInput, isLoading, handleInputChange, handleSubmit } = useCompletion({
+  const { status, messages, setMessages, input, setInput, handleInputChange, handleSubmit } = useChat({
+    api: '/api/chat',
     body: {
       filename,
-      messages,
     },
   })
-  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    setMessages(messages.concat({ role: 'user', content: input }))
-    setInput('')
-    return handleSubmit(e)
-  }
   function sendDefaultMessage(message: string) {
     setInput(message)
     setTimeout(() => {
@@ -178,19 +166,10 @@ export default function SpeechAI() {
   }
 
   useEffect(() => {
-    if (completion) {
-      if (messages.length > 0 && messages[messages.length - 1].role === 'assistant') {
-        setMessages([...messages.slice(0, -1), { role: 'assistant', content: completion }])
-      } else {
-        setMessages([...messages, { role: 'assistant', content: completion }])
-      }
-    }
-  }, [completion])
-  useEffect(() => {
     if (messageContainerRef.current) {
       messageContainerRef.current.scrollTop = messageContainerRef.current.scrollHeight
     }
-  }, [messages, active, isLoading])
+  }, [messages, active, status])
   useEffect(() => {
     const isNotDocs = !filename?.startsWith('/docs')
     setHide(isNotDocs)
@@ -253,12 +232,10 @@ export default function SpeechAI() {
               ))}
             </AnimatePresence>
             <AnimatePresence>
-              {isLoading && messages?.at(-1)?.role !== 'assistant' && (
-                <Message from="ai" content={'思考中⋯'} showCopy={false} />
-              )}
+              {status === 'submitted' && <Message from="ai" content={'思考中⋯'} showCopy={false} />}
             </AnimatePresence>
             <AnimatePresence>
-              {!isLoading && (
+              {status === 'ready' && (
                 <motion.div
                   className="flex flex-col gap-2 overflow-hidden text-gray-800 dark:text-gray-100"
                   initial={{ opacity: 0, height: 0 }}
@@ -281,7 +258,7 @@ export default function SpeechAI() {
           </motion.div>
           <form
             className="flex items-center justify-between gap-1 overflow-hidden rounded-b-lg p-1"
-            onSubmit={onSubmit}>
+            onSubmit={handleSubmit}>
             <input
               className={twMerge(
                 'w-full flex-1 rounded-md rounded-bl-lg bg-transparent p-2 outline-none focus:border-transparent focus:shadow-none focus:ring-0',

@@ -16,7 +16,7 @@ const openai = createOpenAI({
 const embeddingModel = openai.embedding('text-embedding-3-small')
 
 export async function POST(req: Request) {
-  const { messages, filename, prompt } = await req.json()
+  const { messages, filename } = await req.json()
   const systemPrompt = `你是國民黨立委葛如鈞（寶博士）網站的 AI 助手
   - 盡可能簡短、友善回答
   - 盡可能使用工具來提供使用者盡可能準確與完整的資訊
@@ -35,14 +35,7 @@ export async function POST(req: Request) {
   // Ask OpenAI for a streaming completion given the prompt
   const result = streamText({
     model: openai('gpt-4.1-mini'),
-    messages: [
-      { role: 'system', content: systemPrompt },
-      ...messages,
-      {
-        role: 'user',
-        content: prompt,
-      },
-    ],
+    messages: [{ role: 'system', content: systemPrompt }, ...messages],
     maxSteps: 8,
     experimental_transform: smoothStream({
       delayInMs: 10,
