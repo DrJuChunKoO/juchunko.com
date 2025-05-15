@@ -252,47 +252,74 @@ export default function SpeechAI() {
                     .map((toolInvocation) => {
                       const { toolName, state, args, toolCallId } = toolInvocation
                       function renderToolUsage() {
+                        const router = useRouter()
+                        const locale = router.locale || 'en-US'
                         if (toolName === 'viewPage') {
-                          return (
+                          return locale === 'zh-TW' ? (
                             <>
                               <Eye size={16} />
                               查看頁面內容
                             </>
+                          ) : (
+                            <>
+                              <Eye size={16} />
+                              View page content
+                            </>
                           )
                         }
                         if (toolName === 'searchNews') {
-                          return (
+                          return locale === 'zh-TW' ? (
                             <>
                               <Search size={16} />
                               搜尋「{args.keyword}」相關新聞
                             </>
+                          ) : (
+                            <>
+                              <Search size={16} />
+                              Search news for "{args.keyword}"
+                            </>
                           )
                         }
                         if (toolName === 'latestNews') {
-                          return (
+                          return locale === 'zh-TW' ? (
                             <>
                               <Rss size={16} />
                               查看最新新聞
                             </>
+                          ) : (
+                            <>
+                              <Rss size={16} />
+                              View latest news
+                            </>
                           )
                         }
                         if (toolName === 'getNewsByUrl') {
-                          return (
+                          return locale === 'zh-TW' ? (
                             <>
                               <Newspaper size={16} />
                               取得詳細的新聞內容
                             </>
+                          ) : (
+                            <>
+                              <Newspaper size={16} />
+                              Get detailed news content
+                            </>
                           )
                         }
                         if (toolName === 'semanticSiteSearch') {
-                          return (
+                          return locale === 'zh-TW' ? (
                             <>
                               <Search size={16} />
                               搜尋「{args.keyword}」網站內容
                             </>
+                          ) : (
+                            <>
+                              <Search size={16} />
+                              Search site for "{args.keyword}"
+                            </>
                           )
                         }
-                        return '使用工具'
+                        return locale === 'zh-TW' ? '使用工具' : 'Use tool'
                       }
                       return (
                         <div className="flex items-center gap-1 text-sm opacity-50" key={toolCallId}>
