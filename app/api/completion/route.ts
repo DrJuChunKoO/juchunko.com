@@ -16,6 +16,7 @@ const openai = createOpenAI({
 const embeddingModel = openai.embedding('text-embedding-3-small')
 
 export async function POST(req: Request) {
+  const { messages, filename, prompt } = await req.json()
   const systemPrompt = `你是國民黨立委葛如鈞（寶博士）網站的 AI 助手
   - 盡可能簡短、友善回答
   - 盡可能使用工具來提供使用者盡可能準確與完整的資訊
@@ -26,9 +27,11 @@ export async function POST(req: Request) {
   <semanticSiteSearch>
   semanticSiteSearch 會提供 path 'pages/docs/manual/hobby.zh-TW.mdx' 你可以轉換成對應的官網連結提供給使用者 'https://juchunko.com/docs/manual/hobby'
   </semanticSiteSearch>
+  <viewPage>
+  current page: https://juchunko.com${filename}
+  </viewPage>
   `
 
-  const { messages, filename, prompt } = await req.json()
   // Ask OpenAI for a streaming completion given the prompt
   const result = streamText({
     model: openai('gpt-4.1-mini'),
