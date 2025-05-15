@@ -57,6 +57,7 @@ const translations = {
     ],
     voiceChat: '語音對話',
     stopVoiceChat: '停止語音對話',
+    thinking: '思考中⋯',
   },
   'en-US': {
     botName: 'AI Assistant',
@@ -91,6 +92,7 @@ const translations = {
     ],
     voiceChat: 'Voice Chat',
     stopVoiceChat: 'Stop Voice Chat',
+    thinking: 'Thinking…',
   },
 }
 function localeTranslation(key: string) {
@@ -330,13 +332,13 @@ export default function SpeechAI() {
                   {m.content !== '' ? (
                     <Message from={m.role === 'user' ? 'me' : 'ai'} content={m.content} key={index} />
                   ) : (
-                    <Message from="ai" content={'思考中⋯'} showCopy={false} />
+                    <Message from="ai" content={localeTranslation('thinking')} showCopy={false} />
                   )}
                 </div>
               ))}
             </AnimatePresence>
             <AnimatePresence>
-              {status === 'submitted' && <Message from="ai" content={'思考中⋯'} showCopy={false} />}
+              {status === 'submitted' && <Message from="ai" content={localeTranslation('thinking')} showCopy={false} />}
             </AnimatePresence>
             <AnimatePresence>
               {status === 'ready' && (
