@@ -1,7 +1,22 @@
 'use client'
 import { useEffect, useState, useRef } from 'react'
 import { motion, AnimatePresence, useMotionValue } from 'framer-motion'
-import { BotMessageSquare, Minus, Bot, RotateCcw, ArrowRight, Send, Copy, Check, X, Phone } from 'lucide-react'
+import {
+  BotMessageSquare,
+  Minus,
+  Bot,
+  RotateCcw,
+  ArrowRight,
+  Send,
+  Copy,
+  Check,
+  X,
+  Phone,
+  Eye,
+  Newspaper,
+  Search,
+  Rss,
+} from 'lucide-react'
 import { twMerge } from 'tailwind-merge'
 import { useChat } from '@ai-sdk/react'
 import Markdown from 'react-markdown'
@@ -228,7 +243,69 @@ export default function SpeechAI() {
             <Message from="ai" content={localeTranslation('botFirstMessage')} showCopy={false} />
             <AnimatePresence>
               {messages.map((m, index) => (
-                <Message from={m.role === 'user' ? 'me' : 'ai'} content={m.content} key={index} />
+                <div key={index} className="flex flex-col gap-2">
+                  {m.parts
+                    ?.filter((x) => x.type === 'tool-invocation')
+                    //@ts-ignore don't know why this is not typed
+                    .map((x) => x.toolInvocation)
+                    .filter((x) => x)
+                    .map((toolInvocation) => {
+                      const { toolName, state, args, toolCallId } = toolInvocation
+                      function renderToolUsage() {
+                        if (toolName === 'viewPage') {
+                          return (
+                            <>
+                              <Eye size={16} />
+                              查看頁面內容
+                            </>
+                          )
+                        }
+                        if (toolName === 'searchNews') {
+                          return (
+                            <>
+                              <Search size={16} />
+                              搜尋「{args.keyword}」相關新聞
+                            </>
+                          )
+                        }
+                        if (toolName === 'latestNews') {
+                          return (
+                            <>
+                              <Rss size={16} />
+                              查看最新新聞
+                            </>
+                          )
+                        }
+                        if (toolName === 'getNewsByUrl') {
+                          return (
+                            <>
+                              <Newspaper size={16} />
+                              取得詳細的新聞內容
+                            </>
+                          )
+                        }
+                        if (toolName === 'semanticSiteSearch') {
+                          return (
+                            <>
+                              <Search size={16} />
+                              搜尋「{args.keyword}」網站內容
+                            </>
+                          )
+                        }
+                        return '使用工具'
+                      }
+                      return (
+                        <div className="flex items-center gap-1 text-sm opacity-50" key={toolCallId}>
+                          {renderToolUsage()}
+                        </div>
+                      )
+                    })}
+                  {m.content !== '' ? (
+                    <Message from={m.role === 'user' ? 'me' : 'ai'} content={m.content} key={index} />
+                  ) : (
+                    <Message from="ai" content={'思考中⋯'} showCopy={false} />
+                  )}
+                </div>
               ))}
             </AnimatePresence>
             <AnimatePresence>
