@@ -56,7 +56,6 @@ const translations = {
       },
     ],
     voiceChat: '語音對話',
-    stopVoiceChat: '停止語音對話',
     thinking: '思考中⋯',
   },
   'en-US': {
@@ -91,7 +90,6 @@ const translations = {
       },
     ],
     voiceChat: 'Voice Chat',
-    stopVoiceChat: 'Stop Voice Chat',
     thinking: 'Thinking…',
   },
 }
