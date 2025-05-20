@@ -237,7 +237,7 @@ export default function SpeechAI() {
           <motion.div
             className="h-[400px] overflow-y-scroll bg-white p-2 dark:bg-neutral-800"
             ref={messageContainerRef}>
-            <div className="flex items-center justify-center pb-2 text-xs text-neutral-400 dark:text-neutral-600">
+            <div className="flex items-center justify-center text-balance pb-2 text-center text-xs text-neutral-400 dark:text-neutral-600">
               {localeTranslation('notice')}
             </div>
             <Message from="ai" content={localeTranslation('botFirstMessage')} showCopy={false} />
