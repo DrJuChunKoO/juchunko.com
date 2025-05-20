@@ -34,7 +34,7 @@ export async function POST(req: Request) {
 
   // Ask OpenAI for a streaming completion given the prompt
   const result = streamText({
-    model: openai('gpt-4.1-mini'),
+    model: openai.responses('gpt-4.1-mini'),
     messages: [{ role: 'system', content: systemPrompt }, ...messages],
     maxSteps: 8,
     experimental_transform: smoothStream({
