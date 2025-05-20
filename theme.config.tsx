@@ -33,29 +33,48 @@ const config: DocsThemeConfig = {
   },
   docsRepositoryBase: 'https://github.com/DrJuChunKoO/juchunko.com/blob/main',
   useNextSeoProps() {
-    const { asPath } = useRouter()
+    const { asPath, locale } = useRouter()
     if (asPath !== '/') {
       return {
-        titleTemplate: '%s – 科技立委葛如鈞．寶博士',
+        titleTemplate: locale === 'zh-TW' ? '%s - 科技立委葛如鈞．寶博士' : '%s - JU CHUN KO',
       }
     } else {
       return {
-        title: '先進國會・共識未來 - 科技立委葛如鈞．寶博士',
+        title:
+          locale === 'zh-TW'
+            ? '先進國會・共識未來 - 科技立委葛如鈞．寶博士'
+            : 'Emerging Congress, Converging Consensus - JU CHUN KO',
       }
     }
   },
   head: () => {
-    return (
-      <>
-        <link rel="icon" type="image/svg+xml" href="/favicon.png" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta
-          property="og:description"
-          content="歡迎來到葛如鈞（寶博士）的寶博宇宙說明書，在這裡你可以學會如何操作、使用和召喚多元宇宙列車以及公僕寶博。"
-        />
-        <meta property="og:image" content="https://juchunko.com/ogimage.png" />
-      </>
-    )
+    const router = useRouter()
+    const locale = router.locale || 'en-US'
+    if (locale === 'zh-TW') {
+      return (
+        <>
+          <link rel="icon" type="image/svg+xml" href="/favicon.png" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <meta
+            property="og:description"
+            content="歡迎來到葛如鈞（寶博士）的寶博宇宙說明書，在這裡你可以學會如何操作、使用和召喚多元宇宙列車以及公僕寶博。"
+          />
+          <meta property="og:image" content="https://juchunko.com/ogimage.png" />
+        </>
+      )
+    } else {
+      return (
+        <>
+          <link rel="icon" type="image/svg+xml" href="/favicon.png" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <meta
+            property="og:description"
+            content="Welcome to the instruction manual for Dr. Ju Chun Ko's universe. Here you can learn how to operate, use, and summon the Multiverse Train and Public Servant Bot."
+          />
+          <meta property="og:image" content="https://juchunko.com/ogimage.png" />
+        </>
+      )
+    }
   },
   main({ children }) {
     const pathname = usePathname()
