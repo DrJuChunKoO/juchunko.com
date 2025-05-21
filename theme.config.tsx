@@ -71,7 +71,7 @@ const config: DocsThemeConfig = {
             property="og:description"
             content="Welcome to the instruction manual for Dr. Ju Chun Ko's universe. Here you can learn how to operate, use, and summon the Multiverse Train and Public Servant Bot."
           />
-          <meta property="og:image" content="https://juchunko.com/ogimage.png" />
+          <meta property="og:image" content="https://juchunko.com/ogimage-en.png" />
         </>
       )
     }
