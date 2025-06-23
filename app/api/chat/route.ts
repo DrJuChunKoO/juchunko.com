@@ -7,15 +7,15 @@ import pangu from 'pangu'
 export const maxDuration = 30
 export const dynamic = 'force-dynamic'
 
-const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_KEY!)
-// Create an OpenAI API client
-const openai = createOpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-  baseURL: 'https://gateway.ai.cloudflare.com/v1/3f1f83a939b2fc99ca45fd8987962514/juchunko-com/openai',
-})
-const embeddingModel = openai.embedding('text-embedding-3-small')
-
 export async function POST(req: Request) {
+  const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_KEY!)
+  // Create an OpenAI API client
+  const openai = createOpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+    baseURL: 'https://gateway.ai.cloudflare.com/v1/3f1f83a939b2fc99ca45fd8987962514/juchunko-com/openai',
+  })
+  const embeddingModel = openai.embedding('text-embedding-3-small')
+
   const { messages, filename } = await req.json()
   const systemPrompt = `你是國民黨立委葛如鈞（寶博士）網站的 AI 助手
   - 盡可能簡短、友善回答
