@@ -7,13 +7,13 @@ export const defaultLang = "zh-TW";
 
 export const ui = {
   en: {
-    "nav.home": "Home",
-    "nav.about": "About",
-    "nav.twitter": "Twitter",
+    "site.title": "Ju Chun Ko",
+    "nav.blog": "Blog",
+    "nav.transript": "Transcript",
   },
   "zh-TW": {
-    "nav.home": "首頁",
-    "nav.about": "À propos",
-    "nav.twitter": "Twitter",
+    "site.title": "科技立委葛如鈞．寶博士",
+    "nav.blog": "部落格",
+    "nav.transript": "逐字稿",
   },
 } as const;

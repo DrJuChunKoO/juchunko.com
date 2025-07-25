@@ -3,24 +3,86 @@ import { getLangFromUrl, useTranslations } from "../i18n/utils";
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
+
+import BytesizeGithub from "~icons/bytesize/github";
 ---
 
-<nav>
-  <ul>
-    <li>
-      <a href={`/${lang}/home/`}>
-        {t("nav.home")}
-      </a>
-    </li>
-    <li>
-      <a href={`/${lang}/about/`}>
-        {t("nav.about")}
-      </a>
-    </li>
-    <li>
-      <a href="https://twitter.com/astrodotbuild">
-        {t("nav.twitter")}
-      </a>
-    </li>
-  </ul>
-</nav>
+<div class="sticky top-0 z-20 w-full bg-transparent print:hidden">
+  <div
+    class="pointer-events-none absolute z-[-1] h-full w-full bg-white/95 shadow-[0_2px_4px_rgba(0,0,0,.02),0_1px_0_rgba(0,0,0,.06)] backdrop-blur-md contrast-more:shadow-[0_0_0_1px_#000] dark:bg-black/90 dark:shadow-[0_-1px_0_rgba(255,255,255,.1)_inset] contrast-more:dark:shadow-[0_0_0_1px_#fff]"
+  >
+  </div>
+  <nav
+    class="mx-auto flex h-16 max-w-[90rem] items-center justify-end gap-2 pr-[max(env(safe-area-inset-right),1.5rem)] pl-[max(env(safe-area-inset-left),1.5rem)] text-sm"
+  >
+    <a
+      class="flex items-center text-base hover:opacity-75 ltr:mr-auto rtl:ml-auto"
+      href="/"
+    >
+      <span class="font-medium uppercase">{t("site.title")}</span>
+    </a>
+    <a
+      href="https://blog.juchunko.com/"
+      target="_blank"
+      rel="noreferrer"
+      class="relative -ml-2 hidden p-2 whitespace-nowrap text-gray-600 hover:text-gray-800 contrast-more:text-gray-700 md:inline-block dark:text-gray-400 dark:hover:text-gray-200 contrast-more:dark:text-gray-100"
+      aria-current="false"
+    >
+      {t("nav.blog")}
+    </a>
+    <a
+      href="https://transpal.juchunko.com/"
+      target="_blank"
+      rel="noreferrer"
+      class="relative -ml-2 hidden p-2 whitespace-nowrap text-gray-600 hover:text-gray-800 contrast-more:text-gray-700 md:inline-block dark:text-gray-400 dark:hover:text-gray-200 contrast-more:dark:text-gray-100"
+      aria-current="false"
+    >
+      {t("nav.transript")}
+    </a>
+    <a
+      href="https://github.com/DrJuChunKoO/juchunko.com"
+      target="_blank"
+      rel="noreferrer"
+      class="p-2 text-current"
+      title="GitHub repository for this site"
+      aria-label="GitHub repository for this site"
+    >
+      <BytesizeGithub class="size-6" />
+    </a>
+    <button
+      type="button"
+      data-theme-toggle=""
+      aria-label="Toggle dark mode"
+      class="p-2 text-current hover:opacity-75 focus:outline-none"
+    >
+      <!-- Use CSS to swap icons based on dark mode -->
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="block h-6 w-6 dark:hidden"
+        ><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path
+          d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path
+          d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path
+          d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path
+          d="m19.07 4.93-1.41 1.41"></path></svg
+      >
+      <svg
+        class="hidden h-6 w-6 dark:block"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          d="M21.752 15.002A9.718 9.718 0 0 1 12 21.75 9.75 9.75 0 0 1 12 2.25c.813 0 1.604.105 2.358.303a.75.75 0 0 1 .131 1.393 7.252 7.252 0 0 0-4.489 6.678 7.252 7.252 0 0 0 9.235 6.918.75.75 0 0 1 .517 1.46z"
+        ></path>
+      </svg>
+    </button>
+  </nav>
+</div>
