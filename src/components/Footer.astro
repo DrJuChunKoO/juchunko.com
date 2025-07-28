@@ -1,10 +1,16 @@
 ---
 import { getLangFromUrl, useTranslations } from "../i18n/utils";
-
+import LanguageSelector from "./LanguageSelector";
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 
 import LucideLanguages from "~icons/lucide/languages";
 ---
 
-<footer>Footer</footer>
+<footer
+  class="flex max-w-[90rem] items-center justify-end gap-2 pr-[max(env(safe-area-inset-right),1.5rem)] pl-[max(env(safe-area-inset-left),1.5rem)]"
+>
+  Footer
+
+  <LanguageSelector client:load />
+</footer>

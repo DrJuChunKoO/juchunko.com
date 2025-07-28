@@ -23,7 +23,9 @@ export default defineConfig({
     plugins: [
       tailwindcss(),
       Icons({
-        compiler: "astro",
+        autoInstall: true,
+        compiler: "jsx",
+        jsx: "react",
       }),
     ],
   },
