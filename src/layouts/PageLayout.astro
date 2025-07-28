@@ -5,7 +5,11 @@ import Footer from "@/components/Footer.astro";
 ---
 
 <Layout>
-  <Nav />
-  <slot />
-  <Footer />
+  <div class="flex min-h-[100svh] flex-col">
+    <Nav />
+    <div class="flex-1">
+      <slot />
+    </div>
+    <Footer />
+  </div>
 </Layout>

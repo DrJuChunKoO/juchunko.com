@@ -3,14 +3,53 @@ import { getLangFromUrl, useTranslations } from "../i18n/utils";
 import LanguageSelector from "./LanguageSelector";
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
-
-import LucideLanguages from "~icons/lucide/languages";
+import SoicalLink from "./SoicalLink.astro";
+import BiThreads from "~icons/bi/threads";
+import BiFacebook from "~icons/bi/facebook";
+import BiInstagram from "~icons/bi/instagram";
+import BiTiktok from "~icons/bi/tiktok";
+import BiYoutube from "~icons/bi/youtube";
+import BiTwitterX from "~icons/bi/twitter-x";
 ---
 
-<footer
-  class="flex max-w-[90rem] items-center justify-end gap-2 pr-[max(env(safe-area-inset-right),1.5rem)] pl-[max(env(safe-area-inset-left),1.5rem)]"
->
-  Footer
+<footer class="relative">
+  <div
+    class="pointer-events-none absolute z-[-1] h-full w-full bg-white/95 shadow-[0_-2px_4px_rgba(0,0,0,.02),0_-1px_0_rgba(0,0,0,.06)] backdrop-blur-md contrast-more:shadow-[0_0_0_1px_#000] dark:bg-black/90 dark:shadow-[0_1px_0_rgba(255,255,255,.1)_inset] contrast-more:dark:shadow-[0_0_0_1px_#fff]"
+  >
+  </div>
+  <div
+    class="py-6 max-w-[90rem] pr-[max(env(safe-area-inset-right),1.5rem)] pl-[max(env(safe-area-inset-left),1.5rem)] flex flex-col gap-6"
+  >
+    <div class="flex items-center max-md:justify-center gap-6">
+      <LanguageSelector client:load />
+    </div>
+    <div
+      class="flex items-center max-md:flex-col-reverse md:justify-between gap-6"
+    >
+      <div class="text-sm text-gray-500 dark:text-gray-300">
+        © {new Date().getFullYear()} JUCHUNKO.COM All rights reserved.
+      </div>
 
-  <LanguageSelector client:load />
+      <div class="flex gap-6">
+        <SoicalLink href="https://fb.com/dr.juchunko/">
+          <BiFacebook className="size-6" />
+        </SoicalLink>
+        <SoicalLink href="https://instagr.am/dr.juchunko/">
+          <BiInstagram className="size-6" />
+        </SoicalLink>
+        <SoicalLink href="https://tiktok.com/@dr.juchunko">
+          <BiTiktok className="size-6" />
+        </SoicalLink>
+        <SoicalLink href="https://threads.net/@dr.juchunko">
+          <BiThreads className="size-6" />
+        </SoicalLink>
+        <SoicalLink href="https://youtube.com/@dr.juchunko">
+          <BiYoutube className="size-6" />
+        </SoicalLink>
+        <SoicalLink href="https://x.com/@dAAAb">
+          <BiTwitterX className="size-6" />
+        </SoicalLink>
+      </div>
+    </div>
+  </div>
 </footer>

@@ -36,9 +36,11 @@ export default function LanguageSelector() {
 
   return (
     <Select value={selectedLanguage} onValueChange={handleLanguageChange}>
-      <SelectTrigger className="w-40 gap-2">
-        <LucideLanguages />
-        <SelectValue placeholder="Select Language" />
+      <SelectTrigger className="w-40  ">
+        <div className="flex items-center gap-2">
+          <LucideLanguages />
+          <SelectValue placeholder="Select Language" />
+        </div>
       </SelectTrigger>
       <SelectContent>
         {Object.entries(languages).map(([lang, label]) => (
