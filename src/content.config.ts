@@ -5,6 +5,7 @@ const act = defineCollection({
 	schema: z.object({
 		title: z.string(),
 		date: z.coerce.date(),
+		emoji: z.string().optional().default("🤓"),
 	}),
 });
 
