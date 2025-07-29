@@ -11,22 +11,22 @@ import mdx from "@astrojs/mdx";
 
 // https://astro.build/config
 export default defineConfig({
-  integrations: [react(), sitemap(), partytown(), mdx()],
-  i18n: {
-    locales: ["zh-TW", "en"],
-    defaultLocale: "zh-TW",
-    routing: {
-      prefixDefaultLocale: true,
-    },
-  },
-  vite: {
-    plugins: [
-      tailwindcss(),
-      Icons({
-        autoInstall: true,
-        compiler: "jsx",
-        jsx: "react",
-      }),
-    ],
-  },
+	integrations: [react(), sitemap(), partytown(), mdx()],
+	i18n: {
+		locales: ["zh-TW", "en"],
+		defaultLocale: "zh-TW",
+		routing: {
+			prefixDefaultLocale: true,
+		},
+	},
+	vite: {
+		plugins: [
+			tailwindcss(),
+			Icons({
+				autoInstall: true,
+				compiler: "jsx",
+				jsx: "react",
+			}),
+		],
+	},
 });
