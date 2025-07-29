@@ -1,12 +1,12 @@
 ---
-import { getLangFromUrl, useTranslations } from "../i18n/utils"
+import { getLangFromUrl, useTranslations } from "../i18n/utils";
 
-import ThemeToggle from "./ThemeToggle.astro"
+import ThemeToggle from "./ThemeToggle.astro";
 
-const lang = getLangFromUrl(Astro.url)
-const t = useTranslations(lang)
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 
-import BytesizeGithub from "~icons/bytesize/github"
+import BytesizeGithub from "~icons/bytesize/github";
 ---
 
 <div class="sticky top-0 z-20 w-full bg-transparent print:hidden">
@@ -17,7 +17,7 @@ import BytesizeGithub from "~icons/bytesize/github"
 	<nav
 		class="mx-auto flex h-16 max-w-[90rem] items-center justify-end gap-2 pr-[max(env(safe-area-inset-right),1.5rem)] pl-[max(env(safe-area-inset-left),1.5rem)] text-sm"
 	>
-		<a class="flex items-center text-base hover:opacity-75 ltr:mr-auto rtl:ml-auto" href="/">
+		<a class="flex items-center text-base hover:opacity-75 ltr:mr-auto rtl:ml-auto" href={`/${lang}`}>
 			<span class="font-medium uppercase">{t("site.title")}</span>
 		</a>
 		<a
