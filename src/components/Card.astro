@@ -1,0 +1,15 @@
+---
+// components/Card.astro
+const { href, target = "_self", title } = Astro.props;
+---
+
+<a
+  href={href}
+  target={target}
+  class="flex items-center gap-2 p-4 border rounded-lg hover:bg-gray-100 transition"
+>
+  <span class="text-gray-600">
+    <slot name="icon" />
+  </span>
+  <span class="font-semibold">{title}</span>
+</a>
