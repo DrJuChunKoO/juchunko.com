@@ -2,7 +2,9 @@
 @import "tw-animate-css";
 @plugin "@tailwindcss/typography";
 @custom-variant dark (&:is(.dark *));
-
+:root {
+	--font-sans: "TikTok Sans", "Noto Sans TC", "Noto Color Emoji", sans-serif;
+}
 @theme inline {
 	--radius-sm: calc(var(--radius) - 4px);
 	--radius-md: calc(var(--radius) - 2px);
