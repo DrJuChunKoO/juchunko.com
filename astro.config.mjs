@@ -17,6 +17,7 @@ export default defineConfig({
 		defaultLocale: "zh-TW",
 		routing: {
 			prefixDefaultLocale: true,
+			redirectToDefaultLocale: false,
 		},
 	},
 	vite: {

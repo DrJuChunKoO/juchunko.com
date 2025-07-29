@@ -1,8 +1,63 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import ThemeToggle from "@/components/ThemeToggle.astro";
+import ArrowRight from "~icons/lucide/arrow-right";
 ---
 
-<meta http-equiv="refresh" content="0;url=/zh-TW/" />
 <Layout>
-	<p>Redirecting to the Chinese version...</p>
+	<div
+		class="mx-auto flex h-16 max-w-[90rem] items-center justify-end gap-2 pr-[max(env(safe-area-inset-right),1.5rem)] pl-[max(env(safe-area-inset-left),1.5rem)] text-sm"
+	>
+		<a class="flex items-center text-base hover:opacity-75 ltr:mr-auto rtl:ml-auto" href="/">
+			<span class="font-medium uppercase" data-lang="sitename">科技立委葛如鈞．寶博士</span>
+		</a>
+		<ThemeToggle />
+	</div>
+	<div class="w-full max-w-[768px] xl:mt-20 mx-auto aspect-square sm:aspect-video relative">
+		<spline-viewer
+			className="absolute inset-0"
+			loading-anim-type="spinner-big-light"
+			url="https://prod.spline.design/PykwbOV-m1ak0rZ0/scene.splinecode"></spline-viewer>
+
+		<div class="absolute inset-0 flex items-center justify-center">
+			<div class="text-center text-xl sm:text-3xl lg:text-4xl uppercase font-semibold tracking-wider">The Plurality is here.</div>
+		</div>
+	</div>
+	<div class="text-center flex items-center justify-center flex-col gap-4">
+		<p class="text-xl md:text-2xl font-medium" data-lang="title">先進國會・共識未來</p>
+
+		<a
+			href="/zh-TW"
+			class="flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-50 text-blue-500 rounded-full hover:bg-blue-100 transition-colors w-max
+      dark:bg-white/10 dark:text-white/75 dark:hover:bg-white/20 dark:hover:text-white"
+			data-lang="button"
+		>
+			<span data-lang="buttonText"> 進入「科技立委葛如鈞．寶博士」宇宙 </span>
+			<ArrowRight strokeWidth={1} />
+		</a>
+	</div>
 </Layout>
+<script>
+	const browserLang = navigator.language;
+	const lang = browserLang.startsWith("zh") ? "zh-TW" : "en";
+	const locale = {
+		"zh-TW": {
+			sitename: "科技立委葛如鈞．寶博士",
+			title: "先進國會・共識未來",
+			buttonText: `進入「科技立委葛如鈞．寶博士」宇宙`,
+		},
+		en: {
+			sitename: "Ju Chun Ko",
+			title: "Emerging Congress, Converging Consensus",
+			buttonText: `Enter Dr.Ju-Chun KO Universe`,
+		},
+	};
+
+	document.querySelector(`[data-lang="button"]`)?.setAttribute("href", `/${lang}`);
+	document.querySelectorAll("[data-lang]").forEach((el) => {
+		const key = el.getAttribute("data-lang");
+		if (key && locale[lang][key]) {
+			el.textContent = locale[lang][key];
+		}
+	});
+</script>
