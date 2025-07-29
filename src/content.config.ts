@@ -16,5 +16,13 @@ const manual = defineCollection({
 		emoji: z.string().optional().default("🤓"),
 	}),
 });
+const fragment = defineCollection({
+	type: "content",
+	schema: z.object({
+		title: z.string(),
+		date: z.coerce.date(),
+		emoji: z.string().optional().default("🤓"),
+	}),
+});
 
-export const collections = { act, manual };
+export const collections = { act, manual, fragment };
