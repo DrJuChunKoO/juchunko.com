@@ -1,0 +1,29 @@
+---
+import { type CollectionEntry } from "astro:content";
+import PageLayout from "@/layouts/PageLayout.astro";
+import { render } from "astro:content";
+import { getLangFromUrl, useTranslations } from "src/i18n/utils";
+
+export type CategoryKey = "acts" | "manuals";
+
+export interface Props {
+	post: CollectionEntry<"fragment" | "manual" | "act">;
+	categoryKey?: CategoryKey;
+}
+
+const { post, categoryKey } = Astro.props;
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const { Content } = await render(post);
+---
+
+<PageLayout post={post}>
+	<span
+		class="absolute top-0 right-8 hidden h-24 w-16 items-end justify-center rounded-b-xl bg-gray-100 p-3 text-4xl transition-all md:flex dark:bg-gray-800"
+		>{post.data.emoji}</span
+	>
+	<div class="prose prose-slate dark:prose-invert mx-auto max-w-[768px]">
+		{categoryKey && <h4 class="font-medium tracking-tight text-gray-500 opacity-75 dark:text-gray-400">{t(`cat.${categoryKey}`)}</h4>}
+		<Content />
+	</div>
+</PageLayout>
