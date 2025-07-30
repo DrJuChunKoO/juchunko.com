@@ -4,7 +4,7 @@ const { post, lang, category } = Astro.props;
 
 <a
 	href={`/${lang}/${category}/${post.id.replace(/^.+?\//, "").replace(/\.(md|mdx)$/, "")}`}
-	class="border-accent hover:border-primary/25 group group relative flex flex-col items-start overflow-hidden rounded-xl border p-4 pr-24 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800"
+	class="border-accent hover:border-primary/25 group group relative flex flex-col items-start overflow-hidden rounded-xl border p-4 pr-24 shadow-lg shadow-black/5 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800"
 >
 	<h2 class="text-lg font-semibold">{post.data.title}</h2>
 	<p class="text-sm text-gray-600 dark:text-gray-400">
@@ -17,17 +17,15 @@ const { post, lang, category } = Astro.props;
 		}
 	</p>
 	<div
-		class="absolute right-0 bottom-0 flex size-24 items-end justify-end pr-4"
+		class="absolute right-0 bottom-0 flex size-24 items-end justify-end pr-4 drop-shadow-sm"
 		style={{
 			mask: `linear-gradient(to bottom, #000 90%, rgba(0,0,0,.25) 100%)`,
 		}}
 	>
 		<div
-			class="flex h-32 w-16 translate-y-16 rotate-6 items-start justify-center rounded-xl bg-gray-50 pt-3 text-4xl shadow-sm transition-all group-hover:translate-y-14 group-hover:rotate-0 group-hover:bg-gray-100 dark:bg-gray-800 dark:group-hover:bg-gray-700"
+			class="flex h-32 w-16 translate-y-16 rotate-6 items-start justify-center rounded-xl bg-gray-50 pt-3 text-4xl transition-all group-hover:translate-y-14 group-hover:rotate-0 group-hover:bg-gray-100 dark:bg-gray-800 dark:group-hover:bg-gray-700"
 		>
-			<span class="drop-shadow-2xl">
-				{post.data.emoji}
-			</span>
+			{post.data.emoji}
 		</div>
 	</div>
 </a>
