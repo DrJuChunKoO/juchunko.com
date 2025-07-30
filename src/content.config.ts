@@ -6,6 +6,8 @@ const act = defineCollection({
 		title: z.string(),
 		date: z.coerce.date(),
 		emoji: z.string().optional().default("🤓"),
+		description: z.string().optional(),
+		image: z.string().optional(),
 	}),
 });
 const manual = defineCollection({
@@ -14,6 +16,8 @@ const manual = defineCollection({
 		title: z.string(),
 		date: z.coerce.date(),
 		emoji: z.string().optional().default("🤓"),
+		description: z.string().optional(),
+		image: z.string().optional(),
 	}),
 });
 const fragment = defineCollection({
@@ -22,6 +26,8 @@ const fragment = defineCollection({
 		title: z.string(),
 		date: z.coerce.date(),
 		emoji: z.string().optional().default("🤓"),
+		description: z.string().optional(),
+		image: z.string().optional(),
 	}),
 });
 
