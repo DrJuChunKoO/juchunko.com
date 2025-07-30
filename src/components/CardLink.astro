@@ -16,9 +16,18 @@ const { post, lang, category } = Astro.props;
 			})
 		}
 	</p>
-
-	<span
-		class="absolute right-4 -bottom-17 flex h-32 w-16 rotate-6 items-start justify-center rounded-xl bg-gray-50 pt-3 text-4xl shadow-sm transition-all group-hover:-translate-y-2 group-hover:rotate-0 group-hover:bg-gray-100 dark:bg-gray-800 dark:group-hover:bg-gray-700"
-		>{post.data.emoji}</span
+	<div
+		class="absolute right-0 bottom-0 flex size-24 items-end justify-end pr-4"
+		style={{
+			mask: `linear-gradient(to bottom, #000 90%, rgba(0,0,0,.25) 100%)`,
+		}}
 	>
+		<div
+			class="flex h-32 w-16 translate-y-16 rotate-6 items-start justify-center rounded-xl bg-gray-50 pt-3 text-4xl shadow-sm transition-all group-hover:translate-y-14 group-hover:rotate-0 group-hover:bg-gray-100 dark:bg-gray-800 dark:group-hover:bg-gray-700"
+		>
+			<span class="drop-shadow-2xl">
+				{post.data.emoji}
+			</span>
+		</div>
+	</div>
 </a>
