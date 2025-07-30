@@ -4,12 +4,17 @@ const { href, target = "_self", title } = Astro.props;
 ---
 
 <a
-  href={href}
-  target={target}
-  class="flex items-center gap-2 p-4 border rounded-lg hover:bg-gray-100 transition"
+	href={href}
+	target={target}
+	class="flex items-center gap-2 rounded-lg border p-4 underline-offset-2 transition not-hover:decoration-dashed hover:bg-gray-100"
 >
-  <span class="text-gray-600">
-    <slot name="icon" />
-  </span>
-  <span class="font-semibold">{title}</span>
+	<span
+		class="text-gray-600"
+		style={{
+			mask: `linear-gradient(45deg, #000 0%, rgba(0,0,0,.5) 100%)`,
+		}}
+	>
+		<slot name="icon" />
+	</span>
+	<span class="font-medium">{title}</span>
 </a>

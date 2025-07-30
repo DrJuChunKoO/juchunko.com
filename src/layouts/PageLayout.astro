@@ -5,13 +5,36 @@ import Footer from "@/components/Footer.astro";
 ---
 
 <Layout>
-	<div class="flex min-h-[100svh] flex-col w-[100vw] overflow-x-hidden">
+	<div class="relative flex min-h-[100svh] w-[100vw] flex-col">
+		<div
+			class="absolute inset-0 -z-10 hidden h-[100svh] w-full bg-gradient-to-b from-gray-50 via-transparent transition-colors duration-500 md:block dark:from-gray-950"
+		>
+		</div>
 		<Nav />
 		<div
-			class="flex-1 mx-auto w-full max-w-[90rem] pr-[max(env(safe-area-inset-right),1.5rem)] pl-[max(env(safe-area-inset-left),1.5rem)] py-10"
+			class="relative mx-auto w-full max-w-[90rem] flex-1 rounded-t-2xl bg-white py-10 pr-[max(env(safe-area-inset-right),1.5rem)] pl-[max(env(safe-area-inset-left),1.5rem)] transition-shadow duration-500 md:max-w-[90vw] md:py-16 md:shadow-xl dark:bg-white/5 [.scrolled-full_&]:shadow-none"
 		>
 			<slot />
 		</div>
 		<Footer />
 	</div>
 </Layout>
+
+<script is:inline>
+	document.addEventListener("DOMContentLoaded", () => {
+		window.addEventListener("scroll", () => {
+			const scrollTop = window.scrollY;
+			const windowHeight = window.innerHeight;
+			if (scrollTop > 0) {
+				document.body.classList.add("scrolled");
+			} else {
+				document.body.classList.remove("scrolled");
+			}
+			if (scrollTop >= windowHeight / 2) {
+				document.body.classList.add("scrolled-full");
+			} else {
+				document.body.classList.remove("scrolled-full");
+			}
+		});
+	});
+</script>

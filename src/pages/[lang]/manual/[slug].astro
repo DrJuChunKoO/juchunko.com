@@ -28,8 +28,12 @@ const { Content } = await render(post);
 ---
 
 <PageLayout post={post}>
-	<div class="prose prose-slate dark:prose-invert max-w-[768px] mx-auto">
-		<h4 class="opacity-75 text-gray-500 dark:text-gray-400 font-medium tracking-tight">
+	<span
+		class="absolute top-0 right-8 hidden h-24 w-16 items-end justify-center rounded-b-xl bg-gray-100 p-3 text-4xl transition-all md:flex dark:bg-gray-800"
+		>{post.data.emoji}</span
+	>
+	<div class="prose prose-slate dark:prose-invert mx-auto max-w-[768px]">
+		<h4 class="font-medium tracking-tight text-gray-500 opacity-75 dark:text-gray-400">
 			{t("cat.manuals")}
 		</h4>
 		<Content />

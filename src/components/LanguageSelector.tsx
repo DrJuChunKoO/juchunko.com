@@ -1,35 +1,39 @@
-import { useEffect, useState } from "react"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import LucideLanguages from "~icons/lucide/languages"
+import { useEffect, useState } from "react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import LucideLanguages from "~icons/lucide/languages";
 
 const languages = {
 	en: "English",
 	"zh-TW": "中文",
-}
+};
 export default function LanguageSelector() {
-	const [selectedLanguage, setSelectedLanguage] = useState("zh-TW")
+	const [selectedLanguage, setSelectedLanguage] = useState("zh-TW");
 	useEffect(() => {
 		// selected language = url pathname
-		const pathname = window.location.pathname
-		const langMatch = pathname.match(/^\/(en|zh-TW)/)
+		const pathname = window.location.pathname;
+		const langMatch = pathname.match(/^\/(en|zh-TW)/);
 		if (langMatch) {
-			setSelectedLanguage(langMatch[1])
+			setSelectedLanguage(langMatch[1]);
 		} else {
-			setSelectedLanguage("zh-TW") // default language
+			setSelectedLanguage("zh-TW"); // default language
 		}
-	}, [])
+	}, []);
 	// auto switch language after selecting a language
 	const handleLanguageChange = (lang: string) => {
-		const newPath = window.location.pathname.replace(/^(\/en|\/zh-TW)/, `/${lang}`)
-		window.history.pushState({}, "", newPath)
-		location.reload() // reload to apply the new language
-	}
+		const newPath = window.location.pathname.replace(/^(\/en|\/zh-TW)/, `/${lang}`);
+		window.history.pushState({}, "", newPath);
+		location.reload(); // reload to apply the new language
+	};
 
 	return (
 		<Select value={selectedLanguage} onValueChange={handleLanguageChange}>
 			<SelectTrigger className="w-40">
 				<div className="flex items-center gap-2">
-					<LucideLanguages />
+					<LucideLanguages
+						style={{
+							mask: `linear-gradient(45deg, #000 0%, rgba(0,0,0,.5) 100%)`,
+						}}
+					/>
 					<SelectValue placeholder="Select Language" />
 				</div>
 			</SelectTrigger>
@@ -41,5 +45,5 @@ export default function LanguageSelector() {
 				))}
 			</SelectContent>
 		</Select>
-	)
+	);
 }
