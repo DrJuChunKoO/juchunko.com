@@ -51,7 +51,7 @@ const categoryForCard: string = currentCollection;
 		(prevPost || nextPost) && (
 			<div class="mx-auto mt-20 max-w-[768px] border-t-2 border-black/5 py-6 dark:border-white/5">
 				<h2 class="mb-3 text-xl font-semibold">{t("post.recommend")}</h2>
-				<div class="grid gap-4 sm:grid-cols-2">
+				<div class="grid grid-cols-2 gap-2">
 					{nextPost && <CardLink post={nextPost} lang={lang} category={categoryForCard} />}
 					{prevPost && <CardLink post={prevPost} lang={lang} category={categoryForCard} />}
 				</div>

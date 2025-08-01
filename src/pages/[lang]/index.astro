@@ -24,7 +24,7 @@ const fragments = (await getCollection("fragment"))
 ---
 
 <PageLayout>
-	<div class="-mt-10 flex flex-col items-center md:flex-row-reverse md:gap-6">
+	<div class="-mt-10 mb-6 flex flex-col items-center md:flex-row-reverse md:gap-6">
 		<div class="relative mx-auto my-5 aspect-square w-full overflow-hidden rounded-lg md:w-[350px]">
 			<spline-viewer
 				className="absolute inset-0"
@@ -32,24 +32,24 @@ const fragments = (await getCollection("fragment"))
 				url="https://prod.spline.design/XpiiBrX-wdVvPksO/scene.splinecode"></spline-viewer>
 		</div>
 		<div class="mx-auto w-full">
-			<h1 class="mb-2 text-3xl font-bold">{t("home.title")}</h1>
-			<p class="mb-4 text-gray-600 dark:text-gray-400">
+			<h1 class="mb-2 text-2xl leading-[1.35em] font-semibold md:text-3xl">{t("home.title")}</h1>
+			<p class="leading-[1.5em] text-gray-600 dark:text-gray-400">
 				{t("home.description")}
 			</p>
 		</div>
 	</div>
 	<!-- 雜項 -->
-	<div class="grid gap-4 sm:grid-cols-[repeat(auto-fill,minmax(300px,1fr))]">
+	<div class="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-2 md:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] md:gap-4">
 		{fragments.map((post) => <CardLink post={post} lang={lang} category="fragment" />)}
 	</div>
 	<!-- 法案行動 -->
 	<h1 class="mt-7 mb-3 text-2xl font-semibold">{t("cat.acts")}</h1>
-	<div class="grid gap-4 sm:grid-cols-[repeat(auto-fill,minmax(300px,1fr))]">
+	<div class="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-2 md:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] md:gap-4">
 		{acts.map((post) => <CardLink post={post} lang={lang} category="act" />)}
 	</div>
 	<!-- 寶博使用說明書 -->
 	<h1 class="mt-7 mb-3 text-2xl font-semibold">{t("cat.manuals")}</h1>
-	<div class="grid gap-4 sm:grid-cols-[repeat(auto-fill,minmax(300px,1fr))]">
+	<div class="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-2 md:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] md:gap-4">
 		{manuals.map((post) => <CardLink post={post} lang={lang} category="manual" />)}
 	</div>
 </PageLayout>
