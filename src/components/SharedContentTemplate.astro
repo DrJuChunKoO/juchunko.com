@@ -1,8 +1,9 @@
 ---
-import { type CollectionEntry } from "astro:content";
+import { type CollectionEntry, getCollection } from "astro:content";
 import PageLayout from "@/layouts/PageLayout.astro";
 import { render } from "astro:content";
 import { getLangFromUrl, useTranslations } from "src/i18n/utils";
+import CardLink from "@/components/CardLink.astro";
 
 export type CategoryKey = "acts" | "manuals";
 
@@ -15,6 +16,25 @@ const { post, categoryKey } = Astro.props;
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 const { Content } = await render(post);
+
+// 決定目前文章所屬 collection 與對應列表
+const currentCollection = post.collection; // "fragment" | "manual" | "act"
+const allInCollection = (await getCollection(currentCollection))
+	.filter((p) => p.id.startsWith(lang + "/"))
+	.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+// 找到目前文章索引
+const currentId = post.id;
+const index = allInCollection.findIndex((p) => p.id === currentId);
+
+// 依照首頁排序（新->舊）：index-1 是較新（下一篇），index+1 是較舊（前一篇）
+const nextPost = index > 0 ? allInCollection[index - 1] : null;
+const prevPost = index >= 0 && index + 1 < allInCollection.length ? allInCollection[index + 1] : null;
+/**
+ * CardLink 需要 category 字串
+ * 直接使用目前 collection 名稱，避免寫死映射，方便未來擴充新分類
+ */
+const categoryForCard: string = currentCollection;
 ---
 
 <PageLayout post={post}>
@@ -26,4 +46,16 @@ const { Content } = await render(post);
 		{categoryKey && <h4 class="font-medium tracking-tight text-gray-500 opacity-75 dark:text-gray-400">{t(`cat.${categoryKey}`)}</h4>}
 		<Content />
 	</div>
+
+	{
+		(prevPost || nextPost) && (
+			<div class="mx-auto mt-20 max-w-[768px] border-t-2 border-black/5 py-6 dark:border-white/5">
+				<h2 class="mb-3 text-xl font-semibold">{t("post.recommend")}</h2>
+				<div class="grid gap-4 sm:grid-cols-2">
+					{nextPost && <CardLink post={nextPost} lang={lang} category={categoryForCard} />}
+					{prevPost && <CardLink post={prevPost} lang={lang} category={categoryForCard} />}
+				</div>
+			</div>
+		)
+	}
 </PageLayout>
