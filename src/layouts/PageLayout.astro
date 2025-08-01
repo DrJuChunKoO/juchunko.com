@@ -5,6 +5,7 @@ import Footer from "@/components/Footer.astro";
 import BaseHead from "@/components/BaseHead.astro";
 import { getLangFromUrl, useTranslations } from "../i18n/utils";
 import type { CollectionEntry } from "astro:content";
+import Agent from "@/components/Agent";
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
@@ -40,6 +41,7 @@ const pageImage = image || post?.data.image || "/favicon.png";
 			</div>
 			<slot />
 		</div>
+		<Agent client:only />
 		<Footer />
 	</div>
 </Layout>
