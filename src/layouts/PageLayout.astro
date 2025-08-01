@@ -26,14 +26,16 @@ const pageImage = image || post?.data.image || "/favicon.png";
 	<BaseHead title={pageTitle} description={pageDescription} image={pageImage} url={Astro.url.href} slot="head" />
 
 	<div class="relative flex min-h-[100svh] w-[100vw] flex-col">
-		<div class="absolute inset-0 -z-10 hidden h-[100svh] w-full bg-gradient-to-b from-gray-50 via-transparent md:block dark:from-white/10">
+		<div
+			class="pointer-events-none absolute inset-0 -z-10 hidden h-[100svh] w-full bg-gradient-to-b from-gray-50 via-transparent md:block dark:from-white/10"
+		>
 		</div>
 		<Nav />
 		<div
 			class="relative mx-auto w-full max-w-[90rem] flex-1 rounded-t-2xl bg-white py-10 pr-[max(env(safe-area-inset-right),2rem)] pl-[max(env(safe-area-inset-left),2rem)] md:max-w-[90vw] md:py-16 dark:bg-white/5"
 		>
 			<div
-				class="absolute top-0 left-0 hidden h-[90svh] w-full rounded-t-2xl border border-gray-100 md:block md:shadow-xl dark:border-white/5"
+				class="pointer-events-none absolute top-0 left-0 hidden h-[90svh] w-full rounded-t-2xl border border-gray-100 md:block md:shadow-xl dark:border-white/5"
 				style={{
 					mask: `linear-gradient(to bottom, #000 0%, rgba(0,0,0,0) 50%)`,
 				}}
