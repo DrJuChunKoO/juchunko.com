@@ -43,12 +43,12 @@ const fragments = (await getCollection("fragment"))
 		{fragments.map((post) => <CardLink post={post} lang={lang} category="fragment" />)}
 	</div>
 	<!-- 法案行動 -->
-	<h1 class="my-4 text-2xl font-semibold">{t("cat.acts")}</h1>
+	<h1 class="mt-7 mb-3 text-2xl font-semibold">{t("cat.acts")}</h1>
 	<div class="grid gap-4 sm:grid-cols-[repeat(auto-fill,minmax(300px,1fr))]">
 		{acts.map((post) => <CardLink post={post} lang={lang} category="act" />)}
 	</div>
 	<!-- 寶博使用說明書 -->
-	<h1 class="my-4 text-2xl font-semibold">{t("cat.manuals")}</h1>
+	<h1 class="mt-7 mb-3 text-2xl font-semibold">{t("cat.manuals")}</h1>
 	<div class="grid gap-4 sm:grid-cols-[repeat(auto-fill,minmax(300px,1fr))]">
 		{manuals.map((post) => <CardLink post={post} lang={lang} category="manual" />)}
 	</div>
