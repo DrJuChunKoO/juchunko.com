@@ -4,10 +4,10 @@ const { post, lang, category } = Astro.props;
 
 <a
 	href={`/${lang}/${category}/${post.id.replace(/^.+?\//, "").replace(/\.(md|mdx)$/, "")}`}
-	class="border-accent hover:border-primary/25 group group relative flex flex-col items-start overflow-hidden rounded-xl border p-4 pr-24 shadow-lg shadow-black/5 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800"
+	class="border-accent hover:border-primary/25 group group relative flex flex-col items-start overflow-hidden rounded-xl border-2 p-4 pr-24 shadow-black/5 transition-all hover:-translate-y-1 hover:shadow-lg dark:hover:translate-0"
 >
 	<h2 class="text-lg font-semibold">{post.data.title}</h2>
-	<p class="text-sm text-gray-600 dark:text-gray-400">
+	<p class="text-sm tracking-tight text-gray-500">
 		{
 			post.data.date.toLocaleDateString(lang, {
 				year: "numeric",
