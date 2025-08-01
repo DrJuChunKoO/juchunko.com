@@ -32,13 +32,10 @@ const pageImage = image || post?.data.image || "/favicon.png";
 		</div>
 		<Nav />
 		<div
-			class="relative mx-auto w-full max-w-[90rem] flex-1 rounded-t-2xl bg-white py-10 pr-[max(env(safe-area-inset-right),2rem)] pl-[max(env(safe-area-inset-left),2rem)] md:max-w-[90vw] md:py-16 dark:bg-white/5"
+			class="relative mx-auto w-full max-w-[90rem] flex-1 rounded-t-2xl bg-white py-10 pr-[max(env(safe-area-inset-right),2rem)] pl-[max(env(safe-area-inset-left),2rem)] md:max-w-[90vw] md:py-16 dark:bg-transparent"
 		>
 			<div
-				class="pointer-events-none absolute top-0 left-0 hidden h-[90svh] w-full rounded-t-2xl border border-gray-100 md:block md:shadow-xl dark:border-white/5"
-				style={{
-					mask: `linear-gradient(to bottom, #000 0%, rgba(0,0,0,0) 50%)`,
-				}}
+				class="pointer-events-none absolute top-0 left-0 hidden h-[90svh] w-full rounded-t-2xl border border-gray-100 mask-[linear-gradient(to_bottom,#000_0%,rgba(0,0,0,0)_50%)] md:block md:shadow-xl dark:border-white/5 dark:bg-white/5 dark:mask-[linear-gradient(to_bottom,#000_0%,rgba(0,0,0,0)_75%)]"
 			>
 			</div>
 			<slot />
