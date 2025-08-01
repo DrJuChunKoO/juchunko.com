@@ -32,7 +32,7 @@ export default function Agent() {
 	}, []);
 
 	return (
-		<motion.div style={{ bottom: y }} className="fixed right-0 bottom-0 z-20 m-auto flex w-full flex-col items-end justify-end gap-2 p-4">
+		<motion.div style={{ bottom: y }} className="fixed right-0 bottom-0 z-20 m-auto flex w-max flex-col items-end justify-end gap-2 p-4">
 			{/* 三顆功能按鈕：桌面永遠顯示；手機在 open=true 時以動畫顯示（並顯示標籤） */}
 			<div className="hidden flex-col items-end justify-end gap-2 md:flex">
 				<AgentButton icon={<LucidePhone className="size-6 md:size-5" />} label="打給 AI 寶博" showLabel={open} />
