@@ -48,20 +48,40 @@ const pageImage = image || post?.data.image || "/favicon.png";
 </Layout>
 
 <script is:inline>
-	document.addEventListener("DOMContentLoaded", () => {
-		window.addEventListener("scroll", () => {
-			const scrollTop = window.scrollY;
-			const windowHeight = window.innerHeight;
-			if (scrollTop > 0) {
-				document.body.classList.add("scrolled");
-			} else {
-				document.body.classList.remove("scrolled");
-			}
-			if (scrollTop >= windowHeight / 2) {
-				document.body.classList.add("scrolled-full");
-			} else {
-				document.body.classList.remove("scrolled-full");
-			}
-		});
+	// 將邏輯抽成函式，方便在載入與滾動時重用
+	function applyScrollClasses() {
+		const scrollTop = window.scrollY;
+		const windowHeight = window.innerHeight;
+
+		if (scrollTop > 0) {
+			document.body.classList.add("scrolled");
+		} else {
+			document.body.classList.remove("scrolled");
+		}
+
+		if (scrollTop >= windowHeight / 2) {
+			document.body.classList.add("scrolled-full");
+		} else {
+			document.body.classList.remove("scrolled-full");
+		}
+	}
+
+	// 在 DOM 內容就緒時立即執行一次，避免首次渲染樣式錯誤
+	function initScrollClassHandling() {
+		applyScrollClasses();
+		window.addEventListener("scroll", applyScrollClasses, { passive: true });
+	}
+
+	if (document.readyState === "loading") {
+		document.addEventListener("DOMContentLoaded", initScrollClassHandling, { once: true });
+	} else {
+		// 若腳本被延後載入或在 bfcache 恢復的情境下，立即執行一次
+		initScrollClassHandling();
+	}
+
+	// 處理瀏覽器前進/返回快取恢復（bfcache），確保樣式正確
+	window.addEventListener("pageshow", (e) => {
+		// 在 bfcache 恢復時 (persisted 為 true) 或一般顯示時都套用一次，確保狀態正確
+		applyScrollClasses();
 	});
 </script>
