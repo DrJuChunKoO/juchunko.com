@@ -25,14 +25,8 @@ const fragments = (await getCollection("fragment"))
 
 <PageLayout>
 	<div class="-mt-10 mb-6 flex flex-col items-center md:flex-row-reverse md:gap-6">
-		<div class="relative mx-auto my-5 aspect-square w-full overflow-hidden rounded-lg md:w-[350px]">
-			<spline-viewer
-				className="absolute inset-0"
-				loading-anim-type="spinner-big-light"
-				url="https://prod.spline.design/XpiiBrX-wdVvPksO/scene.splinecode"></spline-viewer>
-		</div>
 		<div class="mx-auto w-full">
-			<h1 class="mb-2 text-2xl leading-[1.35em] font-semibold md:text-3xl">{t("home.title")}</h1>
+			<h1 class="my-2 text-2xl leading-[1.35em] font-semibold md:text-3xl">{t("home.title")}</h1>
 			<p class="leading-[1.5em] text-gray-600 dark:text-gray-400">
 				{t("home.description")}
 			</p>

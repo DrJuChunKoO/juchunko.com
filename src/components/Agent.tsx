@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useMotionValue, useReducedMotion, type Variants } from "framer-motion";
 import LucideBotMessageSquare from "~icons/lucide/bot-message-square";
 import LucidePhone from "~icons/lucide/phone";
@@ -6,6 +6,9 @@ import LucideBookAudio from "~icons/lucide/book-audio";
 import LucideSparkles from "~icons/lucide/sparkles";
 import LucideChevronDown from "~icons/lucide/chevron-down";
 import AgentButton from "./AgentButton";
+import PhoneCallInterface from "./PhoneCallInterface";
+import AIAssistantWindow from "./AIAssistantWindow";
+import VoiceReaderWindow from "./VoiceReaderWindow";
 
 /**
  * 特性旗標：由下至上的動畫順序（可於 runtime 切換）
@@ -76,6 +79,9 @@ export default function Agent() {
 	const itemVariants = createItemVariants(prefersReduced);
 
 	const [open, setOpen] = useState(false);
+	const [phoneCallOpen, setPhoneCallOpen] = useState(false);
+	const [aiAssistantOpen, setAiAssistantOpen] = useState(false);
+	const [voiceReaderOpen, setVoiceReaderOpen] = useState(false);
 	// 以 y 控制與底部距離，避免覆蓋 footer
 	const y = useMotionValue(16);
 
@@ -95,18 +101,58 @@ export default function Agent() {
 		return () => window.removeEventListener("scroll", handleScroll);
 	}, []);
 
+	// 處理按鈕點擊事件
+	const handlePhoneCall = () => {
+		setPhoneCallOpen(true);
+		setOpen(false); // 關閉手機選單
+	};
+
+	const handleAIAssistant = () => {
+		// 關閉語音朗讀窗口，只允許一個小窗口同時開啟
+		setVoiceReaderOpen(false);
+		setAiAssistantOpen(true);
+		setOpen(false); // 關閉手機選單
+	};
+
+	const handleVoiceReader = () => {
+		// 關閉 AI 助手窗口，只允許一個小窗口同時開啟
+		setAiAssistantOpen(false);
+		setVoiceReaderOpen(true);
+		setOpen(false); // 關閉手機選單
+	};
+
+	// 檢查是否有任何窗口打開
+	const hasWindowOpen = phoneCallOpen || aiAssistantOpen || voiceReaderOpen;
+
 	return (
 		<motion.div style={{ bottom: y }} className="fixed right-4 bottom-4 z-20 m-auto flex w-max flex-col items-end justify-end gap-2">
 			{/* 三顆功能按鈕：桌面永遠顯示；手機在 open=true 時以動畫顯示（並顯示標籤） */}
-			<div className="hidden flex-col items-end justify-end gap-2 md:flex">
-				<AgentButton icon={<LucidePhone className="size-6 md:size-5" />} label="打給 AI 寶博" showLabel={open} />
-				<AgentButton icon={<LucideBookAudio className="size-6 md:size-5" />} label="語音朗讀" showLabel={open} />
-				<AgentButton icon={<LucideBotMessageSquare className="size-6 md:size-5" />} label="和 AI 聊聊" showLabel={open} />
-			</div>
+			{!hasWindowOpen && (
+				<div className="hidden flex-col items-end justify-end gap-2 md:flex">
+				<AgentButton
+					icon={<LucidePhone className="size-6 md:size-5" />}
+					label="打給 AI 寶博"
+					showLabel={open}
+					onClick={handlePhoneCall}
+				/>
+				<AgentButton
+					icon={<LucideBookAudio className="size-6 md:size-5" />}
+					label="語音朗讀"
+					showLabel={open}
+					onClick={handleVoiceReader}
+				/>
+				<AgentButton
+					icon={<LucideBotMessageSquare className="size-6 md:size-5" />}
+					label="和 AI 聊聊"
+					showLabel={open}
+					onClick={handleAIAssistant}
+				/>
+				</div>
+			)}
 
 			{/* 手機展開時：以 custom delay 實現由下至上（最底層先出現），不改 DOM 順序以維持 A11y 焦點序 */}
 			<AnimatePresence initial={false} mode="sync">
-				{open && (
+				{open && !hasWindowOpen && (
 					<motion.div
 						key="agent-panel-mobile"
 						className="flex flex-col items-end justify-end gap-2 md:hidden"
@@ -142,7 +188,12 @@ export default function Agent() {
 							exit="exit"
 							style={{ willChange: "transform, opacity" }}
 						>
-							<AgentButton icon={<LucidePhone className="size-6" />} label="打給 AI 寶博" showLabel />
+							<AgentButton
+								icon={<LucidePhone className="size-6" />}
+								label="打給 AI 寶博"
+								showLabel
+								onClick={handlePhoneCall}
+							/>
 						</motion.div>
 						<motion.div
 							variants={itemVariants}
@@ -152,7 +203,12 @@ export default function Agent() {
 							exit="exit"
 							style={{ willChange: "transform, opacity" }}
 						>
-							<AgentButton icon={<LucideBookAudio className="size-6" />} label="語音朗讀" showLabel />
+							<AgentButton
+								icon={<LucideBookAudio className="size-6" />}
+								label="語音朗讀"
+								showLabel
+								onClick={handleVoiceReader}
+							/>
 						</motion.div>
 						<motion.div
 							variants={itemVariants}
@@ -162,14 +218,20 @@ export default function Agent() {
 							exit="exit"
 							style={{ willChange: "transform, opacity" }}
 						>
-							<AgentButton icon={<LucideBotMessageSquare className="size-6" />} label="和 AI 聊聊" showLabel />
+							<AgentButton
+								icon={<LucideBotMessageSquare className="size-6" />}
+								label="和 AI 聊聊"
+								showLabel
+								onClick={handleAIAssistant}
+							/>
 						</motion.div>
 					</motion.div>
 				)}
 			</AnimatePresence>
 
 			{/* Mobile toggle button: 手機顯示，點擊後展開三顆按鈕與標籤 */}
-			<motion.button
+			{!hasWindowOpen && (
+				<motion.button
 				type="button"
 				onClick={() => setOpen((v) => !v)}
 				className="flex cursor-pointer items-center gap-1.5 rounded-full border-2 border-gray-200 bg-white p-3 text-gray-600 shadow-2xl shadow-black/5 backdrop-blur-xl hover:bg-gray-100 md:hidden dark:border-white/20 dark:bg-black/80 dark:text-gray-300 dark:hover:bg-slate-950"
@@ -178,9 +240,28 @@ export default function Agent() {
 				whileTap={{ scale: 0.95 }}
 				whileHover={{ scale: 1.05 }}
 				transition={{ type: "spring", stiffness: 400, damping: 30 }}
-			>
-				{open ? <LucideChevronDown className="size-6" /> : <LucideSparkles className="size-6" />}
-			</motion.button>
+				>
+					{open ? <LucideChevronDown className="size-6" /> : <LucideSparkles className="size-6" />}
+				</motion.button>
+			)}
+
+			{/* 全螢幕撥打電話介面 */}
+			<PhoneCallInterface
+				isOpen={phoneCallOpen}
+				onClose={() => setPhoneCallOpen(false)}
+			/>
+
+			{/* AI 助手小窗口 */}
+			<AIAssistantWindow
+				isOpen={aiAssistantOpen}
+				onClose={() => setAiAssistantOpen(false)}
+			/>
+
+			{/* 語音朗讀小窗口 */}
+			<VoiceReaderWindow
+				isOpen={voiceReaderOpen}
+				onClose={() => setVoiceReaderOpen(false)}
+			/>
 		</motion.div>
 	);
 }
