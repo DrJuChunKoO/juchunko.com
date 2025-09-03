@@ -85,25 +85,10 @@ export default function PhoneCallInterface({ isOpen, onClose }: PhoneCallInterfa
 				<motion.div
 					initial={{ opacity: 0 }}
 					animate={{ opacity: 1 }}
-					exit={{ opacity: 0 }}
+					exit={{ opacity: 0, scale: 1.25, filter: "blur(8px)" }}
 					transition={{ duration: 0.3 }}
-					className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-gradient-to-br backdrop-blur-sm"
+					className="fixed inset-0 z-50 flex items-center justify-center bg-black"
 				>
-					{/* 背景動畫效果 */}
-					<div className="absolute inset-0 overflow-hidden">
-						<motion.div
-							animate={{
-								backgroundPosition: ["0% 0%", "100% 100%"],
-							}}
-							transition={{
-								duration: 20,
-								repeat: Infinity,
-								repeatType: "reverse",
-							}}
-							className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 bg-[length:200%_200%]"
-						/>
-					</div>
-
 					{/* 關閉按鈕 */}
 					<motion.button
 						initial={{ opacity: 0, scale: 0.8 }}
@@ -130,11 +115,12 @@ export default function PhoneCallInterface({ isOpen, onClose }: PhoneCallInterfa
 								transition={{ duration: 2, repeat: Infinity }}
 								animate={callState === CALL_STATES.CONNECTED ? { scale: [1, 1.05, 1] } : {}}
 							>
+								{/* @ts-ignore */}
 								<spline-viewer
 									className="absolute inset-0"
 									loading-anim-type="spinner-big-light"
 									url="https://prod.spline.design/XpiiBrX-wdVvPksO/scene.splinecode"
-								></spline-viewer>
+								/>
 							</motion.div>
 						</motion.div>
 						{/* 聯絡人資訊 */}

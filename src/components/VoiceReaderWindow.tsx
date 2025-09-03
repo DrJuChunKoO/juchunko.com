@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue } from "framer-motion";
 import LucideBookAudio from "~icons/lucide/book-audio";
 import LucidePlay from "~icons/lucide/play";
 import LucidePause from "~icons/lucide/pause";
@@ -27,6 +27,25 @@ export default function VoiceReaderWindow({ isOpen, onClose }: VoiceReaderWindow
 	const [progress, setProgress] = useState(0);
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
 	const speechRef = useRef<SpeechSynthesisUtterance | null>(null);
+
+	// 以 y 控制與底部距離，避免覆蓋 footer
+	const y = useMotionValue(16);
+
+	useEffect(() => {
+		function handleScroll() {
+			const footer = document.getElementById("footer");
+			if (!footer) return;
+			const rect = footer.getBoundingClientRect();
+			const windowHeight = window.innerHeight;
+			const top = rect.y - windowHeight;
+			const isBottom = top < 0;
+
+			y.set(isBottom ? 16 - top : 16);
+		}
+		window.addEventListener("scroll", handleScroll);
+		handleScroll();
+		return () => window.removeEventListener("scroll", handleScroll);
+	}, []);
 
 	// 當視窗打開時聚焦文字區域
 	useEffect(() => {
@@ -101,7 +120,7 @@ export default function VoiceReaderWindow({ isOpen, onClose }: VoiceReaderWindow
 	};
 
 	const handleSpeedChange = (speed: number) => {
-		setSettings(prev => ({ ...prev, speed }));
+		setSettings((prev) => ({ ...prev, speed }));
 		// 如果正在播放，重新開始以應用新設定
 		if (playState === "playing") {
 			handleStop();
@@ -110,7 +129,7 @@ export default function VoiceReaderWindow({ isOpen, onClose }: VoiceReaderWindow
 	};
 
 	const handleVolumeChange = (volume: number) => {
-		setSettings(prev => ({ ...prev, volume }));
+		setSettings((prev) => ({ ...prev, volume }));
 		if (speechRef.current) {
 			speechRef.current.volume = volume;
 		}
@@ -126,19 +145,19 @@ export default function VoiceReaderWindow({ isOpen, onClose }: VoiceReaderWindow
 		<AnimatePresence>
 			{isOpen && (
 				<motion.div
-					initial={{ opacity: 0, scale: 0.8, y: 20 }}
+					initial={{ opacity: 0, scale: 0.5, y: 16 }}
 					animate={{
 						opacity: 1,
 						scale: 1,
 						y: 0,
-						height: 520,
 					}}
-					exit={{ opacity: 0, scale: 0.8, y: 20 }}
+					exit={{ opacity: 0, scale: 0.5, y: 16 }}
 					transition={{ type: "spring", stiffness: 300, damping: 30 }}
-					className="fixed bottom-20 right-4 z-40 w-80 rounded-lg bg-white shadow-2xl ring-1 ring-black/5 backdrop-blur-xl dark:bg-gray-900 dark:ring-white/10"
+					style={{ bottom: y }}
+					className="fixed right-4 z-40 h-max max-h-[50vh] w-80 origin-bottom-right overflow-y-auto rounded-lg bg-white shadow-2xl ring-1 ring-black/5 backdrop-blur-xl dark:bg-gray-900 dark:ring-white/10"
 				>
 					{/* 標題欄 */}
-					<div className="flex items-center justify-between rounded-t-lg bg-gradient-to-r from-green-500 to-blue-600 p-3 text-white">
+					<div className="flex items-center justify-between rounded-t-lg bg-blue-600 p-3 text-white">
 						<div className="flex items-center gap-2">
 							<LucideBookAudio className="h-5 w-5" />
 							<h3 className="font-semibold">語音朗讀</h3>
@@ -147,7 +166,7 @@ export default function VoiceReaderWindow({ isOpen, onClose }: VoiceReaderWindow
 							<motion.button
 								whileTap={{ scale: 0.95 }}
 								onClick={() => setShowSettings(!showSettings)}
-								className="rounded p-1 hover:bg-white/20 transition-colors"
+								className="rounded p-1 transition-colors hover:bg-white/20"
 								aria-label="設定"
 							>
 								<LucideSettings className="h-4 w-4" />
@@ -155,7 +174,7 @@ export default function VoiceReaderWindow({ isOpen, onClose }: VoiceReaderWindow
 							<motion.button
 								whileTap={{ scale: 0.95 }}
 								onClick={onClose}
-								className="rounded p-1 hover:bg-white/20 transition-colors"
+								className="rounded p-1 transition-colors hover:bg-white/20"
 								aria-label="關閉"
 							>
 								<LucideX className="h-4 w-4" />
@@ -165,149 +184,141 @@ export default function VoiceReaderWindow({ isOpen, onClose }: VoiceReaderWindow
 
 					{/* 主要內容 */}
 					<div className="flex flex-col overflow-hidden">
-								{/* 設定面板 */}
-								<AnimatePresence>
-									{showSettings && (
-										<motion.div
-											initial={{ height: 0, opacity: 0 }}
-											animate={{ height: "auto", opacity: 1 }}
-											exit={{ height: 0, opacity: 0 }}
-											className="border-b border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-800"
-										>
-											<div className="space-y-3">
-												{/* 語速調整 */}
-												<div>
-													<label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-														語速：{settings.speed}x
-													</label>
-													<input
-														type="range"
-														min="0.5"
-														max="2"
-														step="0.1"
-														value={settings.speed}
-														onChange={(e) => handleSpeedChange(parseFloat(e.target.value))}
-														className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
-													/>
-												</div>
-
-												{/* 音量調整 */}
-												<div>
-													<label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-														音量：{Math.round(settings.volume * 100)}%
-													</label>
-													<input
-														type="range"
-														min="0"
-														max="1"
-														step="0.1"
-														value={settings.volume}
-														onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
-														className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
-													/>
-												</div>
-											</div>
-										</motion.div>
-									)}
-								</AnimatePresence>
-
-								{/* 文字輸入區域 */}
-								<div className="p-3 flex-1">
-									<textarea
-										ref={textareaRef}
-										value={text}
-										onChange={(e) => setText(e.target.value)}
-										placeholder="在此輸入要朗讀的文字..."
-										className="w-full h-48 p-3 text-sm border border-gray-300 rounded-lg resize-none focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:focus:border-blue-400"
-									/>
-
-									{/* 進度條 */}
-									{playState !== "idle" && (
-										<div className="mt-2">
-											<div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-1">
-												<span>播放進度</span>
-												<span>{Math.round(progress)}%</span>
-											</div>
-											<div className="w-full bg-gray-200 rounded-full h-1 dark:bg-gray-700">
-												<motion.div
-													className="bg-blue-500 h-1 rounded-full"
-													style={{ width: `${progress}%` }}
-													transition={{ duration: 0.1 }}
-												/>
-											</div>
+						{/* 設定面板 */}
+						<AnimatePresence>
+							{showSettings && (
+								<motion.div
+									initial={{ height: 0, opacity: 0 }}
+									animate={{ height: "auto", opacity: 1 }}
+									exit={{ height: 0, opacity: 0 }}
+									className="border-b border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-800"
+								>
+									<div className="space-y-3">
+										{/* 語速調整 */}
+										<div>
+											<label className="mb-1 block text-xs font-medium text-gray-700 dark:text-gray-300">語速：{settings.speed}x</label>
+											<input
+												type="range"
+												min="0.5"
+												max="2"
+												step="0.1"
+												value={settings.speed}
+												onChange={(e) => handleSpeedChange(parseFloat(e.target.value))}
+												className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 dark:bg-gray-700"
+											/>
 										</div>
-									)}
 
-									{/* 範例文字 */}
-									{!text && (
-										<div className="mt-2">
-											<p className="text-xs text-gray-500 dark:text-gray-400 mb-2">範例文字：</p>
-											<div className="space-y-1">
-												{sampleTexts.map((sample, index) => (
-													<button
-														key={index}
-														onClick={() => setText(sample)}
-														className="block w-full p-2 text-left text-xs bg-gray-100 hover:bg-gray-200 rounded border dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-300"
-													>
-														{sample.substring(0, 50)}...
-													</button>
-												))}
-											</div>
-										</div>
-									)}
-								</div>
-
-								{/* 控制按鈕 */}
-								<div className="border-t border-gray-200 p-3 dark:border-gray-700">
-									<div className="flex items-center justify-center gap-3">
-										{playState === "playing" ? (
-											<motion.button
-												whileTap={{ scale: 0.95 }}
-												onClick={handlePause}
-												className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-500 text-white hover:bg-orange-600 transition-colors"
-												aria-label="暫停"
-											>
-												<LucidePause className="h-5 w-5" />
-											</motion.button>
-										) : (
-											<motion.button
-												whileTap={{ scale: 0.95 }}
-												onClick={handlePlay}
-												disabled={!text.trim()}
-												className="flex h-10 w-10 items-center justify-center rounded-full bg-green-500 text-white hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-												aria-label="播放"
-											>
-												<LucidePlay className="h-5 w-5" />
-											</motion.button>
-										)}
-
-										<motion.button
-											whileTap={{ scale: 0.95 }}
-											onClick={handleStop}
-											disabled={playState === "idle"}
-											className="flex h-8 w-8 items-center justify-center rounded-full bg-red-500 text-white hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-											aria-label="停止"
-										>
-											<LucideSquare className="h-4 w-4" />
-										</motion.button>
-
-										<div className="flex items-center gap-1 ml-2">
-											<LucideVolume2 className="h-4 w-4 text-gray-500 dark:text-gray-400" />
-											<span className="text-xs text-gray-500 dark:text-gray-400">
-												{Math.round(settings.volume * 100)}%
-											</span>
+										{/* 音量調整 */}
+										<div>
+											<label className="mb-1 block text-xs font-medium text-gray-700 dark:text-gray-300">
+												音量：{Math.round(settings.volume * 100)}%
+											</label>
+											<input
+												type="range"
+												min="0"
+												max="1"
+												step="0.1"
+												value={settings.volume}
+												onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
+												className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 dark:bg-gray-700"
+											/>
 										</div>
 									</div>
+								</motion.div>
+							)}
+						</AnimatePresence>
 
-									{/* 播放狀態 */}
-									<div className="text-center mt-2">
-										<span className="text-xs text-gray-500 dark:text-gray-400">
-											{playState === "playing" && "正在播放..."}
-											{playState === "paused" && "已暫停"}
-											{playState === "idle" && "準備就緒"}
-										</span>
+						{/* 文字輸入區域 */}
+						<div className="flex-1 p-3">
+							<textarea
+								ref={textareaRef}
+								value={text}
+								onChange={(e) => setText(e.target.value)}
+								placeholder="在此輸入要朗讀的文字..."
+								className="h-48 w-full resize-none rounded-lg border border-gray-300 p-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:focus:border-blue-400"
+							/>
+
+							{/* 進度條 */}
+							{playState !== "idle" && (
+								<div className="mt-2">
+									<div className="mb-1 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+										<span>播放進度</span>
+										<span>{Math.round(progress)}%</span>
+									</div>
+									<div className="h-1 w-full rounded-full bg-gray-200 dark:bg-gray-700">
+										<motion.div className="h-1 rounded-full bg-blue-500" style={{ width: `${progress}%` }} transition={{ duration: 0.1 }} />
 									</div>
 								</div>
+							)}
+
+							{/* 範例文字 */}
+							{!text && (
+								<div className="mt-2">
+									<p className="mb-2 text-xs text-gray-500 dark:text-gray-400">範例文字：</p>
+									<div className="space-y-1">
+										{sampleTexts.map((sample, index) => (
+											<button
+												key={index}
+												onClick={() => setText(sample)}
+												className="block w-full rounded border bg-gray-100 p-2 text-left text-xs hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+											>
+												{sample.substring(0, 50)}...
+											</button>
+										))}
+									</div>
+								</div>
+							)}
+						</div>
+
+						{/* 控制按鈕 */}
+						<div className="border-t border-gray-200 p-3 dark:border-gray-700">
+							<div className="flex items-center justify-center gap-3">
+								{playState === "playing" ? (
+									<motion.button
+										whileTap={{ scale: 0.95 }}
+										onClick={handlePause}
+										className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-500 text-white transition-colors hover:bg-orange-600"
+										aria-label="暫停"
+									>
+										<LucidePause className="h-5 w-5" />
+									</motion.button>
+								) : (
+									<motion.button
+										whileTap={{ scale: 0.95 }}
+										onClick={handlePlay}
+										disabled={!text.trim()}
+										className="flex h-10 w-10 items-center justify-center rounded-full bg-green-500 text-white transition-colors hover:bg-green-600 disabled:cursor-not-allowed disabled:opacity-50"
+										aria-label="播放"
+									>
+										<LucidePlay className="h-5 w-5" />
+									</motion.button>
+								)}
+
+								<motion.button
+									whileTap={{ scale: 0.95 }}
+									onClick={handleStop}
+									disabled={playState === "idle"}
+									className="flex h-8 w-8 items-center justify-center rounded-full bg-red-500 text-white transition-colors hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-50"
+									aria-label="停止"
+								>
+									<LucideSquare className="h-4 w-4" />
+								</motion.button>
+
+								<div className="ml-2 flex items-center gap-1">
+									<LucideVolume2 className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+									<span className="text-xs text-gray-500 dark:text-gray-400">{Math.round(settings.volume * 100)}%</span>
+								</div>
+							</div>
+
+							{/* 播放狀態 */}
+							<div className="mt-2 text-center">
+								<span className="text-xs text-gray-500 dark:text-gray-400">
+									{playState === "playing" && "正在播放..."}
+									{playState === "paused" && "已暫停"}
+									{playState === "idle" && "準備就緒"}
+								</span>
+							</div>
+						</div>
 					</div>
 				</motion.div>
 			)}
