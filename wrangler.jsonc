@@ -1,0 +1,23 @@
+{
+  "name": "juchunko.com",
+  "compatibility_date": "2025-09-04",
+  "main": "./src/worker/index.ts",
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS"
+  },
+  "observability": {
+    "logs": {
+      "enabled": true
+    }
+  },
+  "placement": {
+    "mode": "smart"
+  },
+  "routes": [
+    {
+      "pattern": "bata.juchunko.com",
+      "custom_domain": true
+    }
+  ]
+}
