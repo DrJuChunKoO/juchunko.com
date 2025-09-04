@@ -6,10 +6,10 @@ const { href, target = "_self", title } = Astro.props;
 <a
 	href={href}
 	target={target}
-	class="flex items-center gap-2 rounded-lg border p-4 underline-offset-2 transition not-hover:decoration-dashed hover:bg-gray-100"
+	class="flex items-center gap-2 rounded-lg border p-4 underline-offset-2 transition not-hover:decoration-dashed hover:bg-gray-100 dark:hover:bg-white/5"
 >
 	<span
-		class="text-gray-600"
+		class="dark:text-opacity-70 text-gray-600 dark:text-white"
 		style={{
 			mask: `linear-gradient(45deg, #000 0%, rgba(0,0,0,.5) 100%)`,
 		}}
