@@ -9,6 +9,8 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^2.0.23",
+    "@ai-sdk/react": "^2.0.30",
     "@astrojs/mdx": "^4.3.4",
     "@astrojs/partytown": "^2.1.4",
     "@astrojs/react": "^4.3.0",
@@ -18,11 +20,13 @@
     "@tailwindcss/vite": "^4.1.11",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
+    "ai": "^5.0.30",
     "astro": "^5.13.5",
     "astro-embed": "^0.9.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.526.0",
+    "markdown-to-jsx": "^7.7.13",
     "motion": "^12.23.10",
     "prettier-plugin-astro": "^0.14.1",
     "react": "^19.1.0",

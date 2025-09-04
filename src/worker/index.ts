@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { createOpenAI, type OpenAI } from "@ai-sdk/openai";
-import { streamText, tool, smoothStream, embed } from "ai";
-import z from "zod";
+import { streamText, tool, smoothStream, embed, convertToModelMessages } from "ai";
+import { z } from "zod/v3"; // AI SDK 5.0 requires zod v3 import
 import type { ExportedHandler, Fetcher } from "@cloudflare/workers-types";
 
 interface Env {
@@ -57,18 +57,13 @@ current page: https://transpal.juchunko.com/speeches/${filename}
 			// 執行 LLM，並注入各種 tool
 			// --------------------------------------------------------------
 			const result = streamText({
-				model: openai.responses("gpt-4.1-mini"),
-				messages: [{ role: "system", content: systemPrompt }, ...messages],
-				maxSteps: 8,
-				experimental_transform: smoothStream({
-					delayInMs: 10,
-					chunking: /[\u4E00-\u9FFF]|\S+\s+/, // 中英分段顯示
-				}),
+				model: openai("gpt-4o-mini"),
+				messages: convertToModelMessages([{ role: "system", content: systemPrompt }, ...messages]),
 				tools: {
 					// ----------------- 讀取目前頁面 -----------------
 					viewPage: tool({
 						description: "Get the current page content",
-						parameters: z.object({}).strict(),
+						inputSchema: z.object({}).strict(),
 						execute: async () => {
 							try {
 								// 路由轉換邏輯：
@@ -110,12 +105,11 @@ current page: https://transpal.juchunko.com/speeches/${filename}
 				},
 			});
 
-			const response = result.toDataStreamResponse();
+			const response = result.toUIMessageStreamResponse();
 			// 附加 CORS 標頭 (以及 Vercel AI stream header)
-			response.headers.set("x-vercel-ai-data-stream", "v1");
-			response.headers.set("Content-Type", "text/x-unknown");
-			response.headers.set("content-encoding", "identity");
-			response.headers.set("transfer-encoding", "chunked");
+			response.headers.set("Content-Type", "text/event-stream");
+			response.headers.set("Cache-Control", "no-cache");
+			response.headers.set("Connection", "keep-alive");
 			return response;
 		}
 

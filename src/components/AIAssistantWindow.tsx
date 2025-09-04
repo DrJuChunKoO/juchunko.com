@@ -1,34 +1,44 @@
 import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence, useMotionValue } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue } from "motion/react";
 import LucideBotMessageSquare from "~icons/lucide/bot-message-square";
 import LucideSend from "~icons/lucide/send";
 import LucideX from "~icons/lucide/x";
-
-interface Message {
-	id: string;
-	content: string;
-	sender: "user" | "ai";
-	timestamp: Date;
-}
+import LucideArrowRight from "~icons/lucide/arrow-right";
+import { useChat } from "@ai-sdk/react";
+import { DefaultChatTransport } from "ai";
+import Markdown from "markdown-to-jsx";
 
 interface AIAssistantWindowProps {
 	isOpen: boolean;
 	onClose: () => void;
 }
 
+// Loading dots component
+function LoadingDots() {
+	return (
+		<div className="flex space-x-1">
+			{[0, 1, 2].map((i) => (
+				<motion.div
+					key={i}
+					animate={{
+						scale: [1, 1.2, 1],
+						opacity: [0.5, 1, 0.5],
+					}}
+					transition={{
+						duration: 1,
+						repeat: Infinity,
+						delay: i * 0.2,
+					}}
+					className="h-1 w-1 rounded-full bg-gray-400"
+				/>
+			))}
+		</div>
+	);
+}
+
 export default function AIAssistantWindow({ isOpen, onClose }: AIAssistantWindowProps) {
-	const [messages, setMessages] = useState<Message[]>([
-		{
-			id: "welcome",
-			content: "您好！我是 AI 寶博，有什麼可以幫助您的嗎？",
-			sender: "ai",
-			timestamp: new Date(),
-		},
-	]);
-	const [inputValue, setInputValue] = useState("");
-	const [isTyping, setIsTyping] = useState(false);
 	const messagesEndRef = useRef<HTMLDivElement>(null);
-	const inputRef = useRef<HTMLInputElement>(null);
+	const inputRef = useRef<HTMLTextAreaElement>(null);
 
 	// 以 y 控制與底部距離，避免覆蓋 footer
 	const y = useMotionValue(16);
@@ -49,14 +59,55 @@ export default function AIAssistantWindow({ isOpen, onClose }: AIAssistantWindow
 		return () => window.removeEventListener("scroll", handleScroll);
 	}, []);
 
-	// 自動滾動到最新訊息
-	const scrollToBottom = () => {
-		messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+	// 手動管理輸入狀態 (AI SDK 5.0 移除了管理的輸入狀態)
+	const [input, setInput] = useState("");
+
+	// useChat hook for API integration with transport
+	const {
+		messages,
+		status,
+		sendMessage,
+	} = useChat({
+		transport: new DefaultChatTransport({
+			api: "/api/chat",
+			body: {
+				filename: typeof window !== "undefined" ? window.location.pathname : "/",
+			},
+		}),
+	});
+
+	// Quick prompts definitions
+	const quickPrompts = [
+		{
+			text: "重點摘要",
+			prompt: "摘要此對話的重點",
+		},
+		{
+			text: "背景資訊",
+			prompt: "提供此內容的背景資訊",
+		},
+		{
+			text: "主要觀點",
+			prompt: "說明此內容的主要觀點?",
+		},
+		{
+			text: "詳細解釋",
+			prompt: "詳細解釋此內容?",
+		},
+		{
+			text: `生成問答`,
+			prompt: "為此內容生成問答",
+		},
+	] as { text: string; prompt: string }[];
+
+	const sendQuickPrompt = (promptStr: string) => {
+		sendMessage({ text: promptStr });
 	};
 
+	// 自動滾動到最新訊息
 	useEffect(() => {
-		scrollToBottom();
-	}, [messages]);
+		messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+	}, [messages, status]);
 
 	// 當視窗打開時聚焦輸入框
 	useEffect(() => {
@@ -65,56 +116,24 @@ export default function AIAssistantWindow({ isOpen, onClose }: AIAssistantWindow
 		}
 	}, [isOpen]);
 
-	const handleSendMessage = async () => {
-		if (!inputValue.trim()) return;
-
-		const userMessage: Message = {
-			id: Date.now().toString(),
-			content: inputValue,
-			sender: "user",
-			timestamp: new Date(),
-		};
-
-		setMessages((prev) => [...prev, userMessage]);
-		setInputValue("");
-		setIsTyping(true);
-
-		// 模擬 AI 回應
-		setTimeout(() => {
-			const aiResponses = [
-				"這是一個很好的問題！讓我想想...",
-				"我明白您的想法，這裡有幾個建議：",
-				"根據我的理解，這種情況通常需要...",
-				"感謝您的提問！我建議您可以嘗試...",
-				"這個問題很有趣，從我的角度來看...",
-			];
-
-			const randomResponse = aiResponses[Math.floor(Math.random() * aiResponses.length)];
-
-			const aiMessage: Message = {
-				id: (Date.now() + 1).toString(),
-				content: randomResponse,
-				sender: "ai",
-				timestamp: new Date(),
-			};
-
-			setMessages((prev) => [...prev, aiMessage]);
-			setIsTyping(false);
-		}, 1500);
-	};
-
-	const handleKeyPress = (e: React.KeyboardEvent) => {
-		if (e.key === "Enter" && !e.shiftKey) {
+	const handleKeyDown = (e: React.KeyboardEvent) => {
+		const isComposing = (e.nativeEvent as any).isComposing;
+		if (e.key === "Enter" && !e.shiftKey && !isComposing) {
 			e.preventDefault();
-			handleSendMessage();
+			handleSubmit();
 		}
 	};
 
-	const formatTime = (date: Date) => {
-		return date.toLocaleTimeString("zh-TW", {
-			hour: "2-digit",
-			minute: "2-digit",
-		});
+	const handleSubmit = (e?: React.FormEvent) => {
+		if (e) e.preventDefault();
+		if (!input.trim()) return;
+		
+		sendMessage({ text: input });
+		setInput("");
+	};
+
+	const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+		setInput(e.target.value);
 	};
 
 	return (
@@ -151,76 +170,150 @@ export default function AIAssistantWindow({ isOpen, onClose }: AIAssistantWindow
 					</div>
 
 					{/* 聊天內容 */}
-					<div className="flex flex-1 flex-col gap-3 overflow-y-auto p-3">
-						{/* 訊息列表 */}
+					<div className="h-96 max-h-[60vh] border-t border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-950 overflow-y-auto">
+						<motion.div
+							className="flex flex-col space-y-3 p-4 text-sm"
+							initial={{ opacity: 0, y: 10 }}
+							animate={{ opacity: 1, y: 0 }}
+							exit={{ opacity: 0, y: 10 }}
+							transition={{ delay: 0.35 }}
+						>
+							<div className="text-center text-xs text-gray-500">
+								AI 可能會犯錯，可能會有錯誤或不準確的回應。
+							</div>
 
-						{messages.map((message) => (
-							<motion.div
-								key={message.id}
-								initial={{ opacity: 0, y: 10 }}
-								animate={{ opacity: 1, y: 0 }}
-								className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"}`}
-							>
+							{[
+								{
+									id: "system",
+									role: "assistant",
+									parts: [{ type: "text", text: "嗨，我是 AI 助手，隨時準備回答您的問題！請問有什麼我可以幫助您的？" }],
+								},
+								...messages,
+							].map((m) => (
 								<div
-									className={`max-w-[80%] rounded-lg p-2 px-3 text-sm ${
-										message.sender === "user" ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200"
-									}`}
+									key={m.id}
+									className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
 								>
-									<p className="whitespace-pre-wrap">{message.content}</p>
+									<motion.div
+										className={[
+											"prose prose-sm prose-neutral prose-tight max-w-[80%] rounded-lg px-3 py-1 break-words whitespace-pre-wrap",
+											m.role === "user"
+												? "prose-invert origin-right bg-blue-500 text-white"
+												: "dark:prose-invert origin-left bg-gray-100 dark:bg-gray-800",
+										].join(" ")}
+										role="article"
+										aria-label={m.role === "user" ? "使用者訊息" : "助理訊息"}
+										initial={{
+											opacity: 0,
+											x: m.role === "user" ? 10 : -10,
+											rotate: m.role === "user" ? 1 : -1,
+										}}
+										animate={{
+											opacity: 1,
+											x: 0,
+											rotate: 0,
+										}}
+										exit={{
+											opacity: 0,
+											x: m.role === "user" ? 10 : -10,
+											rotate: m.role === "user" ? -1 : 1,
+										}}
+										transition={{ duration: 0.2 }}
+									>
+										{m.parts && m.parts.length > 0 ? (
+											m.parts.map((part, index) => {
+												if (part.type === "text") {
+													return part.text === "" ? (
+														<div key={index} className="flex items-center gap-1">
+															<span className="text-sm text-gray-500">載入中</span>
+															<LoadingDots />
+														</div>
+													) : (
+														<Markdown key={index}>{part.text}</Markdown>
+													);
+												}
+												return null;
+											})
+										) : (
+											<div className="flex items-center gap-1">
+												<span className="text-sm text-gray-500">載入中</span>
+												<LoadingDots />
+											</div>
+										)}
+									</motion.div>
 								</div>
-							</motion.div>
-						))}
+							))}
 
-						{/* AI 輸入中指示器 */}
-						{isTyping && (
-							<motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex justify-start">
-								<div className="rounded-lg bg-gray-100 p-2 dark:bg-gray-800">
-									<div className="flex space-x-1">
-										{[0, 1, 2].map((i) => (
-											<motion.div
-												key={i}
-												animate={{
-													scale: [1, 1.2, 1],
-													opacity: [0.5, 1, 0.5],
-												}}
-												transition={{
-													duration: 1,
-													repeat: Infinity,
-													delay: i * 0.2,
-												}}
-												className="h-2 w-2 rounded-full bg-gray-400"
-											/>
-										))}
-									</div>
-								</div>
-							</motion.div>
-						)}
-						<div ref={messagesEndRef} />
+							{/* Quick prompt buttons */}
+							<AnimatePresence>
+								{status === "ready" && (
+									<motion.div
+										className="-mt-1.5 flex flex-col dark:border-gray-800"
+										initial={{ opacity: 0 }}
+										animate={{ opacity: 1 }}
+										exit={{ opacity: 0 }}
+										transition={{ duration: 0.2 }}
+									>
+										{quickPrompts
+											// filter is in messages - check parts for text content
+											.filter((qp) => !messages.some((m) =>
+												m.parts?.some(part => part.type === "text" && part.text === qp.prompt)
+											))
+											.map((qp) => (
+												<button
+													key={qp.text}
+													onClick={() => sendQuickPrompt(qp.prompt)}
+													aria-label={`快速提示: ${qp.text}`}
+													aria-pressed={false}
+													role="button"
+													tabIndex={0}
+													className="group flex cursor-pointer items-center gap-0.5 rounded p-1 text-left text-sm text-gray-500 transition-all hover:font-medium hover:tracking-wide hover:text-gray-700 disabled:opacity-50 dark:text-gray-400 dark:hover:text-gray-200"
+												>
+													{qp.text}
+													<LucideArrowRight className="h-4 w-4 opacity-50 transition-all group-hover:translate-x-0.5 group-hover:opacity-100" />
+												</button>
+											))}
+									</motion.div>
+								)}
+							</AnimatePresence>
+							<div ref={messagesEndRef} className="flex-1" />
+						</motion.div>
 					</div>
 					{/* 輸入區域 */}
-					<div className="border-t border-gray-200 p-3 dark:border-gray-700">
-						<div className="flex items-center gap-2">
-							<input
+					<form
+						role="form"
+						aria-label="聊天表單"
+						onSubmit={(e) => {
+							handleSubmit(e);
+							setInput("");
+						}}
+						className="dark:border-gray-800"
+					>
+						<div className="flex items-center gap-2 rounded-b-lg border-t border-gray-200 dark:border-gray-800 p-3">
+							<textarea
+								className="h-10 w-full resize-none bg-transparent text-gray-900 placeholder-gray-400 outline-none dark:text-gray-100 dark:placeholder-gray-500 flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:focus:border-blue-400"
+								placeholder="請輸入您的問題..."
+								value={input}
+								onChange={handleInputChange}
+								onKeyDown={handleKeyDown}
+								tabIndex={0}
+								aria-describedby="chat-bot-instructions"
 								ref={inputRef}
-								type="text"
-								value={inputValue}
-								onChange={(e) => setInputValue(e.target.value)}
-								onKeyDown={handleKeyPress}
-								placeholder="輸入訊息..."
-								className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:focus:border-blue-400"
-								disabled={isTyping}
 							/>
-							<motion.button
-								whileTap={{ scale: 0.95 }}
-								onClick={handleSendMessage}
-								disabled={!inputValue.trim() || isTyping}
-								className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-500 text-white transition-colors hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
-								aria-label="發送訊息"
+							<button
+								type="submit"
+								disabled={status === "streaming" || input.trim() === ""}
+								aria-label="送出訊息"
+								aria-disabled={status === "streaming" || input.trim() === "" ? "true" : "false"}
+								className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-500 text-white transition-colors hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:disabled:bg-gray-800"
 							>
 								<LucideSend className="h-4 w-4" />
-							</motion.button>
+							</button>
+							<div id="chat-bot-instructions" className="sr-only">
+								按下 Enter 鍵送出訊息
+							</div>
 						</div>
-					</div>
+					</form>
 				</motion.div>
 			)}
 		</AnimatePresence>
