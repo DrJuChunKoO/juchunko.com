@@ -29,6 +29,34 @@ const dateFormatter = new Intl.DateTimeFormat(lang === "en" ? "en-US" : "zh-TW",
 	day: "2-digit",
 });
 
+// Function to decode HTML entities
+function decodeHtmlEntities(text: string): string {
+	const namedEntities: Record<string, string> = {
+		"&apos;": "'",
+		"&quot;": '"',
+		"&amp;": "&",
+		"&lt;": "<",
+		"&gt;": ">",
+		"&nbsp;": "\u00a0",
+		"&hellip;": "…",
+		"&mdash;": "—",
+	};
+
+	return text.replace(/&(?:#\d+|#x[0-9a-fA-F]+|[a-zA-Z]+);/g, (entity) => {
+		if (entity.startsWith("&#x") || entity.startsWith("&#X")) {
+			const codePoint = Number.parseInt(entity.slice(7, -1), 16);
+			return Number.isFinite(codePoint) ? String.fromCodePoint(codePoint) : entity;
+		}
+
+		if (entity.startsWith("&#")) {
+			const codePoint = Number.parseInt(entity.slice(6, -1), 10);
+			return Number.isFinite(codePoint) ? String.fromCodePoint(codePoint) : entity;
+		}
+
+		return namedEntities[entity] ?? entity;
+	});
+}
+
 async function fetchRSS(): Promise<BlogPost[]> {
 	try {
 		const response = await fetch(RSS_URL, {
@@ -76,11 +104,11 @@ async function fetchRSS(): Promise<BlogPost[]> {
 
 				if (shouldInclude) {
 					const id = guidMatch ? guidMatch[1] : link;
-					const title = titleMatch[1].replace(/<!\[CDATA\[(.*?)\]\]>/g, "$1");
-					const description = descriptionMatch ? descriptionMatch[1].replace(/<!\[CDATA\[(.*?)\]\]>/g, "$1") : undefined;
+					const title = decodeHtmlEntities(titleMatch[1].replace(/<!\[CDATA\[(.*?)\]\]>/g, "$1"));
+					const description = descriptionMatch ? decodeHtmlEntities(descriptionMatch[1].replace(/<!\[CDATA\[(.*?)\]\]>/g, "$1")) : undefined;
 					const pubDate = pubDateMatch ? pubDateMatch[1] : "";
-					const category = categoryMatch ? categoryMatch[1] : undefined;
-					const author = authorMatch ? authorMatch[1] : undefined;
+					const category = categoryMatch ? decodeHtmlEntities(categoryMatch[1]) : undefined;
+					const author = authorMatch ? decodeHtmlEntities(authorMatch[1]) : undefined;
 
 					items.push({
 						id,
