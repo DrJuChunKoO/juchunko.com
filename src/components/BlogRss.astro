@@ -69,15 +69,15 @@ async function fetchRSS(): Promise<BlogPost[]> {
 			if (titleMatch && linkMatch) {
 				const link = linkMatch[1];
 				// Filter posts based on language
-				const isEnglishPost = link.includes('/en/');
-				const isChinesePost = link.includes('/zh/') || (!link.includes('/en/') && !link.includes('/zh/'));
+				const isEnglishPost = link.includes("/en/");
+				const isChinesePost = link.includes("/zh/") || (!link.includes("/en/") && !link.includes("/zh/"));
 
 				const shouldInclude = (lang === "en" && isEnglishPost) || (lang === "zh-TW" && isChinesePost);
 
 				if (shouldInclude) {
 					const id = guidMatch ? guidMatch[1] : link;
-					const title = titleMatch[1].replace(/<!\[CDATA\[(.*?)\]\]>/g, '$1');
-					const description = descriptionMatch ? descriptionMatch[1].replace(/<!\[CDATA\[(.*?)\]\]>/g, '$1') : undefined;
+					const title = titleMatch[1].replace(/<!\[CDATA\[(.*?)\]\]>/g, "$1");
+					const description = descriptionMatch ? descriptionMatch[1].replace(/<!\[CDATA\[(.*?)\]\]>/g, "$1") : undefined;
 					const pubDate = pubDateMatch ? pubDateMatch[1] : "";
 					const category = categoryMatch ? categoryMatch[1] : undefined;
 					const author = authorMatch ? authorMatch[1] : undefined;
@@ -120,63 +120,40 @@ const lastUpdatedLabel = lastUpdatedRaw ? dateFormatter.format(new Date(lastUpda
 const hasData = posts.length > 0;
 ---
 
-<section class="mt-8 rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900/40">
-	<header class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-		<div>
-			<h2 class="text-xl font-semibold text-slate-900 dark:text-white">{t("home.blogRss.title")}</h2>
-			<p class="text-sm text-slate-600 dark:text-slate-300">{t("home.blogRss.subtitle")}</p>
-		</div>
-		{lastUpdatedLabel && (
-			<p class="text-xs text-slate-500 dark:text-slate-400">
-				{t("home.blogRss.updated")}: {lastUpdatedLabel}
+<section class="">
+	{
+		fetchError ? (
+			<p class="rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-900/30 dark:text-red-200">
+				{t("home.blogRss.fetchError")}
 			</p>
-		)}
-	</header>
-
-	{fetchError ? (
-		<p class="mt-6 rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-900/30 dark:text-red-200">
-			{t("home.blogRss.fetchError")}
-		</p>
-	) : !hasData ? (
-		<p class="mt-6 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-300">
-			{t("home.blogRss.empty")}
-		</p>
-	) : (
-		<div class="mt-6 space-y-4">
-			{posts.map((post) => (
-				<article
-					class="rounded-lg border border-slate-200 bg-white/80 px-4 py-3 text-sm shadow-sm transition hover:border-slate-400 dark:border-slate-800 dark:bg-slate-900/60 dark:hover:border-slate-600"
-					data-id={post.id}
-				>
-					<div class="flex flex-col gap-2">
-						<div class="flex items-start justify-between gap-3">
-							<h3 class="font-medium text-slate-900 dark:text-white">{post.title}</h3>
-							<a class="shrink-0 text-xs font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400" href={post.link} target="_blank" rel="noopener noreferrer">
-								{t("home.blogRss.viewPost")}
-							</a>
-						</div>
-						{post.description && (
-							<p class="text-xs text-slate-600 dark:text-slate-300 line-clamp-2">
-								{post.description}
+		) : !hasData ? (
+			<p class="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-300">
+				{t("home.blogRss.empty")}
+			</p>
+		) : (
+			<div class="grid grid-cols-[repeat(auto-fill,minmax(270px,1fr))] gap-4">
+				{posts.map((post) => (
+					<a
+						class="border-accent hover:border-primary/25 group relative flex flex-col items-start overflow-hidden rounded-xl border-2 p-0.5 shadow-black/5 transition-all hover:-translate-y-1 hover:shadow-lg md:p-4 dark:hover:translate-0"
+						target="_blank"
+						rel="noopener noreferrer"
+						href={post.link}
+					>
+						<article class="p-2 md:p-0" data-id={post.id}>
+							{post.category && <div class="text-sm text-gray-500">{post.category}</div>}
+							<h2 class="text-sm font-semibold md:text-lg">{post.title}</h2>
+							<p class="text-xs tracking-tight text-gray-500 md:text-sm">
+								{new Date(post.pubDate).toLocaleDateString(lang, {
+									year: "numeric",
+									month: "long",
+									day: "numeric",
+								})}
 							</p>
-						)}
-						<div class="grid gap-1 text-xs text-slate-600 dark:text-slate-300">
-							{post.pubDate && (
-								<div class="flex flex-wrap gap-1">
-									<span class="font-medium text-slate-500 dark:text-slate-400">{t("home.legislatorActivity.date")}:</span>
-									<span class="text-slate-700 dark:text-slate-200">{dateFormatter.format(new Date(post.pubDate))}</span>
-								</div>
-							)}
-							{post.category && (
-								<div class="flex flex-wrap gap-1">
-									<span class="font-medium text-slate-500 dark:text-slate-400">Category:</span>
-									<span class="text-slate-700 dark:text-slate-200">{post.category}</span>
-								</div>
-							)}
-						</div>
-					</div>
-				</article>
-			))}
-		</div>
-	)}
+							{post.description && <p class="mt-1 text-sm text-slate-600 dark:text-slate-300">{post.description}</p>}
+						</article>
+					</a>
+				))}
+			</div>
+		)
+	}
 </section>

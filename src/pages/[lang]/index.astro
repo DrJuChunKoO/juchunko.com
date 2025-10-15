@@ -36,7 +36,6 @@ const fragments = (await getCollection("fragment"))
 	</div>
 
 	<LegislatorActivity lang={lang} limit={5} />
-	<BlogRss lang={lang} limit={5} />
 	<!-- 雜項 -->
 	<div class="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-2 md:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] md:gap-4">
 		{fragments.map((post) => <CardLink post={post} lang={lang} category="fragment" />)}
@@ -51,4 +50,7 @@ const fragments = (await getCollection("fragment"))
 	<div class="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-2 md:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] md:gap-4">
 		{manuals.map((post) => <CardLink post={post} lang={lang} category="manual" />)}
 	</div>
+	<!-- 部落格文章 -->
+	<h1 class="mt-7 mb-3 text-2xl font-semibold">{t("home.blogRss.title")}</h1>
+	<BlogRss lang={lang} limit={5} />
 </PageLayout>
