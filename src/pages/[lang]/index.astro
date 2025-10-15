@@ -1,6 +1,7 @@
 ---
 import PageLayout from "../../layouts/PageLayout.astro";
 import CardLink from "@/components/CardLink.astro";
+import LegislatorActivity from "@/components/LegislatorActivity.astro";
 import { getLangFromUrl, useTranslations } from "src/i18n/utils";
 import { getCollection } from "astro:content";
 
@@ -32,6 +33,8 @@ const fragments = (await getCollection("fragment"))
 			</p>
 		</div>
 	</div>
+
+	<LegislatorActivity lang={lang} limit={5} />
 	<!-- 雜項 -->
 	<div class="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-2 md:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] md:gap-4">
 		{fragments.map((post) => <CardLink post={post} lang={lang} category="fragment" />)}
