@@ -163,9 +163,7 @@ function mapBillActivity(entry: Record<string, unknown>): BillActivity | null {
 	if (typeof entry["url"] === "string") {
 		url = entry["url"];
 	} else if (Array.isArray(entry["相關附件"])) {
-		const attachments = entry["相關附件"]
-			.map(asRecord)
-			.filter((record): record is Record<string, unknown> => !!record);
+		const attachments = entry["相關附件"].map(asRecord).filter((record): record is Record<string, unknown> => !!record);
 		const attachmentRecord = attachments.find((record) => typeof record["網址"] === "string");
 		if (attachmentRecord) {
 			url = attachmentRecord["網址"] as string;
@@ -202,9 +200,7 @@ function mapMeetActivity(entry: Record<string, unknown>): MeetActivity | null {
 
 	if (!date && meetingRecords.length > 0) {
 		const firstRecord = meetingRecords[0];
-		date =
-			pickFirstString(firstRecord["日期"]) ||
-			(typeof firstRecord["日期"] === "string" ? (firstRecord["日期"] as string) : null);
+		date = pickFirstString(firstRecord["日期"]) || (typeof firstRecord["日期"] === "string" ? (firstRecord["日期"] as string) : null);
 	}
 
 	const location = typeof entry["地點"] === "string" ? entry["地點"] : undefined;
@@ -224,8 +220,7 @@ function mapMeetActivity(entry: Record<string, unknown>): MeetActivity | null {
 		}
 	}
 
-	const updatedAt =
-		(typeof entry["資料抓取時間"] === "string" && entry["資料抓取時間"]) || undefined;
+	const updatedAt = (typeof entry["資料抓取時間"] === "string" && entry["資料抓取時間"]) || undefined;
 
 	return {
 		id,
@@ -240,15 +235,10 @@ function mapMeetActivity(entry: Record<string, unknown>): MeetActivity | null {
 
 function mapInterpellationActivity(entry: Record<string, unknown>): InterpellationActivity | null {
 	const id =
-		(typeof entry["質詢編號"] === "string" && entry["質詢編號"]) ||
-		(typeof entry["會議代碼"] === "string" && entry["會議代碼"]) ||
-		null;
+		(typeof entry["質詢編號"] === "string" && entry["質詢編號"]) || (typeof entry["會議代碼"] === "string" && entry["會議代碼"]) || null;
 	if (!id) return null;
 
-	const title =
-		(typeof entry["標題"] === "string" && entry["標題"]) ||
-		(typeof entry["發言主題"] === "string" && entry["發言主題"]) ||
-		id;
+	const title = (typeof entry["標題"] === "string" && entry["標題"]) || (typeof entry["發言主題"] === "string" && entry["發言主題"]) || id;
 
 	const date =
 		(typeof entry["質詢日期"] === "string" && entry["質詢日期"]) ||
@@ -292,27 +282,31 @@ const safeLimit = Number.isFinite(limit) ? Math.max(1, Math.min(20, Math.floor(l
 let proposeBills: BillActivity[] = [];
 let cosignBills: BillActivity[] = [];
 let meetList: MeetActivity[] = [];
-let interpellationList: InterpellationActivity[] = [];
 let fetchError = false;
 
 try {
-	const [proposeRes, cosignRes, meetsRes, interpellationsRes] = await Promise.all([
+	const [proposeRes, cosignRes, meetsRes] = await Promise.all([
 		fetchJSON<BillsResponse>(`/legislators/${LEGISLATOR_TERM}/${encodedName}/propose_bills?limit=${safeLimit}`),
 		fetchJSON<BillsResponse>(`/legislators/${LEGISLATOR_TERM}/${encodedName}/cosign_bills?limit=${safeLimit}`),
 		fetchJSON<MeetsResponse>(`/legislators/${LEGISLATOR_TERM}/${encodedName}/meets?limit=${safeLimit}`),
-		fetchJSON<InterpellationsResponse>(`/legislators/${LEGISLATOR_TERM}/${encodedName}/interpellations?limit=${safeLimit}`),
 	]);
 
 	proposeBills =
-		proposeRes?.bills?.map((entry) => mapBillActivity(entry)).filter((item): item is BillActivity => !!item).slice(0, safeLimit) ?? [];
+		proposeRes?.bills
+			?.map((entry) => mapBillActivity(entry))
+			.filter((item): item is BillActivity => !!item)
+			.slice(0, safeLimit) ?? [];
+
 	cosignBills =
-		cosignRes?.bills?.map((entry) => mapBillActivity(entry)).filter((item): item is BillActivity => !!item).slice(0, safeLimit) ?? [];
+		cosignRes?.bills
+			?.map((entry) => mapBillActivity(entry))
+			.filter((item): item is BillActivity => !!item)
+			.slice(0, safeLimit) ?? [];
+
 	meetList =
-		meetsRes?.meets?.map((entry) => mapMeetActivity(entry)).filter((item): item is MeetActivity => !!item).slice(0, safeLimit) ?? [];
-	interpellationList =
-		interpellationsRes?.interpellations
-			?.map((entry) => mapInterpellationActivity(entry))
-			.filter((item): item is InterpellationActivity => !!item)
+		meetsRes?.meets
+			?.map((entry) => mapMeetActivity(entry))
+			.filter((item): item is MeetActivity => !!item)
 			.slice(0, safeLimit) ?? [];
 } catch (error) {
 	console.error("Failed to fetch legislator activity:", error);
@@ -328,11 +322,7 @@ const timestamps = [
 const lastUpdatedRaw = timestamps.sort((a, b) => (a > b ? 1 : -1)).at(-1) ?? null;
 const lastUpdatedLabel = lastUpdatedRaw ? formatDateTime(lastUpdatedRaw) : null;
 
-const hasData =
-	proposeBills.length > 0 ||
-	cosignBills.length > 0 ||
-	meetList.length > 0 ||
-	interpellationList.length > 0;
+const hasData = proposeBills.length > 0 || cosignBills.length > 0 || meetList.length > 0;
 ---
 
 <section class="mt-8 rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900/40">
@@ -341,419 +331,166 @@ const hasData =
 			<h2 class="text-xl font-semibold text-slate-900 dark:text-white">{t("home.legislatorActivity.title")}</h2>
 			<p class="text-sm text-slate-600 dark:text-slate-300">{t("home.legislatorActivity.subtitle")}</p>
 		</div>
-		{lastUpdatedLabel && (
-			<p class="text-xs text-slate-500 dark:text-slate-400">
-				{t("home.legislatorActivity.updated")}: {lastUpdatedLabel}
-			</p>
-		)}
+		{
+			lastUpdatedLabel && (
+				<p class="text-xs text-slate-500 dark:text-slate-400">
+					{t("home.legislatorActivity.updated")}: {lastUpdatedLabel}
+				</p>
+			)
+		}
 	</header>
 
-	{fetchError ? (
-		<p class="mt-6 rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-900/30 dark:text-red-200">
-			{t("home.legislatorActivity.fetchError")}
-		</p>
-	) : !hasData ? (
-		<p class="mt-6 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-300">
-			{t("home.legislatorActivity.empty")}
-		</p>
-	) : (
-		<div class="mt-6 space-y-8">
-			<!-- 提案 -->
-			<section class="flex flex-col gap-3">
-				<h3 class="text-lg font-semibold text-slate-800 dark:text-slate-100">
-					{t("home.legislatorActivity.section.propose")}
-				</h3>
-				{proposeBills.length > 0 ? (
-					<div class="relative" data-la-root>
-						<!-- 漸層邊緣提示可水平捲動 -->
-						<div class="pointer-events-none absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-white/90 to-transparent dark:from-slate-900/70"></div>
-						<div class="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-white/90 to-transparent dark:from-slate-900/70"></div>
-
-						<div class="flex gap-2 md:gap-4 overflow-x-auto py-4 -my-4 scroll-smooth snap-x snap-mandatory" data-scroller>
+	{
+		fetchError ? (
+			<p class="mt-6 rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-900/30 dark:text-red-200">
+				{t("home.legislatorActivity.fetchError")}
+			</p>
+		) : !hasData ? (
+			<p class="mt-6 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-300">
+				{t("home.legislatorActivity.empty")}
+			</p>
+		) : (
+			<div class="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+				<section class="flex flex-col gap-4">
+					<h3 class="text-lg font-semibold text-slate-800 dark:text-slate-100">{t("home.legislatorActivity.section.propose")}</h3>
+					{proposeBills.length > 0 ? (
+						<ul class="space-y-3">
 							{proposeBills.map((bill) => (
-								bill.url ? (
-									<a
-										class="min-w-[270px] md:min-w-[320px] snap-start border-accent hover:border-primary/25 group relative flex flex-col items-start overflow-hidden rounded-xl border-2 p-0.5 shadow-black/5 transition-all hover:-translate-y-1 hover:shadow-lg md:p-4 dark:hover:translate-0"
-										target="_blank"
-										rel="noopener noreferrer"
-										href={bill.url}
-										data-id={bill.id}
-									>
-										<article class="p-2 md:p-0">
-											<h2 class="text-sm font-semibold md:text-lg">{bill.title}</h2>
-											<p class="text-xs tracking-tight text-gray-500 md:text-sm">
-												{bill.updatedAt ? formatDate(bill.updatedAt) : ""}
+								<li
+									class="border-accent hover:border-primary/25 group relative flex flex-col items-start overflow-hidden rounded-xl border-2 p-0.5 shadow-black/5 transition-all hover:-translate-y-1 hover:shadow-lg md:p-4 dark:hover:translate-0"
+									data-id={bill.id}
+								>
+									<div class="p-2 md:p-0">
+										<h2 class="text-sm font-semibold md:text-lg">{bill.title}</h2>
+										<p class="text-xs tracking-tight text-gray-500 md:text-sm">{bill.updatedAt ? formatDate(bill.updatedAt) : ""}</p>
+										{bill.status && (
+											<p class="mt-2 line-clamp-2 text-xs text-slate-600 dark:text-slate-300">
+												{t("home.legislatorActivity.billStatus")}: {bill.status}
 											</p>
-											{bill.status && (
-												<p class="mt-2 line-clamp-2 text-xs text-slate-600 dark:text-slate-300">
-													{t("home.legislatorActivity.billStatus")}: {bill.status}
-												</p>
-											)}
-											{bill.law && (
-												<p class="mt-1 text-xs text-slate-600 dark:text-slate-300">
-													{t("home.legislatorActivity.law")}: {bill.law}
-												</p>
-											)}
-										</article>
-									</a>
-								) : (
-									<div
-										class="min-w-[270px] md:min-w-[320px] snap-start border-accent group relative flex flex-col items-start overflow-hidden rounded-xl border-2 p-0.5 shadow-black/5 md:p-4"
-										data-id={bill.id}
-									>
-										<article class="p-2 md:p-0">
-											<h2 class="text-sm font-semibold md:text-lg">{bill.title}</h2>
-											<p class="text-xs tracking-tight text-gray-500 md:text-sm">
-												{bill.updatedAt ? formatDate(bill.updatedAt) : ""}
+										)}
+										{bill.law && (
+											<p class="mt-1 text-xs text-slate-600 dark:text-slate-300">
+												{t("home.legislatorActivity.law")}: {bill.law}
 											</p>
-											{bill.status && (
-												<p class="mt-2 line-clamp-2 text-xs text-slate-600 dark:text-slate-300">
-													{t("home.legislatorActivity.billStatus")}: {bill.status}
-												</p>
+										)}
+										<div class="mt-3">
+											{bill.url && (
+												<a
+													class="shrink-0 text-xs font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400"
+													href={bill.url}
+													target="_blank"
+													rel="noopener noreferrer"
+												>
+													{t("home.legislatorActivity.viewBill")}
+												</a>
 											)}
-											{bill.law && (
-												<p class="mt-1 text-xs text-slate-600 dark:text-slate-300">
-													{t("home.legislatorActivity.law")}: {bill.law}
-												</p>
-											)}
-										</article>
+										</div>
 									</div>
-								)
+								</li>
 							))}
-						</div>
+						</ul>
+					) : (
+						<p class="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-xs text-slate-600 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-300">
+							{t("home.legislatorActivity.empty")}
+						</p>
+					)}
+				</section>
 
-						<!-- 控制按鈕 -->
-						<div class="absolute bottom-2 left-4 z-10">
-							<div class="flex items-center gap-1 rounded-full bg-white/90 px-1.5 py-1 shadow-lg ring-1 ring-black/10 backdrop-blur dark:bg-slate-800/70">
-								<button
-									type="button"
-									class="inline-flex h-8 w-8 items-center justify-center rounded-full text-slate-700 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-200 dark:hover:bg-slate-700/60"
-									data-left
-									aria-label={t("post.prev")}
-								>
-									<span aria-hidden="true">←</span>
-								</button>
-								<div class="h-6 w-px bg-slate-300/70 dark:bg-slate-600/60" aria-hidden="true"></div>
-								<button
-									type="button"
-									class="inline-flex h-8 w-8 items-center justify-center rounded-full text-slate-700 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-200 dark:hover:bg-slate-700/60"
-									data-right
-									aria-label={t("post.next")}
-								>
-									<span aria-hidden="true">→</span>
-								</button>
-							</div>
-						</div>
-					</div>
-				) : (
-					<p class="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-xs text-slate-600 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-300">
-						{t("home.legislatorActivity.empty")}
-					</p>
-				)}
-			</section>
-
-			<!-- 連署 -->
-			<section class="flex flex-col gap-3">
-				<h3 class="text-lg font-semibold text-slate-800 dark:text-slate-100">
-					{t("home.legislatorActivity.section.cosign")}
-				</h3>
-				{cosignBills.length > 0 ? (
-					<div class="relative" data-la-root>
-						<div class="pointer-events-none absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-white/90 to-transparent dark:from-slate-900/70"></div>
-						<div class="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-white/90 to-transparent dark:from-slate-900/70"></div>
-
-						<div class="flex gap-2 md:gap-4 overflow-x-auto py-4 -my-4 scroll-smooth snap-x snap-mandatory" data-scroller>
+				<section class="flex flex-col gap-4">
+					<h3 class="text-lg font-semibold text-slate-800 dark:text-slate-100">{t("home.legislatorActivity.section.cosign")}</h3>
+					{cosignBills.length > 0 ? (
+						<ul class="space-y-3">
 							{cosignBills.map((bill) => (
-								bill.url ? (
-									<a
-										class="min-w-[270px] md:min-w-[320px] snap-start border-accent hover:border-primary/25 group relative flex flex-col items-start overflow-hidden rounded-xl border-2 p-0.5 shadow-black/5 transition-all hover:-translate-y-1 hover:shadow-lg md:p-4 dark:hover:translate-0"
-										target="_blank"
-										rel="noopener noreferrer"
-										href={bill.url}
-										data-id={bill.id}
-									>
-										<article class="p-2 md:p-0">
-											<h2 class="text-sm font-semibold md:text-lg">{bill.title}</h2>
-											<p class="text-xs tracking-tight text-gray-500 md:text-sm">
-												{bill.updatedAt ? formatDate(bill.updatedAt) : ""}
+								<li
+									class="border-accent hover:border-primary/25 group relative flex flex-col items-start overflow-hidden rounded-xl border-2 p-0.5 shadow-black/5 transition-all hover:-translate-y-1 hover:shadow-lg md:p-4 dark:hover:translate-0"
+									data-id={bill.id}
+								>
+									<div class="p-2 md:p-0">
+										<h2 class="text-sm font-semibold md:text-lg">{bill.title}</h2>
+										<p class="text-xs tracking-tight text-gray-500 md:text-sm">{bill.updatedAt ? formatDate(bill.updatedAt) : ""}</p>
+										{bill.status && (
+											<p class="mt-2 line-clamp-2 text-xs text-slate-600 dark:text-slate-300">
+												{t("home.legislatorActivity.billStatus")}: {bill.status}
 											</p>
-											{bill.status && (
-												<p class="mt-2 line-clamp-2 text-xs text-slate-600 dark:text-slate-300">
-													{t("home.legislatorActivity.billStatus")}: {bill.status}
-												</p>
-											)}
-											{bill.law && (
-												<p class="mt-1 text-xs text-slate-600 dark:text-slate-300">
-													{t("home.legislatorActivity.law")}: {bill.law}
-												</p>
-											)}
-										</article>
-									</a>
-								) : (
-									<div
-										class="min-w-[270px] md:min-w-[320px] snap-start border-accent group relative flex flex-col items-start overflow-hidden rounded-xl border-2 p-0.5 shadow-black/5 md:p-4"
-										data-id={bill.id}
-									>
-										<article class="p-2 md:p-0">
-											<h2 class="text-sm font-semibold md:text-lg">{bill.title}</h2>
-											<p class="text-xs tracking-tight text-gray-500 md:text-sm">
-												{bill.updatedAt ? formatDate(bill.updatedAt) : ""}
+										)}
+										{bill.law && (
+											<p class="mt-1 text-xs text-slate-600 dark:text-slate-300">
+												{t("home.legislatorActivity.law")}: {bill.law}
 											</p>
-											{bill.status && (
-												<p class="mt-2 line-clamp-2 text-xs text-slate-600 dark:text-slate-300">
-													{t("home.legislatorActivity.billStatus")}: {bill.status}
-												</p>
+										)}
+										<div class="mt-3">
+											{bill.url && (
+												<a
+													class="shrink-0 text-xs font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400"
+													href={bill.url}
+													target="_blank"
+													rel="noopener noreferrer"
+												>
+													{t("home.legislatorActivity.viewBill")}
+												</a>
 											)}
-											{bill.law && (
-												<p class="mt-1 text-xs text-slate-600 dark:text-slate-300">
-													{t("home.legislatorActivity.law")}: {bill.law}
-												</p>
-											)}
-										</article>
+										</div>
 									</div>
-								)
+								</li>
 							))}
-						</div>
+						</ul>
+					) : (
+						<p class="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-xs text-slate-600 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-300">
+							{t("home.legislatorActivity.empty")}
+						</p>
+					)}
+				</section>
 
-						<div class="absolute bottom-2 left-4 z-10">
-							<div class="flex items-center gap-1 rounded-full bg-white/90 px-1.5 py-1 shadow-lg ring-1 ring-black/10 backdrop-blur dark:bg-slate-800/70">
-								<button
-									type="button"
-									class="inline-flex h-8 w-8 items-center justify-center rounded-full text-slate-700 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-200 dark:hover:bg-slate-700/60"
-									data-left
-									aria-label={t("post.prev")}
-								>
-									<span aria-hidden="true">←</span>
-								</button>
-								<div class="h-6 w-px bg-slate-300/70 dark:bg-slate-600/60" aria-hidden="true"></div>
-								<button
-									type="button"
-									class="inline-flex h-8 w-8 items-center justify-center rounded-full text-slate-700 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-200 dark:hover:bg-slate-700/60"
-									data-right
-									aria-label={t("post.next")}
-								>
-									<span aria-hidden="true">→</span>
-								</button>
-							</div>
-						</div>
-					</div>
-				) : (
-					<p class="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-xs text-slate-600 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-300">
-						{t("home.legislatorActivity.empty")}
-					</p>
-				)}
-			</section>
-
-			<!-- 會議 -->
-			<section class="flex flex-col gap-3">
-				<h3 class="text-lg font-semibold text-slate-800 dark:text-slate-100">
-					{t("home.legislatorActivity.section.meets")}
-				</h3>
-				{meetList.length > 0 ? (
-					<div class="relative" data-la-root>
-						<div class="pointer-events-none absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-white/90 to-transparent dark:from-slate-900/70"></div>
-						<div class="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-white/90 to-transparent dark:from-slate-900/70"></div>
-
-						<div class="flex gap-2 md:gap-4 overflow-x-auto py-4 -my-4 scroll-smooth snap-x snap-mandatory" data-scroller>
+				<section class="flex flex-col gap-4">
+					<h3 class="text-lg font-semibold text-slate-800 dark:text-slate-100">{t("home.legislatorActivity.section.meets")}</h3>
+					{meetList.length > 0 ? (
+						<ul class="space-y-3">
 							{meetList.map((meet) => (
-								meet.url ? (
-									<a
-										class="min-w-[270px] md:min-w-[320px] snap-start border-accent hover:border-primary/25 group relative flex flex-col items-start overflow-hidden rounded-xl border-2 p-0.5 shadow-black/5 transition-all hover:-translate-y-1 hover:shadow-lg md:p-4 dark:hover:translate-0"
-										target="_blank"
-										rel="noopener noreferrer"
-										href={meet.url}
-										data-id={meet.id}
-									>
-										<article class="p-2 md:p-0">
-											<h2 class="text-sm font-semibold md:text-lg">{meet.name}</h2>
-											<p class="text-xs tracking-tight text-gray-500 md:text-sm">
-												{meet.date ? formatDate(meet.date) : ""}
+								<li
+									class="border-accent hover:border-primary/25 group relative flex flex-col items-start overflow-hidden rounded-xl border-2 p-0.5 shadow-black/5 transition-all hover:-translate-y-1 hover:shadow-lg md:p-4 dark:hover:translate-0"
+									data-id={meet.id}
+								>
+									<div class="p-2 md:p-0">
+										<h2 class="text-sm font-semibold md:text-lg">{meet.name}</h2>
+										<p class="text-xs tracking-tight text-gray-500 md:text-sm">{meet.date ? formatDate(meet.date) : ""}</p>
+										{meet.type && (
+											<p class="mt-2 line-clamp-2 text-xs text-slate-600 dark:text-slate-300">
+												{t("home.legislatorActivity.meetingType")}: {meet.type}
 											</p>
-											{meet.type && (
-												<p class="mt-2 line-clamp-2 text-xs text-slate-600 dark:text-slate-300">
-													{t("home.legislatorActivity.meetingType")}: {meet.type}
-												</p>
-											)}
-											{meet.location && (
-												<p class="mt-1 text-xs text-slate-600 dark:text-slate-300">
-													{t("home.legislatorActivity.location")}: {meet.location}
-												</p>
-											)}
-										</article>
-									</a>
-								) : (
-									<div
-										class="min-w-[270px] md:min-w-[320px] snap-start border-accent group relative flex flex-col items-start overflow-hidden rounded-xl border-2 p-0.5 shadow-black/5 md:p-4"
-										data-id={meet.id}
-									>
-										<article class="p-2 md:p-0">
-											<h2 class="text-sm font-semibold md:text-lg">{meet.name}</h2>
-											<p class="text-xs tracking-tight text-gray-500 md:text-sm">
-												{meet.date ? formatDate(meet.date) : ""}
+										)}
+										{meet.location && (
+											<p class="mt-1 text-xs text-slate-600 dark:text-slate-300">
+												{t("home.legislatorActivity.location")}: {meet.location}
 											</p>
-											{meet.type && (
-												<p class="mt-2 line-clamp-2 text-xs text-slate-600 dark:text-slate-300">
-													{t("home.legislatorActivity.meetingType")}: {meet.type}
-												</p>
+										)}
+										<div class="mt-3">
+											{meet.url && (
+												<a
+													class="shrink-0 text-xs font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400"
+													href={meet.url}
+													target="_blank"
+													rel="noopener noreferrer"
+												>
+													{t("home.legislatorActivity.viewMeet")}
+												</a>
 											)}
-											{meet.location && (
-												<p class="mt-1 text-xs text-slate-600 dark:text-slate-300">
-													{t("home.legislatorActivity.location")}: {meet.location}
-												</p>
-											)}
-										</article>
+										</div>
 									</div>
-								)
+								</li>
 							))}
-						</div>
+						</ul>
+					) : (
+						<p class="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-xs text-slate-600 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-300">
+							{t("home.legislatorActivity.empty")}
+						</p>
+					)}
+				</section>
 
-						<div class="absolute bottom-2 left-4 z-10">
-							<div class="flex items-center gap-1 rounded-full bg-white/90 px-1.5 py-1 shadow-lg ring-1 ring-black/10 backdrop-blur dark:bg-slate-800/70">
-								<button
-									type="button"
-									class="inline-flex h-8 w-8 items-center justify-center rounded-full text-slate-700 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-200 dark:hover:bg-slate-700/60"
-									data-left
-									aria-label={t("post.prev")}
-								>
-									<span aria-hidden="true">←</span>
-								</button>
-								<div class="h-6 w-px bg-slate-300/70 dark:bg-slate-600/60" aria-hidden="true"></div>
-								<button
-									type="button"
-									class="inline-flex h-8 w-8 items-center justify-center rounded-full text-slate-700 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-200 dark:hover:bg-slate-700/60"
-									data-right
-									aria-label={t("post.next")}
-								>
-									<span aria-hidden="true">→</span>
-								</button>
-							</div>
-						</div>
-					</div>
-				) : (
-					<p class="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-xs text-slate-600 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-300">
-						{t("home.legislatorActivity.empty")}
-					</p>
-				)}
-			</section>
-
-			<!-- 質詢 -->
-			<section class="flex flex-col gap-3">
-				<h3 class="text-lg font-semibold text-slate-800 dark:text-slate-100">
-					{t("home.legislatorActivity.section.interpellations")}
-				</h3>
-				{interpellationList.length > 0 ? (
-					<div class="relative" data-la-root>
-						<div class="pointer-events-none absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-white/90 to-transparent dark:from-slate-900/70"></div>
-						<div class="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-white/90 to-transparent dark:from-slate-900/70"></div>
-
-						<div class="flex gap-2 md:gap-4 overflow-x-auto py-4 -my-4 scroll-smooth snap-x snap-mandatory" data-scroller>
-							{interpellationList.map((item) => (
-								item.url ? (
-									<a
-										class="min-w-[270px] md:min-w-[320px] snap-start border-accent hover:border-primary/25 group relative flex flex-col items-start overflow-hidden rounded-xl border-2 p-0.5 shadow-black/5 transition-all hover:-translate-y-1 hover:shadow-lg md:p-4 dark:hover:translate-0"
-										target="_blank"
-										rel="noopener noreferrer"
-										href={item.url}
-										data-id={item.id}
-									>
-										<article class="p-2 md:p-0">
-											<h2 class="text-sm font-semibold md:text-lg">{item.title}</h2>
-											<p class="text-xs tracking-tight text-gray-500 md:text-sm">
-												{item.date ? formatDate(item.date) : ""}
-											</p>
-										</article>
-									</a>
-								) : (
-									<div
-										class="min-w-[270px] md:min-w-[320px] snap-start border-accent group relative flex flex-col items-start overflow-hidden rounded-xl border-2 p-0.5 shadow-black/5 md:p-4"
-										data-id={item.id}
-									>
-										<article class="p-2 md:p-0">
-											<h2 class="text-sm font-semibold md:text-lg">{item.title}</h2>
-											<p class="text-xs tracking-tight text-gray-500 md:text-sm">
-												{item.date ? formatDate(item.date) : ""}
-											</p>
-										</article>
-									</div>
-								)
-							))}
-						</div>
-
-						<div class="absolute bottom-2 left-4 z-10">
-							<div class="flex items-center gap-1 rounded-full bg-white/90 px-1.5 py-1 shadow-lg ring-1 ring-black/10 backdrop-blur dark:bg-slate-800/70">
-								<button
-									type="button"
-									class="inline-flex h-8 w-8 items-center justify-center rounded-full text-slate-700 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-200 dark:hover:bg-slate-700/60"
-									data-left
-									aria-label={t("post.prev")}
-								>
-									<span aria-hidden="true">←</span>
-								</button>
-								<div class="h-6 w-px bg-slate-300/70 dark:bg-slate-600/60" aria-hidden="true"></div>
-								<button
-									type="button"
-									class="inline-flex h-8 w-8 items-center justify-center rounded-full text-slate-700 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-200 dark:hover:bg-slate-700/60"
-									data-right
-									aria-label={t("post.next")}
-								>
-									<span aria-hidden="true">→</span>
-								</button>
-							</div>
-						</div>
-					</div>
-				) : (
-					<p class="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-xs text-slate-600 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-300">
-						{t("home.legislatorActivity.empty")}
-					</p>
-				)}
-			</section>
-		</div>
-	)}
+			</div>
+		)
+	}
+	<p class="mt-4 text-xs text-slate-500 dark:text-slate-400">
+		{lang === "en" ? "Data source" : "資料來源"}：
+		<a class="underline hover:text-slate-700 dark:hover:text-slate-300" href="https://ly.govapi.tw/" target="_blank" rel="noopener noreferrer">LYAPI</a>
+	</p>
 </section>
-
-<script is:inline>
-	(() => {
-		const roots = document.querySelectorAll('[data-la-root]');
-		roots.forEach((root) => {
-			const scroller = root.querySelector('[data-scroller]');
-			const left = root.querySelector('[data-left]');
-			const right = root.querySelector('[data-right]');
-			if (!scroller || !left || !right) return;
-
-			const scrollEl = scroller;
-			const leftBtn = left;
-			const rightBtn = right;
-			const amount = () => scrollEl.clientWidth * 0.9;
-
-			function updateButtons() {
-				const atStart = scrollEl.scrollLeft <= 0;
-				const atEnd = Math.ceil(scrollEl.scrollLeft + scrollEl.clientWidth) >= scrollEl.scrollWidth - 1;
-				leftBtn.disabled = atStart;
-				rightBtn.disabled = atEnd;
-			}
-
-			leftBtn.addEventListener('click', () => {
-				scrollEl.scrollBy({ left: -amount(), behavior: 'smooth' });
-			});
-
-			rightBtn.addEventListener('click', () => {
-				scrollEl.scrollBy({ left: amount(), behavior: 'smooth' });
-			});
-
-			scrollEl.addEventListener('scroll', updateButtons, { passive: true });
-			window.addEventListener('resize', updateButtons);
-			updateButtons();
-		});
-	})();
-</script>
-
-<style>
-	/* 隱藏各區塊的水平卷軸 */
-	[data-la-root] [data-scroller] {
-		-ms-overflow-style: none; /* IE 10+ */
-		scrollbar-width: none; /* Firefox */
-	}
-	[data-la-root] [data-scroller]::-webkit-scrollbar {
-		display: none; /* Chrome/Safari/Opera */
-	}
-</style>
