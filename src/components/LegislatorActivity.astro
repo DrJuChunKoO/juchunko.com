@@ -325,7 +325,7 @@ const lastUpdatedLabel = lastUpdatedRaw ? formatDateTime(lastUpdatedRaw) : null;
 const hasData = proposeBills.length > 0 || cosignBills.length > 0 || meetList.length > 0;
 ---
 
-<section class="mt-8 rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900/40">
+<section class="mt-8 mb-4 rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900/40">
 	<header class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
 		<div>
 			<h2 class="text-xl font-semibold text-slate-900 dark:text-white">{t("home.legislatorActivity.title")}</h2>
@@ -356,36 +356,47 @@ const hasData = proposeBills.length > 0 || cosignBills.length > 0 || meetList.le
 					{proposeBills.length > 0 ? (
 						<ul class="space-y-3">
 							{proposeBills.map((bill) => (
-								<li
-									class="border-accent hover:border-primary/25 group relative flex flex-col items-start overflow-hidden rounded-xl border-2 p-0.5 shadow-black/5 transition-all hover:-translate-y-1 hover:shadow-lg md:p-4 dark:hover:translate-0"
-									data-id={bill.id}
-								>
-									<div class="p-2 md:p-0">
-										<h2 class="text-sm font-semibold md:text-lg">{bill.title}</h2>
-										<p class="text-xs tracking-tight text-gray-500 md:text-sm">{bill.updatedAt ? formatDate(bill.updatedAt) : ""}</p>
-										{bill.status && (
-											<p class="mt-2 line-clamp-2 text-xs text-slate-600 dark:text-slate-300">
-												{t("home.legislatorActivity.billStatus")}: {bill.status}
-											</p>
-										)}
-										{bill.law && (
-											<p class="mt-1 text-xs text-slate-600 dark:text-slate-300">
-												{t("home.legislatorActivity.law")}: {bill.law}
-											</p>
-										)}
-										<div class="mt-3">
-											{bill.url && (
-												<a
-													class="shrink-0 text-xs font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400"
-													href={bill.url}
-													target="_blank"
-													rel="noopener noreferrer"
-												>
-													{t("home.legislatorActivity.viewBill")}
-												</a>
-											)}
+								<li data-id={bill.id}>
+									{bill.url ? (
+										<a
+											class="border-accent hover:border-primary/25 group relative flex flex-col items-start overflow-hidden rounded-xl border-2 p-0.5 shadow-black/5 transition-all hover:-translate-y-1 hover:shadow-lg md:p-4 dark:hover:translate-0"
+											href={bill.url}
+											target="_blank"
+											rel="noopener noreferrer"
+										>
+											<div class="p-2 md:p-0">
+												<h2 class="text-sm font-semibold md:text-lg">{bill.title}</h2>
+												<p class="text-xs tracking-tight text-gray-500 md:text-sm">{bill.updatedAt ? formatDate(bill.updatedAt) : ""}</p>
+												{bill.status && (
+													<p class="mt-2 line-clamp-2 text-xs text-slate-600 dark:text-slate-300">
+														{t("home.legislatorActivity.billStatus")}: {bill.status}
+													</p>
+												)}
+												{bill.law && (
+													<p class="mt-1 text-xs text-slate-600 dark:text-slate-300">
+														{t("home.legislatorActivity.law")}: {bill.law}
+													</p>
+												)}
+											</div>
+										</a>
+									) : (
+										<div class="border-accent hover:border-primary/25 group relative flex flex-col items-start overflow-hidden rounded-xl border-2 p-0.5 shadow-black/5 transition-all hover:-translate-y-1 hover:shadow-lg md:p-4 dark:hover:translate-0">
+											<div class="p-2 md:p-0">
+												<h2 class="text-sm font-semibold md:text-lg">{bill.title}</h2>
+												<p class="text-xs tracking-tight text-gray-500 md:text-sm">{bill.updatedAt ? formatDate(bill.updatedAt) : ""}</p>
+												{bill.status && (
+													<p class="mt-2 line-clamp-2 text-xs text-slate-600 dark:text-slate-300">
+														{t("home.legislatorActivity.billStatus")}: {bill.status}
+													</p>
+												)}
+												{bill.law && (
+													<p class="mt-1 text-xs text-slate-600 dark:text-slate-300">
+														{t("home.legislatorActivity.law")}: {bill.law}
+													</p>
+												)}
+											</div>
 										</div>
-									</div>
+									)}
 								</li>
 							))}
 						</ul>
@@ -401,36 +412,47 @@ const hasData = proposeBills.length > 0 || cosignBills.length > 0 || meetList.le
 					{cosignBills.length > 0 ? (
 						<ul class="space-y-3">
 							{cosignBills.map((bill) => (
-								<li
-									class="border-accent hover:border-primary/25 group relative flex flex-col items-start overflow-hidden rounded-xl border-2 p-0.5 shadow-black/5 transition-all hover:-translate-y-1 hover:shadow-lg md:p-4 dark:hover:translate-0"
-									data-id={bill.id}
-								>
-									<div class="p-2 md:p-0">
-										<h2 class="text-sm font-semibold md:text-lg">{bill.title}</h2>
-										<p class="text-xs tracking-tight text-gray-500 md:text-sm">{bill.updatedAt ? formatDate(bill.updatedAt) : ""}</p>
-										{bill.status && (
-											<p class="mt-2 line-clamp-2 text-xs text-slate-600 dark:text-slate-300">
-												{t("home.legislatorActivity.billStatus")}: {bill.status}
-											</p>
-										)}
-										{bill.law && (
-											<p class="mt-1 text-xs text-slate-600 dark:text-slate-300">
-												{t("home.legislatorActivity.law")}: {bill.law}
-											</p>
-										)}
-										<div class="mt-3">
-											{bill.url && (
-												<a
-													class="shrink-0 text-xs font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400"
-													href={bill.url}
-													target="_blank"
-													rel="noopener noreferrer"
-												>
-													{t("home.legislatorActivity.viewBill")}
-												</a>
-											)}
+								<li data-id={bill.id}>
+									{bill.url ? (
+										<a
+											class="border-accent hover:border-primary/25 group relative flex flex-col items-start overflow-hidden rounded-xl border-2 p-0.5 shadow-black/5 transition-all hover:-translate-y-1 hover:shadow-lg md:p-4 dark:hover:translate-0"
+											href={bill.url}
+											target="_blank"
+											rel="noopener noreferrer"
+										>
+											<div class="p-2 md:p-0">
+												<h2 class="text-sm font-semibold md:text-lg">{bill.title}</h2>
+												<p class="text-xs tracking-tight text-gray-500 md:text-sm">{bill.updatedAt ? formatDate(bill.updatedAt) : ""}</p>
+												{bill.status && (
+													<p class="mt-2 line-clamp-2 text-xs text-slate-600 dark:text-slate-300">
+														{t("home.legislatorActivity.billStatus")}: {bill.status}
+													</p>
+												)}
+												{bill.law && (
+													<p class="mt-1 text-xs text-slate-600 dark:text-slate-300">
+														{t("home.legislatorActivity.law")}: {bill.law}
+													</p>
+												)}
+											</div>
+										</a>
+									) : (
+										<div class="border-accent hover:border-primary/25 group relative flex flex-col items-start overflow-hidden rounded-xl border-2 p-0.5 shadow-black/5 transition-all hover:-translate-y-1 hover:shadow-lg md:p-4 dark:hover:translate-0">
+											<div class="p-2 md:p-0">
+												<h2 class="text-sm font-semibold md:text-lg">{bill.title}</h2>
+												<p class="text-xs tracking-tight text-gray-500 md:text-sm">{bill.updatedAt ? formatDate(bill.updatedAt) : ""}</p>
+												{bill.status && (
+													<p class="mt-2 line-clamp-2 text-xs text-slate-600 dark:text-slate-300">
+														{t("home.legislatorActivity.billStatus")}: {bill.status}
+													</p>
+												)}
+												{bill.law && (
+													<p class="mt-1 text-xs text-slate-600 dark:text-slate-300">
+														{t("home.legislatorActivity.law")}: {bill.law}
+													</p>
+												)}
+											</div>
 										</div>
-									</div>
+									)}
 								</li>
 							))}
 						</ul>
@@ -446,36 +468,47 @@ const hasData = proposeBills.length > 0 || cosignBills.length > 0 || meetList.le
 					{meetList.length > 0 ? (
 						<ul class="space-y-3">
 							{meetList.map((meet) => (
-								<li
-									class="border-accent hover:border-primary/25 group relative flex flex-col items-start overflow-hidden rounded-xl border-2 p-0.5 shadow-black/5 transition-all hover:-translate-y-1 hover:shadow-lg md:p-4 dark:hover:translate-0"
-									data-id={meet.id}
-								>
-									<div class="p-2 md:p-0">
-										<h2 class="text-sm font-semibold md:text-lg">{meet.name}</h2>
-										<p class="text-xs tracking-tight text-gray-500 md:text-sm">{meet.date ? formatDate(meet.date) : ""}</p>
-										{meet.type && (
-											<p class="mt-2 line-clamp-2 text-xs text-slate-600 dark:text-slate-300">
-												{t("home.legislatorActivity.meetingType")}: {meet.type}
-											</p>
-										)}
-										{meet.location && (
-											<p class="mt-1 text-xs text-slate-600 dark:text-slate-300">
-												{t("home.legislatorActivity.location")}: {meet.location}
-											</p>
-										)}
-										<div class="mt-3">
-											{meet.url && (
-												<a
-													class="shrink-0 text-xs font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400"
-													href={meet.url}
-													target="_blank"
-													rel="noopener noreferrer"
-												>
-													{t("home.legislatorActivity.viewMeet")}
-												</a>
-											)}
+								<li data-id={meet.id}>
+									{meet.url ? (
+										<a
+											class="border-accent hover:border-primary/25 group relative flex flex-col items-start overflow-hidden rounded-xl border-2 p-0.5 shadow-black/5 transition-all hover:-translate-y-1 hover:shadow-lg md:p-4 dark:hover:translate-0"
+											href={meet.url}
+											target="_blank"
+											rel="noopener noreferrer"
+										>
+											<div class="p-2 md:p-0">
+												<h2 class="text-sm font-semibold md:text-lg">{meet.name}</h2>
+												<p class="text-xs tracking-tight text-gray-500 md:text-sm">{meet.date ? formatDate(meet.date) : ""}</p>
+												{meet.type && (
+													<p class="mt-2 line-clamp-2 text-xs text-slate-600 dark:text-slate-300">
+														{t("home.legislatorActivity.meetingType")}: {meet.type}
+													</p>
+												)}
+												{meet.location && (
+													<p class="mt-1 text-xs text-slate-600 dark:text-slate-300">
+														{t("home.legislatorActivity.location")}: {meet.location}
+													</p>
+												)}
+											</div>
+										</a>
+									) : (
+										<div class="border-accent hover:border-primary/25 group relative flex flex-col items-start overflow-hidden rounded-xl border-2 p-0.5 shadow-black/5 transition-all hover:-translate-y-1 hover:shadow-lg md:p-4 dark:hover:translate-0">
+											<div class="p-2 md:p-0">
+												<h2 class="text-sm font-semibold md:text-lg">{meet.name}</h2>
+												<p class="text-xs tracking-tight text-gray-500 md:text-sm">{meet.date ? formatDate(meet.date) : ""}</p>
+												{meet.type && (
+													<p class="mt-2 line-clamp-2 text-xs text-slate-600 dark:text-slate-300">
+														{t("home.legislatorActivity.meetingType")}: {meet.type}
+													</p>
+												)}
+												{meet.location && (
+													<p class="mt-1 text-xs text-slate-600 dark:text-slate-300">
+														{t("home.legislatorActivity.location")}: {meet.location}
+													</p>
+												)}
+											</div>
 										</div>
-									</div>
+									)}
 								</li>
 							))}
 						</ul>
@@ -485,12 +518,16 @@ const hasData = proposeBills.length > 0 || cosignBills.length > 0 || meetList.le
 						</p>
 					)}
 				</section>
-
 			</div>
 		)
 	}
 	<p class="mt-4 text-xs text-slate-500 dark:text-slate-400">
 		{lang === "en" ? "Data source" : "資料來源"}：
-		<a class="underline hover:text-slate-700 dark:hover:text-slate-300" href="https://ly.govapi.tw/" target="_blank" rel="noopener noreferrer">LYAPI</a>
+		<a
+			class="underline hover:text-slate-700 dark:hover:text-slate-300"
+			href="https://ly.govapi.tw/"
+			target="_blank"
+			rel="noopener noreferrer">LYAPI</a
+		>
 	</p>
 </section>
