@@ -3,6 +3,7 @@ import PageLayout from "../../layouts/PageLayout.astro";
 import CardLink from "@/components/CardLink.astro";
 import LegislatorActivity from "@/components/LegislatorActivity.astro";
 import BlogRss from "@/components/BlogRss.astro";
+import TranspalRSS from "@/components/TranspalRSS.astro";
 import { getLangFromUrl, useTranslations } from "src/i18n/utils";
 import { getCollection } from "astro:content";
 
@@ -53,4 +54,7 @@ const fragments = (await getCollection("fragment"))
 	<!-- 部落格文章 -->
 	<h1 class="mt-7 mb-3 text-2xl font-semibold">{t("home.blogRss.title")}</h1>
 	<BlogRss lang={lang} limit={5} />
+	<!-- TransPal 逐字稿 -->
+	<h1 class="mt-7 mb-3 text-2xl font-semibold">最新對話逐字稿</h1>
+	<TranspalRSS lang={lang} limit={5} />
 </PageLayout>

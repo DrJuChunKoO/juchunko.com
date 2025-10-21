@@ -1,0 +1,221 @@
+---
+import { useTranslations } from "src/i18n/utils";
+
+type SupportedLang = "en" | "zh-TW";
+
+interface FeedItem {
+  id: string;
+  title: string;
+  description?: string;
+  link: string;
+  pubDate: string;
+  category?: string;
+  author?: string;
+}
+
+type Props = {
+  lang?: SupportedLang;
+  limit?: number;
+};
+
+const { lang = "zh-TW", limit = 5 } = Astro.props as Props;
+const t = useTranslations(lang);
+
+const RSS_URL = "https://transpal.juchunko.com/rss.xml";
+
+const dateFormatter = new Intl.DateTimeFormat(lang === "en" ? "en-US" : "zh-TW", {
+  year: "numeric",
+  month: lang === "en" ? "short" : "2-digit",
+  day: "2-digit",
+});
+
+function decodeHtmlEntities(text: string): string {
+  if (!text) return text;
+  const namedEntities: Record<string, string> = {
+    "&apos;": "'",
+    "&quot;": '"',
+    "&amp;": "&",
+    "&lt;": "<",
+    "&gt;": ">",
+    "&nbsp;": "\u00a0",
+    "&hellip;": "…",
+    "&mdash;": "—",
+  };
+
+  return text.replace(/<!\[CDATA\[(.*?)\]\]>|&(?:#\d+|#x[0-9a-fA-F]+|[a-zA-Z]+);/gs, (m, c) => {
+    if (c !== undefined) return c;
+    return namedEntities[m] ?? m;
+  });
+}
+
+// Descriptions are intentionally omitted now; we only display title and date.
+
+async function fetchTranspal(): Promise<FeedItem[]> {
+  try {
+    const res = await fetch(RSS_URL, { method: "GET", headers: { accept: "application/xml" }, cache: "no-store" });
+    if (!res.ok) throw new Error(`Failed to fetch TransPal RSS: ${res.status} ${res.statusText}`);
+    const xml = await res.text();
+
+    const items: FeedItem[] = [];
+    const itemRegex = /<item>(.*?)<\/item>/gs;
+    const titleRegex = /<title>([\s\S]*?)<\/title>/i;
+    const linkRegex = /<link>([\s\S]*?)<\/link>/i;
+    const descriptionRegex = /<description>([\s\S]*?)<\/description>/i;
+    const pubDateRegex = /<pubDate>([\s\S]*?)<\/pubDate>/i;
+    const categoryRegex = /<category>([\s\S]*?)<\/category>/i;
+    const authorRegex = /<author>([\s\S]*?)<\/author>/i;
+    const guidRegex = /<guid[^>]*>([\s\S]*?)<\/guid>/i;
+
+    let m;
+    while ((m = itemRegex.exec(xml)) !== null) {
+      const itemXml = m[1];
+      const titleMatch = titleRegex.exec(itemXml);
+      const linkMatch = linkRegex.exec(itemXml);
+      const descMatch = descriptionRegex.exec(itemXml);
+      const pubMatch = pubDateRegex.exec(itemXml);
+      const catMatch = categoryRegex.exec(itemXml);
+      const authorMatch = authorRegex.exec(itemXml);
+      const guidMatch = guidRegex.exec(itemXml);
+
+      if (!titleMatch || !linkMatch) continue;
+
+      const title = decodeHtmlEntities(titleMatch[1].replace(/<!\[CDATA\[(.*?)\]\]>/gs, "$1")).trim();
+      const link = linkMatch[1].trim();
+      const id = guidMatch ? guidMatch[1].trim() : link;
+      const pubDate = pubMatch ? pubMatch[1].trim() : "";
+      const category = catMatch ? decodeHtmlEntities(catMatch[1].trim()) : undefined;
+      const author = authorMatch ? decodeHtmlEntities(authorMatch[1].trim()) : undefined;
+
+      items.push({ id, title, link, pubDate, category, author });
+    }
+
+    return items;
+  } catch (err) {
+    console.error(err);
+    return [];
+  }
+}
+
+let posts: FeedItem[] = [];
+let fetchError = false;
+
+try {
+  const all = await fetchTranspal();
+  posts = all.slice(0, limit);
+} catch (e) {
+  console.error("TransPal RSS fetch failed", e);
+  fetchError = true;
+}
+
+const timestamps = posts.map((p) => p.pubDate).filter((v): v is string => Boolean(v));
+const lastUpdatedRaw = timestamps.sort((a, b) => (a > b ? 1 : -1)).at(-1) ?? null;
+const lastUpdatedLabel = lastUpdatedRaw ? dateFormatter.format(new Date(lastUpdatedRaw)) : null;
+
+const hasData = posts.length > 0;
+---
+
+<section class="">
+  {
+    fetchError ? (
+      <p class="rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-900/30 dark:text-red-200">
+        {t("home.blogRss.fetchError")}
+      </p>
+    ) : !hasData ? (
+      <p class="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-300">
+        {t("home.blogRss.empty")}
+      </p>
+    ) : (
+      <div class="relative" data-blogrss>
+        <div class="pointer-events-none absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-white/90 to-transparent dark:from-slate-900/70"></div>
+        <div class="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-white/90 to-transparent dark:from-slate-900/70"></div>
+
+        <div class="flex gap-2 md:gap-4 overflow-x-auto py-4 -my-4 scroll-smooth snap-x snap-mandatory" data-scroller>
+          {posts.map((post) => (
+            <a
+              class="min-w-[270px] md:min-w-[320px] snap-start border-accent hover:border-primary/25 group relative flex flex-col items-start overflow-hidden rounded-xl border-2 p-0.5 shadow-black/5 transition-all hover:-translate-y-1 hover:shadow-lg md:p-4 dark:hover:translate-0"
+              target="_blank"
+              rel="noopener noreferrer"
+              href={post.link}
+            >
+              <article class="p-2 md:p-0" data-id={post.id}>
+                {/* category removed as requested */}
+                <h2 class="text-sm font-semibold md:text-lg">{post.title}</h2>
+                <p class="text-xs tracking-tight text-gray-500 md:text-sm">
+                  {post.pubDate ? new Date(post.pubDate).toLocaleDateString(lang, { year: "numeric", month: "long", day: "numeric" }) : ""}
+                </p>
+                {/* description intentionally omitted */}
+              </article>
+            </a>
+          ))}
+
+          <a
+            class="min-w-[270px] md:min-w-[320px] snap-start border-accent hover:border-primary/25 group relative flex flex-col items-center justify-center overflow-hidden rounded-xl border-2 p-2.5 shadow-black/5 transition-all hover:-translate-y-1 hover:shadow-lg md:p-4 dark:hover:translate-0"
+            target="_blank"
+            rel="noopener noreferrer"
+            href="https://transpal.juchunko.com/"
+          >
+            <h2 class="text-sm font-semibold md:text-lg">{t("home.blogRss.viewMore")} <span aria-hidden="true">→</span></h2>
+          </a>
+        </div>
+
+        <div class="absolute -bottom-2 left-4 z-10">
+          <div class="flex items-center gap-1 rounded-full bg-white/90 px-1.5 py-1 shadow-lg ring-1 ring-black/10 backdrop-blur dark:bg-slate-800/70">
+            <button type="button" class="inline-flex h-8 w-8 items-center justify-center rounded-full text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed dark:text-slate-200 dark:hover:bg-slate-700/60" data-left aria-label={t("post.prev")}>
+              <span aria-hidden="true">←</span>
+            </button>
+            <div class="h-6 w-px bg-slate-300/70 dark:bg-slate-600/60" aria-hidden="true"></div>
+            <button type="button" class="inline-flex h-8 w-8 items-center justify-center rounded-full text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed dark:text-slate-200 dark:hover:bg-slate-700/60" data-right aria-label={t("post.next")}>
+              <span aria-hidden="true">→</span>
+            </button>
+          </div>
+        </div>
+
+        <script is:inline>
+          (() => {
+            const roots = document.querySelectorAll('[data-blogrss]');
+            roots.forEach((root) => {
+              const scroller = root.querySelector('[data-scroller]');
+              const left = root.querySelector('[data-left]');
+              const right = root.querySelector('[data-right]');
+              if (!scroller || !left || !right) return;
+
+              const scrollEl = scroller;
+              const leftBtn = left;
+              const rightBtn = right;
+              const amount = () => scrollEl.clientWidth * 0.9;
+
+              function updateButtons() {
+                const atStart = scrollEl.scrollLeft <= 0;
+                const atEnd = Math.ceil(scrollEl.scrollLeft + scrollEl.clientWidth) >= scrollEl.scrollWidth - 1;
+                leftBtn.disabled = atStart;
+                rightBtn.disabled = atEnd;
+              }
+
+              leftBtn.addEventListener('click', () => {
+                scrollEl.scrollBy({ left: -amount(), behavior: 'smooth' });
+              });
+
+              rightBtn.addEventListener('click', () => {
+                scrollEl.scrollBy({ left: amount(), behavior: 'smooth' });
+              });
+
+              scrollEl.addEventListener('scroll', updateButtons, { passive: true });
+              window.addEventListener('resize', updateButtons);
+              updateButtons();
+            });
+          })();
+        </script>
+      </div>
+    )
+  }
+</section>
+
+<style>
+  [data-blogrss] [data-scroller] {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  [data-blogrss] [data-scroller]::-webkit-scrollbar {
+    display: none;
+  }
+</style>
