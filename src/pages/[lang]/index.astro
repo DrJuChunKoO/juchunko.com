@@ -55,6 +55,6 @@ const fragments = (await getCollection("fragment"))
 	<h1 class="mt-7 mb-3 text-2xl font-semibold">{t("home.blogRss.title")}</h1>
 	<BlogRss lang={lang} limit={5} />
 	<!-- TransPal 逐字稿 -->
-	<h1 class="mt-7 mb-3 text-2xl font-semibold">最新對話逐字稿</h1>
+	<h1 class="mt-7 mb-3 text-2xl font-semibold">{t("home.transpalRss.title")}</h1>
 	<TranspalRSS lang={lang} limit={5} />
 </PageLayout>
