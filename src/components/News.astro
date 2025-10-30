@@ -1,0 +1,43 @@
+---
+import { timeAgo } from "@/lib/utils";
+
+export interface Props {
+	lang: "zh-TW" | "en";
+	limit?: number;
+}
+
+const { lang, limit = 5 } = Astro.props;
+
+let news: any[] = [];
+try {
+	const response = await fetch("https://aifferent.juchunko.com/api/news");
+	if (response.ok) {
+		const data = await response.json();
+		news = data.data.slice(0, limit);
+	}
+} catch (error) {
+	console.error("Failed to fetch news:", error);
+}
+---
+
+<div class="flex flex-col gap-3">
+	{
+		news.map((item) => (
+			<a href={item.url} target="_blank" rel="noopener noreferrer" class="card-link no-underline">
+				<div class="bg-card text-card-foreground hover:bg-muted w-full rounded-lg border p-4 transition-colors">
+					<h3 class="text-lg font-bold leading-tight">
+						{lang === "en" ? item.title_en : item.title}
+					</h3>
+					<p class="text-muted-foreground mt-2 text-sm">
+						{lang === "en" ? item.summary_en : item.summary}
+					</p>
+					<div class="text-muted-foreground mt-2 flex items-center gap-2 text-xs">
+						<span>{item.source}</span>
+						<span>·</span>
+						<span>{timeAgo(item.time, lang)}</span>
+					</div>
+				</div>
+			</a>
+		))
+	}
+</div>
