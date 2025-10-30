@@ -26,7 +26,7 @@ function AlbumCard({
 	return (
 		<motion.div
 			className={cn(
-				"bg-muted/50 relative flex h-36 w-[min(26rem,75vw)] flex-col justify-between rounded-xl border-t border-l border-white/10 bg-gradient-to-br from-black/5 to-white/5 px-6 py-4 backdrop-blur-sm select-none",
+				"bg-muted/50 relative flex h-36 w-[min(26rem,75vw)] flex-col justify-between rounded-xl border-t border-gray-50/50 bg-gradient-to-b from-[#E6E8E8]/50 to-[#E6E8E8]/25 px-6 py-4 backdrop-blur-sm select-none dark:border-white/10 dark:from-[#31302F]/50 dark:to-[#31302F]/25",
 				className,
 			)}
 			initial={{ opacity: 0, y: `200%` }}
@@ -37,7 +37,7 @@ function AlbumCard({
 				<span className="relative inline-flex size-8 shrink-0 items-center justify-center rounded-full bg-gray-50/50 text-gray-500 dark:bg-white/5 dark:text-white/80">
 					{icon}
 				</span>
-				<p className={cn("line-clamp-2 text-sm font-medium dark:text-white/80")}>{title}</p>
+				<p className={cn("line-clamp-1 text-sm font-medium dark:text-white/80")}>{title}</p>
 			</div>
 			<p className="line-clamp-2 text-sm dark:text-white/50">{description}</p>
 			<p className="text-muted-foreground text-xs">{date}</p>

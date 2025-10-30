@@ -126,7 +126,7 @@ const cardItems = posts.map((activity) => {
 	target="_blank"
 	rel="noopener noreferrer"
 >
-	<AlbumCards client:load cards={cardItems} />
+	<AlbumCards client:load cards={cardItems.toReversed()} />
 	<div class="flex w-full items-center justify-between gap-2 bg-black/2.5 p-4 py-3 backdrop-blur-xs md:p-6 md:py-4 dark:bg-white/5">
 		<header>
 			<h2 class="font-semibold text-slate-900 md:text-xl dark:text-white">對話逐字稿</h2>

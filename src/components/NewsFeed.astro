@@ -54,11 +54,13 @@ try {
 }
 
 const hasData = allNews.length > 0;
-
-const carouselLabels = {
-	news: t("home.news.news"),
-	source: t("home.news.source"),
-};
+const cardItems = allNews.slice(0, limit).map((item) => ({
+	title: lang === "en" ? item.title_en : item.title,
+	description: lang === "en" ? item.summary_en : item.summary,
+	date: timeAgo(item.time, lang),
+	href: item.url,
+	icon: "newspaper",
+}));
 ---
 
 <DataFeed
@@ -72,16 +74,7 @@ const carouselLabels = {
 	fetchErrorMessage={t("home.news.fetchError")}
 >
 	<div slot="card">
-		<DisplayCards
-			client:load
-			cards={allNews.slice(0, limit).map((item) => ({
-				title: lang === "en" ? item.title_en : item.title,
-				description: lang === "en" ? item.summary_en : item.summary,
-				date: timeAgo(item.time, lang),
-				href: item.url,
-				icon: "newspaper",
-			}))}
-		/>
+		<DisplayCards client:load cards={cardItems.toReversed()} />
 	</div>
 	<div slot="page"></div>
 </DataFeed>

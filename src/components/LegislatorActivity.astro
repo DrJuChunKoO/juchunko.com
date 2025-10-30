@@ -366,7 +366,7 @@ const cardItems = allActivities.map((activity) => {
 	fetchErrorMessage={t("home.legislatorActivity.fetchError")}
 >
 	<div slot="card">
-		<DisplayCards client:load cards={cardItems} />
+		<DisplayCards client:load cards={cardItems.toReversed()} />
 	</div>
 	<div slot="page">
 		<LegislatorActivityPage lang={lang} activities={allActivities} labels={carouselLabels} />
