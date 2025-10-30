@@ -1,8 +1,8 @@
 ---
 import PageLayout from "../../layouts/PageLayout.astro";
-import NewsFeed from "../../components/NewsFeed.astro";
 import { useTranslations } from "../../i18n/utils";
 import { languages } from "../../i18n/ui";
+import NewsPage from "../../components/NewsPage";
 
 export function getStaticPaths() {
 	return Object.keys(languages).map((lang) => ({
@@ -27,6 +27,11 @@ const description = t("home.news.subtitle");
 			class="absolute top-0 right-8 hidden h-24 w-16 items-end justify-center rounded-b-xl bg-gradient-to-b from-gray-100 to-gray-200 p-3 text-4xl transition-all md:flex dark:from-white/10 dark:to-white/5"
 			>📰</span
 		>
-		<NewsFeed lang={lang as "en" | "zh-TW"} variant="page" />
+
+		<!-- React-based News page -->
+		<!-- client:load 確保在瀏覽器載入 React 元件 -->
+		<div>
+			<NewsPage client:load lang={lang as "en" | "zh-TW"} />
+		</div>
 	</div>
 </PageLayout>
