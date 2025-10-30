@@ -8,6 +8,7 @@ interface CarouselProps<T> {
 	renderItem: (item: T) => ReactNode;
 	lang: "en" | "zh-TW";
 	ariaLabelPrefix: string;
+	getItemKey?: (item: T, index: number) => string | number;
 }
 
 const variants = {
@@ -29,7 +30,7 @@ const variants = {
 
 const swipeConfidenceThreshold = 10000;
 
-export function Carousel<T>({ items, renderItem, ariaLabelPrefix }: CarouselProps<T>) {
+export function Carousel<T>({ items, renderItem, ariaLabelPrefix, getItemKey }: CarouselProps<T>) {
 	const [[page, direction], setPage] = useState([0, 0]);
 
 	const paginate = (newDirection: number) => {
@@ -84,9 +85,9 @@ export function Carousel<T>({ items, renderItem, ariaLabelPrefix }: CarouselProp
 					<ChevronLeft className="h-5 w-5" />
 				</button>
 				<div className="flex items-center gap-2">
-					{items.map((_, i) => (
+					{items.map((item, i) => (
 						<button
-							key={i}
+							key={getItemKey ? getItemKey(item, i) : i}
 							onClick={() => setPage([i, i > index ? 1 : -1])}
 							className={`h-2 w-2 rounded-full transition-colors ${
 								i === index
