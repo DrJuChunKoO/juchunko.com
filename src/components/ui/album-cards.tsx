@@ -20,7 +20,7 @@ function AlbumCard({
 	description = "Discover amazing content",
 	date = "Just now",
 }: AlbumCardProps) {
-	const scale = 1 + index * 0.05;
+	const scale = 0.95 + index * 0.05;
 	const yOffset = (index - 1) * -70;
 
 	return (
@@ -88,7 +88,7 @@ export default function AlbumCards({ cards }: AlbumCardsProps) {
 	});
 
 	return (
-		<div className="-my-20 flex flex-col items-center">
+		<div className="-my-24 flex flex-col items-center p-6">
 			{cardsToRender.map((cardProps, index) => (
 				<AlbumCard key={index} index={index} {...cardProps} />
 			))}
