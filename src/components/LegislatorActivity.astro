@@ -339,7 +339,7 @@ const carouselLabels = {
 	meet: t("home.legislatorActivity.section.meets"),
 };
 
-const cardItems = allActivities.slice(0, 5).map((activity) => {
+const cardItems = allActivities.map((activity) => {
 	const details = Object.entries(activity.details)
 		.filter(([, value]) => value)
 		.map(([key, value]) => `${key}: ${value}`)

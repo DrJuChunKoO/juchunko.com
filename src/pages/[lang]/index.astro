@@ -36,13 +36,18 @@ const fragments = (await getCollection("fragment"))
 			</p>
 		</div>
 	</div>
-	<div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+	<div class="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
 		<LegislatorActivity lang={lang} />
 
 		<!-- 新聞 -->
 		<NewsFeed lang={lang} variant="card" />
 	</div>
-
+	<div class="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+		<!-- 部落格文章 -->
+		<BlogRss lang={lang} />
+		<!-- TransPal 逐字稿 -->
+		<TranspalRSS lang={lang} limit={5} />
+	</div>
 	<!-- 雜項 -->
 	<div class="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-3 md:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] md:gap-6">
 		{fragments.map((post) => <CardLink post={post} lang={lang} category="fragment" />)}
@@ -57,10 +62,4 @@ const fragments = (await getCollection("fragment"))
 	<div class="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-3 md:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] md:gap-6">
 		{manuals.map((post) => <CardLink post={post} lang={lang} category="manual" />)}
 	</div>
-	<!-- 部落格文章 -->
-	<h1 class="text-foreground mt-12 mb-6 text-center text-2xl font-bold md:text-left">{t("home.blogRss.title")}</h1>
-	<BlogRss lang={lang} limit={5} />
-	<!-- TransPal 逐字稿 -->
-	<h1 class="text-foreground mt-12 mb-6 text-center text-2xl font-bold md:text-left">{t("home.transpalRss.title")}</h1>
-	<TranspalRSS lang={lang} limit={5} />
 </PageLayout>

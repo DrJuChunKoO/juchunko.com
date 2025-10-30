@@ -1,6 +1,8 @@
 ---
 import { useTranslations } from "src/i18n/utils";
-
+import AlbumCards from "./ui/album-cards.tsx";
+import { ArrowRight } from "lucide-react";
+import { timeAgo } from "../lib/utils";
 type SupportedLang = "en" | "zh-TW";
 
 interface BlogPost {
@@ -14,14 +16,14 @@ interface BlogPost {
 }
 
 type BlogRssProps = {
-	lang: SupportedLang;
+	lang?: SupportedLang;
 	limit?: number;
 };
 
-const { lang = "zh-TW", limit = 5 } = Astro.props as BlogRssProps;
+const { lang = "zh-TW", limit = 3 } = Astro.props as BlogRssProps;
 const t = useTranslations(lang);
 
-const RSS_URL = lang === "en" ? "https://blog.juchunko.com/rss.xml" : "https://blog.juchunko.com/rss.xml";
+const RSS_URL = "https://blog.juchunko.com/rss.xml";
 
 const dateFormatter = new Intl.DateTimeFormat(lang === "en" ? "en-US" : "zh-TW", {
 	year: "numeric",
@@ -29,8 +31,8 @@ const dateFormatter = new Intl.DateTimeFormat(lang === "en" ? "en-US" : "zh-TW",
 	day: "2-digit",
 });
 
-// Function to decode HTML entities
 function decodeHtmlEntities(text: string): string {
+	if (!text) return text;
 	const namedEntities: Record<string, string> = {
 		"&apos;": "'",
 		"&quot;": '"',
@@ -42,18 +44,9 @@ function decodeHtmlEntities(text: string): string {
 		"&mdash;": "—",
 	};
 
-	return text.replace(/&(?:#\d+|#x[0-9a-fA-F]+|[a-zA-Z]+);/g, (entity) => {
-		if (entity.startsWith("&#x") || entity.startsWith("&#X")) {
-			const codePoint = Number.parseInt(entity.slice(7, -1), 16);
-			return Number.isFinite(codePoint) ? String.fromCodePoint(codePoint) : entity;
-		}
-
-		if (entity.startsWith("&#")) {
-			const codePoint = Number.parseInt(entity.slice(6, -1), 10);
-			return Number.isFinite(codePoint) ? String.fromCodePoint(codePoint) : entity;
-		}
-
-		return namedEntities[entity] ?? entity;
+	return text.replace(/<!\[CDATA\[(.*?)\]\]>|&(?:#\d+|#x[0-9a-fA-F]+|[a-zA-Z]+);/gs, (m, c) => {
+		if (c !== undefined) return c;
+		return namedEntities[m] ?? m;
 	});
 }
 
@@ -65,69 +58,51 @@ async function fetchRSS(): Promise<BlogPost[]> {
 			cache: "no-store",
 		});
 
-		if (!response.ok) {
-			throw new Error(`Failed to fetch RSS: ${response.status} ${response.statusText}`);
-		}
+		if (!response.ok) throw new Error(`Failed to fetch RSS: ${response.status} ${response.statusText}`);
+		const xml = await response.text();
 
-		const xmlText = await response.text();
-
-		// Simple XML parsing for RSS
 		const items: BlogPost[] = [];
 		const itemRegex = /<item>(.*?)<\/item>/gs;
-		const titleRegex = /<title>(.*?)<\/title>/;
-		const linkRegex = /<link>(.*?)<\/link>/;
-		const descriptionRegex = /<description>(.*?)<\/description>/;
-		const pubDateRegex = /<pubDate>(.*?)<\/pubDate>/;
-		const categoryRegex = /<category>(.*?)<\/category>/;
-		const authorRegex = /<author>(.*?)<\/author>/;
-		const guidRegex = /<guid[^>]*>(.*?)<\/guid>/;
+		const titleRegex = /<title>([\s\S]*?)<\/title>/i;
+		const linkRegex = /<link>([\s\S]*?)<\/link>/i;
+		const descriptionRegex = /<description>([\s\S]*?)<\/description>/i;
+		const pubDateRegex = /<pubDate>([\s\S]*?)<\/pubDate>/i;
+		const categoryRegex = /<category>([\s\S]*?)<\/category>/i;
+		const authorRegex = /<author>([\s\S]*?)<\/author>/i;
+		const guidRegex = /<guid[^>]*>([\s\S]*?)<\/guid>/i;
 
-		let match;
-		while ((match = itemRegex.exec(xmlText)) !== null) {
-			const itemXml = match[1];
-
+		let m;
+		while ((m = itemRegex.exec(xml)) !== null) {
+			const itemXml = m[1];
 			const titleMatch = titleRegex.exec(itemXml);
 			const linkMatch = linkRegex.exec(itemXml);
-			const descriptionMatch = descriptionRegex.exec(itemXml);
-			const pubDateMatch = pubDateRegex.exec(itemXml);
-			const categoryMatch = categoryRegex.exec(itemXml);
+			const descMatch = descriptionRegex.exec(itemXml);
+			const pubMatch = pubDateRegex.exec(itemXml);
+			const catMatch = categoryRegex.exec(itemXml);
 			const authorMatch = authorRegex.exec(itemXml);
 			const guidMatch = guidRegex.exec(itemXml);
 
-			if (titleMatch && linkMatch) {
-				const link = linkMatch[1];
-				// Filter posts based on language
-				const isEnglishPost = link.includes("/en/");
-				const isChinesePost = link.includes("/zh/") || (!link.includes("/en/") && !link.includes("/zh/"));
+			if (!titleMatch || !linkMatch) continue;
 
-				const shouldInclude = (lang === "en" && isEnglishPost) || (lang === "zh-TW" && isChinesePost);
+			const link = linkMatch[1].trim();
+			const isEnglishPost = link.includes("/en/");
+			const isChinesePost = link.includes("/zh/") || (!link.includes("/en/") && !link.includes("/zh/"));
+			const shouldInclude = (lang === "en" && isEnglishPost) || (lang === "zh-TW" && isChinesePost);
+			if (!shouldInclude) continue;
 
-				if (shouldInclude) {
-					const id = guidMatch ? guidMatch[1] : link;
-					const title = decodeHtmlEntities(titleMatch[1].replace(/<!\[CDATA\[(.*?)\]\]>/g, "$1"));
-					const description = descriptionMatch
-						? decodeHtmlEntities(descriptionMatch[1].replace(/<!\[CDATA\[(.*?)\]\]>/g, "$1"))
-						: undefined;
-					const pubDate = pubDateMatch ? pubDateMatch[1] : "";
-					const category = categoryMatch ? decodeHtmlEntities(categoryMatch[1]) : undefined;
-					const author = authorMatch ? decodeHtmlEntities(authorMatch[1]) : undefined;
+			const title = decodeHtmlEntities(titleMatch[1].replace(/<!\[CDATA\[(.*?)\]\]>/gs, "$1")).trim();
+			const description = descMatch ? decodeHtmlEntities(descMatch[1].replace(/<!\[CDATA\[(.*?)\]\]>/gs, "$1")).trim() : "";
+			const id = guidMatch ? guidMatch[1].trim() : link;
+			const pubDate = pubMatch ? pubMatch[1].trim() : "";
+			const category = catMatch ? decodeHtmlEntities(catMatch[1].trim()) : undefined;
+			const author = authorMatch ? decodeHtmlEntities(authorMatch[1].trim()) : undefined;
 
-					items.push({
-						id,
-						title,
-						description,
-						link,
-						pubDate,
-						category,
-						author,
-					});
-				}
-			}
+			items.push({ id, title, description, link, pubDate, category, author });
 		}
 
 		return items;
-	} catch (error) {
-		console.error("Failed to fetch RSS:", error);
+	} catch (err) {
+		console.error(err);
 		return [];
 	}
 }
@@ -138,141 +113,34 @@ let fetchError = false;
 try {
 	const allPosts = await fetchRSS();
 	posts = allPosts.slice(0, limit);
-} catch (error) {
-	console.error("Failed to fetch blog RSS:", error);
+} catch (e) {
+	console.error("Failed to fetch blog RSS:", e);
 	fetchError = true;
 }
 
-const timestamps = posts.map((post) => post.pubDate).filter((value): value is string => value.length > 0);
-const lastUpdatedRaw = timestamps.sort((a, b) => (a > b ? 1 : -1)).at(-1) ?? null;
-const lastUpdatedLabel = lastUpdatedRaw ? dateFormatter.format(new Date(lastUpdatedRaw)) : null;
-
-const hasData = posts.length > 0;
+const cardItems = posts.map((post) => {
+	return {
+		title: post.title,
+		description: post.description,
+		date: post.pubDate ? timeAgo(post.pubDate, lang) : "",
+		href: post.link ? post.link : `/`,
+		icon: "blog",
+	};
+});
 ---
 
-<section class="">
-	{
-		fetchError ? (
-			<p class="rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-900/30 dark:text-red-200">
-				{t("home.blogRss.fetchError")}
-			</p>
-		) : !hasData ? (
-			<p class="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-300">
-				{t("home.blogRss.empty")}
-			</p>
-		) : (
-			<div class="relative" data-blogrss>
-				<!-- Gradient edges to hint scrollable area -->
-				<div class="pointer-events-none absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-white/90 to-transparent dark:from-slate-900/70"></div>
-				<div class="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-white/90 to-transparent dark:from-slate-900/70"></div>
-
-				<div
-					class="flex gap-2 md:gap-4 overflow-x-auto py-4 -my-4 scroll-smooth snap-x snap-mandatory"
-					data-scroller
-				>
-					{posts.map((post) => (
-						<a
-							class="min-w-[270px] md:min-w-[320px] snap-start border-accent hover:border-primary/25 group relative flex flex-col items-start overflow-hidden rounded-xl border-2 p-0.5 shadow-black/5 transition-all hover:-translate-y-1 hover:shadow-lg md:p-4 dark:hover:translate-0"
-							target="_blank"
-							rel="noopener noreferrer"
-							href={post.link}
-						>
-							<article class="p-2 md:p-0" data-id={post.id}>
-								{post.category && <div class="text-sm text-gray-500">{post.category}</div>}
-								<h2 class="text-sm font-semibold md:text-lg">{post.title}</h2>
-								<p class="text-xs tracking-tight text-gray-500 md:text-sm">
-									{new Date(post.pubDate).toLocaleDateString(lang, {
-										year: "numeric",
-										month: "long",
-										day: "numeric",
-									})}
-								</p>
-								{post.description && <p class="mt-1 text-sm text-slate-600 dark:text-slate-300">{post.description}</p>}
-							</article>
-						</a>
-					))}
-					<a
-						class="min-w-[270px] md:min-w-[320px] snap-start border-accent hover:border-primary/25 group relative flex flex-col items-center justify-center overflow-hidden rounded-xl border-2 p-2.5 shadow-black/5 transition-all hover:-translate-y-1 hover:shadow-lg md:p-4 dark:hover:translate-0"
-						target="_blank"
-						rel="noopener noreferrer"
-						href="https://blog.juchunko.com/"
-					>
-						<h2 class="text-sm font-semibold md:text-lg">
-							{t("home.blogRss.viewMore")} <span aria-hidden="true">→</span>
-						</h2>
-					</a>
-				</div>
-
-				<!-- Redesigned control buttons: bottom-right pill with two arrows -->
-				<div class="absolute -bottom-2 left-4 z-10">
-					<div class="flex items-center gap-1 rounded-full bg-white/90 px-1.5 py-1 shadow-lg ring-1 ring-black/10 backdrop-blur dark:bg-slate-800/70">
-						<button
-							type="button"
-							class="inline-flex h-8 w-8 items-center justify-center rounded-full text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed dark:text-slate-200 dark:hover:bg-slate-700/60"
-							data-left
-							aria-label={t("post.prev")}
-						>
-							<span aria-hidden="true">←</span>
-						</button>
-						<div class="h-6 w-px bg-slate-300/70 dark:bg-slate-600/60" aria-hidden="true"></div>
-						<button
-							type="button"
-							class="inline-flex h-8 w-8 items-center justify-center rounded-full text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed dark:text-slate-200 dark:hover:bg-slate-700/60"
-							data-right
-							aria-label={t("post.next")}
-						>
-							<span aria-hidden="true">→</span>
-						</button>
-					</div>
-				</div>
-
-				<script is:inline>
-					(() => {
-						const roots = document.querySelectorAll('[data-blogrss]');
-						roots.forEach((root) => {
-							const scroller = root.querySelector('[data-scroller]');
-							const left = root.querySelector('[data-left]');
-							const right = root.querySelector('[data-right]');
-							if (!scroller || !left || !right) return;
-
-							const scrollEl = scroller;
-							const leftBtn = left;
-							const rightBtn = right;
-							const amount = () => scrollEl.clientWidth * 0.9;
-
-							function updateButtons() {
-								const atStart = scrollEl.scrollLeft <= 0;
-								const atEnd = Math.ceil(scrollEl.scrollLeft + scrollEl.clientWidth) >= scrollEl.scrollWidth - 1;
-								leftBtn.disabled = atStart;
-								rightBtn.disabled = atEnd;
-							}
-
-							leftBtn.addEventListener('click', () => {
-								scrollEl.scrollBy({ left: -amount(), behavior: 'smooth' });
-							});
-
-							rightBtn.addEventListener('click', () => {
-								scrollEl.scrollBy({ left: amount(), behavior: 'smooth' });
-							});
-
-							scrollEl.addEventListener('scroll', updateButtons, { passive: true });
-							window.addEventListener('resize', updateButtons);
-							updateButtons();
-						});
-					})();
-				</script>
-			</div>
-		)
-	}
-</section>
-
-<style>
-	/* Hide scrollbar for the horizontal scroller */
-	[data-blogrss] [data-scroller] {
-		-ms-overflow-style: none; /* IE 10+ */
-		scrollbar-width: none; /* Firefox */
-	}
-	[data-blogrss] [data-scroller]::-webkit-scrollbar {
-		display: none; /* Chrome/Safari/Opera */
-	}
-</style>
+<a
+	class="group relative mb-4 block overflow-hidden rounded-lg bg-gray-50 transition-colors hover:bg-gray-100 dark:bg-white/5 dark:hover:bg-white/10"
+	href="https://blog.juchunko.com/"
+	target="_blank"
+	rel="noopener noreferrer"
+>
+	<AlbumCards client:load cards={cardItems} />
+	<div class="flex w-full items-center justify-between gap-2 bg-black/2.5 p-4 py-3 backdrop-blur-xs md:p-6 md:py-4 dark:bg-white/5">
+		<header>
+			<h2 class="font-semibold text-slate-900 md:text-xl dark:text-white">部落格</h2>
+			<p class="text-xs text-slate-600 md:text-sm dark:text-white/50">查看最新部落格文章</p>
+		</header>
+		<ArrowRight className="size-5 text-gray-600 transition-transform group-hover:translate-x-1 dark:text-white/80" />
+	</div>
+</a>
