@@ -29,32 +29,33 @@ const fragments = (await getCollection("fragment"))
 <PageLayout>
 	<div class="-mt-10 mb-6 flex flex-col items-center md:flex-row-reverse md:gap-6">
 		<div class="mx-auto w-full">
-			<h1 class="my-2 text-2xl leading-[1.35em] font-semibold md:text-3xl">{t("home.title")}</h1>
-			<p class="leading-[1.5em] text-gray-600 dark:text-gray-400">
+			<h1 class="text-foreground my-2 text-3xl leading-[1.35em] font-bold md:text-4xl">{t("home.title")}</h1>
+			<p class="text-lg leading-[1.6em] text-gray-600 md:text-xl dark:text-gray-400">
 				{t("home.description")}
 			</p>
 		</div>
 	</div>
 
 	<LegislatorActivity lang={lang} limit={5} />
+
 	<!-- 雜項 -->
-	<div class="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-2 md:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] md:gap-4">
+	<div class="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-3 md:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] md:gap-6">
 		{fragments.map((post) => <CardLink post={post} lang={lang} category="fragment" />)}
 	</div>
 	<!-- 法案行動 -->
-	<h1 class="mt-7 mb-3 text-2xl font-semibold">{t("cat.acts")}</h1>
-	<div class="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-2 md:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] md:gap-4">
+	<h1 class="text-foreground mt-12 mb-6 text-center text-2xl font-bold md:text-left">{t("cat.acts")}</h1>
+	<div class="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-3 md:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] md:gap-6">
 		{acts.map((post) => <CardLink post={post} lang={lang} category="act" />)}
 	</div>
 	<!-- 寶博使用說明書 -->
-	<h1 class="mt-7 mb-3 text-2xl font-semibold">{t("cat.manuals")}</h1>
-	<div class="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-2 md:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] md:gap-4">
+	<h1 class="text-foreground mt-12 mb-6 text-center text-2xl font-bold md:text-left">{t("cat.manuals")}</h1>
+	<div class="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-3 md:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] md:gap-6">
 		{manuals.map((post) => <CardLink post={post} lang={lang} category="manual" />)}
 	</div>
 	<!-- 部落格文章 -->
-	<h1 class="mt-7 mb-3 text-2xl font-semibold">{t("home.blogRss.title")}</h1>
+	<h1 class="text-foreground mt-12 mb-6 text-center text-2xl font-bold md:text-left">{t("home.blogRss.title")}</h1>
 	<BlogRss lang={lang} limit={5} />
 	<!-- TransPal 逐字稿 -->
-	<h1 class="mt-7 mb-3 text-2xl font-semibold">{t("home.transpalRss.title")}</h1>
+	<h1 class="text-foreground mt-12 mb-6 text-center text-2xl font-bold md:text-left">{t("home.transpalRss.title")}</h1>
 	<TranspalRSS lang={lang} limit={5} />
 </PageLayout>

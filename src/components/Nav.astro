@@ -11,20 +11,23 @@ import BytesizeGithub from "~icons/bytesize/github";
 
 <div class="sticky top-0 z-20 w-full self-start bg-transparent print:hidden">
 	<div
-		class="pointer-events-none absolute z-[-1] h-full w-full bg-white/95 shadow-[0_2px_4px_rgba(0,0,0,.02),0_1px_0_rgba(0,0,0,.06)] backdrop-blur-md transition-all duration-500 contrast-more:shadow-[0_0_0_1px_#000] md:-translate-y-[100%] md:opacity-0 dark:bg-black/90 dark:shadow-[0_-1px_0_rgba(255,255,255,.1)_inset] contrast-more:dark:shadow-[0_0_0_1px_#fff] [.scrolled__&]:translate-y-0 [.scrolled_&]:opacity-100"
+		class="pointer-events-none absolute z-[-1] h-full w-full bg-white/80 shadow-[0_4px_32px_rgba(0,0,0,.1)] backdrop-blur-xl transition-all duration-500 contrast-more:shadow-[0_0_0_1px_#000] md:-translate-y-[100%] md:opacity-0 dark:bg-black/80 dark:shadow-[0_-1px_0_rgba(255,255,255,.1)_inset] contrast-more:dark:shadow-[0_0_0_1px_#fff] [.scrolled__&]:translate-y-0 [.scrolled_&]:opacity-100"
 	>
 	</div>
 	<nav
 		class="mx-auto flex h-20 max-w-[90rem] items-center justify-end gap-2 pr-[max(env(safe-area-inset-right),2rem)] pl-[max(env(safe-area-inset-left),2rem)] text-sm transition-all md:max-w-[90vw] [.scrolled_&]:h-16"
 	>
-		<a class="flex items-center text-base hover:opacity-75 ltr:mr-auto rtl:ml-auto" href={`/${lang}`}>
-			<span class="font-medium uppercase">{t("site.title")}</span>
+		<a
+			class="flex items-center text-base transition-all duration-200 hover:scale-105 hover:opacity-75 ltr:mr-auto rtl:ml-auto"
+			href={`/${lang}`}
+		>
+			<span class="text-foreground font-bold tracking-wide uppercase">{t("site.title")}</span>
 		</a>
 		<a
 			href="https://blog.juchunko.com/"
 			target="_blank"
 			rel="noreferrer"
-			class="relative -ml-2 hidden p-2 whitespace-nowrap text-gray-600 hover:text-gray-800 contrast-more:text-gray-700 md:inline-block dark:text-white/75 dark:hover:text-white contrast-more:dark:text-white/90"
+			class="hover:text-primary relative -ml-2 hidden p-2 whitespace-nowrap text-gray-600 transition-colors duration-200 contrast-more:text-gray-700 md:inline-block dark:text-white/75 dark:hover:text-white contrast-more:dark:text-white/90"
 			aria-current="false"
 		>
 			{t("nav.blog")}
@@ -33,7 +36,7 @@ import BytesizeGithub from "~icons/bytesize/github";
 			href="https://transpal.juchunko.com/"
 			target="_blank"
 			rel="noreferrer"
-			class="relative -ml-2 hidden p-2 whitespace-nowrap text-gray-600 hover:text-gray-800 contrast-more:text-gray-700 md:inline-block dark:text-white/75 dark:hover:text-white contrast-more:dark:text-white/90"
+			class="hover:text-primary relative -ml-2 hidden p-2 whitespace-nowrap text-gray-600 transition-colors duration-200 contrast-more:text-gray-700 md:inline-block dark:text-white/75 dark:hover:text-white contrast-more:dark:text-white/90"
 			aria-current="false"
 		>
 			{t("nav.transript")}
@@ -42,7 +45,7 @@ import BytesizeGithub from "~icons/bytesize/github";
 			href="https://github.com/DrJuChunKoO/juchunko.com"
 			target="_blank"
 			rel="noreferrer"
-			class="p-2 text-current"
+			class="p-2 text-current transition-transform duration-200 hover:scale-110"
 			title="GitHub repository for this site"
 			aria-label="GitHub repository for this site"
 		>
