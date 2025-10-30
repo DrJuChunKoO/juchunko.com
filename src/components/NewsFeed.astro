@@ -1,8 +1,8 @@
 ---
 import { useTranslations } from "../i18n/utils";
 import { timeAgo } from "../lib/utils";
-import { NewsCarousel } from "./NewsCarousel.tsx";
 import type { NewsItem } from "./NewsCarousel.tsx";
+import DisplayCards from "./ui/display-cards.tsx";
 import DataFeed from "./DataFeed.astro";
 
 type SupportedLang = "en" | "zh-TW";
@@ -15,7 +15,7 @@ type NewsFeedProps = {
 const { lang = "zh-TW", variant = "card" } = Astro.props as NewsFeedProps;
 
 const isCard = variant === "card";
-const limit = isCard ? 5 : 100;
+const limit = isCard ? 3 : 100;
 const t = useTranslations(lang);
 
 // Data fetching logic
@@ -29,7 +29,10 @@ try {
 		const data = await response.json();
 		allNews = data.data.slice(0, limit);
 		if (allNews.length > 0) {
-			const latestTime = allNews.map((item) => item.time).sort().reverse()[0];
+			const latestTime = allNews
+				.map((item) => item.time)
+				.sort()
+				.reverse()[0];
 			if (latestTime) {
 				const locale = lang === "en" ? "en-US" : "zh-TW";
 				const dateTimeFormatter = new Intl.DateTimeFormat(locale, {
@@ -59,38 +62,26 @@ const carouselLabels = {
 ---
 
 <DataFeed
-	lang={lang}
 	variant={variant}
 	title={t("home.news.title")}
 	subtitle={t("home.news.subtitle")}
 	viewMoreLink={`/${lang}/news`}
-	viewMoreText={t("home.news.viewMore")}
 	fetchError={fetchError}
 	hasData={hasData}
-	lastUpdatedLabel={lastUpdatedLabel}
-	dataSourceName="AI-fferent"
-	dataSourceUrl="https://aifferent.juchunko.com/api/news"
 	emptyMessage={t("home.news.empty")}
 	fetchErrorMessage={t("home.news.fetchError")}
 >
 	<div slot="card">
-		<NewsCarousel client:load news={allNews} lang={lang} labels={carouselLabels} />
+		<DisplayCards
+			client:load
+			cards={allNews.slice(0, limit).map((item) => ({
+				title: lang === "en" ? item.title_en : item.title,
+				description: lang === "en" ? item.summary_en : item.summary,
+				date: timeAgo(item.time, lang),
+				href: item.url,
+				icon: "newspaper",
+			}))}
+		/>
 	</div>
-	<div slot="page">
-		<div class="flex flex-col gap-3">
-			{allNews.map((item) => (
-				<a href={item.url} target="_blank" rel="noopener noreferrer" class="card-link no-underline">
-					<div class="bg-card text-card-foreground hover:bg-muted w-full rounded-lg border p-4 transition-colors">
-						<h3 class="text-lg font-bold leading-tight">{lang === "en" ? item.title_en : item.title}</h3>
-						<p class="text-muted-foreground mt-2 text-sm">{lang === "en" ? item.summary_en : item.summary}</p>
-						<div class="text-muted-foreground mt-2 flex items-center gap-2 text-xs">
-							<span>{item.source}</span>
-							<span>·</span>
-							<span>{timeAgo(item.time, lang)}</span>
-						</div>
-					</div>
-				</a>
-			))}
-		</div>
-	</div>
+	<div slot="page"></div>
 </DataFeed>

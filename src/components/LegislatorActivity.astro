@@ -1,10 +1,9 @@
 ---
 import { useTranslations } from "../i18n/utils";
-import { BookText, Signature, User } from "lucide-react";
 import { timeAgo } from "../lib/utils";
 import DataFeed from "./DataFeed.astro";
-import { ActivityCarousel } from "./ActivityCarousel.tsx";
-import type { Activity } from "./ActivityCarousel.tsx";
+import LegislatorActivityPage from "./LegislatorActivityPage.astro";
+import DisplayCards from "./ui/display-cards.tsx";
 
 type SupportedLang = "en" | "zh-TW";
 
@@ -28,12 +27,14 @@ interface MeetActivity {
 	updatedAt?: string;
 }
 
-interface InterpellationActivity {
+type Activity = {
 	id: string;
+	type: "propose" | "cosign" | "meet" | string;
 	title: string;
-	date?: string;
+	date?: Date | null;
 	url?: string;
-}
+	details: Record<string, string | undefined>;
+};
 
 type LegislatorActivityProps = {
 	lang: SupportedLang;
@@ -43,7 +44,7 @@ type LegislatorActivityProps = {
 const { lang = "zh-TW", variant = "card" } = Astro.props as LegislatorActivityProps;
 
 const isCard = variant === "card";
-const limit = isCard ? 5 : 100;
+const limit = isCard ? 3 : 100;
 const t = useTranslations(lang);
 
 const locale = lang === "en" ? "en-US" : "zh-TW";
@@ -337,76 +338,37 @@ const carouselLabels = {
 	cosign: t("home.legislatorActivity.section.cosign"),
 	meet: t("home.legislatorActivity.section.meets"),
 };
+
+const cardItems = allActivities.slice(0, 5).map((activity) => {
+	const details = Object.entries(activity.details)
+		.filter(([, value]) => value)
+		.map(([key, value]) => `${key}: ${value}`)
+		.join(lang === "en" ? ", " : "、");
+
+	return {
+		title: activity.title,
+		description: details,
+		date: activity.date ? timeAgo(activity.date.toISOString(), lang) : "",
+		href: activity.url ? activity.url : `/${lang}/activities/${activity.id}`,
+		icon: activity.type,
+	};
+});
 ---
 
 <DataFeed
-	lang={lang}
 	variant={variant}
 	title={t("home.legislatorActivity.title")}
 	subtitle={t("home.legislatorActivity.subtitle")}
 	viewMoreLink={`/${lang}/activities`}
-	viewMoreText={t("home.legislatorActivity.viewMore")}
 	fetchError={fetchError}
 	hasData={hasData}
-	lastUpdatedLabel={lastUpdatedLabel}
-	dataSourceName="LYAPI"
-	dataSourceUrl="https://ly.govapi.tw/"
 	emptyMessage={t("home.legislatorActivity.empty")}
 	fetchErrorMessage={t("home.legislatorActivity.fetchError")}
 >
 	<div slot="card">
-		<ActivityCarousel client:load activities={allActivities} lang={lang} labels={carouselLabels} />
+		<DisplayCards client:load cards={cardItems} />
 	</div>
 	<div slot="page">
-		<ol class="relative ml-4 border-l border-slate-200 dark:border-slate-700">
-			{
-				allActivities.map((activity) => {
-					const Wrapper = activity.url ? "a" : "div";
-					const wrapperProps =
-						Wrapper === "a"
-							? {
-									href: activity.url,
-									target: "_blank",
-									rel: "noopener noreferrer",
-								}
-							: {};
-
-					return (
-						<li class="timeline-item mb-2 ml-8" data-id={activity.id}>
-							<span class="absolute -left-4 mt-1.5 flex size-7 items-center justify-center rounded-full bg-slate-100 ring-8 ring-white dark:bg-slate-700 dark:ring-slate-900">
-								{activity.type === "propose" && <BookText client:visible className="h-4 w-4 text-slate-600 dark:text-slate-300" />}
-								{activity.type === "cosign" && <Signature client:visible className="h-4 w-4 text-slate-600 dark:text-slate-300" />}
-								{activity.type === "meet" && <User client:visible className="h-4 w-4 text-slate-600 dark:text-slate-300" />}
-							</span>
-							<Wrapper
-								class="border-accent hover:border-primary/25 group relative -ml-2 flex flex-col items-start overflow-hidden rounded-md border p-2 shadow-black/5 transition-all hover:bg-slate-50 dark:hover:bg-slate-800/50"
-								{...wrapperProps}
-							>
-								<div class="mb-1 flex w-full items-center justify-between">
-									<span class="rounded bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-										{carouselLabels[activity.type]}
-									</span>
-									<time class="text-xs leading-none font-normal text-slate-500 dark:text-slate-400">
-										{activity.date ? timeAgo(activity.date.toISOString(), lang) : ""}
-									</time>
-								</div>
-								<div class="">
-									<h3 class="font-semibold text-slate-900 dark:text-white">{activity.title}</h3>
-									<div class="mt-1 flex flex-col gap-0.5 text-xs text-slate-600 dark:text-slate-400">
-										{Object.entries(activity.details)
-											.filter(([, value]) => value)
-											.map(([key, value]) => (
-												<p>
-													<span class="font-medium">{key}</span>: {value}
-												</p>
-											))}
-									</div>
-								</div>
-							</Wrapper>
-						</li>
-					);
-				})
-			}
-		</ol>
+		<LegislatorActivityPage lang={lang} activities={allActivities} labels={carouselLabels} />
 	</div>
 </DataFeed>

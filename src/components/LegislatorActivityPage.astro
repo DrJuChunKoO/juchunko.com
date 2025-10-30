@@ -1,0 +1,72 @@
+---
+import { timeAgo } from "../lib/utils";
+import { BookText, Signature, User } from "lucide-react";
+
+type Activity = {
+	id: string;
+	type: string;
+	title: string;
+	date?: Date | null;
+	url?: string;
+	details: Record<string, string | undefined>;
+};
+
+type Props = {
+	lang: "en" | "zh-TW";
+	activities: Activity[];
+	labels: Record<string, string>;
+};
+
+const { lang = "zh-TW", activities = [], labels = {} } = Astro.props as Props;
+---
+
+<ol class="relative ml-4 border-l border-slate-200 dark:border-slate-700">
+	{
+		activities.map((activity) => {
+			const Wrapper = activity.url ? "a" : "div";
+			const wrapperProps =
+				Wrapper === "a"
+					? {
+							href: activity.url,
+							target: "_blank",
+							rel: "noopener noreferrer",
+					  }
+					: {};
+
+			return (
+				<li class="timeline-item mb-2 ml-8" data-id={activity.id}>
+					<span class="absolute -left-4 mt-1.5 flex size-7 items-center justify-center rounded-full bg-slate-100 ring-8 ring-white dark:bg-slate-700 dark:ring-slate-900">
+						{activity.type === "propose" && <BookText client:visible className="h-4 w-4 text-slate-600 dark:text-slate-300" />}
+						{activity.type === "cosign" && <Signature client:visible className="h-4 w-4 text-slate-600 dark:text-slate-300" />}
+						{activity.type === "meet" && <User client:visible className="h-4 w-4 text-slate-600 dark:text-slate-300" />}
+					</span>
+					<Wrapper
+						class="border-accent hover:border-primary/25 group relative -ml-2 flex flex-col items-start overflow-hidden rounded-md border p-2 shadow-black/5 transition-all hover:bg-slate-50 dark:hover:bg-slate-800/50"
+						{...wrapperProps}
+					>
+						<div class="mb-1 flex w-full items-center justify-between">
+							<span class="rounded bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+								{labels[activity.type]}
+							</span>
+							<time class="text-xs leading-none font-normal text-slate-500 dark:text-slate-400">
+								{activity.date ? timeAgo(activity.date.toISOString(), lang) : ""}
+							</time>
+						</div>
+						<div>
+							<h3 class="font-semibold text-slate-900 dark:text-white">{activity.title}</h3>
+							<div class="mt-1 flex flex-col gap-0.5 text-xs text-slate-600 dark:text-slate-400">
+								{Object.entries(activity.details)
+									.filter(([, value]) => value)
+									.map(([key, value]) => (
+										<p>
+											<span class="font-medium">{key}</span>: {value}
+										</p>
+									))}
+							</div>
+						</div>
+					</Wrapper>
+				</li>
+			);
+		})
+	}
+</ol>
