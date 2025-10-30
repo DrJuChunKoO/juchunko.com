@@ -1,0 +1,32 @@
+---
+import PageLayout from "../../layouts/PageLayout.astro";
+import LegislatorActivity from "../../components/LegislatorActivity.astro";
+import { useTranslations } from "../../i18n/utils";
+import { languages } from "../../i18n/ui";
+
+export function getStaticPaths() {
+	return Object.keys(languages).map((lang) => ({
+		params: { lang },
+	}));
+}
+
+const { lang } = Astro.params;
+const t = useTranslations(lang as "en" | "zh-TW");
+
+const title = t("home.legislatorActivity.title");
+const description = t("home.legislatorActivity.subtitle");
+---
+
+<PageLayout {title} {description}>
+	<div class="container mx-auto max-w-3xl px-4">
+		<div class="prose prose-slate dark:prose-invert mx-auto mb-4 max-w-full">
+			<h4 class="font-medium tracking-tight text-gray-500 opacity-75 dark:text-gray-400">{t("home.legislatorActivity.subtitle")}</h4>
+			<h1>{t("home.legislatorActivity.title")}</h1>
+		</div>
+		<span
+			class="absolute top-0 right-8 hidden h-24 w-16 items-end justify-center rounded-b-xl bg-gradient-to-b from-gray-100 to-gray-200 p-3 text-4xl transition-all md:flex dark:from-white/10 dark:to-white/5"
+			>📅</span
+		>
+		<LegislatorActivity lang={lang as "en" | "zh-TW"} variant="page" />
+	</div>
+</PageLayout>

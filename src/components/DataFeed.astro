@@ -1,0 +1,94 @@
+---
+import { useTranslations } from "../i18n/utils";
+
+type SupportedLang = "en" | "zh-TW";
+
+export interface Props {
+	lang: SupportedLang;
+	variant?: "card" | "page";
+	title: string;
+	subtitle: string;
+	viewMoreLink?: string;
+	viewMoreText?: string;
+	fetchError: boolean;
+	hasData: boolean;
+	lastUpdatedLabel: string | null;
+	dataSourceName: string;
+	dataSourceUrl: string;
+	emptyMessage: string;
+	fetchErrorMessage: string;
+}
+
+const {
+	lang,
+	variant = "card",
+	title,
+	subtitle,
+	viewMoreLink,
+	viewMoreText,
+	fetchError,
+	hasData,
+	lastUpdatedLabel,
+	dataSourceName,
+	dataSourceUrl,
+	emptyMessage,
+	fetchErrorMessage,
+} = Astro.props;
+
+const isCard = variant === "card";
+const showTitle = isCard;
+const showViewMore = isCard && viewMoreLink && viewMoreText;
+const t = useTranslations(lang);
+---
+
+<section class={isCard ? "mt-8 mb-4 rounded-lg overflow-hidden bg-gray-50 p-4 md:p-6 dark:bg-white/10" : ""}>
+	{
+		showTitle && (
+			<div class="mb-4 flex items-center justify-between gap-2">
+				<header>
+					<h2 class="text-xl font-semibold text-slate-900 dark:text-white">{title}</h2>
+					<p class="text-sm text-slate-600 dark:text-slate-300">{subtitle}</p>
+				</header>
+
+				{hasData && showViewMore && (
+					<a
+						href={viewMoreLink}
+						class="rounded-full bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-slate-200 dark:bg-white/10 dark:text-white/80 dark:hover:bg-white/20"
+					>
+						{viewMoreText}
+					</a>
+				)}
+			</div>
+		)
+	}
+
+	{
+		fetchError ? (
+			<p class="mt-6 rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-900/30 dark:text-red-200">
+				{fetchErrorMessage}
+			</p>
+		) : !hasData ? (
+			<p class="mt-6 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-300">
+				{emptyMessage}
+			</p>
+		) : (
+			<div>{isCard ? <slot name="card" /> : <slot name="page" />}</div>
+		)
+	}
+
+	<div class="flex flex-wrap justify-between gap-2 border-t pt-2 text-xs text-slate-400 dark:text-slate-600">
+		<p>
+			{lang === "en" ? "Data source" : "資料來源"}：
+			<a class="underline hover:text-slate-600 dark:hover:text-slate-400" href={dataSourceUrl} target="_blank" rel="noopener noreferrer">
+				{dataSourceName}
+			</a>
+		</p>
+		{
+			lastUpdatedLabel && (
+				<p>
+					{t("home.legislatorActivity.updated")}: {lastUpdatedLabel}
+				</p>
+			)
+		}
+	</div>
+</section>

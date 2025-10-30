@@ -1,5 +1,10 @@
 ---
-import { useTranslations } from "@/i18n/utils";
+import { useTranslations } from "../i18n/utils";
+import { BookText, Signature, User } from "lucide-react";
+import { timeAgo } from "../lib/utils";
+import DataFeed from "./DataFeed.astro";
+import { ActivityCarousel } from "./ActivityCarousel.tsx";
+import type { Activity } from "./ActivityCarousel.tsx";
 
 type SupportedLang = "en" | "zh-TW";
 
@@ -32,10 +37,13 @@ interface InterpellationActivity {
 
 type LegislatorActivityProps = {
 	lang: SupportedLang;
-	limit?: number;
+	variant?: "card" | "page";
 };
 
-const { lang = "zh-TW", limit = 5 } = Astro.props as LegislatorActivityProps;
+const { lang = "zh-TW", variant = "card" } = Astro.props as LegislatorActivityProps;
+
+const isCard = variant === "card";
+const limit = isCard ? 5 : 100;
 const t = useTranslations(lang);
 
 const locale = lang === "en" ? "en-US" : "zh-TW";
@@ -45,12 +53,6 @@ const API_BASE = "https://ly.govapi.tw/v2";
 const LEGISLATOR_TERM = 11;
 const LEGISLATOR_NAME = "葛如鈞";
 const encodedName = encodeURIComponent(LEGISLATOR_NAME);
-
-const dateFormatter = new Intl.DateTimeFormat(locale, {
-	year: "numeric",
-	month: lang === "en" ? "short" : "2-digit",
-	day: "2-digit",
-});
 
 const dateTimeFormatter = new Intl.DateTimeFormat(locale, {
 	year: "numeric",
@@ -129,14 +131,6 @@ function parseToDate(value?: string | null): Date | null {
 	return null;
 }
 
-function formatDate(value?: string | null): string {
-	const parsed = parseToDate(value);
-	if (parsed) {
-		return dateFormatter.format(parsed);
-	}
-	return value ?? "";
-}
-
 function formatDateTime(value?: string | null): string {
 	const parsed = parseToDate(value);
 	if (parsed) {
@@ -208,7 +202,7 @@ function mapMeetActivity(entry: Record<string, unknown>): MeetActivity | null {
 	let url: string | undefined;
 	if (Array.isArray(entry["連結"])) {
 		const links = entry["連結"].map(asRecord).filter((record): record is Record<string, unknown> => !!record);
-		const meetingLink = links.find((link) => typeof link["連結"] === "string" && (!link["類型"] || link["類型"] === "video"));
+		const meetingLink = links.find((link) => typeof link["連結"] === "string" && (!link["類型"] || link["類型"] === "User"));
 		if (meetingLink) {
 			url = meetingLink["連結"] as string;
 		}
@@ -233,38 +227,6 @@ function mapMeetActivity(entry: Record<string, unknown>): MeetActivity | null {
 	};
 }
 
-function mapInterpellationActivity(entry: Record<string, unknown>): InterpellationActivity | null {
-	const id =
-		(typeof entry["質詢編號"] === "string" && entry["質詢編號"]) || (typeof entry["會議代碼"] === "string" && entry["會議代碼"]) || null;
-	if (!id) return null;
-
-	const title = (typeof entry["標題"] === "string" && entry["標題"]) || (typeof entry["發言主題"] === "string" && entry["發言主題"]) || id;
-
-	const date =
-		(typeof entry["質詢日期"] === "string" && entry["質詢日期"]) ||
-		(typeof entry["日期"] === "string" && entry["日期"]) ||
-		pickFirstString(entry["日期"]) ||
-		undefined;
-
-	let url: string | undefined;
-	if (typeof entry["url"] === "string") {
-		url = entry["url"];
-	} else if (Array.isArray(entry["連結"])) {
-		const links = entry["連結"].map(asRecord).filter((record): record is Record<string, unknown> => !!record);
-		const target = links.find((link) => typeof link["連結"] === "string");
-		if (target) {
-			url = target["連結"] as string;
-		}
-	}
-
-	return {
-		id,
-		title,
-		date,
-		url,
-	};
-}
-
 type BillsResponse = {
 	bills?: Record<string, unknown>[];
 };
@@ -273,15 +235,9 @@ type MeetsResponse = {
 	meets?: Record<string, unknown>[];
 };
 
-type InterpellationsResponse = {
-	interpellations?: Record<string, unknown>[];
-};
-
 const safeLimit = Number.isFinite(limit) ? Math.max(1, Math.min(20, Math.floor(limit))) : 5;
 
-let proposeBills: BillActivity[] = [];
-let cosignBills: BillActivity[] = [];
-let meetList: MeetActivity[] = [];
+let allActivities: Activity[] = [];
 let fetchError = false;
 
 try {
@@ -291,243 +247,166 @@ try {
 		fetchJSON<MeetsResponse>(`/legislators/${LEGISLATOR_TERM}/${encodedName}/meets?limit=${safeLimit}`),
 	]);
 
-	proposeBills =
+	const proposedBills =
 		proposeRes?.bills
 			?.map((entry) => mapBillActivity(entry))
 			.filter((item): item is BillActivity => !!item)
 			.slice(0, safeLimit) ?? [];
 
-	cosignBills =
+	const cosignedBills =
 		cosignRes?.bills
 			?.map((entry) => mapBillActivity(entry))
 			.filter((item): item is BillActivity => !!item)
 			.slice(0, safeLimit) ?? [];
 
-	meetList =
+	const meetList =
 		meetsRes?.meets
 			?.map((entry) => mapMeetActivity(entry))
 			.filter((item): item is MeetActivity => !!item)
 			.slice(0, safeLimit) ?? [];
+
+	const activities: Activity[] = [
+		...proposedBills.map(
+			(bill): Activity => ({
+				id: bill.id,
+				type: "propose",
+				title: bill.title,
+				date: parseToDate(bill.updatedAt),
+				url: bill.url,
+				details: {
+					[t("home.legislatorActivity.billStatus")]: bill.status,
+					[t("home.legislatorActivity.law")]: bill.law,
+				},
+			}),
+		),
+		...cosignedBills.map(
+			(bill): Activity => ({
+				id: bill.id,
+				type: "cosign",
+				title: bill.title,
+				date: parseToDate(bill.updatedAt),
+				url: bill.url,
+				details: {
+					[t("home.legislatorActivity.billStatus")]: bill.status,
+					[t("home.legislatorActivity.law")]: bill.law,
+				},
+			}),
+		),
+		...meetList.map(
+			(meet): Activity => ({
+				id: meet.id,
+				type: "meet",
+				title: meet.name,
+				date: parseToDate(meet.date),
+				url: meet.url,
+				details: {
+					[t("home.legislatorActivity.meetingType")]: meet.type,
+					[t("home.legislatorActivity.location")]: meet.location,
+				},
+			}),
+		),
+	];
+
+	activities.sort((a, b) => {
+		if (a.date && b.date) {
+			return b.date.getTime() - a.date.getTime();
+		}
+		if (a.date) return -1;
+		if (b.date) return 1;
+		return 0;
+	});
+
+	allActivities = activities.slice(0, safeLimit);
 } catch (error) {
 	console.error("Failed to fetch legislator activity:", error);
 	fetchError = true;
 }
 
-const timestamps = [
-	...proposeBills.map((item) => item.updatedAt),
-	...cosignBills.map((item) => item.updatedAt),
-	...meetList.map((item) => item.updatedAt),
-].filter((value): value is string => typeof value === "string" && value.length > 0);
+const timestamps = allActivities
+	.map((item) => (item.date ? item.date.toISOString() : null))
+	.filter((value): value is string => typeof value === "string" && value.length > 0);
 
 const lastUpdatedRaw = timestamps.sort((a, b) => (a > b ? 1 : -1)).at(-1) ?? null;
 const lastUpdatedLabel = lastUpdatedRaw ? formatDateTime(lastUpdatedRaw) : null;
 
-const hasData = proposeBills.length > 0 || cosignBills.length > 0 || meetList.length > 0;
+const hasData = allActivities.length > 0;
+
+const carouselLabels = {
+	activity: t("home.legislatorActivity.title"),
+	propose: t("home.legislatorActivity.section.propose"),
+	cosign: t("home.legislatorActivity.section.cosign"),
+	meet: t("home.legislatorActivity.section.meets"),
+};
 ---
 
-<section class="mt-8 mb-4 rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900/40">
-	<header class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-		<div>
-			<h2 class="text-xl font-semibold text-slate-900 dark:text-white">{t("home.legislatorActivity.title")}</h2>
-			<p class="text-sm text-slate-600 dark:text-slate-300">{t("home.legislatorActivity.subtitle")}</p>
-		</div>
-		{
-			lastUpdatedLabel && (
-				<p class="text-xs text-slate-500 dark:text-slate-400">
-					{t("home.legislatorActivity.updated")}: {lastUpdatedLabel}
-				</p>
-			)
-		}
-	</header>
+<DataFeed
+	lang={lang}
+	variant={variant}
+	title={t("home.legislatorActivity.title")}
+	subtitle={t("home.legislatorActivity.subtitle")}
+	viewMoreLink={`/${lang}/activities`}
+	viewMoreText={t("home.legislatorActivity.viewMore")}
+	fetchError={fetchError}
+	hasData={hasData}
+	lastUpdatedLabel={lastUpdatedLabel}
+	dataSourceName="LYAPI"
+	dataSourceUrl="https://ly.govapi.tw/"
+	emptyMessage={t("home.legislatorActivity.empty")}
+	fetchErrorMessage={t("home.legislatorActivity.fetchError")}
+>
+	<div slot="card">
+		<ActivityCarousel client:load activities={allActivities} lang={lang} labels={carouselLabels} />
+	</div>
+	<div slot="page">
+		<ol class="relative ml-4 border-l border-slate-200 dark:border-slate-700">
+			{
+				allActivities.map((activity) => {
+					const Wrapper = activity.url ? "a" : "div";
+					const wrapperProps =
+						Wrapper === "a"
+							? {
+									href: activity.url,
+									target: "_blank",
+									rel: "noopener noreferrer",
+								}
+							: {};
 
-	{
-		fetchError ? (
-			<p class="mt-6 rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-900/30 dark:text-red-200">
-				{t("home.legislatorActivity.fetchError")}
-			</p>
-		) : !hasData ? (
-			<p class="mt-6 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-300">
-				{t("home.legislatorActivity.empty")}
-			</p>
-		) : (
-			<div class="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-				<section class="flex flex-col gap-4">
-					<h3 class="text-lg font-semibold text-slate-800 dark:text-slate-100">{t("home.legislatorActivity.section.propose")}</h3>
-					{proposeBills.length > 0 ? (
-						<ul class="space-y-3">
-							{proposeBills.map((bill) => (
-								<li data-id={bill.id}>
-									{bill.url ? (
-										<a
-											class="border-accent hover:border-primary/25 group relative flex flex-col items-start overflow-hidden rounded-xl border-2 p-0.5 shadow-black/5 transition-all hover:-translate-y-1 hover:shadow-lg md:p-4 dark:hover:translate-0"
-											href={bill.url}
-											target="_blank"
-											rel="noopener noreferrer"
-										>
-											<div class="p-2 md:p-0">
-												<h2 class="text-sm font-semibold md:text-lg">{bill.title}</h2>
-												<p class="text-xs tracking-tight text-gray-500 md:text-sm">{bill.updatedAt ? formatDate(bill.updatedAt) : ""}</p>
-												{bill.status && (
-													<p class="mt-2 line-clamp-2 text-xs text-slate-600 dark:text-slate-300">
-														{t("home.legislatorActivity.billStatus")}: {bill.status}
-													</p>
-												)}
-												{bill.law && (
-													<p class="mt-1 text-xs text-slate-600 dark:text-slate-300">
-														{t("home.legislatorActivity.law")}: {bill.law}
-													</p>
-												)}
-											</div>
-										</a>
-									) : (
-										<div class="border-accent hover:border-primary/25 group relative flex flex-col items-start overflow-hidden rounded-xl border-2 p-0.5 shadow-black/5 transition-all hover:-translate-y-1 hover:shadow-lg md:p-4 dark:hover:translate-0">
-											<div class="p-2 md:p-0">
-												<h2 class="text-sm font-semibold md:text-lg">{bill.title}</h2>
-												<p class="text-xs tracking-tight text-gray-500 md:text-sm">{bill.updatedAt ? formatDate(bill.updatedAt) : ""}</p>
-												{bill.status && (
-													<p class="mt-2 line-clamp-2 text-xs text-slate-600 dark:text-slate-300">
-														{t("home.legislatorActivity.billStatus")}: {bill.status}
-													</p>
-												)}
-												{bill.law && (
-													<p class="mt-1 text-xs text-slate-600 dark:text-slate-300">
-														{t("home.legislatorActivity.law")}: {bill.law}
-													</p>
-												)}
-											</div>
-										</div>
-									)}
-								</li>
-							))}
-						</ul>
-					) : (
-						<p class="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-xs text-slate-600 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-300">
-							{t("home.legislatorActivity.empty")}
-						</p>
-					)}
-				</section>
-
-				<section class="flex flex-col gap-4">
-					<h3 class="text-lg font-semibold text-slate-800 dark:text-slate-100">{t("home.legislatorActivity.section.cosign")}</h3>
-					{cosignBills.length > 0 ? (
-						<ul class="space-y-3">
-							{cosignBills.map((bill) => (
-								<li data-id={bill.id}>
-									{bill.url ? (
-										<a
-											class="border-accent hover:border-primary/25 group relative flex flex-col items-start overflow-hidden rounded-xl border-2 p-0.5 shadow-black/5 transition-all hover:-translate-y-1 hover:shadow-lg md:p-4 dark:hover:translate-0"
-											href={bill.url}
-											target="_blank"
-											rel="noopener noreferrer"
-										>
-											<div class="p-2 md:p-0">
-												<h2 class="text-sm font-semibold md:text-lg">{bill.title}</h2>
-												<p class="text-xs tracking-tight text-gray-500 md:text-sm">{bill.updatedAt ? formatDate(bill.updatedAt) : ""}</p>
-												{bill.status && (
-													<p class="mt-2 line-clamp-2 text-xs text-slate-600 dark:text-slate-300">
-														{t("home.legislatorActivity.billStatus")}: {bill.status}
-													</p>
-												)}
-												{bill.law && (
-													<p class="mt-1 text-xs text-slate-600 dark:text-slate-300">
-														{t("home.legislatorActivity.law")}: {bill.law}
-													</p>
-												)}
-											</div>
-										</a>
-									) : (
-										<div class="border-accent hover:border-primary/25 group relative flex flex-col items-start overflow-hidden rounded-xl border-2 p-0.5 shadow-black/5 transition-all hover:-translate-y-1 hover:shadow-lg md:p-4 dark:hover:translate-0">
-											<div class="p-2 md:p-0">
-												<h2 class="text-sm font-semibold md:text-lg">{bill.title}</h2>
-												<p class="text-xs tracking-tight text-gray-500 md:text-sm">{bill.updatedAt ? formatDate(bill.updatedAt) : ""}</p>
-												{bill.status && (
-													<p class="mt-2 line-clamp-2 text-xs text-slate-600 dark:text-slate-300">
-														{t("home.legislatorActivity.billStatus")}: {bill.status}
-													</p>
-												)}
-												{bill.law && (
-													<p class="mt-1 text-xs text-slate-600 dark:text-slate-300">
-														{t("home.legislatorActivity.law")}: {bill.law}
-													</p>
-												)}
-											</div>
-										</div>
-									)}
-								</li>
-							))}
-						</ul>
-					) : (
-						<p class="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-xs text-slate-600 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-300">
-							{t("home.legislatorActivity.empty")}
-						</p>
-					)}
-				</section>
-
-				<section class="flex flex-col gap-4">
-					<h3 class="text-lg font-semibold text-slate-800 dark:text-slate-100">{t("home.legislatorActivity.section.meets")}</h3>
-					{meetList.length > 0 ? (
-						<ul class="space-y-3">
-							{meetList.map((meet) => (
-								<li data-id={meet.id}>
-									{meet.url ? (
-										<a
-											class="border-accent hover:border-primary/25 group relative flex flex-col items-start overflow-hidden rounded-xl border-2 p-0.5 shadow-black/5 transition-all hover:-translate-y-1 hover:shadow-lg md:p-4 dark:hover:translate-0"
-											href={meet.url}
-											target="_blank"
-											rel="noopener noreferrer"
-										>
-											<div class="p-2 md:p-0">
-												<h2 class="text-sm font-semibold md:text-lg">{meet.name}</h2>
-												<p class="text-xs tracking-tight text-gray-500 md:text-sm">{meet.date ? formatDate(meet.date) : ""}</p>
-												{meet.type && (
-													<p class="mt-2 line-clamp-2 text-xs text-slate-600 dark:text-slate-300">
-														{t("home.legislatorActivity.meetingType")}: {meet.type}
-													</p>
-												)}
-												{meet.location && (
-													<p class="mt-1 text-xs text-slate-600 dark:text-slate-300">
-														{t("home.legislatorActivity.location")}: {meet.location}
-													</p>
-												)}
-											</div>
-										</a>
-									) : (
-										<div class="border-accent hover:border-primary/25 group relative flex flex-col items-start overflow-hidden rounded-xl border-2 p-0.5 shadow-black/5 transition-all hover:-translate-y-1 hover:shadow-lg md:p-4 dark:hover:translate-0">
-											<div class="p-2 md:p-0">
-												<h2 class="text-sm font-semibold md:text-lg">{meet.name}</h2>
-												<p class="text-xs tracking-tight text-gray-500 md:text-sm">{meet.date ? formatDate(meet.date) : ""}</p>
-												{meet.type && (
-													<p class="mt-2 line-clamp-2 text-xs text-slate-600 dark:text-slate-300">
-														{t("home.legislatorActivity.meetingType")}: {meet.type}
-													</p>
-												)}
-												{meet.location && (
-													<p class="mt-1 text-xs text-slate-600 dark:text-slate-300">
-														{t("home.legislatorActivity.location")}: {meet.location}
-													</p>
-												)}
-											</div>
-										</div>
-									)}
-								</li>
-							))}
-						</ul>
-					) : (
-						<p class="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-xs text-slate-600 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-300">
-							{t("home.legislatorActivity.empty")}
-						</p>
-					)}
-				</section>
-			</div>
-		)
-	}
-	<p class="mt-4 text-xs text-slate-500 dark:text-slate-400">
-		{lang === "en" ? "Data source" : "資料來源"}：
-		<a
-			class="underline hover:text-slate-700 dark:hover:text-slate-300"
-			href="https://ly.govapi.tw/"
-			target="_blank"
-			rel="noopener noreferrer">LYAPI</a
-		>
-	</p>
-</section>
+					return (
+						<li class="timeline-item mb-2 ml-8" data-id={activity.id}>
+							<span class="absolute -left-4 mt-1.5 flex size-7 items-center justify-center rounded-full bg-slate-100 ring-8 ring-white dark:bg-slate-700 dark:ring-slate-900">
+								{activity.type === "propose" && <BookText client:visible className="h-4 w-4 text-slate-600 dark:text-slate-300" />}
+								{activity.type === "cosign" && <Signature client:visible className="h-4 w-4 text-slate-600 dark:text-slate-300" />}
+								{activity.type === "meet" && <User client:visible className="h-4 w-4 text-slate-600 dark:text-slate-300" />}
+							</span>
+							<Wrapper
+								class="border-accent hover:border-primary/25 group relative -ml-2 flex flex-col items-start overflow-hidden rounded-md border p-2 shadow-black/5 transition-all hover:bg-slate-50 dark:hover:bg-slate-800/50"
+								{...wrapperProps}
+							>
+								<div class="mb-1 flex w-full items-center justify-between">
+									<span class="rounded bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+										{carouselLabels[activity.type]}
+									</span>
+									<time class="text-xs leading-none font-normal text-slate-500 dark:text-slate-400">
+										{activity.date ? timeAgo(activity.date.toISOString(), lang) : ""}
+									</time>
+								</div>
+								<div class="">
+									<h3 class="font-semibold text-slate-900 dark:text-white">{activity.title}</h3>
+									<div class="mt-1 flex flex-col gap-0.5 text-xs text-slate-600 dark:text-slate-400">
+										{Object.entries(activity.details)
+											.filter(([, value]) => value)
+											.map(([key, value]) => (
+												<p>
+													<span class="font-medium">{key}</span>: {value}
+												</p>
+											))}
+									</div>
+								</div>
+							</Wrapper>
+						</li>
+					);
+				})
+			}
+		</ol>
+	</div>
+</DataFeed>

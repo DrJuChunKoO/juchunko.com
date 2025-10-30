@@ -1,0 +1,96 @@
+---
+import { useTranslations } from "../i18n/utils";
+import { timeAgo } from "../lib/utils";
+import { NewsCarousel } from "./NewsCarousel.tsx";
+import type { NewsItem } from "./NewsCarousel.tsx";
+import DataFeed from "./DataFeed.astro";
+
+type SupportedLang = "en" | "zh-TW";
+
+type NewsFeedProps = {
+	lang: SupportedLang;
+	variant?: "card" | "page";
+};
+
+const { lang = "zh-TW", variant = "card" } = Astro.props as NewsFeedProps;
+
+const isCard = variant === "card";
+const limit = isCard ? 5 : 100;
+const t = useTranslations(lang);
+
+// Data fetching logic
+let allNews: NewsItem[] = [];
+let fetchError = false;
+let lastUpdatedLabel: string | null = null;
+
+try {
+	const response = await fetch("https://aifferent.juchunko.com/api/news");
+	if (response.ok) {
+		const data = await response.json();
+		allNews = data.data.slice(0, limit);
+		if (allNews.length > 0) {
+			const latestTime = allNews.map((item) => item.time).sort().reverse()[0];
+			if (latestTime) {
+				const locale = lang === "en" ? "en-US" : "zh-TW";
+				const dateTimeFormatter = new Intl.DateTimeFormat(locale, {
+					year: "numeric",
+					month: lang === "en" ? "short" : "2-digit",
+					day: "2-digit",
+					hour: "2-digit",
+					minute: "2-digit",
+				});
+				lastUpdatedLabel = dateTimeFormatter.format(new Date(latestTime));
+			}
+		}
+	} else {
+		fetchError = true;
+	}
+} catch (error) {
+	console.error("Failed to fetch news:", error);
+	fetchError = true;
+}
+
+const hasData = allNews.length > 0;
+
+const carouselLabels = {
+	news: t("home.news.news"),
+	source: t("home.news.source"),
+};
+---
+
+<DataFeed
+	lang={lang}
+	variant={variant}
+	title={t("home.news.title")}
+	subtitle={t("home.news.subtitle")}
+	viewMoreLink={`/${lang}/news`}
+	viewMoreText={t("home.news.viewMore")}
+	fetchError={fetchError}
+	hasData={hasData}
+	lastUpdatedLabel={lastUpdatedLabel}
+	dataSourceName="AI-fferent"
+	dataSourceUrl="https://aifferent.juchunko.com/api/news"
+	emptyMessage={t("home.news.empty")}
+	fetchErrorMessage={t("home.news.fetchError")}
+>
+	<div slot="card">
+		<NewsCarousel client:load news={allNews} lang={lang} labels={carouselLabels} />
+	</div>
+	<div slot="page">
+		<div class="flex flex-col gap-3">
+			{allNews.map((item) => (
+				<a href={item.url} target="_blank" rel="noopener noreferrer" class="card-link no-underline">
+					<div class="bg-card text-card-foreground hover:bg-muted w-full rounded-lg border p-4 transition-colors">
+						<h3 class="text-lg font-bold leading-tight">{lang === "en" ? item.title_en : item.title}</h3>
+						<p class="text-muted-foreground mt-2 text-sm">{lang === "en" ? item.summary_en : item.summary}</p>
+						<div class="text-muted-foreground mt-2 flex items-center gap-2 text-xs">
+							<span>{item.source}</span>
+							<span>·</span>
+							<span>{timeAgo(item.time, lang)}</span>
+						</div>
+					</div>
+				</a>
+			))}
+		</div>
+	</div>
+</DataFeed>

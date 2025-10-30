@@ -4,7 +4,7 @@ import CardLink from "@/components/CardLink.astro";
 import LegislatorActivity from "@/components/LegislatorActivity.astro";
 import BlogRss from "@/components/BlogRss.astro";
 import TranspalRSS from "@/components/TranspalRSS.astro";
-import News from "@/components/News.astro";
+import NewsFeed from "@/components/NewsFeed.astro";
 import { getLangFromUrl, useTranslations } from "src/i18n/utils";
 import { getCollection } from "astro:content";
 
@@ -28,7 +28,7 @@ const fragments = (await getCollection("fragment"))
 ---
 
 <PageLayout>
-	<div class="-mt-10 mb-6 flex flex-col items-center md:flex-row-reverse md:gap-6">
+	<div class="mb-6 flex flex-col items-center md:-mt-10 md:flex-row-reverse md:gap-6">
 		<div class="mx-auto w-full">
 			<h1 class="text-foreground my-2 text-3xl leading-[1.35em] font-bold md:text-4xl">{t("home.title")}</h1>
 			<p class="text-lg leading-[1.6em] text-gray-600 md:text-xl dark:text-gray-400">
@@ -36,12 +36,12 @@ const fragments = (await getCollection("fragment"))
 			</p>
 		</div>
 	</div>
+	<div class="-gap-4 grid grid-cols-1 md:grid-cols-2 md:gap-4">
+		<LegislatorActivity lang={lang} />
 
-	<LegislatorActivity lang={lang} limit={5} />
-
-	<!-- 新聞 -->
-	<h1 class="text-foreground mt-12 mb-6 text-center text-2xl font-bold md:text-left">{t("home.news.title")}</h1>
-	<News lang={lang} limit={5} />
+		<!-- 新聞 -->
+		<NewsFeed lang={lang} variant="card" />
+	</div>
 
 	<!-- 雜項 -->
 	<div class="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-3 md:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] md:gap-6">
