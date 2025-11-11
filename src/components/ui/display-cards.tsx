@@ -26,7 +26,7 @@ function DisplayCard({
 	return (
 		<motion.div
 			className={cn(
-				"bg-muted/50 relative flex h-36 w-[min(26rem,75vw)] flex-col justify-between rounded-xl border-t border-l border-white/10 bg-gradient-to-br from-black/5 to-white/5 px-6 py-4 backdrop-blur-sm select-none",
+				"bg-muted/50 relative flex h-36 w-[min(26rem,75vw)] flex-col justify-between rounded-xl bg-gradient-to-br from-black/5 to-white/5 px-6 py-4 drop-shadow-xs backdrop-blur-sm select-none",
 				className,
 			)}
 			initial={{ opacity: 0, x: `${xOffset + 50}%`, y: `200%`, rotate: `${index * 5}deg` }}

@@ -26,7 +26,7 @@ function AlbumCard({
 	return (
 		<motion.div
 			className={cn(
-				"bg-muted/50 relative flex h-36 w-[min(26rem,75vw)] flex-col justify-between rounded-xl border-t border-gray-50/50 bg-gradient-to-b from-[#E6E8E8]/50 to-[#E6E8E8]/25 px-6 py-4 backdrop-blur-sm select-none dark:border-white/10 dark:from-[#31302F]/50 dark:to-[#31302F]/25",
+				"bg-muted/50 relative flex h-36 w-[min(26rem,75vw)] flex-col justify-between rounded-xl bg-gradient-to-b from-[#E6E8E8]/50 to-[#E6E8E8]/25 px-6 py-4 drop-shadow-xs backdrop-blur-sm select-none dark:from-[#31302F]/50 dark:to-[#31302F]/25",
 				className,
 			)}
 			initial={{ opacity: 0, y: `200%` }}
