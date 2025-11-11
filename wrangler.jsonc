@@ -1,5 +1,5 @@
 {
-  "name": "juchunko.com",
+  "name": "juchunko-com",
   "compatibility_date": "2025-09-04",
   "main": "./src/worker/index.ts",
   "assets": {
