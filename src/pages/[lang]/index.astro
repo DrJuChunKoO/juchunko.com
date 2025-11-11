@@ -5,6 +5,7 @@ import LegislatorActivity from "@/components/LegislatorActivity.astro";
 import BlogRss from "@/components/BlogRss.astro";
 import TranspalRSS from "@/components/TranspalRSS.astro";
 import NewsFeed from "@/components/NewsFeed.astro";
+import Callout from "@/components/Callout.astro";
 import { getLangFromUrl, useTranslations } from "src/i18n/utils";
 import { getCollection } from "astro:content";
 
@@ -36,6 +37,19 @@ const fragments = (await getCollection("fragment"))
 			</p>
 		</div>
 	</div>
+
+	{
+		lang === "zh-TW" && (
+			<Callout key="ai-basic-act-2025-07" actionText="前往查看" actionHref={`/${lang}/act/ai-basic-act`} class="mb-4">
+				<div class="space-y-1">
+					<div class="text-base font-bold">AI 基本法</div>
+					<div class="text-xs text-gray-600 dark:text-gray-400">
+						數發部未能如承諾於 7/15 前提供部版條文，僅提供委員版本意見且出現 14 次「再予斟酌」，原定 7/21 審查被迫延期。
+					</div>
+				</div>
+			</Callout>
+		)
+	}
 	<div class="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
 		<LegislatorActivity lang={lang} />
 
