@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { Sparkles, Newspaper, BookText, Signature, User, Rss, Mic } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 interface AlbumCardProps {
 	index?: number;
 	className?: string;

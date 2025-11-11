@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import LucidePhone from "~icons/lucide/phone";
 import LucidePhoneOff from "~icons/lucide/phone-off";
 import LucideMic from "~icons/lucide/mic";

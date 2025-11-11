@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { AnimatePresence, motion, useMotionValue, useReducedMotion, type Variants } from "framer-motion";
+import { AnimatePresence, motion, useMotionValue, useReducedMotion, type Variants } from "motion/react";
 import LucideBotMessageSquare from "~icons/lucide/bot-message-square";
 import LucidePhone from "~icons/lucide/phone";
 import LucideBookAudio from "~icons/lucide/book-audio";

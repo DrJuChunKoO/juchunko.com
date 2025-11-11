@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence, useMotionValue } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue } from "motion/react";
 import LucideBookAudio from "~icons/lucide/book-audio";
 import LucidePlay from "~icons/lucide/play";
 import LucidePause from "~icons/lucide/pause";
