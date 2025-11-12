@@ -16,6 +16,7 @@
     "@astrojs/partytown": "^2.1.4",
     "@astrojs/react": "^4.4.2",
     "@astrojs/sitemap": "^3.6.0",
+    "@excalidraw/markdown-to-text": "^0.1.2",
     "@next/third-parties": "^15.4.4",
     "@radix-ui/react-select": "^2.2.5",
     "@tailwindcss/vite": "^4.1.11",

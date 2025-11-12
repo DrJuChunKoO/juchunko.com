@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils";
 import { Sparkles, Newspaper, BookText, Signature, User } from "lucide-react";
 import { motion } from "motion/react";
-import Markdown from "markdown-to-jsx";
+import { removeMarkdown } from "@excalidraw/markdown-to-text";
 interface DisplayCardProps {
 	index?: number;
 	className?: string;
@@ -40,7 +40,7 @@ function DisplayCard({
 				</span>
 				<p className={cn("line-clamp-2 text-sm font-medium dark:text-white/80")}>{title}</p>
 			</div>
-			<Markdown className="line-clamp-2 text-sm dark:text-white/50">{description}</Markdown>
+			<p className="line-clamp-2 text-sm dark:text-white/50">{removeMarkdown(description)}</p>
 			<p className="text-muted-foreground text-xs">{date}</p>
 		</motion.div>
 	);
