@@ -3,6 +3,7 @@
 import { cn } from "@/lib/utils";
 import { Sparkles, Newspaper, BookText, Signature, User, Rss, Mic } from "lucide-react";
 import { motion } from "motion/react";
+import Markdown from "markdown-to-jsx";
 interface AlbumCardProps {
 	index?: number;
 	className?: string;
@@ -39,7 +40,7 @@ function AlbumCard({
 				</span>
 				<p className={cn("line-clamp-1 text-sm font-medium dark:text-white/80")}>{title}</p>
 			</div>
-			<p className="line-clamp-2 text-sm dark:text-white/50">{description}</p>
+			<Markdown className="line-clamp-2 text-sm dark:text-white/50">{description}</Markdown>
 			<p className="text-muted-foreground text-xs">{date}</p>
 		</motion.div>
 	);
