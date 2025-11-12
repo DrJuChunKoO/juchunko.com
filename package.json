@@ -9,8 +9,8 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^2.0.23",
-    "@ai-sdk/react": "^2.0.30",
+    "@ai-sdk/openai": "^2.0.65",
+    "@ai-sdk/react": "^2.0.92",
     "@astro-community/astro-embed-youtube": "^0.5.7",
     "@astrojs/mdx": "^4.3.10",
     "@astrojs/partytown": "^2.1.4",

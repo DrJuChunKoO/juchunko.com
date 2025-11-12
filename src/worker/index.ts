@@ -57,7 +57,7 @@ current page: https://transpal.juchunko.com/speeches/${filename}
 			// 執行 LLM，並注入各種 tool
 			// --------------------------------------------------------------
 			const result = streamText({
-				model: openai("gpt-4o-mini"),
+				model: openai("gpt-4.1-mini"),
 				messages: convertToModelMessages([{ role: "system", content: systemPrompt }, ...messages]),
 				tools: {
 					// ----------------- 讀取目前頁面 -----------------
@@ -113,7 +113,7 @@ current page: https://transpal.juchunko.com/speeches/${filename}
 			return response;
 		}
 
-		// 非上述路由 – 直接回傳靜態檔 (免費 CDN)
+		// 非上述路由 – 直接回傳靜態檔
 		return env.ASSETS.fetch(request);
 	},
 } satisfies ExportedHandler<Env>;
