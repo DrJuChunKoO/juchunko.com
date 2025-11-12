@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { createOpenAI, type OpenAI } from "@ai-sdk/openai";
 import { streamText, tool, smoothStream, embed, convertToModelMessages } from "ai";
-import { z } from "zod/v3"; // AI SDK 5.0 requires zod v3 import
+import { z } from "zod";
 import type { ExportedHandler, Fetcher } from "@cloudflare/workers-types";
 
 interface Env {
@@ -71,18 +71,18 @@ current page: https://transpal.juchunko.com/speeches/${filename}
 								// actual file: /src/content/act/zh-TW/nuclear-reactor-facility-control-act.mdx
 								// path: /en/act/nuclear-reactor-facility-control-act
 								// actual file: /src/content/act/en/nuclear-reactor-facility-control-act.mdx
-								
+
 								// 解析路由：/{lang}/{contentType}/{slug}
-								const cleanFilename = filename.replace(/^\/+|\/+$/g, ''); // 移除前後斜線
-								const pathParts = cleanFilename.split('/');
-								
+								const cleanFilename = filename.replace(/^\/+|\/+$/g, ""); // 移除前後斜線
+								const pathParts = cleanFilename.split("/");
+
 								if (pathParts.length >= 3) {
 									const [lang, contentType, ...slugParts] = pathParts;
-									const slug = slugParts.join('/'); // 處理可能有多層的 slug
-									
+									const slug = slugParts.join("/"); // 處理可能有多層的 slug
+
 									// 組合實際檔案路徑：/src/content/{contentType}/{lang}/{slug}.mdx
 									const actualFilePath = `src/content/${contentType}/${lang}/${slug}.mdx`;
-									
+
 									const fileData = await fetch(
 										`https://raw.githubusercontent.com/DrJuChunKoO/juchunko.com/refs/heads/main/${actualFilePath}`,
 									).then((res) => {
