@@ -1,4 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
+import { SquareArrowOutUpRight } from "lucide-react";
+import Markdown from "markdown-to-jsx";
 
 type NewsItem = {
 	url: string;
@@ -184,14 +186,20 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 						value={q}
 						onChange={(e) => setQ(e.target.value)}
 						placeholder={lang === "en" ? "Search news..." : "搜尋新聞..."}
-						className="flex-1 rounded-lg border px-3 py-2"
+						className="focus-visible:border-primary/50 focus-visible:ring-primary/25 flex-1 rounded-lg border px-3 py-2 outline-0 transition-all focus-visible:ring-2"
 					/>
-					<button type="submit" className="bg-primary inline-flex items-center rounded-lg px-4 py-2 text-white">
+					<button
+						type="submit"
+						className="bg-primary text-primary-foreground inline-flex items-center rounded-lg px-4 py-2 transition-colors"
+					>
 						{lang === "en" ? "Search" : "搜尋"}
 					</button>
 					{/* optional clear button */}
 					{q ? (
-						<button onClick={clearSearch} className="inline-flex items-center rounded-lg border px-3 py-2">
+						<button
+							onClick={clearSearch}
+							className="bg-muted text-muted-foreground inline-flex items-center rounded-lg px-4 py-2 transition-colors"
+						>
 							{lang === "en" ? "Clear" : "清除"}
 						</button>
 					) : null}
@@ -201,17 +209,30 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 			<section id="news-results" className="flex flex-col gap-2">
 				{items.map((item, idx) => {
 					const title = lang === "en" ? item.title_en || item.title || "" : item.title || "";
-					const summary = lang === "en" ? item.summary_en || item.summary || "" : item.summary || "";
+					const summary: string = lang === "en" ? item.summary_en || item.summary || "" : item.summary || "";
 					return (
-						<a key={idx} href={item.url} target="_blank" rel="noopener noreferrer" className="card-link no-underline">
-							<div className="bg-card text-card-foreground hover:bg-muted w-full rounded-lg border p-4 transition-colors">
-								<h3 className="text-lg leading-tight font-bold">{title}</h3>
-								<p className="text-muted-foreground mt-2 text-sm">{summary}</p>
+						<a
+							key={idx}
+							href={item.url}
+							target="_blank"
+							rel="noopener noreferrer"
+							className="group block w-full rounded-lg bg-gray-50 p-4 no-underline transition-colors hover:bg-gray-100 dark:bg-white/5 dark:hover:bg-white/10"
+						>
+							<h3 className="text-lg leading-tight font-medium">{title}</h3>
+							<Markdown className="text-muted-foreground mt-2 text-sm">
+								{summary
+									.split("葛如鈞")
+									.map((part) => part.trim())
+									.join("**葛如鈞**")}
+							</Markdown>
+
+							<div className="flex items-center justify-between gap-4">
 								<div className="text-muted-foreground mt-2 flex items-center gap-2 text-xs">
 									<span>{item.source}</span>
 									<span>·</span>
 									<span>{timeAgo(item.time)}</span>
 								</div>
+								<SquareArrowOutUpRight className="size-4 opacity-0 transition-opacity group-hover:opacity-100" />
 							</div>
 						</a>
 					);
