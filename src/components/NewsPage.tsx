@@ -186,11 +186,11 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 						value={q}
 						onChange={(e) => setQ(e.target.value)}
 						placeholder={lang === "en" ? "Search news..." : "搜尋新聞..."}
-						className="focus-visible:border-primary/50 focus-visible:ring-primary/25 flex-1 rounded-lg border px-3 py-2 outline-0 transition-all focus-visible:ring-2"
+						className="focus-visible:border-primary/50 focus-visible:ring-primary/25 h-11 flex-1 rounded-lg border px-3 py-2 outline-0 transition-all focus-visible:ring-2"
 					/>
 					<button
 						type="submit"
-						className="bg-primary text-primary-foreground inline-flex items-center rounded-lg px-4 py-2 transition-colors"
+						className="bg-primary text-primary-foreground inline-flex h-11 items-center rounded-lg px-4 transition-colors"
 					>
 						{lang === "en" ? "Search" : "搜尋"}
 					</button>
@@ -198,7 +198,7 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 					{q ? (
 						<button
 							onClick={clearSearch}
-							className="bg-muted text-muted-foreground inline-flex items-center rounded-lg px-4 py-2 transition-colors"
+							className="bg-muted text-muted-foreground inline-flex h-11 items-center rounded-lg px-4 transition-colors"
 						>
 							{lang === "en" ? "Clear" : "清除"}
 						</button>
@@ -219,7 +219,7 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 							className="group block w-full rounded-lg bg-gray-50 p-4 no-underline transition-colors hover:bg-gray-100 dark:bg-white/5 dark:hover:bg-white/10"
 						>
 							<h3 className="text-lg leading-tight font-medium">{title}</h3>
-							<Markdown className="text-muted-foreground mt-2 text-sm">
+							<Markdown className="text-muted-foreground [&_strong]:text-primary/75 mt-2 text-sm [&_strong]:font-medium">
 								{summary
 									.split("葛如鈞")
 									.map((part) => part.trim())
