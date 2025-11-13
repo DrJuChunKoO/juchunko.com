@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { SquareArrowOutUpRight } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import Markdown from "markdown-to-jsx";
 
 type NewsItem = {
@@ -232,7 +232,7 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 									<span>·</span>
 									<span>{timeAgo(item.time)}</span>
 								</div>
-								<SquareArrowOutUpRight className="size-4 opacity-0 transition-opacity group-hover:opacity-100" />
+								<ArrowUpRight className="size-4 opacity-0 transition-opacity group-hover:opacity-100" />
 							</div>
 						</a>
 					);

@@ -1,7 +1,7 @@
 ---
 import { useTranslations } from "src/i18n/utils";
 import AlbumCards from "./ui/album-cards.tsx";
-import { SquareArrowOutUpRight } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { timeAgo } from "../lib/utils";
 type SupportedLang = "en" | "zh-TW";
 
@@ -132,6 +132,6 @@ const cardItems = posts.map((activity) => {
 			<h2 class="font-semibold text-slate-900 md:text-xl dark:text-white">{t("home.transpalRss.title")}</h2>
 			<p class="text-xs text-slate-600 md:text-sm dark:text-white/50">{t("home.transpalRss.subtitle")}</p>
 		</header>
-		<SquareArrowOutUpRight className="size-5 text-gray-600 dark:text-white/80" />
+		<ArrowUpRight className="size-5 text-gray-600 dark:text-white/80" />
 	</div>
 </a>
