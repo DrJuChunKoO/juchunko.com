@@ -137,3 +137,6 @@
 :root {
 	text-autospace: normal;
 }
+.prose {
+	word-break: break-all;
+}
