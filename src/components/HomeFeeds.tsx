@@ -3,6 +3,7 @@ import React from "react";
 import DisplayCards from "./ui/display-cards";
 import AlbumCards from "./ui/album-cards";
 import { ui } from "src/i18n/ui";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 
 type CardItem = {
 	title?: string;
@@ -28,6 +29,13 @@ export default function HomeFeeds({ lang, legislatorCards = [], newsCards = [], 
 		transpal: ui[lang]["home.transpalRss.title"],
 	};
 
+	const subtitles = {
+		legislator: ui[lang]["home.legislatorActivity.subtitle"],
+		news: ui[lang]["home.news.subtitle"],
+		blog: ui[lang]["home.blogRss.subtitle"],
+		transpal: ui[lang]["home.transpalRss.subtitle"],
+	};
+
 	const SectionCard: React.FC<{
 		title: string;
 		href?: string;
@@ -41,11 +49,16 @@ export default function HomeFeeds({ lang, legislatorCards = [], newsCards = [], 
 				target={href.startsWith("http") ? "_blank" : "_self"}
 			>
 				<div>{children}</div>
-				<div className="flex w-full items-center justify-between gap-2 bg-black/5 p-4 py-3 md:p-6 md:py-4 dark:bg-white/5">
+				<div className="relative z-10 flex w-full items-center justify-between gap-2 bg-black/5 p-4 py-3 md:p-6 md:py-4 dark:bg-white/5">
 					<header>
 						<h2 className="font-semibold text-slate-900 md:text-xl dark:text-white">{title}</h2>
-						<p>{description}</p>
+						<p className="text-sm opacity-75 md:text-base"> {description}</p>
 					</header>
+					{href.startsWith("http") ? (
+						<ArrowUpRight className="size-6 text-gray-600 transition-transform group-hover:translate-x-1 dark:text-gray-300" />
+					) : (
+						<ArrowRight className="size-6 text-gray-600 transition-transform group-hover:translate-x-1 dark:text-gray-300" />
+					)}
 				</div>
 			</a>
 		);
@@ -53,19 +66,19 @@ export default function HomeFeeds({ lang, legislatorCards = [], newsCards = [], 
 
 	return (
 		<div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-			<SectionCard title={titles.legislator} href="/activities">
+			<SectionCard title={titles.legislator} description={subtitles.legislator} href="/activities">
 				<DisplayCards cards={legislatorCards} />
 			</SectionCard>
 
-			<SectionCard title={titles.news} href="/news">
+			<SectionCard title={titles.news} description={subtitles.news} href="/news">
 				<DisplayCards cards={newsCards} />
 			</SectionCard>
 
-			<SectionCard title={titles.blog} href="https://blog.juchunko.com/">
+			<SectionCard title={titles.blog} description={subtitles.blog} href="https://blog.juchunko.com/">
 				<AlbumCards cards={blogCards} />
 			</SectionCard>
 
-			<SectionCard title={titles.transpal} href="https://transpal.juchunko.com/">
+			<SectionCard title={titles.transpal} description={subtitles.transpal} href="https://transpal.juchunko.com/">
 				<AlbumCards cards={transpalCards} />
 			</SectionCard>
 		</div>
