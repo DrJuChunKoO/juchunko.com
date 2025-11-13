@@ -121,7 +121,7 @@ export default function AlbumCards({ cards }: AlbumCardsProps) {
 	});
 
 	return (
-		<div className="-my-24 flex flex-col items-center p-6">
+		<div className="-my-24 flex hidden flex-col items-center p-6 sm:flex">
 			{cardsToRender.map((cardProps, index) => (
 				<AlbumCard key={index} index={index} {...cardProps} />
 			))}

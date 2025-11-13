@@ -113,7 +113,7 @@ export default function DisplayCards({ cards }: DisplayCardsProps) {
 	});
 
 	return (
-		<div className="-mt-20 -mb-6 flex flex-col items-center p-6">
+		<div className="-mt-20 -mb-6 hidden flex-col items-center p-6 sm:flex">
 			{cardsToRender.map((cardProps, index) => (
 				<DisplayCard key={index} index={index} {...cardProps} />
 			))}
