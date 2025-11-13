@@ -1,5 +1,4 @@
-"use client";
-
+import { useMediaQuery } from "usehooks-ts";
 import React, { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Sparkles, Newspaper, BookText, Signature, User } from "lucide-react";
@@ -111,12 +110,12 @@ export default function DisplayCards({ cards }: DisplayCardsProps) {
 		}
 		return result;
 	});
-
-	return (
+	const matches = useMediaQuery("(min-width: 640px)");
+	return matches ? (
 		<div className="-mt-20 -mb-6 hidden flex-col items-center p-6 sm:flex">
 			{cardsToRender.map((cardProps, index) => (
 				<DisplayCard key={index} index={index} {...cardProps} />
 			))}
 		</div>
-	);
+	) : null;
 }

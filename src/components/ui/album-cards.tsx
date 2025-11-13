@@ -1,5 +1,4 @@
-"use client";
-
+import { useMediaQuery } from "usehooks-ts";
 import React, { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Sparkles, Newspaper, BookText, Signature, User, Rss, Mic } from "lucide-react";
@@ -119,12 +118,12 @@ export default function AlbumCards({ cards }: AlbumCardsProps) {
 		}
 		return result;
 	});
-
-	return (
-		<div className="-my-24 flex hidden flex-col items-center p-6 sm:flex">
+	const matches = useMediaQuery("(min-width: 640px)");
+	return matches ? (
+		<div className="-my-24 hidden flex-col items-center p-6 sm:flex">
 			{cardsToRender.map((cardProps, index) => (
 				<AlbumCard key={index} index={index} {...cardProps} />
 			))}
 		</div>
-	);
+	) : null;
 }
