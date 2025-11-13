@@ -3,6 +3,7 @@ import PageLayout from "../../layouts/PageLayout.astro";
 import LegislatorActivity from "../../components/LegislatorActivity.astro";
 import { useTranslations } from "../../i18n/utils";
 import { languages } from "../../i18n/ui";
+import Callout from "@/components/Callout.astro";
 
 export function getStaticPaths() {
 	return Object.keys(languages).map((lang) => ({
@@ -23,6 +24,24 @@ const description = t("home.legislatorActivity.subtitle");
 			<h4 class="font-medium tracking-tight text-gray-500 opacity-75 dark:text-gray-400">{t("home.legislatorActivity.subtitle")}</h4>
 			<h1>{t("home.legislatorActivity.title")}</h1>
 		</div>
+
+		{
+			lang === "zh-TW" && (
+				<Callout key="ly-api" class="mb-4">
+					<div class="text-gray-600 dark:text-gray-400">
+						資料來源：
+						<a
+							href="https://ly.govapi.tw/v2/"
+							target="_blank"
+							rel="noopener noreferrer"
+							class="underline hover:text-blue-600 dark:hover:text-blue-400"
+						>
+							LYAPI
+						</a>
+					</div>
+				</Callout>
+			)
+		}
 		<span
 			class="absolute top-0 right-8 hidden h-24 w-16 items-end justify-center rounded-b-xl bg-gradient-to-b from-gray-100 to-gray-200 p-3 text-4xl transition-all md:flex dark:from-white/10 dark:to-white/5"
 			>📅</span
