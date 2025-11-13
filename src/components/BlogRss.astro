@@ -135,7 +135,7 @@ const cardItems = posts.map((post) => {
 	target="_blank"
 	rel="noopener noreferrer"
 >
-	<AlbumCards client:load cards={cardItems} />
+	<AlbumCards client:only cards={cardItems} />
 	<div class="flex w-full items-center justify-between gap-2 bg-[#F2F3F5] p-4 py-3 md:p-6 md:py-4 dark:bg-[#252424]">
 		<header>
 			<h2 class="font-semibold text-slate-900 md:text-xl dark:text-white">{t("home.blogRss.title")}</h2>
