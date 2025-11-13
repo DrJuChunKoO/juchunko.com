@@ -1,10 +1,7 @@
 {
-  "useTabs": true,
-  "singleQuote": false,
-  "trailingComma": "all",
-  "printWidth": 140,
-  "plugins": [
-    "prettier-plugin-astro",
-    "prettier-plugin-tailwindcss"
-  ]
+	"useTabs": true,
+	"singleQuote": false,
+	"trailingComma": "all",
+	"printWidth": 140,
+	"plugins": ["prettier-plugin-astro", "prettier-plugin-tailwindcss"]
 }

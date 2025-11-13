@@ -63,11 +63,7 @@ export default function AIAssistantWindow({ isOpen, onClose }: AIAssistantWindow
 	const [input, setInput] = useState("");
 
 	// useChat hook for API integration with transport
-	const {
-		messages,
-		status,
-		sendMessage,
-	} = useChat({
+	const { messages, status, sendMessage } = useChat({
 		transport: new DefaultChatTransport({
 			api: "/api/chat",
 			body: {
@@ -127,7 +123,7 @@ export default function AIAssistantWindow({ isOpen, onClose }: AIAssistantWindow
 	const handleSubmit = (e?: React.FormEvent) => {
 		if (e) e.preventDefault();
 		if (!input.trim()) return;
-		
+
 		sendMessage({ text: input });
 		setInput("");
 	};
@@ -170,7 +166,7 @@ export default function AIAssistantWindow({ isOpen, onClose }: AIAssistantWindow
 					</div>
 
 					{/* 聊天內容 */}
-					<div className="h-96 max-h-[60vh] border-t border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-950 overflow-y-auto">
+					<div className="h-96 max-h-[60vh] overflow-y-auto border-t border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-950">
 						<motion.div
 							className="flex flex-col space-y-3 p-4 text-sm"
 							initial={{ opacity: 0, y: 10 }}
@@ -178,9 +174,7 @@ export default function AIAssistantWindow({ isOpen, onClose }: AIAssistantWindow
 							exit={{ opacity: 0, y: 10 }}
 							transition={{ delay: 0.35 }}
 						>
-							<div className="text-center text-xs text-gray-500">
-								AI 可能會犯錯，可能會有錯誤或不準確的回應。
-							</div>
+							<div className="text-center text-xs text-gray-500">AI 可能會犯錯，可能會有錯誤或不準確的回應。</div>
 
 							{[
 								{
@@ -190,10 +184,7 @@ export default function AIAssistantWindow({ isOpen, onClose }: AIAssistantWindow
 								},
 								...messages,
 							].map((m) => (
-								<div
-									key={m.id}
-									className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
-								>
+								<div key={m.id} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
 									<motion.div
 										className={[
 											"prose prose-sm prose-neutral prose-tight max-w-[80%] rounded-lg px-3 py-1 break-words whitespace-pre-wrap",
@@ -256,9 +247,7 @@ export default function AIAssistantWindow({ isOpen, onClose }: AIAssistantWindow
 									>
 										{quickPrompts
 											// filter is in messages - check parts for text content
-											.filter((qp) => !messages.some((m) =>
-												m.parts?.some(part => part.type === "text" && part.text === qp.prompt)
-											))
+											.filter((qp) => !messages.some((m) => m.parts?.some((part) => part.type === "text" && part.text === qp.prompt)))
 											.map((qp) => (
 												<button
 													key={qp.text}
@@ -289,9 +278,9 @@ export default function AIAssistantWindow({ isOpen, onClose }: AIAssistantWindow
 						}}
 						className="dark:border-gray-800"
 					>
-						<div className="flex items-center gap-2 rounded-b-lg border-t border-gray-200 dark:border-gray-800 p-3">
+						<div className="flex items-center gap-2 rounded-b-lg border-t border-gray-200 p-3 dark:border-gray-800">
 							<textarea
-								className="h-10 w-full resize-none bg-transparent text-gray-900 placeholder-gray-400 outline-none dark:text-gray-100 dark:placeholder-gray-500 flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:focus:border-blue-400"
+								className="h-10 w-full flex-1 resize-none rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-blue-400"
 								placeholder="請輸入您的問題..."
 								value={input}
 								onChange={handleInputChange}
@@ -305,7 +294,7 @@ export default function AIAssistantWindow({ isOpen, onClose }: AIAssistantWindow
 								disabled={status === "streaming" || input.trim() === ""}
 								aria-label="送出訊息"
 								aria-disabled={status === "streaming" || input.trim() === "" ? "true" : "false"}
-								className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-500 text-white transition-colors hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:disabled:bg-gray-800"
+								className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-500 text-white transition-colors hover:bg-blue-600 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:opacity-50 dark:bg-blue-600 dark:hover:bg-blue-700 dark:disabled:bg-gray-800"
 							>
 								<LucideSend className="h-4 w-4" />
 							</button>
