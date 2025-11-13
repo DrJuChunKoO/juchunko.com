@@ -1,8 +1,8 @@
-import { useMediaQuery } from "usehooks-ts";
-import React, { useEffect, useState } from "react";
+import type React from "react";
 import { cn } from "@/lib/utils";
 import { Sparkles, Newspaper, BookText, Signature, User, Rss, Mic } from "lucide-react";
-import { motion } from "motion/react";
+import { LazyMotion, domAnimation } from "motion/react";
+import * as m from "motion/react-m";
 import { removeMarkdown } from "@excalidraw/markdown-to-text";
 interface AlbumCardProps {
 	index?: number;
@@ -24,45 +24,20 @@ function AlbumCard({
 	const scale = 0.95 + index * 0.05;
 	const yOffset = (index - 1) * -70;
 
-	// Detect Safari to avoid applying backdrop blur (Safari has known issues with backdrop-filter)
-	const [isSafari, setIsSafari] = useState(true);
-	useEffect(() => {
-		if (typeof navigator === "undefined") return;
-		const ua = navigator.userAgent || "";
-		const vendor = navigator.vendor || "";
-		const isIOS = /iP(hone|od|ad)/.test(ua);
-		// Safari UAs include 'Safari' but exclude common other browsers' markers
-		const isSafariBrowser = /Safari/.test(ua) && !/Chrome|Chromium|CriOS|FxiOS|Edg|OPR/.test(ua);
-		// On iOS, vendor may help indicate WebKit/Safari
-		setIsSafari(isSafariBrowser || (isIOS && vendor.includes("Apple")));
-	}, []);
-
-	const Wrapper = ({ children }: { children: React.ReactNode }) =>
-		isSafari ? (
-			<motion.div
-				className={cn(
-					"bg-muted/50 relative flex h-36 w-[min(26rem,75vw)] transform-gpu flex-col justify-between rounded-xl bg-gradient-to-b px-6 py-4 drop-shadow-xs select-none",
-					"from-[#E6E8E8] to-[#f3f5f5] dark:from-[#31302F] dark:to-[#31302F]",
-					className,
-				)}
-				style={{ opacity: 1, y: `${yOffset}%`, scale: scale }}
-			>
-				{children}
-			</motion.div>
-		) : (
-			<motion.div
-				className={cn(
-					"bg-muted/50 relative flex h-36 w-[min(26rem,75vw)] transform-gpu flex-col justify-between rounded-xl bg-gradient-to-b px-6 py-4 drop-shadow-xs select-none",
-					"from-[#E6E8E8]/50 to-[#E6E8E8]/25 backdrop-blur-sm dark:from-[#31302F]/50 dark:to-[#31302F]/25",
-					className,
-				)}
-				initial={{ opacity: 0, y: `200%` }}
-				animate={{ opacity: 1, y: `${yOffset}%`, scale: scale }}
-				transition={{ delay: index * 0.1, duration: 0.5 }}
-			>
-				{children}
-			</motion.div>
-		);
+	const Wrapper = ({ children }: { children: React.ReactNode }) => (
+		<m.div
+			className={cn(
+				"bg-muted/50 relative flex h-36 w-[min(26rem,75vw)] transform-gpu flex-col justify-between rounded-xl bg-gradient-to-b px-6 py-4 drop-shadow-xs select-none",
+				"from-[#E6E8E8]/50 to-[#E6E8E8]/25 backdrop-blur-sm will-change-transform dark:from-[#31302F]/50 dark:to-[#31302F]/25",
+				className,
+			)}
+			initial={{ opacity: 0, y: `200%` }}
+			animate={{ opacity: 1, y: `${yOffset}%`, scale: scale }}
+			transition={{ delay: index * 0.1, duration: 0.5 }}
+		>
+			{children}
+		</m.div>
+	);
 	return (
 		<Wrapper>
 			<div className="flex items-center gap-2">
@@ -118,12 +93,14 @@ export default function AlbumCards({ cards }: AlbumCardsProps) {
 		}
 		return result;
 	});
-	const matches = useMediaQuery("(min-width: 640px)");
-	return matches ? (
-		<div className="-my-24 hidden flex-col items-center p-6 sm:flex">
-			{cardsToRender.map((cardProps, index) => (
-				<AlbumCard key={index} index={index} {...cardProps} />
-			))}
+
+	return (
+		<div className="-my-24 flex flex-col items-center p-6">
+			<LazyMotion features={domAnimation}>
+				{cardsToRender.map((cardProps, index) => (
+					<AlbumCard key={index} index={index} {...cardProps} />
+				))}
+			</LazyMotion>
 		</div>
-	) : null;
+	);
 }

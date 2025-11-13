@@ -1,0 +1,27 @@
+---
+import HomeFeedsClient from "./HomeFeeds.tsx";
+import { getIndexCards } from "../lib/indexCards";
+
+type SupportedLang = "en" | "zh-TW";
+const { lang = "zh-TW" } = Astro.props as { lang?: SupportedLang };
+
+// Server-side: 聚合各外部資料來源
+const { newsCards, newsFetchError, blogCards, blogFetchError, transpalCards, transpalFetchError, legislatorCards } =
+	await getIndexCards(lang);
+---
+
+<!-- HomeFeeds.astro：把 fetch 與資料整合放進來，client 端只負責 hydrate/互動 -->
+<HomeFeedsClient
+	client:only="react"
+	lang={lang}
+	legislatorCards={legislatorCards}
+	newsCards={newsCards}
+	blogCards={blogCards}
+	transpalCards={transpalCards}
+>
+	<div slot="fallback">
+		<div class="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+			{Array.from({ length: 4 }).map(() => <div class="h-75 animate-pulse rounded-lg bg-gray-200 p-4 dark:bg-gray-700" />)}
+		</div>
+	</div>
+</HomeFeedsClient>
