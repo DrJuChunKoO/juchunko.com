@@ -115,6 +115,7 @@ export default function PhoneCallInterface({ isOpen, onClose }: PhoneCallInterfa
 								transition={{ duration: 2, repeat: Infinity }}
 								animate={callState === CALL_STATES.CONNECTED ? { scale: [1, 1.05, 1] } : {}}
 							>
+								<script type="module" src="https://unpkg.com/@splinetool/viewer@1.0.18/build/spline-viewer.js"></script>
 								{/* @ts-ignore */}
 								<spline-viewer
 									className="absolute inset-0"
