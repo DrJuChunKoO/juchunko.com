@@ -25,7 +25,7 @@ function DisplayCard({
 	const yOffset = (index - 1) * -50;
 
 	// Detect Safari to avoid applying backdrop blur (Safari has known issues with backdrop-filter)
-	const [isSafari, setIsSafari] = useState(false);
+	const [isSafari, setIsSafari] = useState(true);
 	useEffect(() => {
 		if (typeof navigator === "undefined") return;
 		const ua = navigator.userAgent || "";
