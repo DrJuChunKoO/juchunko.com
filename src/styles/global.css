@@ -140,3 +140,14 @@
 .prose {
 	word-break: break-all;
 }
+
+.backdrop-blur-xs,
+.backdrop-blur-sm,
+.backdrop-blur,
+.backdrop-blur-md,
+.backdrop-blur-lg,
+.backdrop-blur-xl,
+.backdrop-blur-2xl,
+.backdrop-blur-3xl {
+	transform: translate3d(0, 0, 0);
+}

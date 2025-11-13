@@ -39,7 +39,7 @@ function DisplayCard({
 		isSafari ? (
 			<motion.div
 				className={cn(
-					"bg-muted/50 relative flex h-36 w-[min(26rem,75vw)] flex-col justify-between rounded-xl bg-gradient-to-br px-6 py-4 drop-shadow-xs select-none",
+					"bg-muted/50 relative flex h-36 w-[min(26rem,75vw)] transform-gpu flex-col justify-between rounded-xl bg-gradient-to-br px-6 py-4 drop-shadow-xs select-none",
 					"from-[#E6E8E8] to-[#f3f5f5] dark:from-[#31302F] dark:to-[#31302F]",
 					className,
 				)}
@@ -50,7 +50,7 @@ function DisplayCard({
 		) : (
 			<motion.div
 				className={cn(
-					"bg-muted/50 relative flex h-36 w-[min(26rem,75vw)] flex-col justify-between rounded-xl bg-gradient-to-br px-6 py-4 drop-shadow-xs select-none",
+					"bg-muted/50 relative flex h-36 w-[min(26rem,75vw)] transform-gpu flex-col justify-between rounded-xl bg-gradient-to-br px-6 py-4 drop-shadow-xs select-none",
 					"from-[#E6E8E8]/50 to-[#E6E8E8]/25 backdrop-blur-sm dark:from-[#31302F]/50 dark:to-[#31302F]/25",
 					className,
 				)}
