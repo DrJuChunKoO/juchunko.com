@@ -23,8 +23,7 @@ function AlbumCard({
 }: AlbumCardProps) {
 	const scale = 0.95 + index * 0.05;
 	const yOffset = (index - 1) * -70;
-
-	const Wrapper = ({ children }: { children: React.ReactNode }) => (
+	return (
 		<m.div
 			className={cn(
 				"bg-muted/50 relative flex h-36 w-[min(26rem,75vw)] transform-gpu flex-col justify-between rounded-xl bg-gradient-to-b px-6 py-4 drop-shadow-xs select-none",
@@ -35,11 +34,6 @@ function AlbumCard({
 			animate={{ opacity: 1, y: `${yOffset}%`, scale: scale }}
 			transition={{ delay: index * 0.1, duration: 0.5 }}
 		>
-			{children}
-		</m.div>
-	);
-	return (
-		<Wrapper>
 			<div className="flex items-center gap-2">
 				<span className="relative inline-flex size-8 shrink-0 items-center justify-center rounded-full bg-gray-50/50 text-gray-500 dark:bg-white/5 dark:text-white/80">
 					{icon}
@@ -48,7 +42,7 @@ function AlbumCard({
 			</div>
 			<p className="line-clamp-2 text-sm dark:text-white/50">{removeMarkdown(description)}</p>
 			<p className="text-muted-foreground text-xs">{date}</p>
-		</Wrapper>
+		</m.div>
 	);
 }
 
