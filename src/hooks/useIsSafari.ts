@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 export default function useIsSafari() {
-	const [isSafari, setIsSafari] = useState(false);
+	const [isSafari, setIsSafari] = useState(true);
 	useEffect(() => {
 		if (typeof navigator === "undefined") return;
 		const ua = navigator.userAgent || "";

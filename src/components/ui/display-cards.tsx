@@ -24,17 +24,30 @@ function DisplayCard({
 	const isSafari = useIsSafari();
 	const xOffset = (index - 1) * 20;
 	const yOffset = (index - 1) * -50;
-	return (
+	const baseClass =
+		"relative flex h-36 w-[min(26rem,75vw)] transform-gpu flex-col justify-between rounded-xl border bg-gradient-to-br px-6 py-4 drop-shadow-xs will-change-transform select-none";
+	return isSafari ? (
 		<m.div
-			className={cn(
-				"relative flex h-36 w-[min(26rem,75vw)] transform-gpu flex-col justify-between rounded-xl border bg-gradient-to-br px-6 py-4 drop-shadow-xs will-change-transform select-none",
-				!isSafari && "backdrop-blur-sm",
-				isSafari ? "from-muted to-muted/75" : "from-muted/50 to-muted/25",
-				className,
-			)}
+			className={cn(baseClass, "from-muted to-muted/75", className)}
+			style={{ opacity: 1, x: `${xOffset}%`, y: `${yOffset}%`, skewY: "-6deg", rotate: "0deg" }}
+			key="safari"
+		>
+			<div className="flex items-center gap-2">
+				<span className="relative inline-flex size-8 shrink-0 items-center justify-center rounded-full bg-gray-50/50 text-gray-500 dark:bg-white/5 dark:text-white/80">
+					{icon}
+				</span>
+				<p className={cn("line-clamp-2 text-sm font-medium dark:text-white/80")}>{title}</p>
+			</div>
+			<p className="line-clamp-2 text-sm dark:text-white/50">{removeMarkdown(description)}</p>
+			<p className="text-muted-foreground text-xs">{date}</p>
+		</m.div>
+	) : (
+		<m.div
+			className={cn(baseClass, "backdrop-blur-sm", "from-muted/50 to-muted/25", className)}
 			initial={{ opacity: 0, x: `${xOffset + 50}%`, y: `200%`, rotate: `${index * 5}deg` }}
 			animate={{ opacity: 1, x: `${xOffset}%`, y: `${yOffset}%`, skewY: "-6deg", rotate: "0deg" }}
 			transition={{ delay: isSafari ? 0 : index * 0.1, duration: isSafari ? 0 : 0.5 }}
+			key="not-safari"
 		>
 			<div className="flex items-center gap-2">
 				<span className="relative inline-flex size-8 shrink-0 items-center justify-center rounded-full bg-gray-50/50 text-gray-500 dark:bg-white/5 dark:text-white/80">
