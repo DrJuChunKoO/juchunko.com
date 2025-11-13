@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
 import LucideLanguages from "~icons/lucide/languages";
 
 const languages = {
@@ -26,24 +26,24 @@ export default function LanguageSelector() {
 	};
 
 	return (
-		<Select value={selectedLanguage} onValueChange={handleLanguageChange}>
-			<SelectTrigger className="w-40">
-				<div className="flex items-center gap-2">
-					<LucideLanguages
-						style={{
-							mask: `linear-gradient(45deg, #000 0%, rgba(0,0,0,.5) 100%)`,
-						}}
-					/>
-					<SelectValue placeholder="Select Language" />
-				</div>
-			</SelectTrigger>
-			<SelectContent>
+		<div className="flex items-center gap-2">
+			<LucideLanguages
+				style={{
+					mask: `linear-gradient(45deg, #000 0%, rgba(0,0,0,.5) 100%)`,
+				}}
+			/>
+			<NativeSelect
+				className="w-40"
+				value={selectedLanguage}
+				onChange={(e) => handleLanguageChange(e.target.value)}
+				aria-label="Select Language"
+			>
 				{Object.entries(languages).map(([lang, label]) => (
-					<SelectItem key={lang} value={lang}>
+					<NativeSelectOption key={lang} value={lang}>
 						{label}
-					</SelectItem>
+					</NativeSelectOption>
 				))}
-			</SelectContent>
-		</Select>
+			</NativeSelect>
+		</div>
 	);
 }
