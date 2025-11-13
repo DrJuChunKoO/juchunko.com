@@ -1,7 +1,6 @@
 import type React from "react";
 import { cn } from "@/lib/utils";
 import { Sparkles, Newspaper, BookText, Signature, User, Rss, Mic } from "lucide-react";
-import { LazyMotion, domAnimation } from "motion/react";
 import * as m from "motion/react-m";
 import { removeMarkdown } from "@excalidraw/markdown-to-text";
 interface AlbumCardProps {
@@ -31,7 +30,7 @@ function AlbumCard({
 				className,
 			)}
 			initial={{ opacity: 0, y: `200%` }}
-			animate={{ opacity: 1, y: `${yOffset}%`, scale: scale }}
+			whileInView={{ opacity: 1, y: `${yOffset}%`, scale: scale }}
 			transition={{ delay: index * 0.1, duration: 0.5 }}
 		>
 			<div className="flex items-center gap-2">
@@ -90,11 +89,9 @@ export default function AlbumCards({ cards }: AlbumCardsProps) {
 
 	return (
 		<div className="-my-24 flex flex-col items-center p-6">
-			<LazyMotion features={domAnimation}>
-				{cardsToRender.map((cardProps, index) => (
-					<AlbumCard key={index} index={index} {...cardProps} />
-				))}
-			</LazyMotion>
+			{cardsToRender.map((cardProps, index) => (
+				<AlbumCard key={index} index={index} {...cardProps} />
+			))}
 		</div>
 	);
 }

@@ -1,8 +1,6 @@
 import type React from "react";
 import { cn } from "@/lib/utils";
 import { Sparkles, Newspaper, BookText, Signature, User } from "lucide-react";
-
-import { LazyMotion, domAnimation } from "motion/react";
 import * as m from "motion/react-m";
 import { removeMarkdown } from "@excalidraw/markdown-to-text";
 interface DisplayCardProps {
@@ -32,7 +30,7 @@ function DisplayCard({
 				className,
 			)}
 			initial={{ opacity: 0, x: `${xOffset + 50}%`, y: `200%`, rotate: `${index * 5}deg` }}
-			animate={{ opacity: 1, x: `${xOffset}%`, y: `${yOffset}%`, skewY: "-6deg", rotate: "0deg" }}
+			whileInView={{ opacity: 1, x: `${xOffset}%`, y: `${yOffset}%`, skewY: "-6deg", rotate: "0deg" }}
 			transition={{ delay: index * 0.1, duration: 0.5 }}
 		>
 			<div className="flex items-center gap-2">
@@ -85,11 +83,9 @@ export default function DisplayCards({ cards }: DisplayCardsProps) {
 
 	return (
 		<div className="-my-20 flex flex-col items-center p-6">
-			<LazyMotion features={domAnimation}>
-				{cardsToRender.map((cardProps, index) => (
-					<DisplayCard key={index} index={index} {...cardProps} />
-				))}
-			</LazyMotion>
+			{cardsToRender.map((cardProps, index) => (
+				<DisplayCard key={index} index={index} {...cardProps} />
+			))}
 		</div>
 	);
 }
