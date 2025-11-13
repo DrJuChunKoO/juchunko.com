@@ -34,10 +34,40 @@ export default function LanguagePrompt({ currentUrl }: LanguagePromptProps) {
 	}, [currentLang, promptChoice]);
 
 	const handleSwitch = () => {
-		// record that the user switched so we don't prompt again this session
-		setPromptChoice("switched");
-		const newPath = currentUrl.replace(`/${currentLang}/`, `/${browserLang}/`);
-		window.location.href = newPath;
+		// Determine the target locale from the browser language
+		const detected = navigator.language.startsWith("zh") ? "zh-TW" : "en";
+
+		try {
+			// Persist user's choice so the prompt won't reappear in this session
+			setPromptChoice("switched");
+
+			// Build a new URL and replace the first path segment (the locale)
+			// This handles cases like '/en', '/en/', '/en/foo' and preserves
+			// query string and hash fragments.
+			const url = new URL(currentUrl, window.location.origin);
+			const segments = url.pathname.split("/");
+
+			// segments[0] is '', segments[1] should be the locale when present
+			if (segments.length > 1 && (segments[1] === "en" || segments[1] === "zh-TW")) {
+				segments[1] = detected;
+			} else {
+				// No locale segment present — insert it right after the leading '/'
+				segments.splice(1, 0, detected);
+			}
+
+			url.pathname = segments.join("/") || "/";
+			const newHref = url.toString();
+			console.log("Switching language, navigating to:", newHref);
+			setShowPrompt(false);
+			window.location.href = newHref;
+		} catch (err) {
+			// Fallback: attempt a best-effort string replace and still persist the choice
+			console.error("Failed to construct locale URL, falling back to naive replace:", err);
+			setPromptChoice("switched");
+			setShowPrompt(false);
+			const naive = currentUrl.replace(`/${currentLang}/`, `/${detected}/`);
+			window.location.href = naive;
+		}
 	};
 
 	const variants = {
