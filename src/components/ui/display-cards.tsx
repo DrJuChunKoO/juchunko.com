@@ -1,5 +1,6 @@
 "use client";
 
+import React, { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Sparkles, Newspaper, BookText, Signature, User } from "lucide-react";
 import { motion } from "motion/react";
@@ -24,10 +25,23 @@ function DisplayCard({
 	const xOffset = (index - 1) * 20;
 	const yOffset = (index - 1) * -50;
 
+	// Detect Safari to avoid applying backdrop blur (Safari has known issues with backdrop-filter)
+	const [isSafari, setIsSafari] = useState(false);
+	useEffect(() => {
+		if (typeof navigator === "undefined") return;
+		const ua = navigator.userAgent || "";
+		const vendor = navigator.vendor || "";
+		const isIOS = /iP(hone|od|ad)/.test(ua);
+		const isSafariBrowser = /Safari/.test(ua) && !/Chrome|Chromium|CriOS|FxiOS|Edg|OPR/.test(ua);
+		setIsSafari(isSafariBrowser || (isIOS && vendor.includes("Apple")));
+	}, []);
+
 	return (
 		<motion.div
 			className={cn(
-				"bg-muted/50 relative flex h-36 w-[min(26rem,75vw)] flex-col justify-between rounded-xl bg-gradient-to-br from-black/5 to-white/5 px-6 py-4 drop-shadow-xs backdrop-blur-sm select-none",
+				"bg-muted/50 relative flex h-36 w-[min(26rem,75vw)] flex-col justify-between rounded-xl bg-gradient-to-br px-6 py-4 drop-shadow-xs select-none",
+				!isSafari && "from-[#E6E8E8]/50 to-[#E6E8E8]/25 backdrop-blur-sm dark:from-[#31302F]/50 dark:to-[#31302F]/25",
+				isSafari && "from-[#E6E8E8] to-[#f3f5f5] dark:from-[#31302F] dark:to-[#31302F]",
 				className,
 			)}
 			initial={{ opacity: 0, x: `${xOffset + 50}%`, y: `200%`, rotate: `${index * 5}deg` }}
