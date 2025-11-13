@@ -236,7 +236,7 @@ type MeetsResponse = {
 	meets?: Record<string, unknown>[];
 };
 
-const safeLimit = Number.isFinite(limit) ? Math.max(1, Math.min(20, Math.floor(limit))) : 5;
+const safeLimit = Number.isFinite(limit) ? Math.max(1, limit) : 5;
 
 let allActivities: Activity[] = [];
 let fetchError = false;
@@ -322,13 +322,6 @@ try {
 	console.error("Failed to fetch legislator activity:", error);
 	fetchError = true;
 }
-
-const timestamps = allActivities
-	.map((item) => (item.date ? item.date.toISOString() : null))
-	.filter((value): value is string => typeof value === "string" && value.length > 0);
-
-const lastUpdatedRaw = timestamps.sort((a, b) => (a > b ? 1 : -1)).at(-1) ?? null;
-const lastUpdatedLabel = lastUpdatedRaw ? formatDateTime(lastUpdatedRaw) : null;
 
 const hasData = allActivities.length > 0;
 
