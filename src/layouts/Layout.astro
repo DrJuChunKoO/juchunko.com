@@ -1,6 +1,7 @@
 ---
 import "../styles/global.css";
 import { getLangFromUrl, useTranslations } from "../i18n/utils";
+import LanguagePrompt from "../components/LanguagePrompt.tsx";
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 ---
@@ -26,5 +27,6 @@ const t = useTranslations(lang);
 	</head>
 	<body class="overflow-x-hidden">
 		<slot />
+		<LanguagePrompt currentUrl={Astro.url.href} client:only="react" />
 	</body>
 </html>

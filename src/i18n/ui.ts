@@ -50,6 +50,11 @@ export const ui = {
 		"post.recommend": "Recommended for you",
 		"post.prev": "Previous",
 		"post.next": "Next",
+		"languagePrompt.title": "This page is available in English",
+		"languagePrompt.message": "Do you want to switch your language?",
+		"languagePrompt.go": "Go",
+		"languagePrompt.switch": "Switch",
+		"languagePrompt.dismiss": "Dismiss",
 	},
 	"zh-TW": {
 		"site.title": "科技立委葛如鈞．寶博士",
@@ -95,5 +100,10 @@ export const ui = {
 		"post.recommend": "為您推薦",
 		"post.prev": "前一篇",
 		"post.next": "後一篇",
+		"languagePrompt.title": "此頁提供繁體中文版",
+		"languagePrompt.message": "要切換您的語言嗎？",
+		"languagePrompt.go": "前往",
+		"languagePrompt.switch": "切換",
+		"languagePrompt.dismiss": "忽略",
 	},
 } as const;
