@@ -56,7 +56,7 @@ export default function HomeFeeds({ lang, legislatorCards = [], newsCards = [], 
 						<p className="line-clamp-1 text-sm opacity-75 md:text-base"> {description}</p>
 					</header>
 					{href.startsWith("http") ? (
-						<ArrowUpRight className="size-6 text-gray-600 transition-transform group-hover:translate-x-1 dark:text-gray-300" />
+						<ArrowUpRight className="size-6 text-gray-600 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1 dark:text-gray-300" />
 					) : (
 						<ArrowRight className="size-6 text-gray-600 transition-transform group-hover:translate-x-1 dark:text-gray-300" />
 					)}
