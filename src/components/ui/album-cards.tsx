@@ -38,25 +38,34 @@ function AlbumCard({
 		setIsSafari(isSafariBrowser || (isIOS && vendor.includes("Apple")));
 	}, []);
 
-	// prepare motion props; disable motion in Safari by making initial == animate and zero duration
-	const motionInitial = isSafari ? { opacity: 1, y: `${yOffset}%`, scale: scale } : { opacity: 0, y: `200%` };
-
-	const motionAnimate = isSafari ? motionInitial : { opacity: 1, y: `${yOffset}%`, scale: scale };
-
-	const motionTransition = isSafari ? { duration: 0 } : { delay: index * 0.1, duration: 0.5 };
-
+	const Wrapper = ({ children }: { children: React.ReactNode }) =>
+		isSafari ? (
+			<motion.div
+				className={cn(
+					"bg-muted/50 relative flex h-36 w-[min(26rem,75vw)] flex-col justify-between rounded-xl bg-gradient-to-b px-6 py-4 drop-shadow-xs select-none",
+					"from-[#E6E8E8] to-[#f3f5f5] dark:from-[#31302F] dark:to-[#31302F]",
+					className,
+				)}
+				style={{ opacity: 1, y: `${yOffset}%`, scale: scale }}
+			>
+				{children}
+			</motion.div>
+		) : (
+			<motion.div
+				className={cn(
+					"bg-muted/50 relative flex h-36 w-[min(26rem,75vw)] flex-col justify-between rounded-xl bg-gradient-to-b px-6 py-4 drop-shadow-xs select-none",
+					"from-[#E6E8E8]/50 to-[#E6E8E8]/25 backdrop-blur-sm dark:from-[#31302F]/50 dark:to-[#31302F]/25",
+					className,
+				)}
+				initial={{ opacity: 0, y: `200%` }}
+				animate={{ opacity: 1, y: `${yOffset}%`, scale: scale }}
+				transition={{ delay: index * 0.1, duration: 0.5 }}
+			>
+				{children}
+			</motion.div>
+		);
 	return (
-		<motion.div
-			className={cn(
-				"bg-muted/50 relative flex h-36 w-[min(26rem,75vw)] flex-col justify-between rounded-xl bg-gradient-to-b px-6 py-4 drop-shadow-xs select-none",
-				!isSafari && "from-[#E6E8E8]/50 to-[#E6E8E8]/25 backdrop-blur-sm dark:from-[#31302F]/50 dark:to-[#31302F]/25",
-				isSafari && "from-[#E6E8E8] to-[#f3f5f5] dark:from-[#31302F] dark:to-[#31302F]",
-				className,
-			)}
-			initial={motionInitial}
-			animate={motionAnimate}
-			transition={motionTransition}
-		>
+		<Wrapper>
 			<div className="flex items-center gap-2">
 				<span className="relative inline-flex size-8 shrink-0 items-center justify-center rounded-full bg-gray-50/50 text-gray-500 dark:bg-white/5 dark:text-white/80">
 					{icon}
@@ -65,7 +74,7 @@ function AlbumCard({
 			</div>
 			<p className="line-clamp-2 text-sm dark:text-white/50">{removeMarkdown(description)}</p>
 			<p className="text-muted-foreground text-xs">{date}</p>
-		</motion.div>
+		</Wrapper>
 	);
 }
 
