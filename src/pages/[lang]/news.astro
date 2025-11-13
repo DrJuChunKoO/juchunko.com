@@ -29,7 +29,7 @@ const description = t("home.news.subtitle");
 		>
 
 		<!-- React-based News page -->
-		<!-- client:only 確保在瀏覽器載入 React 元件 -->
-		<NewsPage client:only lang={lang as "en" | "zh-TW"} />
+		<!-- client:only="react" 確保在瀏覽器載入 React 元件 -->
+		<NewsPage client:only="react" lang={lang as "en" | "zh-TW"} />
 	</div>
 </PageLayout>

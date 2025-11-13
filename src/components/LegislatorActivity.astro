@@ -359,7 +359,7 @@ const cardItems = allActivities.map((activity) => {
 	fetchErrorMessage={t("home.legislatorActivity.fetchError")}
 >
 	<div slot="card">
-		<DisplayCards client:only cards={cardItems.toReversed()} />
+		<DisplayCards client:only="react" cards={cardItems.toReversed()} />
 	</div>
 	<div slot="page">
 		<LegislatorActivityPage lang={lang} activities={allActivities} labels={carouselLabels} />
