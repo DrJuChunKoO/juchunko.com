@@ -38,6 +38,13 @@ function AlbumCard({
 		setIsSafari(isSafariBrowser || (isIOS && vendor.includes("Apple")));
 	}, []);
 
+	// prepare motion props; disable motion in Safari by making initial == animate and zero duration
+	const motionInitial = isSafari ? { opacity: 1, y: `${yOffset}%`, scale: scale } : { opacity: 0, y: `200%` };
+
+	const motionAnimate = isSafari ? motionInitial : { opacity: 1, y: `${yOffset}%`, scale: scale };
+
+	const motionTransition = isSafari ? { duration: 0 } : { delay: index * 0.1, duration: 0.5 };
+
 	return (
 		<motion.div
 			className={cn(
@@ -46,9 +53,9 @@ function AlbumCard({
 				isSafari && "from-[#E6E8E8] to-[#f3f5f5] dark:from-[#31302F] dark:to-[#31302F]",
 				className,
 			)}
-			initial={{ opacity: 0, y: `200%` }}
-			animate={{ opacity: 1, y: `${yOffset}%`, scale: scale }}
-			transition={{ delay: index * 0.1, duration: 0.5 }}
+			initial={motionInitial}
+			animate={motionAnimate}
+			transition={motionTransition}
 		>
 			<div className="flex items-center gap-2">
 				<span className="relative inline-flex size-8 shrink-0 items-center justify-center rounded-full bg-gray-50/50 text-gray-500 dark:bg-white/5 dark:text-white/80">
