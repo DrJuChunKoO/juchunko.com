@@ -27,9 +27,26 @@ const description = t("home.legislatorActivity.subtitle");
 
 		{
 			lang === "zh-TW" && (
-				<Callout key="ly-api" class="mb-4">
+				<Callout key="ly-api" class="mb-4" closable={false}>
 					<div class="text-gray-600 dark:text-gray-400">
 						資料來源：
+						<a
+							href="https://ly.govapi.tw/v2/"
+							target="_blank"
+							rel="noopener noreferrer"
+							class="underline hover:text-blue-600 dark:hover:text-blue-400"
+						>
+							LYAPI
+						</a>
+					</div>
+				</Callout>
+			)
+		}
+		{
+			lang === "en" && (
+				<Callout key="ly-api-en" class="mb-4" closable={false}>
+					<div class="text-gray-600 dark:text-gray-400">
+						Data Source:
 						<a
 							href="https://ly.govapi.tw/v2/"
 							target="_blank"
