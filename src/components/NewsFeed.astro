@@ -74,7 +74,7 @@ const cardItems = allNews.slice(0, limit).map((item) => ({
 	fetchErrorMessage={t("home.news.fetchError")}
 >
 	<div slot="card">
-		<DisplayCards client:load cards={cardItems.toReversed()} />
+		<DisplayCards client:only cards={cardItems.toReversed()} />
 	</div>
 	<div slot="page"></div>
 </DataFeed>
