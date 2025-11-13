@@ -17,11 +17,8 @@ import BytesizeGithub from "~icons/bytesize/github";
 	<nav
 		class="mx-auto flex h-20 max-w-[90rem] items-center justify-end gap-2 pr-[max(env(safe-area-inset-right),2rem)] pl-[max(env(safe-area-inset-left),2rem)] text-sm transition-all md:max-w-[90vw] [.scrolled_&]:h-16"
 	>
-		<a
-			class="flex items-center text-base transition-all duration-200 hover:scale-105 hover:opacity-75 ltr:mr-auto rtl:ml-auto"
-			href={`/${lang}`}
-		>
-			<span class="text-foreground font-bold tracking-wide uppercase">{t("site.title")}</span>
+		<a class="flex items-center text-base transition-opacity hover:opacity-75 ltr:mr-auto rtl:ml-auto" href={`/${lang}`}>
+			<span class="text-foreground font-medium tracking-wide uppercase">{t("site.title")}</span>
 		</a>
 		<a
 			href="https://blog.juchunko.com/"
@@ -45,7 +42,7 @@ import BytesizeGithub from "~icons/bytesize/github";
 			href="https://github.com/DrJuChunKoO/juchunko.com"
 			target="_blank"
 			rel="noreferrer"
-			class="p-2 text-current transition-transform duration-200 hover:scale-110"
+			class="p-2 text-current transition-opacity hover:opacity-75"
 			title="GitHub repository for this site"
 			aria-label="GitHub repository for this site"
 		>

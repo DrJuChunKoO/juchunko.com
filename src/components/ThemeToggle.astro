@@ -2,7 +2,12 @@
 
 ---
 
-<button type="button" data-theme-toggle aria-label="Toggle dark mode" class="p-2 text-current hover:opacity-75 focus:outline-none">
+<button
+	type="button"
+	data-theme-toggle
+	aria-label="Toggle dark mode"
+	class="cursor-pointer p-2 text-current hover:opacity-75 focus:outline-none"
+>
 	<!-- Use CSS to swap icons based on dark mode -->
 	<svg
 		xmlns="http://www.w3.org/2000/svg"
@@ -27,44 +32,44 @@
 </button>
 
 <script is:inline data-astro-rerun>
-	;(() => {
+	(() => {
 		/**
 		 * Apply the stored/system theme to the provided document (defaults to current one).
 		 */
 		function applyTheme(doc = document) {
 			try {
-				const stored = localStorage.getItem("theme")
-				const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches
-				const dark = stored === "dark" || (!stored && prefersDark)
-				doc.documentElement.classList.toggle("dark", dark)
+				const stored = localStorage.getItem("theme");
+				const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+				const dark = stored === "dark" || (!stored && prefersDark);
+				doc.documentElement.classList.toggle("dark", dark);
 			} catch {
 				/* ignore */
 			}
 		}
 
 		// Ensure correct theme on initial load.
-		applyTheme()
+		applyTheme();
 
 		// Before Astro swaps the new document in, copy the theme so there is no flash.
 		document.addEventListener("astro:before-swap", (event) => {
-			applyTheme(event.newDocument)
-		})
+			applyTheme(event.newDocument);
+		});
 
 		// Handle toggle button clicks (re-bind on every page load).
 		function bindToggle() {
-			const button = document.querySelector("[data-theme-toggle]")
-			if (!button || button.__themeToggleBound) return
+			const button = document.querySelector("[data-theme-toggle]");
+			if (!button || button.__themeToggleBound) return;
 
-			button.__themeToggleBound = true
+			button.__themeToggleBound = true;
 			button.addEventListener("click", () => {
-				const html = document.documentElement
-				const isDark = html.classList.toggle("dark")
-				localStorage.setItem("theme", isDark ? "dark" : "light")
-			})
+				const html = document.documentElement;
+				const isDark = html.classList.toggle("dark");
+				localStorage.setItem("theme", isDark ? "dark" : "light");
+			});
 		}
 
 		// Bind immediately and after every client navigation.
-		bindToggle()
-		document.addEventListener("astro:page-load", bindToggle)
-	})()
+		bindToggle();
+		document.addEventListener("astro:page-load", bindToggle);
+	})();
 </script>
