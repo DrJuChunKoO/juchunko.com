@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import { Sparkles, Newspaper, BookText, Signature, User, Rss, Mic } from "lucide-react";
 import * as m from "motion/react-m";
 import { removeMarkdown } from "@excalidraw/markdown-to-text";
+import useIsSafari from "@/hooks/useIsSafari";
 interface AlbumCardProps {
 	index?: number;
 	className?: string;
@@ -20,18 +21,20 @@ function AlbumCard({
 	description = "Discover amazing content",
 	date = "Just now",
 }: AlbumCardProps) {
+	const isSafari = useIsSafari();
 	const scale = 0.95 + index * 0.05;
 	const yOffset = (index - 1) * -70;
 	return (
 		<m.div
 			className={cn(
-				"bg-muted/50 relative flex h-36 w-[min(26rem,75vw)] transform-gpu flex-col justify-between rounded-xl bg-gradient-to-b px-6 py-4 drop-shadow-xs select-none",
-				"from-[#E6E8E8]/50 to-[#E6E8E8]/25 backdrop-blur-sm will-change-transform dark:from-[#31302F]/50 dark:to-[#31302F]/25",
+				"relative flex h-36 w-[min(26rem,75vw)] flex-col justify-between rounded-xl border bg-gradient-to-b px-6 py-4 drop-shadow-xs will-change-transform select-none",
+				!isSafari && "backdrop-blur-sm",
+				isSafari ? "from-muted to-muted/75" : "from-muted/50 to-muted/25",
 				className,
 			)}
 			initial={{ opacity: 0, y: `200%` }}
-			whileInView={{ opacity: 1, y: `${yOffset}%`, scale: scale }}
-			transition={{ delay: index * 0.1, duration: 0.5 }}
+			animate={{ opacity: 1, y: `${yOffset}%`, scale: scale }}
+			transition={{ delay: isSafari ? 0 : index * 0.1, duration: isSafari ? 0 : 0.5 }}
 		>
 			<div className="flex items-center gap-2">
 				<span className="relative inline-flex size-8 shrink-0 items-center justify-center rounded-full bg-gray-50/50 text-gray-500 dark:bg-white/5 dark:text-white/80">
