@@ -16,7 +16,7 @@
   },
   "routes": [
     {
-      "pattern": "bata.juchunko.com",
+      "pattern": "beta.juchunko.com",
       "custom_domain": true
     }
   ]
