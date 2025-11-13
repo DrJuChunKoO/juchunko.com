@@ -68,11 +68,11 @@ export default function HomeFeeds({ lang, legislatorCards = [], newsCards = [], 
 	return (
 		<div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
 			<LazyMotion features={domAnimation}>
-				<SectionCard title={titles.legislator} description={subtitles.legislator} href="/activities">
+				<SectionCard title={titles.legislator} description={subtitles.legislator} href={`/${lang}/activities`}>
 					<DisplayCards cards={legislatorCards.toReversed()} />
 				</SectionCard>
 
-				<SectionCard title={titles.news} description={subtitles.news} href="/news">
+				<SectionCard title={titles.news} description={subtitles.news} href={`/${lang}/news`}>
 					<DisplayCards cards={newsCards.toReversed()} />
 				</SectionCard>
 
