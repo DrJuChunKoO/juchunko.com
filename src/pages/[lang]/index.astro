@@ -31,8 +31,8 @@ const fragments = (await getCollection("fragment"))
 <PageLayout>
 	<div class="mb-6 flex flex-col items-center md:-mt-10 md:flex-row-reverse md:gap-6">
 		<div class="mx-auto w-full">
-			<h1 class="text-foreground my-2 text-3xl leading-[1.35em] font-bold md:text-4xl">{t("home.title")}</h1>
-			<p class="text-lg leading-[1.6em] text-gray-600 md:text-xl dark:text-gray-400">
+			<h1 class="text-foreground my-2 text-2xl leading-[1.35em] font-bold md:text-4xl">{t("home.title")}</h1>
+			<p class="leading-[1.6em] text-gray-600 md:text-xl dark:text-gray-400">
 				{t("home.description")}
 			</p>
 		</div>
@@ -40,7 +40,7 @@ const fragments = (await getCollection("fragment"))
 
 	{
 		lang === "zh-TW" && (
-			<Callout key="ai-basic-act-2025-07" actionText="前往查看" actionHref={`/${lang}/act/ai-basic-act`} class="mb-4">
+			<Callout key="ai-basic-act-2025-07" actionText="前往查看" actionHref={`/${lang}/act/ai-basic-act`} class="mb-4" closable={false}>
 				<div class="space-y-1">
 					<div class="text-base font-bold">AI 基本法</div>
 					<div class="text-xs text-gray-600 dark:text-gray-400">
