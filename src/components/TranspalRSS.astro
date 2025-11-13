@@ -129,8 +129,8 @@ const cardItems = posts.map((activity) => {
 	<AlbumCards client:load cards={cardItems.toReversed()} />
 	<div class="flex w-full items-center justify-between gap-2 bg-black/2.5 p-4 py-3 backdrop-blur-xs md:p-6 md:py-4 dark:bg-white/5">
 		<header>
-			<h2 class="font-semibold text-slate-900 md:text-xl dark:text-white">對話逐字稿</h2>
-			<p class="text-xs text-slate-600 md:text-sm dark:text-white/50">查看最新對話逐字稿</p>
+			<h2 class="font-semibold text-slate-900 md:text-xl dark:text-white">{t("home.transpalRss.title")}</h2>
+			<p class="text-xs text-slate-600 md:text-sm dark:text-white/50">{t("home.transpalRss.subtitle")}</p>
 		</header>
 		<SquareArrowOutUpRight className="size-5 text-gray-600 dark:text-white/80" />
 	</div>
