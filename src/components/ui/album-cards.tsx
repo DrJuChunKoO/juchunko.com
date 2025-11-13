@@ -27,7 +27,7 @@ function AlbumCard({
 	return (
 		<m.div
 			className={cn(
-				"relative flex h-36 w-[min(26rem,75vw)] flex-col justify-between rounded-xl border bg-gradient-to-b px-6 py-4 drop-shadow-xs will-change-transform select-none",
+				"relative flex h-36 w-[min(26rem,75vw)] transform-gpu flex-col justify-between rounded-xl border bg-gradient-to-b px-6 py-4 drop-shadow-xs will-change-transform select-none",
 				!isSafari && "backdrop-blur-sm",
 				isSafari ? "from-muted to-muted/75" : "from-muted/50 to-muted/25",
 				className,
