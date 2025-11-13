@@ -29,5 +29,14 @@ export default defineConfig({
 				jsx: "react",
 			}),
 		],
+		build: {
+			rollupOptions: {
+				output: {
+					manualChunks: {
+						react: ["react", "react-dom"],
+					},
+				},
+			},
+		},
 	},
 });
