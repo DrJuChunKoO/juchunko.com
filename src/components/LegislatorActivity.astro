@@ -3,7 +3,6 @@ import { useTranslations } from "../i18n/utils";
 import { timeAgo } from "../lib/utils";
 import DataFeed from "./DataFeed.astro";
 import LegislatorActivityPage from "./LegislatorActivityPage.astro";
-import DisplayCards from "./ui/display-cards.tsx";
 
 type SupportedLang = "en" | "zh-TW";
 
@@ -358,9 +357,7 @@ const cardItems = allActivities.map((activity) => {
 	emptyMessage={t("home.legislatorActivity.empty")}
 	fetchErrorMessage={t("home.legislatorActivity.fetchError")}
 >
-	<div slot="card">
-		<DisplayCards client:only="react" cards={cardItems.toReversed()} />
-	</div>
+	<div slot="card"></div>
 	<div slot="page">
 		<LegislatorActivityPage lang={lang} activities={allActivities} labels={carouselLabels} />
 	</div>
