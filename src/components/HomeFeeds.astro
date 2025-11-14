@@ -1,6 +1,7 @@
 ---
-import HomeFeedsClient from "./HomeFeeds.tsx";
 import { getIndexCards } from "../lib/indexCards";
+import { ui } from "src/i18n/ui";
+import { Sparkles, Newspaper, BookText, Signature, User, Rss, Mic, ArrowRight, ArrowUpRight } from "lucide-react";
 
 type SupportedLang = "en" | "zh-TW";
 const { lang = "zh-TW" } = Astro.props as { lang?: SupportedLang };
@@ -8,20 +9,227 @@ const { lang = "zh-TW" } = Astro.props as { lang?: SupportedLang };
 // Server-side: 聚合各外部資料來源
 const { newsCards, newsFetchError, blogCards, blogFetchError, transpalCards, transpalFetchError, legislatorCards } =
 	await getIndexCards(lang);
+
+const titles = {
+	legislator: ui[lang]["home.legislatorActivity.title"],
+	news: ui[lang]["home.news.title"],
+	blog: ui[lang]["home.blogRss.title"],
+	transpal: ui[lang]["home.transpalRss.title"],
+};
+
+const subtitles = {
+	legislator: ui[lang]["home.legislatorActivity.subtitle"],
+	news: ui[lang]["home.news.subtitle"],
+	blog: ui[lang]["home.blogRss.subtitle"],
+	transpal: ui[lang]["home.transpalRss.subtitle"],
+};
+
+// Section configuration array (separates data from rendering)
+const sections = [
+	{
+		key: "legislator",
+		title: titles.legislator,
+		subtitle: subtitles.legislator,
+		href: `/${lang}/activities`,
+		type: "display",
+		cards: legislatorCards?.slice().reverse() ?? [],
+		max: 3,
+	},
+	{
+		key: "news",
+		title: titles.news,
+		subtitle: subtitles.news,
+		href: `/${lang}/news`,
+		type: "display",
+		cards: newsCards?.slice().reverse() ?? [],
+		max: 3,
+	},
+	{
+		key: "blog",
+		title: titles.blog,
+		subtitle: subtitles.blog,
+		href: `https://blog.juchunko.com/`,
+		type: "album",
+		cards: blogCards ?? [],
+		max: 3,
+	},
+	{
+		key: "transpal",
+		title: titles.transpal,
+		subtitle: subtitles.transpal,
+		href: `https://transpal.juchunko.com/`,
+		type: "album",
+		cards: transpalCards?.slice().reverse() ?? [],
+		max: 3,
+	},
+];
 ---
 
-<!-- HomeFeeds.astro：把 fetch 與資料整合放進來，client 端只負責 hydrate/互動 -->
-<HomeFeedsClient
-	client:only="react"
-	lang={lang}
-	legislatorCards={legislatorCards}
-	newsCards={newsCards}
-	blogCards={blogCards}
-	transpalCards={transpalCards}
->
-	<div slot="fallback">
-		<div class="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-			{Array.from({ length: 4 }).map(() => <div class="h-75 animate-pulse rounded-lg bg-gray-200 p-4 dark:bg-gray-700" />)}
-		</div>
-	</div>
-</HomeFeedsClient>
+<!-- Use Tailwind utility classes instead of local CSS -->
+<div class="homefeeds-grid mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+	{
+		sections.map((sec) => (
+			<a
+				class="section-card group relative flex flex-col overflow-hidden rounded-lg bg-gray-50 transition-colors hover:bg-gray-100 dark:bg-white/5 dark:hover:bg-white/10"
+				href={sec.href}
+				data-animate="init"
+			>
+				<div class="p-4 md:p-6">
+					<div class="relative flex h-75 flex-col items-center">
+						{sec.cards?.slice(0, sec.max).map((c, index) => {
+							if (sec.type === "display") {
+								const xOffset = (index - 1) * 20;
+								return (
+									<div
+										class="from-muted/50 to-muted/25 absolute top-1/2 left-1/2 flex h-36 w-[min(26rem,75vw)] -translate-x-1/2 -translate-y-1/2 transform-gpu flex-col justify-between rounded-xl border bg-gradient-to-br px-6 py-4 drop-shadow-sm backdrop-blur-sm will-change-transform select-none dark:from-white/5 dark:to-white/3"
+										data-card-index={index}
+										data-card-type="display"
+										style={`opacity:0; transform: translate(-50%, 200%) translateX(${xOffset}%) rotate(${index * 5}deg); z-index:${3 - index};`}
+									>
+										<div class="flex items-center gap-2">
+											<span class="relative inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gray-50/50 text-gray-500 dark:bg-white/5 dark:text-white/80">
+												{c.icon === "newspaper" ? (
+													<Newspaper className="h-4 w-4" />
+												) : c.icon === "propose" ? (
+													<BookText className="h-4 w-4" />
+												) : c.icon === "cosign" ? (
+													<Signature className="h-4 w-4" />
+												) : c.icon === "meet" ? (
+													<User className="h-4 w-4" />
+												) : (
+													<Sparkles className="h-4 w-4" />
+												)}
+											</span>
+											<p class="line-clamp-2 text-sm font-medium dark:text-white/80">{c.title}</p>
+										</div>
+										<p class="line-clamp-2 text-sm dark:text-white/50">{c.description}</p>
+										<p class="text-muted-foreground text-xs">{c.date}</p>
+									</div>
+								);
+							}
+							// album
+							const scale = 1 - index * 0.05;
+							return (
+								<div
+									class="from-muted/50 to-muted/25 absolute top-1/2 left-1/2 flex h-36 w-[min(26rem,75vw)] -translate-x-1/2 -translate-y-1/2 transform-gpu flex-col justify-between rounded-xl border bg-gradient-to-b px-6 py-4 drop-shadow-sm backdrop-blur-sm will-change-transform select-none dark:from-white/5 dark:to-white/3"
+									data-card-index={index}
+									data-card-type="album"
+									style={`opacity:0; transform: translate(-50%, 200%) scale(${scale}); z-index:${3 - index};`}
+								>
+									<div class="flex items-center gap-2">
+										<span class="relative inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gray-50/50 text-gray-500 dark:bg-white/5 dark:text-white/80">
+											{c.icon === "newspaper" ? (
+												<Newspaper className="h-4 w-4" />
+											) : c.icon === "propose" ? (
+												<BookText className="h-4 w-4" />
+											) : c.icon === "cosign" ? (
+												<Signature className="h-4 w-4" />
+											) : c.icon === "meet" ? (
+												<User className="h-4 w-4" />
+											) : c.icon === "blog" ? (
+												<Rss className="h-4 w-4" />
+											) : c.icon === "transpal" ? (
+												<Mic className="h-4 w-4" />
+											) : (
+												<Sparkles className="h-4 w-4" />
+											)}
+										</span>
+										<p class="line-clamp-1 text-sm font-medium dark:text-white/80">{c.title}</p>
+									</div>
+									<p class="line-clamp-2 text-sm dark:text-white/50">{c.description}</p>
+									<p class="text-muted-foreground text-xs">{c.date}</p>
+								</div>
+							);
+						})}
+					</div>
+				</div>
+				<div class="relative z-10 flex w-full items-center justify-between gap-2 bg-black/5 p-4 py-3 md:p-6 md:py-4 dark:bg-white/5">
+					<header>
+						<h2 class="font-semibold text-slate-900 md:text-xl dark:text-white">{sec.title}</h2>
+						<p class="line-clamp-1 text-sm opacity-75 md:text-base">{sec.subtitle}</p>
+					</header>
+					{sec.href && sec.href.startsWith("http") ? (
+						<ArrowUpRight className="h-6 w-6 text-gray-600 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1 dark:text-gray-300" />
+					) : (
+						<ArrowRight className="h-6 w-6 text-gray-600 transition-transform group-hover:translate-x-1 dark:text-gray-300" />
+					)}
+				</div>
+			</a>
+		))
+	}
+</div>
+
+<script>
+	// @ts-nocheck
+	// Staggered entry animation (vanilla JS) inspired by Framer Motion's staggerChildren
+	(function () {
+		const prefersReduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+		if (prefersReduced) {
+			// Immediately mark as done when user prefers reduced motion
+			document.querySelectorAll(".section-card[data-animate]").forEach((el) => el.setAttribute("data-animate", "done"));
+			return;
+		}
+
+		// Use IntersectionObserver to animate when grid enters viewport
+		const cards = Array.from(document.querySelectorAll(".section-card[data-animate]"));
+		if (!cards.length) return;
+
+		const io = new IntersectionObserver(
+			(entries, obs) => {
+				entries.forEach((entry) => {
+					if (entry.isIntersecting) {
+						// stagger visible cards by DOM order
+						cards.forEach((card, i) => {
+							setTimeout(() => card.setAttribute("data-animate", "done"), 100 + i * 80);
+						});
+						obs.disconnect();
+					}
+				});
+			},
+			{ threshold: 0.05 },
+		);
+
+		// Also animate inner stacked cards when their parent section finishes animating
+		function animateInnerCards(section) {
+			// animate inner cards within the section element itself
+			const container = section;
+			const children = Array.from(container.querySelectorAll("[data-card-index]"));
+			children.forEach((child, i) => {
+				const el = /** @type {any} */ (child);
+				const idx = Number(el.getAttribute("data-card-index") || i);
+				const type = el.getAttribute("data-card-type");
+				const delay = 120 + i * 90;
+				setTimeout(() => {
+					el.style.transition = "opacity .5s cubic-bezier(.4,0,.2,1), transform .5s cubic-bezier(.4,0,.2,1)";
+					el.style.opacity = "1";
+					if (type === "display") {
+						const xOffset = (idx - 1) * 20;
+						const yOffset = (idx - 1) * -50;
+						el.style.transform = `translate(${xOffset}%, ${yOffset}%) skewY(6deg) rotate(0deg)`;
+					} else if (type === "album") {
+						const scale = 1 - idx * 0.05;
+						const yOffset = (idx - 1) * -70;
+						el.style.transform = `translateY(${yOffset}%) scale(${scale})`;
+					}
+				}, delay);
+			});
+		}
+
+		// When sections are set to 'done', animate their inner cards as well
+		const sections = Array.from(document.querySelectorAll(".section-card[data-animate]"));
+		sections.forEach((section, idx) => {
+			const observer = new MutationObserver((mutations) => {
+				for (const m of mutations) {
+					if (m.type === "attributes" && section.getAttribute("data-animate") === "done") {
+						animateInnerCards(section);
+						observer.disconnect();
+						break;
+					}
+				}
+			});
+			observer.observe(section, { attributes: true });
+		});
+
+		io.observe(cards[0].closest(".homefeeds-grid") || document.body);
+	})();
+</script>
