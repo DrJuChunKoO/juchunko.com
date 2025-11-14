@@ -98,13 +98,13 @@ export default function LanguagePrompt({ currentUrl }: LanguagePromptProps) {
 					exit="hidden"
 					variants={shouldReduceMotion ? {} : variants}
 					transition={{ duration: 0.3 }}
-					className="text-primary fixed bottom-4 left-4 z-50 m-auto w-max divide-y overflow-hidden rounded-xl border shadow-lg backdrop-blur-lg max-sm:right-4"
+					className="text-primary fixed bottom-4 left-4 z-50 m-auto w-max divide-y overflow-hidden rounded-xl border shadow-lg max-sm:right-4"
 				>
-					<div className="bg-background/80 flex shrink-0 flex-col items-start gap-1 p-2 px-4 pr-10">
+					<div className="bg-background flex shrink-0 flex-col items-start gap-1 p-2 px-4 pr-10">
 						<div className="font-medium">{title}</div>
 						<p className="text-muted-foreground">{message}</p>
 					</div>
-					<div className="bg-primary-foreground/80 flex w-full justify-between gap-2 p-2">
+					<div className="bg-primary-foreground flex w-full justify-between gap-2 p-2">
 						<Button
 							variant="outline"
 							onClick={() => {
