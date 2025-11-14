@@ -66,7 +66,7 @@ const sections = [
 ---
 
 <!-- Use Tailwind utility classes instead of local CSS -->
-<div class="homefeeds-grid mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+<div class="homefeeds-grid mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
 	{
 		sections.map((sec) => (
 			<a
@@ -74,15 +74,15 @@ const sections = [
 				href={sec.href}
 			>
 				<div class="p-4 md:p-6">
-					<div class="relative flex h-75 flex-col items-center">
+					<div class="relative flex h-60 flex-col items-center">
 						{sec.cards?.slice(0, sec.max).map((c, index) => {
 							if (sec.type === "display") {
 								const xOffset = (index - 1) * 20;
 								const yOffset = (index - 1) * -50;
 								return (
 									<div
-										class="from-muted/50 to-muted/25 absolute top-1/2 left-1/2 flex h-36 w-[min(26rem,75vw)] -translate-x-1/2 -translate-y-1/2 transform-gpu flex-col justify-between rounded-xl border bg-gradient-to-br px-6 py-4 drop-shadow-sm will-change-transform select-none dark:from-white/5 dark:to-white/3"
-										style={`opacity:1; transform: translate(${xOffset}%, ${yOffset}%) skewY(-6deg) rotate(0deg); z-index:${3 - index};`}
+										class="from-muted to-muted/80 absolute top-1/2 left-1/2 flex h-36 w-[min(26rem,75vw)] -translate-x-1/2 -translate-y-1/2 transform-gpu flex-col justify-between rounded-xl border bg-gradient-to-br px-6 py-4 drop-shadow-sm select-none dark:from-[#111] dark:to-[#111]/80"
+										style={`opacity:1; transform: translate(${xOffset}%, ${yOffset}%) skewY(6deg) rotate(0.5deg); z-index:${3 - index};`}
 									>
 										<div class="flex items-center gap-2">
 											<span class="relative inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gray-50/50 text-gray-500 dark:bg-white/5 dark:text-white/80">
@@ -107,10 +107,10 @@ const sections = [
 							}
 							// album
 							const scale = 1 - index * 0.05;
-							const yOffset = (index - 1) * -70;
+							const yOffset = (index - 1) * -50;
 							return (
 								<div
-									class="from-muted/50 to-muted/25 absolute top-1/2 left-1/2 flex h-36 w-[min(26rem,75vw)] -translate-x-1/2 -translate-y-1/2 transform-gpu flex-col justify-between rounded-xl border bg-gradient-to-b px-6 py-4 drop-shadow-sm will-change-transform select-none dark:from-white/5 dark:to-white/3"
+									class="from-muted to-muted/80 absolute top-1/2 left-1/2 flex h-36 w-[min(26rem,75vw)] -translate-x-1/2 -translate-y-1/2 transform-gpu flex-col justify-between rounded-xl border bg-gradient-to-b px-6 py-4 drop-shadow-sm select-none dark:from-[#111] dark:to-[#111]/80"
 									style={`opacity:1; transform: translateY(${yOffset}%) scale(${scale}); z-index:${3 - index};`}
 								>
 									<div class="flex items-center gap-2">
