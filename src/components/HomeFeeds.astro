@@ -66,11 +66,11 @@ const sections = [
 ---
 
 <!-- Use Tailwind utility classes instead of local CSS -->
-<div class="homefeeds-grid mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+<div class="homefeeds-grid mb-4 flex gap-4 overflow-x-auto max-md:pb-2 md:grid md:grid-cols-2">
 	{
 		sections.map((sec) => (
 			<a
-				class="section-card group relative flex flex-col overflow-hidden rounded-lg bg-gray-50 transition-colors hover:bg-gray-100 dark:bg-white/5 dark:hover:bg-white/10"
+				class="section-card group relative flex min-w-[70vw] shrink-0 flex-col overflow-hidden rounded-lg bg-gray-50 transition-colors hover:bg-gray-100 dark:bg-white/5 dark:hover:bg-white/10"
 				href={sec.href}
 			>
 				<div class="p-4 md:p-6">
