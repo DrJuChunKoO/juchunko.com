@@ -72,19 +72,17 @@ const sections = [
 			<a
 				class="section-card group relative flex flex-col overflow-hidden rounded-lg bg-gray-50 transition-colors hover:bg-gray-100 dark:bg-white/5 dark:hover:bg-white/10"
 				href={sec.href}
-				data-animate="init"
 			>
 				<div class="p-4 md:p-6">
 					<div class="relative flex h-75 flex-col items-center">
 						{sec.cards?.slice(0, sec.max).map((c, index) => {
 							if (sec.type === "display") {
 								const xOffset = (index - 1) * 20;
+								const yOffset = (index - 1) * -50;
 								return (
 									<div
-										class="from-muted/50 to-muted/25 absolute top-1/2 left-1/2 flex h-36 w-[min(26rem,75vw)] -translate-x-1/2 -translate-y-1/2 transform-gpu flex-col justify-between rounded-xl border bg-gradient-to-br px-6 py-4 drop-shadow-sm backdrop-blur-sm will-change-transform select-none dark:from-white/5 dark:to-white/3"
-										data-card-index={index}
-										data-card-type="display"
-										style={`opacity:0; transform: translate(-50%, 200%) translateX(${xOffset}%) rotate(${index * 5}deg); z-index:${3 - index};`}
+										class="from-muted/50 to-muted/25 absolute top-1/2 left-1/2 flex h-36 w-[min(26rem,75vw)] -translate-x-1/2 -translate-y-1/2 transform-gpu flex-col justify-between rounded-xl border bg-gradient-to-br px-6 py-4 drop-shadow-sm will-change-transform select-none dark:from-white/5 dark:to-white/3"
+										style={`opacity:1; transform: translate(${xOffset}%, ${yOffset}%) skewY(-6deg) rotate(0deg); z-index:${3 - index};`}
 									>
 										<div class="flex items-center gap-2">
 											<span class="relative inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gray-50/50 text-gray-500 dark:bg-white/5 dark:text-white/80">
@@ -109,12 +107,11 @@ const sections = [
 							}
 							// album
 							const scale = 1 - index * 0.05;
+							const yOffset = (index - 1) * -70;
 							return (
 								<div
-									class="from-muted/50 to-muted/25 absolute top-1/2 left-1/2 flex h-36 w-[min(26rem,75vw)] -translate-x-1/2 -translate-y-1/2 transform-gpu flex-col justify-between rounded-xl border bg-gradient-to-b px-6 py-4 drop-shadow-sm backdrop-blur-sm will-change-transform select-none dark:from-white/5 dark:to-white/3"
-									data-card-index={index}
-									data-card-type="album"
-									style={`opacity:0; transform: translate(-50%, 200%) scale(${scale}); z-index:${3 - index};`}
+									class="from-muted/50 to-muted/25 absolute top-1/2 left-1/2 flex h-36 w-[min(26rem,75vw)] -translate-x-1/2 -translate-y-1/2 transform-gpu flex-col justify-between rounded-xl border bg-gradient-to-b px-6 py-4 drop-shadow-sm will-change-transform select-none dark:from-white/5 dark:to-white/3"
+									style={`opacity:1; transform: translateY(${yOffset}%) scale(${scale}); z-index:${3 - index};`}
 								>
 									<div class="flex items-center gap-2">
 										<span class="relative inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gray-50/50 text-gray-500 dark:bg-white/5 dark:text-white/80">
@@ -158,78 +155,3 @@ const sections = [
 		))
 	}
 </div>
-
-<script>
-	// @ts-nocheck
-	// Staggered entry animation (vanilla JS) inspired by Framer Motion's staggerChildren
-	(function () {
-		const prefersReduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-		if (prefersReduced) {
-			// Immediately mark as done when user prefers reduced motion
-			document.querySelectorAll(".section-card[data-animate]").forEach((el) => el.setAttribute("data-animate", "done"));
-			return;
-		}
-
-		// Use IntersectionObserver to animate when grid enters viewport
-		const cards = Array.from(document.querySelectorAll(".section-card[data-animate]"));
-		if (!cards.length) return;
-
-		const io = new IntersectionObserver(
-			(entries, obs) => {
-				entries.forEach((entry) => {
-					if (entry.isIntersecting) {
-						// stagger visible cards by DOM order
-						cards.forEach((card, i) => {
-							setTimeout(() => card.setAttribute("data-animate", "done"), 100 + i * 80);
-						});
-						obs.disconnect();
-					}
-				});
-			},
-			{ threshold: 0.05 },
-		);
-
-		// Also animate inner stacked cards when their parent section finishes animating
-		function animateInnerCards(section) {
-			// animate inner cards within the section element itself
-			const container = section;
-			const children = Array.from(container.querySelectorAll("[data-card-index]"));
-			children.forEach((child, i) => {
-				const el = /** @type {any} */ (child);
-				const idx = Number(el.getAttribute("data-card-index") || i);
-				const type = el.getAttribute("data-card-type");
-				const delay = 120 + i * 90;
-				setTimeout(() => {
-					el.style.transition = "opacity .5s cubic-bezier(.4,0,.2,1), transform .5s cubic-bezier(.4,0,.2,1)";
-					el.style.opacity = "1";
-					if (type === "display") {
-						const xOffset = (idx - 1) * 20;
-						const yOffset = (idx - 1) * -50;
-						el.style.transform = `translate(${xOffset}%, ${yOffset}%) skewY(6deg) rotate(0deg)`;
-					} else if (type === "album") {
-						const scale = 1 - idx * 0.05;
-						const yOffset = (idx - 1) * -70;
-						el.style.transform = `translateY(${yOffset}%) scale(${scale})`;
-					}
-				}, delay);
-			});
-		}
-
-		// When sections are set to 'done', animate their inner cards as well
-		const sections = Array.from(document.querySelectorAll(".section-card[data-animate]"));
-		sections.forEach((section, idx) => {
-			const observer = new MutationObserver((mutations) => {
-				for (const m of mutations) {
-					if (m.type === "attributes" && section.getAttribute("data-animate") === "done") {
-						animateInnerCards(section);
-						observer.disconnect();
-						break;
-					}
-				}
-			});
-			observer.observe(section, { attributes: true });
-		});
-
-		io.observe(cards[0].closest(".homefeeds-grid") || document.body);
-	})();
-</script>
