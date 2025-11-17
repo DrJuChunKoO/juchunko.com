@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
-import LucideLanguages from "~icons/lucide/languages";
+import Languages from "~icons/lucide/languages";
 
 const languages = {
 	en: "English",
@@ -27,11 +27,7 @@ export default function LanguageSelector() {
 
 	return (
 		<div className="flex items-center gap-2">
-			<LucideLanguages
-				style={{
-					mask: `linear-gradient(45deg, #000 0%, rgba(0,0,0,.5) 100%)`,
-				}}
-			/>
+			<Languages />
 			<NativeSelect
 				className="w-40"
 				value={selectedLanguage}
