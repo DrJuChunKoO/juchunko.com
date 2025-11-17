@@ -74,7 +74,7 @@ const sections = [
 				href={sec.href}
 			>
 				<div class="p-4 md:p-6">
-					<div class="relative flex h-60 flex-col items-center">
+					<div class="relative flex h-60 flex-col items-center gap-2">
 						{sec.cards?.slice(0, sec.max).map((c, index) => {
 							if (sec.type === "display") {
 								const xOffset = (index - 1) * 20;
