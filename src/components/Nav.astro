@@ -6,7 +6,7 @@ import ThemeToggle from "./ThemeToggle.astro";
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 
-import { Github } from "@lucide/astro";
+import TablerBrandGithub from "./icon/TablerBrandGithub.astro";
 ---
 
 <div class="sticky top-0 z-20 w-full self-start bg-transparent print:hidden">
@@ -46,7 +46,7 @@ import { Github } from "@lucide/astro";
 			title="GitHub repository for this site"
 			aria-label="GitHub repository for this site"
 		>
-			<Github class="size-6" />
+			<TablerBrandGithub class="size-6" />
 		</a>
 		<ThemeToggle />
 	</nav>
