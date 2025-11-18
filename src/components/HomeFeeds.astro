@@ -134,11 +134,11 @@ const calcAlbumTransform = (index: number) => {
 	{
 		sections.map((sec, sIndex) => (
 			<a
-				class="section-card group relative flex shrink-0 flex-col overflow-hidden rounded-lg bg-gray-50 transition-colors hover:bg-gray-100 max-lg:w-[50vw] max-md:w-[70vw] dark:bg-white/5 dark:hover:bg-white/10"
+				class="section-card group bg-muted/50 hover:bg-muted relative flex shrink-0 flex-col overflow-hidden rounded-lg transition-colors max-lg:w-[50vw] max-md:w-[70vw]"
 				href={sec.href}
 			>
 				<div class="p-4 md:p-6">
-					<div class="relative flex h-60 flex-col">
+					<div class="relative flex h-60 flex-col data-[type=display]:max-md:scale-75" data-type={sec.type}>
 						{sec.cards?.slice(0, sec.max).map((c, index) => {
 							const delayMs = sIndex * 150 + index * 120;
 							const transformStyle = sec.type === "display" ? calcDisplayTransform(index) : calcAlbumTransform(index);
@@ -147,10 +147,10 @@ const calcAlbumTransform = (index: number) => {
 							return (
 								<div
 									class={cn(
-										"absolute top-1/2 left-1/2 w-[min(26rem,65vw)] -translate-x-1/2 -translate-y-1/2 transform-gpu rounded-xl border px-6 py-4 backdrop-blur-sm select-none data-[type=display]:max-lg:-translate-x-[35%]",
+										"border-muted-foreground/10 absolute top-1/2 left-1/2 w-[min(26rem,65vw)] -translate-x-1/2 -translate-y-1/2 transform-gpu rounded-xl border px-6 py-4 backdrop-blur-sm select-none",
 										// gradientClass
 										`data-[type=album]:bg-linear-to-b data-[type=display]:bg-linear-to-br`,
-										"from-muted/50 to-muted/25 dark:from-[#111]/50 dark:to-[#111]/25",
+										"from-muted/50 to-muted/25",
 									)}
 									style={styleStr}
 									data-type={sec.type}
@@ -173,15 +173,15 @@ const calcAlbumTransform = (index: number) => {
 						})}
 					</div>
 				</div>
-				<div class="relative z-10 flex w-full items-center justify-between gap-2 bg-black/5 p-4 py-3 backdrop-blur-sm md:p-6 md:py-4 dark:bg-white/5">
+				<div class="text-foreground relative z-10 flex w-full items-center justify-between gap-2 bg-black/5 p-4 py-3 backdrop-blur-sm md:p-6 md:py-4 dark:bg-white/5">
 					<header>
-						<h2 class="font-semibold text-slate-900 md:text-xl dark:text-white">{sec.title}</h2>
-						<p class="line-clamp-1 text-sm opacity-75 md:text-base">{sec.subtitle}</p>
+						<h2 class="line-clamp-1 font-semibold md:text-xl">{sec.title}</h2>
+						<p class="text-muted-foreground line-clamp-1 text-sm opacity-75 md:text-base">{sec.subtitle}</p>
 					</header>
 					{sec.href && sec.href.startsWith("http") ? (
-						<ArrowUpRight class="h-6 w-6 text-gray-600 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 dark:text-gray-300" />
+						<ArrowUpRight class="h-6 w-6 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
 					) : (
-						<ArrowRight class="h-6 w-6 text-gray-600 transition-transform group-hover:translate-x-0.5 dark:text-gray-300" />
+						<ArrowRight class="h-6 w-6 transition-transform group-hover:translate-x-0.5" />
 					)}
 				</div>
 			</a>

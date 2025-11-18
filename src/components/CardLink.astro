@@ -11,7 +11,7 @@ const { post, lang, category } = Astro.props;
 	</div>
 	<div class="p-2 md:p-0">
 		<h2 class="text-sm font-semibold md:text-lg">{post.data.title}</h2>
-		<p class="text-xs tracking-tight text-gray-500 md:text-sm">
+		<p class="text-muted-foreground text-xs tracking-tight md:text-sm">
 			{
 				post.data.date.toLocaleDateString(lang, {
 					year: "numeric",

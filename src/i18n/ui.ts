@@ -15,7 +15,7 @@ export const ui = {
 		"home.title": "Welcome to the Dr. Ju-Chun KO Universe",
 		"home.description":
 			"This is the personal website of Ju-Chun (JC) Ko, a current Legislator at-large in the Legislative Yuan, Republic of China (Taiwan). In this universe, you will explore JC’s thoughts, interests, tastes, and content on legislative actions, adjustments to regulations for artificial intelligence, and multi-universe advocacy.",
-		"home.legislatorActivity.title": "Legislator Ko’s Recent Activity",
+		"home.legislatorActivity.title": "JC’s Recent Activity",
 		"home.legislatorActivity.subtitle": "Latest proposals, co-sponsorships, and meeting participation.",
 		"home.legislatorActivity.section.propose": "Primary Bills",
 		"home.legislatorActivity.section.cosign": "Co-Sponsored Bills",

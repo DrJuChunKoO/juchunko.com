@@ -29,7 +29,7 @@ const fragments = (await getCollection("fragment"))
 	<div class="mb-6 flex flex-col items-center md:-mt-10 md:flex-row-reverse md:gap-6">
 		<div class="mx-auto w-full">
 			<h1 class="text-foreground my-2 text-2xl leading-[1.35em] font-bold md:text-4xl">{t("home.title")}</h1>
-			<p class="leading-[1.6em] text-gray-600 md:text-xl dark:text-gray-400">
+			<p class="text-muted-foreground leading-[1.6em] md:text-xl">
 				{t("home.description")}
 			</p>
 		</div>
@@ -40,7 +40,7 @@ const fragments = (await getCollection("fragment"))
 			<Callout key="ai-basic-act-2025-07" actionText="前往查看" actionHref={`/${lang}/act/ai-basic-act`} class="mb-4" closable={false}>
 				<div class="space-y-1">
 					<div class="text-base font-bold">AI 基本法</div>
-					<div class="text-xs text-gray-600 dark:text-gray-400">
+					<div class="text-muted-foreground text-xs">
 						數發部未能如承諾於 7/15 前提供部版條文，僅提供委員版本意見且出現 14 次「再予斟酌」，原定 7/21 審查被迫延期。
 					</div>
 				</div>
