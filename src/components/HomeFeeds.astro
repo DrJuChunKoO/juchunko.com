@@ -69,7 +69,7 @@ const sections = [
 	{
 		sections.map((sec) => (
 			<a
-				class="section-card group relative flex shrink-0 flex-col overflow-hidden rounded-lg bg-gray-50 transition-colors hover:bg-gray-100 max-md:min-w-[70vw] dark:bg-white/5 dark:hover:bg-white/10"
+				class="section-card group relative flex shrink-0 flex-col overflow-hidden rounded-lg bg-gray-50 transition-colors hover:bg-gray-100 max-md:w-[70vw] dark:bg-white/5 dark:hover:bg-white/10"
 				href={sec.href}
 			>
 				<div class="p-4 md:p-6">
@@ -80,7 +80,7 @@ const sections = [
 								const yOffset = (index - 1) * -50;
 								return (
 									<div
-										class="from-muted/50 to-muted/25 absolute top-1/2 left-1/2 flex h-36 w-[min(26rem,75vw)] -translate-x-1/2 -translate-y-1/2 transform-gpu flex-col justify-between rounded-xl border bg-gradient-to-br px-6 py-4 drop-shadow-sm backdrop-blur-sm select-none dark:from-[#111]/50 dark:to-[#111]/25"
+										class="from-muted/50 to-muted/25 absolute top-1/2 left-1/2 flex h-36 w-[min(26rem,65vw)] -translate-x-1/2 -translate-y-1/2 transform-gpu flex-col justify-between rounded-xl border bg-gradient-to-br px-6 py-4 drop-shadow-sm backdrop-blur-sm select-none dark:from-[#111]/50 dark:to-[#111]/25"
 										style={`transform: translate(${xOffset}%, ${yOffset}%) skewY(6deg) rotate(0.5deg); z-index:${3 - index};`}
 									>
 										<div class="flex items-center gap-2">
@@ -104,12 +104,21 @@ const sections = [
 									</div>
 								);
 							}
-							// album
-							const scale = 1 - index * 0.05;
-							const yOffset = (index - 1) * -50;
+							// album — use exponential decay for spacing and scaling
+							// This keeps the spread visually balanced (outer cards get closer
+							// more quickly) while the topmost card remains the largest.
+							const baseOffset = 40; // percentage points to use as base magnitude
+							const offsetDecay = 0.6; // per-step decay factor for offset (0..1)
+							const position = index - 1; // -1, 0, 1 -> left/top, center, right/bottom
+							// magnitude gets smaller with each step from center
+							const yOffset = -position * (baseOffset * Math.pow(offsetDecay, Math.abs(position)));
+
+							const baseScale = 1; // starting scale for index 0
+							const scaleDecay = 0.95; // per-step decay factor for scale
+							const scale = baseScale * Math.pow(scaleDecay, index);
 							return (
 								<div
-									class="from-muted/50 to-muted/25 absolute top-1/2 left-1/2 flex h-36 w-[min(26rem,75vw)] -translate-x-1/2 -translate-y-1/2 transform-gpu flex-col justify-between rounded-xl border bg-gradient-to-b px-6 py-4 drop-shadow-sm backdrop-blur-sm select-none dark:from-[#111]/50 dark:to-[#111]/25"
+									class="from-muted/50 to-muted/25 absolute top-1/2 left-1/2 flex h-36 w-[min(26rem,65vw)] -translate-x-1/2 -translate-y-1/2 transform-gpu flex-col justify-between rounded-xl border bg-gradient-to-b px-6 py-4 drop-shadow-sm backdrop-blur-sm select-none dark:from-[#111]/50 dark:to-[#111]/25"
 									style={`transform: translateY(${yOffset}%) scale(${scale}); z-index:${3 - index};`}
 								>
 									<div class="flex items-center gap-2">
