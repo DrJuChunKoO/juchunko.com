@@ -2,7 +2,8 @@
 import { getIndexCards } from "../lib/indexCards";
 import { ui } from "src/i18n/ui";
 import { Sparkles, Newspaper, BookText, Signature, User, Rss, Mic, ArrowRight, ArrowUpRight } from "@lucide/astro";
-
+import { cn } from "@/lib/utils";
+import { removeMarkdown } from "@excalidraw/markdown-to-text";
 type SupportedLang = "en" | "zh-TW";
 const { lang = "zh-TW" } = Astro.props as { lang?: SupportedLang };
 
@@ -74,12 +75,6 @@ const getIcon = (name?: string) => {
 	return Sparkles;
 };
 
-// Utility: CSS classes shared across both album and display cards (gradient left to right variance handled separately)
-const baseCardClass =
-	"from-muted/50 to-muted/25 absolute top-1/2 left-1/2 w-[min(26rem,65vw)] data-[type=display]:max-lg:-translate-x-[35%] -translate-x-1/2 -translate-y-1/2 transform-gpu rounded-xl border px-6 py-4 drop-shadow-sm backdrop-blur-sm select-none dark:from-[#111]/50 dark:to-[#111]/25";
-const displayGradientClass = "bg-linear-to-br";
-const albumGradientClass = "bg-linear-to-b";
-
 // NOTE: We avoid returning JSX from frontmatter helpers. Markup is rendered in template.
 
 // Utility: calculate transform style for display layout
@@ -104,17 +99,26 @@ const calcAlbumTransform = (index: number) => {
 
 <!-- Use Tailwind utility classes instead of local CSS -->
 <style>
-	/* Home feed card entrance animation (staggered). Respects prefers-reduced-motion. */
+	/* Home feed card entrance animation (staggered pop effect). Respects prefers-reduced-motion. */
 	.home-card-appear {
+		/* The outer container sets a transform (positioning). We animate an inner wrapper so
+		   the positioning transform is preserved. This class controls the pop animation only. */
 		opacity: 0;
 		transform-origin: center center;
-		will-change: opacity;
-		animation: home-card-appear 380ms cubic-bezier(0.2, 0.9, 0.2, 1) var(--delay, 0ms) both;
+		will-change: transform, opacity;
+		animation: home-card-pop 480ms cubic-bezier(0.2, 0.9, 0.2, 1) var(--delay, 0ms) both;
+		/* Render layer to GPU for smoother animation */
+		backface-visibility: hidden;
 	}
 
-	@keyframes home-card-appear {
-		to {
+	@keyframes home-card-pop {
+		0% {
+			opacity: 0;
+			transform: translateY(18px) scale(0.8);
+		}
+		100% {
 			opacity: 1;
+			transform: translateY(0) scale(1);
 		}
 	}
 
@@ -138,22 +142,31 @@ const calcAlbumTransform = (index: number) => {
 						{sec.cards?.slice(0, sec.max).map((c, index) => {
 							const delayMs = sIndex * 150 + index * 120;
 							const transformStyle = sec.type === "display" ? calcDisplayTransform(index) : calcAlbumTransform(index);
-							const gradientClass = sec.type === "display" ? displayGradientClass : albumGradientClass;
 							const styleStr = `--delay:${delayMs}ms; ${transformStyle}`;
-							const titleClamp = sec.type === "display" ? 2 : 1;
 							const Icon = getIcon(c.icon);
-							const titleClampClass = titleClamp === 1 ? "line-clamp-1" : "line-clamp-2";
 							return (
-								<div class={`${baseCardClass} ${gradientClass}`} style={styleStr} data-type={sec.type}>
-									<div class="home-card-appear flex h-28 flex-col justify-between">
-										<div class="flex items-center gap-2">
-											<span class="relative inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-50/50 text-gray-500 dark:bg-white/5 dark:text-white/80">
-												<Icon class="h-4 w-4" />
-											</span>
-											<p class={`${titleClampClass} text-sm font-medium dark:text-white/80`}>{c.title}</p>
+								<div
+									class={cn(
+										"absolute top-1/2 left-1/2 w-[min(26rem,65vw)] -translate-x-1/2 -translate-y-1/2 transform-gpu rounded-xl border px-6 py-4 backdrop-blur-sm select-none data-[type=display]:max-lg:-translate-x-[35%]",
+										// gradientClass
+										`data-[type=album]:bg-linear-to-b data-[type=display]:bg-linear-to-br`,
+										"from-muted/50 to-muted/25 dark:from-[#111]/50 dark:to-[#111]/25",
+									)}
+									style={styleStr}
+									data-type={sec.type}
+								>
+									{/* animated inner wrapper; we keep transform/positioning on the outer element */}
+									<div class="home-card-appear">
+										<div class="flex h-28 flex-col justify-between">
+											<div class="flex items-center gap-2">
+												<span class="relative inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-50/50 text-gray-500 drop-shadow-md dark:bg-white/5 dark:text-white/80">
+													<Icon class="h-4 w-4" />
+												</span>
+												<p class={`line-clamp-2 text-sm font-medium dark:text-white/80`}>{c.title}</p>
+											</div>
+											<p class="line-clamp-2 text-sm dark:text-white/50">{removeMarkdown(c.description || "")}</p>
+											<p class="text-muted-foreground text-xs">{c.date}</p>
 										</div>
-										<p class="line-clamp-2 text-sm dark:text-white/50">{c.description}</p>
-										<p class="text-muted-foreground text-xs">{c.date}</p>
 									</div>
 								</div>
 							);
@@ -166,9 +179,9 @@ const calcAlbumTransform = (index: number) => {
 						<p class="line-clamp-1 text-sm opacity-75 md:text-base">{sec.subtitle}</p>
 					</header>
 					{sec.href && sec.href.startsWith("http") ? (
-						<ArrowUpRight class="h-6 w-6 text-gray-600 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1 dark:text-gray-300" />
+						<ArrowUpRight class="h-6 w-6 text-gray-600 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 dark:text-gray-300" />
 					) : (
-						<ArrowRight class="h-6 w-6 text-gray-600 transition-transform group-hover:translate-x-1 dark:text-gray-300" />
+						<ArrowRight class="h-6 w-6 text-gray-600 transition-transform group-hover:translate-x-0.5 dark:text-gray-300" />
 					)}
 				</div>
 			</a>

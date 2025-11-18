@@ -1,5 +1,6 @@
 import { fetchRss } from "@/lib/rss";
 import { timeAgo } from "@/lib/utils";
+import { useTranslations } from "@/i18n/utils";
 
 type CardItem = {
 	title?: string;
@@ -252,9 +253,25 @@ export async function getIndexCards(lang: "en" | "zh-TW") {
 		});
 
 		result.legislatorCards = activities.slice(0, 3).map((activity: any) => {
+			const t = useTranslations(lang);
+			function mapDetailKeyToI18nKey(key: string) {
+				switch (key) {
+					case "status":
+						return "home.legislatorActivity.billStatus";
+					case "law":
+						return "home.legislatorActivity.law";
+					case "meetingType":
+						return "home.legislatorActivity.meetingType";
+					case "location":
+						return "home.legislatorActivity.location";
+					default:
+						return key;
+				}
+			}
+
 			const details = Object.entries(activity.details)
 				.filter(([, value]) => value)
-				.map(([key, value]) => `${key}: ${value}`)
+				.map(([key, value]) => `${t(mapDetailKeyToI18nKey(key))}: ${value}`)
 				.join(lang === "en" ? ", " : "、");
 			return {
 				title: activity.title,
