@@ -80,21 +80,21 @@ const sections = [
 								const yOffset = (index - 1) * -50;
 								return (
 									<div
-										class="from-muted to-muted/80 absolute top-1/2 left-1/2 flex h-36 w-[min(26rem,75vw)] -translate-x-1/2 -translate-y-1/2 transform-gpu flex-col justify-between rounded-xl border bg-gradient-to-br px-6 py-4 drop-shadow-sm select-none dark:from-[#111] dark:to-[#111]/80"
-										style={`opacity:1; transform: translate(${xOffset}%, ${yOffset}%) skewY(6deg) rotate(0.5deg); z-index:${3 - index};`}
+										class="from-muted/50 to-muted/25 absolute top-1/2 left-1/2 flex h-36 w-[min(26rem,75vw)] -translate-x-1/2 -translate-y-1/2 transform-gpu flex-col justify-between rounded-xl border bg-gradient-to-br px-6 py-4 drop-shadow-sm backdrop-blur-sm select-none dark:from-[#111]/50 dark:to-[#111]/25"
+										style={`transform: translate(${xOffset}%, ${yOffset}%) skewY(6deg) rotate(0.5deg); z-index:${3 - index};`}
 									>
 										<div class="flex items-center gap-2">
-											<span class="relative inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gray-50/50 text-gray-500 dark:bg-white/5 dark:text-white/80">
+											<span class="relative inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-50/50 text-gray-500 dark:bg-white/5 dark:text-white/80">
 												{c.icon === "newspaper" ? (
-													<Newspaper className="h-4 w-4" />
+													<Newspaper class="h-4 w-4" />
 												) : c.icon === "propose" ? (
-													<BookText className="h-4 w-4" />
+													<BookText class="h-4 w-4" />
 												) : c.icon === "cosign" ? (
-													<Signature className="h-4 w-4" />
+													<Signature class="h-4 w-4" />
 												) : c.icon === "meet" ? (
-													<User className="h-4 w-4" />
+													<User class="h-4 w-4" />
 												) : (
-													<Sparkles className="h-4 w-4" />
+													<Sparkles class="h-4 w-4" />
 												)}
 											</span>
 											<p class="line-clamp-2 text-sm font-medium dark:text-white/80">{c.title}</p>
@@ -109,8 +109,8 @@ const sections = [
 							const yOffset = (index - 1) * -50;
 							return (
 								<div
-									class="from-muted to-muted/80 absolute top-1/2 left-1/2 flex h-36 w-[min(26rem,75vw)] -translate-x-1/2 -translate-y-1/2 transform-gpu flex-col justify-between rounded-xl border bg-gradient-to-b px-6 py-4 drop-shadow-sm select-none dark:from-[#111] dark:to-[#111]/80"
-									style={`opacity:1; transform: translateY(${yOffset}%) scale(${scale}); z-index:${3 - index};`}
+									class="from-muted/50 to-muted/25 absolute top-1/2 left-1/2 flex h-36 w-[min(26rem,75vw)] -translate-x-1/2 -translate-y-1/2 transform-gpu flex-col justify-between rounded-xl border bg-gradient-to-b px-6 py-4 drop-shadow-sm backdrop-blur-sm select-none dark:from-[#111]/50 dark:to-[#111]/25"
+									style={`transform: translateY(${yOffset}%) scale(${scale}); z-index:${3 - index};`}
 								>
 									<div class="flex items-center gap-2">
 										<span class="relative inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gray-50/50 text-gray-500 dark:bg-white/5 dark:text-white/80">
@@ -139,7 +139,7 @@ const sections = [
 						})}
 					</div>
 				</div>
-				<div class="relative z-10 flex w-full items-center justify-between gap-2 bg-black/5 p-4 py-3 md:p-6 md:py-4 dark:bg-white/5">
+				<div class="relative z-10 flex w-full items-center justify-between gap-2 bg-black/5 p-4 py-3 backdrop-blur-sm md:p-6 md:py-4 dark:bg-white/5">
 					<header>
 						<h2 class="font-semibold text-slate-900 md:text-xl dark:text-white">{sec.title}</h2>
 						<p class="line-clamp-1 text-sm opacity-75 md:text-base">{sec.subtitle}</p>
