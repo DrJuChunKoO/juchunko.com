@@ -14,7 +14,13 @@ interface LanguagePromptProps {
 export default function LanguagePrompt({ currentUrl }: LanguagePromptProps) {
 	const [browserLang, setBrowserLang] = useState<"en" | "zh-TW" | null>(null);
 	const [showPrompt, setShowPrompt] = useState(false);
-	const currentLang = getLangFromUrl(new URL(currentUrl));
+	const getCurrentUrl = () => {
+		// If running in the browser, prefer the real window location
+		if (typeof window !== "undefined") return window.location.href;
+		// Otherwise fall back to the server-provided URL
+		return currentUrl;
+	};
+	const currentLang = getLangFromUrl(new URL(getCurrentUrl()));
 	const shouldReduceMotion = useReducedMotion() ?? false;
 
 	// Persist user's prompt decision for the current UI language in sessionStorage.
@@ -36,6 +42,8 @@ export default function LanguagePrompt({ currentUrl }: LanguagePromptProps) {
 	const handleSwitch = () => {
 		// Determine the target locale from the browser language
 		const detected = navigator.language.startsWith("zh") ? "zh-TW" : "en";
+		// Build a client-side href value for both try and catch branches.
+		const href = typeof window !== "undefined" ? window.location.href : currentUrl;
 
 		try {
 			// Persist user's choice so the prompt won't reappear in this session
@@ -44,7 +52,7 @@ export default function LanguagePrompt({ currentUrl }: LanguagePromptProps) {
 			// Build a new URL and replace the first path segment (the locale)
 			// This handles cases like '/en', '/en/', '/en/foo' and preserves
 			// query string and hash fragments.
-			const url = new URL(currentUrl, window.location.origin);
+			const url = new URL(href);
 			const segments = url.pathname.split("/");
 
 			// segments[0] is '', segments[1] should be the locale when present
@@ -65,7 +73,7 @@ export default function LanguagePrompt({ currentUrl }: LanguagePromptProps) {
 			console.error("Failed to construct locale URL, falling back to naive replace:", err);
 			setPromptChoice("switched");
 			setShowPrompt(false);
-			const naive = currentUrl.replace(`/${currentLang}/`, `/${detected}/`);
+			const naive = href.replace(`/${currentLang}/`, `/${detected}/`);
 			window.location.href = naive;
 		}
 	};
