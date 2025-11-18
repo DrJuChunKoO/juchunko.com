@@ -1,9 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence, useMotionValue } from "motion/react";
-import LucideBotMessageSquare from "~icons/lucide/bot-message-square";
-import LucideSend from "~icons/lucide/send";
-import LucideX from "~icons/lucide/x";
-import LucideArrowRight from "~icons/lucide/arrow-right";
+import { BotMessageSquare, Send, X, ArrowRight } from "lucide-react";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import Markdown from "markdown-to-jsx";
@@ -150,7 +147,7 @@ export default function AIAssistantWindow({ isOpen, onClose }: AIAssistantWindow
 					{/* 標題欄 */}
 					<div className="flex items-center justify-between rounded-t-lg bg-gray-500 p-3 text-white">
 						<div className="flex items-center gap-2">
-							<LucideBotMessageSquare className="h-5 w-5" />
+							<BotMessageSquare className="h-5 w-5" />
 							<h3 className="font-semibold">AI 助手</h3>
 						</div>
 						<div className="flex items-center gap-1">
@@ -160,7 +157,7 @@ export default function AIAssistantWindow({ isOpen, onClose }: AIAssistantWindow
 								className="rounded p-1 transition-colors hover:bg-white/20"
 								aria-label="關閉"
 							>
-								<LucideX className="h-4 w-4" />
+								<X className="h-4 w-4" />
 							</motion.button>
 						</div>
 					</div>
@@ -259,7 +256,7 @@ export default function AIAssistantWindow({ isOpen, onClose }: AIAssistantWindow
 													className="group flex cursor-pointer items-center gap-0.5 rounded p-1 text-left text-sm text-gray-500 transition-all hover:font-medium hover:tracking-wide hover:text-gray-700 disabled:opacity-50 dark:text-gray-400 dark:hover:text-gray-200"
 												>
 													{qp.text}
-													<LucideArrowRight className="h-4 w-4 opacity-50 transition-all group-hover:translate-x-0.5 group-hover:opacity-100" />
+													<ArrowRight className="h-4 w-4 opacity-50 transition-all group-hover:translate-x-0.5 group-hover:opacity-100" />
 												</button>
 											))}
 									</motion.div>
@@ -296,7 +293,7 @@ export default function AIAssistantWindow({ isOpen, onClose }: AIAssistantWindow
 								aria-disabled={status === "streaming" || input.trim() === "" ? "true" : "false"}
 								className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-500 text-white transition-colors hover:bg-blue-600 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:opacity-50 dark:bg-blue-600 dark:hover:bg-blue-700 dark:disabled:bg-gray-800"
 							>
-								<LucideSend className="h-4 w-4" />
+								<Send className="h-4 w-4" />
 							</button>
 							<div id="chat-bot-instructions" className="sr-only">
 								按下 Enter 鍵送出訊息

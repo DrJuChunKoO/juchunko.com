@@ -1,10 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import LucidePhone from "~icons/lucide/phone";
-import LucidePhoneOff from "~icons/lucide/phone-off";
-import LucideMic from "~icons/lucide/mic";
-import LucideMicOff from "~icons/lucide/mic-off";
-import LucideX from "~icons/lucide/x";
+
+import { X, MicOff, Mic, Phone, PhoneOff } from "lucide-react";
 
 interface PhoneCallInterfaceProps {
 	isOpen: boolean;
@@ -98,7 +95,7 @@ export default function PhoneCallInterface({ isOpen, onClose }: PhoneCallInterfa
 						className="absolute top-6 right-6 flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-lg transition-colors hover:bg-white/20"
 						aria-label="關閉通話介面"
 					>
-						<LucideX className="h-6 w-6" />
+						<X className="h-6 w-6" />
 					</motion.button>
 
 					{/* 主要內容 */}
@@ -178,7 +175,7 @@ export default function PhoneCallInterface({ isOpen, onClose }: PhoneCallInterfa
 									className="flex h-16 w-16 items-center justify-center rounded-full bg-green-500 text-white shadow-lg transition-colors hover:bg-green-600"
 									aria-label="撥打電話"
 								>
-									<LucidePhone className="h-8 w-8" />
+									<Phone className="h-8 w-8" />
 								</motion.button>
 							)}
 
@@ -194,7 +191,7 @@ export default function PhoneCallInterface({ isOpen, onClose }: PhoneCallInterfa
 										}`}
 										aria-label={isMuted ? "取消靜音" : "靜音"}
 									>
-										{isMuted ? <LucideMicOff className="h-6 w-6" /> : <LucideMic className="h-6 w-6" />}
+										{isMuted ? <MicOff className="h-6 w-6" /> : <Mic className="h-6 w-6" />}
 									</motion.button>
 
 									{/* 掛斷按鈕 */}
@@ -205,7 +202,7 @@ export default function PhoneCallInterface({ isOpen, onClose }: PhoneCallInterfa
 										className="flex h-16 w-16 items-center justify-center rounded-full bg-red-500 text-white shadow-lg transition-colors hover:bg-red-600"
 										aria-label="結束通話"
 									>
-										<LucidePhoneOff className="h-8 w-8" />
+										<PhoneOff className="h-8 w-8" />
 									</motion.button>
 								</>
 							)}

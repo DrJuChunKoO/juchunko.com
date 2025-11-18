@@ -1,19 +1,19 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import ThemeToggle from "@/components/ThemeToggle.astro";
-import ArrowRight from "~icons/lucide/arrow-right";
+import { ArrowRight } from "@lucide/astro";
 ---
 
 <Layout>
 	<div
-		class="mx-auto flex h-20 max-w-[90rem] items-center justify-end gap-2 pr-[max(env(safe-area-inset-right),2rem)] pl-[max(env(safe-area-inset-left),2rem)] text-sm md:max-w-[90vw]"
+		class="mx-auto flex h-20 max-w-360 items-center justify-end gap-2 pr-[max(env(safe-area-inset-right),2rem)] pl-[max(env(safe-area-inset-left),2rem)] text-sm md:max-w-[90vw]"
 	>
 		<a class="flex items-center text-base hover:opacity-75 ltr:mr-auto rtl:ml-auto" href="/">
 			<span class="font-medium uppercase" data-lang="sitename">科技立委葛如鈞．寶博士</span>
 		</a>
 		<ThemeToggle />
 	</div>
-	<div class="relative mx-auto aspect-square w-full max-w-[768px] sm:aspect-video xl:mt-20">
+	<div class="relative mx-auto aspect-square w-full max-w-3xl sm:aspect-video xl:mt-20">
 		<script type="module" src="https://unpkg.com/@splinetool/viewer@1.0.18/build/spline-viewer.js"></script>
 		<spline-viewer
 			className="absolute inset-0"
@@ -33,7 +33,7 @@ import ArrowRight from "~icons/lucide/arrow-right";
 			data-lang="button"
 		>
 			<span data-lang="buttonText"> 進入「科技立委葛如鈞．寶博士」宇宙 </span>
-			<ArrowRight strokeWidth={1} />
+			<ArrowRight />
 		</a>
 	</div>
 </Layout>

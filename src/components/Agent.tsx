@@ -1,10 +1,6 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useMotionValue, useReducedMotion, type Variants } from "motion/react";
-import LucideBotMessageSquare from "~icons/lucide/bot-message-square";
-import LucidePhone from "~icons/lucide/phone";
-import LucideBookAudio from "~icons/lucide/book-audio";
-import LucideSparkles from "~icons/lucide/sparkles";
-import LucideChevronDown from "~icons/lucide/chevron-down";
+import { BotMessageSquare, Phone, BookAudio, Sparkles, ChevronDown } from "lucide-react";
 import AgentButton from "./AgentButton";
 import PhoneCallInterface from "./PhoneCallInterface";
 import AIAssistantWindow from "./AIAssistantWindow";
@@ -129,20 +125,10 @@ export default function Agent() {
 			{/* 三顆功能按鈕：桌面永遠顯示；手機在 open=true 時以動畫顯示（並顯示標籤） */}
 			{!hasWindowOpen && (
 				<div className="hidden flex-col items-end justify-end gap-2 md:flex">
+					<AgentButton icon={<Phone className="size-6 md:size-5" />} label="打給 AI 寶博" showLabel={open} onClick={handlePhoneCall} />
+					<AgentButton icon={<BookAudio className="size-6 md:size-5" />} label="語音朗讀" showLabel={open} onClick={handleVoiceReader} />
 					<AgentButton
-						icon={<LucidePhone className="size-6 md:size-5" />}
-						label="打給 AI 寶博"
-						showLabel={open}
-						onClick={handlePhoneCall}
-					/>
-					<AgentButton
-						icon={<LucideBookAudio className="size-6 md:size-5" />}
-						label="語音朗讀"
-						showLabel={open}
-						onClick={handleVoiceReader}
-					/>
-					<AgentButton
-						icon={<LucideBotMessageSquare className="size-6 md:size-5" />}
+						icon={<BotMessageSquare className="size-6 md:size-5" />}
 						label="和 AI 聊聊"
 						showLabel={open}
 						onClick={handleAIAssistant}
@@ -188,7 +174,7 @@ export default function Agent() {
 							exit="exit"
 							style={{ willChange: "transform, opacity" }}
 						>
-							<AgentButton icon={<LucidePhone className="size-6" />} label="打給 AI 寶博" showLabel onClick={handlePhoneCall} />
+							<AgentButton icon={<Phone className="size-6" />} label="打給 AI 寶博" showLabel onClick={handlePhoneCall} />
 						</motion.div>
 						<motion.div
 							variants={itemVariants}
@@ -198,7 +184,7 @@ export default function Agent() {
 							exit="exit"
 							style={{ willChange: "transform, opacity" }}
 						>
-							<AgentButton icon={<LucideBookAudio className="size-6" />} label="語音朗讀" showLabel onClick={handleVoiceReader} />
+							<AgentButton icon={<BookAudio className="size-6" />} label="語音朗讀" showLabel onClick={handleVoiceReader} />
 						</motion.div>
 						<motion.div
 							variants={itemVariants}
@@ -208,7 +194,7 @@ export default function Agent() {
 							exit="exit"
 							style={{ willChange: "transform, opacity" }}
 						>
-							<AgentButton icon={<LucideBotMessageSquare className="size-6" />} label="和 AI 聊聊" showLabel onClick={handleAIAssistant} />
+							<AgentButton icon={<BotMessageSquare className="size-6" />} label="和 AI 聊聊" showLabel onClick={handleAIAssistant} />
 						</motion.div>
 					</motion.div>
 				)}
@@ -226,7 +212,7 @@ export default function Agent() {
 					whileHover={{ scale: 1.05 }}
 					transition={{ type: "spring", stiffness: 400, damping: 30 }}
 				>
-					{open ? <LucideChevronDown className="size-6" /> : <LucideSparkles className="size-6" />}
+					{open ? <ChevronDown className="size-6" /> : <Sparkles className="size-6" />}
 				</motion.button>
 			)}
 

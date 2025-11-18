@@ -6,7 +6,7 @@ import ThemeToggle from "./ThemeToggle.astro";
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 
-import BytesizeGithub from "~icons/bytesize/github";
+import { Github } from "@lucide/astro";
 ---
 
 <div class="sticky top-0 z-20 w-full self-start bg-transparent print:hidden">
@@ -46,7 +46,7 @@ import BytesizeGithub from "~icons/bytesize/github";
 			title="GitHub repository for this site"
 			aria-label="GitHub repository for this site"
 		>
-			<BytesizeGithub className="size-6" />
+			<Github class="size-6" />
 		</a>
 		<ThemeToggle />
 	</nav>

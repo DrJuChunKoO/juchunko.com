@@ -1,12 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence, useMotionValue } from "motion/react";
-import LucideBookAudio from "~icons/lucide/book-audio";
-import LucidePlay from "~icons/lucide/play";
-import LucidePause from "~icons/lucide/pause";
-import LucideSquare from "~icons/lucide/square";
-import LucideVolume2 from "~icons/lucide/volume-2";
-import LucideSettings from "~icons/lucide/settings";
-import LucideX from "~icons/lucide/x";
+import { BookAudio, Play, Pause, Square, Volume2, Settings, X } from "lucide-react";
 
 interface VoiceReaderWindowProps {
 	isOpen: boolean;
@@ -159,7 +153,7 @@ export default function VoiceReaderWindow({ isOpen, onClose }: VoiceReaderWindow
 					{/* 標題欄 */}
 					<div className="flex items-center justify-between rounded-t-lg bg-blue-600 p-3 text-white">
 						<div className="flex items-center gap-2">
-							<LucideBookAudio className="h-5 w-5" />
+							<BookAudio className="h-5 w-5" />
 							<h3 className="font-semibold">語音朗讀</h3>
 						</div>
 						<div className="flex items-center gap-1">
@@ -169,7 +163,7 @@ export default function VoiceReaderWindow({ isOpen, onClose }: VoiceReaderWindow
 								className="rounded p-1 transition-colors hover:bg-white/20"
 								aria-label="設定"
 							>
-								<LucideSettings className="h-4 w-4" />
+								<Settings className="h-4 w-4" />
 							</motion.button>
 							<motion.button
 								whileTap={{ scale: 0.95 }}
@@ -177,7 +171,7 @@ export default function VoiceReaderWindow({ isOpen, onClose }: VoiceReaderWindow
 								className="rounded p-1 transition-colors hover:bg-white/20"
 								aria-label="關閉"
 							>
-								<LucideX className="h-4 w-4" />
+								<X className="h-4 w-4" />
 							</motion.button>
 						</div>
 					</div>
@@ -280,7 +274,7 @@ export default function VoiceReaderWindow({ isOpen, onClose }: VoiceReaderWindow
 										className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-500 text-white transition-colors hover:bg-orange-600"
 										aria-label="暫停"
 									>
-										<LucidePause className="h-5 w-5" />
+										<Pause className="h-5 w-5" />
 									</motion.button>
 								) : (
 									<motion.button
@@ -290,7 +284,7 @@ export default function VoiceReaderWindow({ isOpen, onClose }: VoiceReaderWindow
 										className="flex h-10 w-10 items-center justify-center rounded-full bg-green-500 text-white transition-colors hover:bg-green-600 disabled:cursor-not-allowed disabled:opacity-50"
 										aria-label="播放"
 									>
-										<LucidePlay className="h-5 w-5" />
+										<Play className="h-5 w-5" />
 									</motion.button>
 								)}
 
@@ -301,11 +295,11 @@ export default function VoiceReaderWindow({ isOpen, onClose }: VoiceReaderWindow
 									className="flex h-8 w-8 items-center justify-center rounded-full bg-red-500 text-white transition-colors hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-50"
 									aria-label="停止"
 								>
-									<LucideSquare className="h-4 w-4" />
+									<Square className="h-4 w-4" />
 								</motion.button>
 
 								<div className="ml-2 flex items-center gap-1">
-									<LucideVolume2 className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+									<Volume2 className="h-4 w-4 text-gray-500 dark:text-gray-400" />
 									<span className="text-xs text-gray-500 dark:text-gray-400">{Math.round(settings.volume * 100)}%</span>
 								</div>
 							</div>

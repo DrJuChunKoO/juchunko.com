@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
-import Languages from "~icons/lucide/languages";
+
+import { Languages } from "lucide-react";
 
 const languages = {
 	en: "English",

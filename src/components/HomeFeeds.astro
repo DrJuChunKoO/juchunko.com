@@ -1,14 +1,13 @@
 ---
 import { getIndexCards } from "../lib/indexCards";
 import { ui } from "src/i18n/ui";
-import { Sparkles, Newspaper, BookText, Signature, User, Rss, Mic, ArrowRight, ArrowUpRight } from "lucide-react";
+import { Sparkles, Newspaper, BookText, Signature, User, Rss, Mic, ArrowRight, ArrowUpRight } from "@lucide/astro";
 
 type SupportedLang = "en" | "zh-TW";
 const { lang = "zh-TW" } = Astro.props as { lang?: SupportedLang };
 
 // Server-side: 聚合各外部資料來源
-const { newsCards, newsFetchError, blogCards, blogFetchError, transpalCards, transpalFetchError, legislatorCards } =
-	await getIndexCards(lang);
+const { newsCards, blogCards, transpalCards, legislatorCards } = await getIndexCards(lang);
 
 const titles = {
 	legislator: ui[lang]["home.legislatorActivity.title"],
@@ -116,19 +115,19 @@ const sections = [
 									<div class="flex items-center gap-2">
 										<span class="relative inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gray-50/50 text-gray-500 dark:bg-white/5 dark:text-white/80">
 											{c.icon === "newspaper" ? (
-												<Newspaper className="h-4 w-4" />
+												<Newspaper class="h-4 w-4" />
 											) : c.icon === "propose" ? (
-												<BookText className="h-4 w-4" />
+												<BookText class="h-4 w-4" />
 											) : c.icon === "cosign" ? (
-												<Signature className="h-4 w-4" />
+												<Signature class="h-4 w-4" />
 											) : c.icon === "meet" ? (
-												<User className="h-4 w-4" />
+												<User class="h-4 w-4" />
 											) : c.icon === "blog" ? (
-												<Rss className="h-4 w-4" />
+												<Rss class="h-4 w-4" />
 											) : c.icon === "transpal" ? (
-												<Mic className="h-4 w-4" />
+												<Mic class="h-4 w-4" />
 											) : (
-												<Sparkles className="h-4 w-4" />
+												<Sparkles class="h-4 w-4" />
 											)}
 										</span>
 										<p class="line-clamp-1 text-sm font-medium dark:text-white/80">{c.title}</p>
@@ -146,9 +145,9 @@ const sections = [
 						<p class="line-clamp-1 text-sm opacity-75 md:text-base">{sec.subtitle}</p>
 					</header>
 					{sec.href && sec.href.startsWith("http") ? (
-						<ArrowUpRight className="h-6 w-6 text-gray-600 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1 dark:text-gray-300" />
+						<ArrowUpRight class="h-6 w-6 text-gray-600 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1 dark:text-gray-300" />
 					) : (
-						<ArrowRight className="h-6 w-6 text-gray-600 transition-transform group-hover:translate-x-1 dark:text-gray-300" />
+						<ArrowRight class="h-6 w-6 text-gray-600 transition-transform group-hover:translate-x-1 dark:text-gray-300" />
 					)}
 				</div>
 			</a>

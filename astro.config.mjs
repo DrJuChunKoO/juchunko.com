@@ -11,6 +11,7 @@ import mdx from "@astrojs/mdx";
 
 // https://astro.build/config
 export default defineConfig({
+	output: "static",
 	integrations: [react(), sitemap(), partytown(), mdx()],
 	i18n: {
 		locales: ["zh-TW", "en"],
@@ -30,6 +31,7 @@ export default defineConfig({
 			}),
 		],
 		build: {
+			assetsInlineLimit: 0,
 			rollupOptions: {
 				output: {
 					manualChunks: {
