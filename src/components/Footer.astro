@@ -1,15 +1,12 @@
 ---
-import { getLangFromUrl, useTranslations } from "../i18n/utils";
 import LanguageSelector from "./LanguageSelector";
-const lang = getLangFromUrl(Astro.url);
-const t = useTranslations(lang);
 import SoicalLink from "./SoicalLink.astro";
-import BiThreads from "~icons/bi/threads";
-import BiFacebook from "~icons/bi/facebook";
-import BiInstagram from "~icons/bi/instagram";
-import BiTiktok from "~icons/bi/tiktok";
-import BiYoutube from "~icons/bi/youtube";
-import BiTwitterX from "~icons/bi/twitter-x";
+import TablerBrandThreads from "./icon/TablerBrandThreads.astro";
+import TablerBrandFacebook from "./icon/TablerBrandFacebook.astro";
+import TablerBrandInstagram from "./icon/TablerBrandInstagram.astro";
+import TablerBrandTiktok from "./icon/TablerBrandTiktok.astro";
+import TablerBrandYoutube from "./icon/TablerBrandYoutube.astro";
+import TablerBrandX from "./icon/TablerBrandX.astro";
 ---
 
 <footer id="footer" class="relative w-full print:hidden">
@@ -30,22 +27,22 @@ import BiTwitterX from "~icons/bi/twitter-x";
 
 			<div class="flex gap-6">
 				<SoicalLink href="https://fb.com/dr.juchunko/">
-					<BiFacebook className="size-6" />
+					<TablerBrandFacebook className="size-6" />
 				</SoicalLink>
 				<SoicalLink href="https://instagr.am/dr.juchunko/">
-					<BiInstagram className="size-6" />
+					<TablerBrandInstagram className="size-6" />
 				</SoicalLink>
 				<SoicalLink href="https://tiktok.com/@dr.juchunko">
-					<BiTiktok className="size-6" />
+					<TablerBrandTiktok className="size-6" />
 				</SoicalLink>
 				<SoicalLink href="https://threads.net/@dr.juchunko">
-					<BiThreads className="size-6" />
+					<TablerBrandThreads className="size-6" />
 				</SoicalLink>
 				<SoicalLink href="https://youtube.com/@dr.juchunko">
-					<BiYoutube className="size-6" />
+					<TablerBrandYoutube className="size-6" />
 				</SoicalLink>
 				<SoicalLink href="https://x.com/@dAAAb">
-					<BiTwitterX className="size-6" />
+					<TablerBrandX className="size-6" />
 				</SoicalLink>
 			</div>
 		</div>
