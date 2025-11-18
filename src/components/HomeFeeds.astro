@@ -26,21 +26,21 @@ const subtitles = {
 // Section configuration array (separates data from rendering)
 const sections = [
 	{
-		key: "legislator",
-		title: titles.legislator,
-		subtitle: subtitles.legislator,
-		href: `/${lang}/activities`,
-		type: "display",
-		cards: legislatorCards?.slice().reverse() ?? [],
-		max: 3,
-	},
-	{
 		key: "news",
 		title: titles.news,
 		subtitle: subtitles.news,
 		href: `/${lang}/news`,
 		type: "display",
 		cards: newsCards?.slice().reverse() ?? [],
+		max: 3,
+	},
+	{
+		key: "legislator",
+		title: titles.legislator,
+		subtitle: subtitles.legislator,
+		href: `/${lang}/activities`,
+		type: "display",
+		cards: legislatorCards?.slice().reverse() ?? [],
 		max: 3,
 	},
 	{
