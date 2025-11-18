@@ -65,9 +65,32 @@ const sections = [
 ---
 
 <!-- Use Tailwind utility classes instead of local CSS -->
+<style>
+	/* Home feed card entrance animation (staggered). Respects prefers-reduced-motion. */
+	.home-card-appear {
+		opacity: 0;
+		transform-origin: center center;
+		will-change: opacity;
+		animation: home-card-appear 380ms cubic-bezier(0.2, 0.9, 0.2, 1) var(--delay, 0ms) both;
+	}
+
+	@keyframes home-card-appear {
+		to {
+			opacity: 1;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.home-card-appear {
+			animation: none !important;
+			opacity: 1;
+			transform: none !important;
+		}
+	}
+</style>
 <div class="homefeeds-grid mb-4 flex gap-4 overflow-x-auto max-md:-mx-4 max-md:px-4 max-md:pb-2 md:grid md:grid-cols-2">
 	{
-		sections.map((sec) => (
+		sections.map((sec, sIndex) => (
 			<a
 				class="section-card group relative flex shrink-0 flex-col overflow-hidden rounded-lg bg-gray-50 transition-colors hover:bg-gray-100 max-md:w-[70vw] dark:bg-white/5 dark:hover:bg-white/10"
 				href={sec.href}
@@ -75,32 +98,35 @@ const sections = [
 				<div class="p-4 md:p-6">
 					<div class="relative flex h-60 flex-col items-center gap-2">
 						{sec.cards?.slice(0, sec.max).map((c, index) => {
+							const delayMs = sIndex * 150 + index * 120;
 							if (sec.type === "display") {
 								const xOffset = (index - 1) * 20;
 								const yOffset = (index - 1) * -50;
 								return (
 									<div
-										class="from-muted/50 to-muted/25 absolute top-1/2 left-1/2 flex h-36 w-[min(26rem,65vw)] -translate-x-1/2 -translate-y-1/2 transform-gpu flex-col justify-between rounded-xl border bg-gradient-to-br px-6 py-4 drop-shadow-sm backdrop-blur-sm select-none dark:from-[#111]/50 dark:to-[#111]/25"
-										style={`transform: translate(${xOffset}%, ${yOffset}%) skewY(6deg) rotate(0.5deg); z-index:${3 - index};`}
+										class="from-muted/50 to-muted/25 absolute top-1/2 left-1/2 w-[min(26rem,65vw)] -translate-x-1/2 -translate-y-1/2 transform-gpu rounded-xl border bg-linear-to-br px-6 py-4 drop-shadow-sm backdrop-blur-sm select-none dark:from-[#111]/50 dark:to-[#111]/25"
+										style={`--delay:${delayMs}ms; transform: translate(${xOffset}%, ${yOffset}%) skewY(6deg) rotate(0.5deg); z-index:${3 - index};`}
 									>
-										<div class="flex items-center gap-2">
-											<span class="relative inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-50/50 text-gray-500 dark:bg-white/5 dark:text-white/80">
-												{c.icon === "newspaper" ? (
-													<Newspaper class="h-4 w-4" />
-												) : c.icon === "propose" ? (
-													<BookText class="h-4 w-4" />
-												) : c.icon === "cosign" ? (
-													<Signature class="h-4 w-4" />
-												) : c.icon === "meet" ? (
-													<User class="h-4 w-4" />
-												) : (
-													<Sparkles class="h-4 w-4" />
-												)}
-											</span>
-											<p class="line-clamp-2 text-sm font-medium dark:text-white/80">{c.title}</p>
+										<div class="home-card-appear flex h-28 flex-col justify-between">
+											<div class="flex items-center gap-2">
+												<span class="relative inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-50/50 text-gray-500 dark:bg-white/5 dark:text-white/80">
+													{c.icon === "newspaper" ? (
+														<Newspaper class="h-4 w-4" />
+													) : c.icon === "propose" ? (
+														<BookText class="h-4 w-4" />
+													) : c.icon === "cosign" ? (
+														<Signature class="h-4 w-4" />
+													) : c.icon === "meet" ? (
+														<User class="h-4 w-4" />
+													) : (
+														<Sparkles class="h-4 w-4" />
+													)}
+												</span>
+												<p class="line-clamp-2 text-sm font-medium dark:text-white/80">{c.title}</p>
+											</div>
+											<p class="line-clamp-2 text-sm dark:text-white/50">{c.description}</p>
+											<p class="text-muted-foreground text-xs">{c.date}</p>
 										</div>
-										<p class="line-clamp-2 text-sm dark:text-white/50">{c.description}</p>
-										<p class="text-muted-foreground text-xs">{c.date}</p>
 									</div>
 								);
 							}
@@ -118,31 +144,33 @@ const sections = [
 							const scale = baseScale * Math.pow(scaleDecay, index);
 							return (
 								<div
-									class="from-muted/50 to-muted/25 absolute top-1/2 left-1/2 flex h-36 w-[min(26rem,65vw)] -translate-x-1/2 -translate-y-1/2 transform-gpu flex-col justify-between rounded-xl border bg-gradient-to-b px-6 py-4 drop-shadow-sm backdrop-blur-sm select-none dark:from-[#111]/50 dark:to-[#111]/25"
-									style={`transform: translateY(${yOffset}%) scale(${scale}); z-index:${3 - index};`}
+									class="from-muted/50 to-muted/25 absolute top-1/2 left-1/2 flex w-[min(26rem,65vw)] -translate-x-1/2 -translate-y-1/2 transform-gpu flex-col justify-between rounded-xl border bg-linear-to-b px-6 py-4 drop-shadow-sm backdrop-blur-sm select-none dark:from-[#111]/50 dark:to-[#111]/25"
+									style={`--delay:${delayMs}ms; transform: translateY(${yOffset}%) scale(${scale}); z-index:${3 - index};`}
 								>
-									<div class="flex items-center gap-2">
-										<span class="relative inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gray-50/50 text-gray-500 dark:bg-white/5 dark:text-white/80">
-											{c.icon === "newspaper" ? (
-												<Newspaper class="h-4 w-4" />
-											) : c.icon === "propose" ? (
-												<BookText class="h-4 w-4" />
-											) : c.icon === "cosign" ? (
-												<Signature class="h-4 w-4" />
-											) : c.icon === "meet" ? (
-												<User class="h-4 w-4" />
-											) : c.icon === "blog" ? (
-												<Rss class="h-4 w-4" />
-											) : c.icon === "transpal" ? (
-												<Mic class="h-4 w-4" />
-											) : (
-												<Sparkles class="h-4 w-4" />
-											)}
-										</span>
-										<p class="line-clamp-1 text-sm font-medium dark:text-white/80">{c.title}</p>
+									<div class="home-card-appear flex h-28 flex-col justify-between">
+										<div class="flex items-center gap-2">
+											<span class="relative inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-50/50 text-gray-500 dark:bg-white/5 dark:text-white/80">
+												{c.icon === "newspaper" ? (
+													<Newspaper class="h-4 w-4" />
+												) : c.icon === "propose" ? (
+													<BookText class="h-4 w-4" />
+												) : c.icon === "cosign" ? (
+													<Signature class="h-4 w-4" />
+												) : c.icon === "meet" ? (
+													<User class="h-4 w-4" />
+												) : c.icon === "blog" ? (
+													<Rss class="h-4 w-4" />
+												) : c.icon === "transpal" ? (
+													<Mic class="h-4 w-4" />
+												) : (
+													<Sparkles class="h-4 w-4" />
+												)}
+											</span>
+											<p class="line-clamp-1 text-sm font-medium dark:text-white/80">{c.title}</p>
+										</div>
+										<p class="line-clamp-2 text-sm dark:text-white/50">{c.description}</p>
+										<p class="text-muted-foreground text-xs">{c.date}</p>
 									</div>
-									<p class="line-clamp-2 text-sm dark:text-white/50">{c.description}</p>
-									<p class="text-muted-foreground text-xs">{c.date}</p>
 								</div>
 							);
 						})}
