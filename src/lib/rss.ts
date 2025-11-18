@@ -9,17 +9,22 @@ export type FeedItem = {
 	author?: string;
 };
 
-function decodeHtmlEntities(text: string | undefined): string {
+export function decodeHtmlEntities(text: string | undefined): string {
 	if (!text) return "";
 	const namedEntities: Record<string, string> = {
-		"'": "'",
-		'"': '"',
-		"&": "&",
-		"<": "<",
-		">": ">",
+		"&apos;": "'",
+		"&quot;": '"',
+		"&amp;": "&",
+		"&lt;": "<",
+		"&gt;": ">",
 		"&nbsp;": "\u00a0",
 		"&hellip;": "…",
 		"&mdash;": "—",
+		"&ndash;": "–",
+		"&lsquo;": "‘",
+		"&rsquo;": "’",
+		"&ldquo;": "“",
+		"&rdquo;": "”",
 	};
 
 	return text
