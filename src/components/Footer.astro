@@ -15,7 +15,7 @@ import TablerBrandX from "./icon/TablerBrandX.astro";
 	>
 	</div>
 	<div
-		class="relative mx-auto flex max-w-[90rem] flex-col gap-8 py-8 pr-[max(env(safe-area-inset-right),2rem)] pl-[max(env(safe-area-inset-left),2rem)] md:max-w-[90vw]"
+		class="relative mx-auto flex max-w-360 flex-col gap-8 py-8 pr-[max(env(safe-area-inset-right),2rem)] pl-[max(env(safe-area-inset-left),2rem)] md:max-w-[90vw]"
 	>
 		<div class="flex items-center gap-6 max-md:justify-center">
 			<LanguageSelector client:only="react" />
@@ -25,7 +25,7 @@ import TablerBrandX from "./icon/TablerBrandX.astro";
 				© {new Date().getFullYear()} JUCHUNKO.COM All rights reserved.
 			</div>
 
-			<div class="flex gap-6">
+			<div class="flex items-center gap-4">
 				<SoicalLink href="https://fb.com/dr.juchunko/">
 					<TablerBrandFacebook className="size-6" />
 				</SoicalLink>

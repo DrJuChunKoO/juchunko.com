@@ -184,7 +184,7 @@ export default function AIAssistantWindow({ isOpen, onClose }: AIAssistantWindow
 								<div key={m.id} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
 									<motion.div
 										className={[
-											"prose prose-sm prose-neutral prose-tight max-w-[80%] rounded-lg px-3 py-1 break-words whitespace-pre-wrap",
+											"prose prose-sm prose-neutral prose-tight max-w-[80%] rounded-lg px-3 py-1 wrap-break-word whitespace-pre-wrap",
 											m.role === "user"
 												? "prose-invert origin-right bg-blue-500 text-white"
 												: "dark:prose-invert origin-left bg-gray-100 dark:bg-gray-800",

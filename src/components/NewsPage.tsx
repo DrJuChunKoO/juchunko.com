@@ -232,7 +232,7 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 									<span>·</span>
 									<span>{timeAgo(item.time)}</span>
 								</div>
-								<ArrowUpRight className="size-4 opacity-0 transition-opacity group-hover:opacity-100" />
+								<ArrowUpRight className="size-4 -translate-x-1 translate-y-1 opacity-0 transition-all group-hover:translate-none group-hover:opacity-100" />
 							</div>
 						</a>
 					);

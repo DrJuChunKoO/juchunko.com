@@ -28,7 +28,7 @@ export default function LanguageSelector() {
 
 	return (
 		<div className="flex items-center gap-2">
-			<Languages />
+			<Languages className="text-muted-foreground" />
 			<NativeSelect
 				className="w-40"
 				value={selectedLanguage}
