@@ -11,11 +11,11 @@ import { Github } from "@lucide/astro";
 
 <div class="sticky top-0 z-20 w-full self-start bg-transparent print:hidden">
 	<div
-		class="pointer-events-none absolute z-[-1] h-full w-full bg-white/80 shadow-[0_4px_32px_rgba(0,0,0,.1)] backdrop-blur-xl transition-all duration-500 in-[.scrolled]:translate-y-0 in-[.scrolled]:opacity-100 contrast-more:shadow-[0_0_0_1px_#000] md:-translate-y-full md:opacity-0 dark:bg-[#181616] dark:shadow-[0_-1px_0_rgba(255,255,255,.1)_inset] contrast-more:dark:shadow-[0_0_0_1px_#fff]"
+		class="pointer-events-none absolute z-[-1] h-full w-full bg-white/80 shadow-[0_4px_32px_rgba(0,0,0,.1)] backdrop-blur-xl transition-all duration-500 contrast-more:shadow-[0_0_0_1px_#000] md:-translate-y-[100%] md:opacity-0 dark:bg-[#181616] dark:shadow-[0_-1px_0_rgba(255,255,255,.1)_inset] contrast-more:dark:shadow-[0_0_0_1px_#fff] [.scrolled__&]:translate-y-0 [.scrolled_&]:opacity-100"
 	>
 	</div>
 	<nav
-		class="mx-auto flex h-20 max-w-360 items-center justify-end gap-2 pr-[max(env(safe-area-inset-right),2rem)] pl-[max(env(safe-area-inset-left),2rem)] text-sm transition-all in-[.scrolled]:h-16 md:max-w-[90vw]"
+		class="mx-auto flex h-20 max-w-[90rem] items-center justify-end gap-2 pr-[max(env(safe-area-inset-right),2rem)] pl-[max(env(safe-area-inset-left),2rem)] text-sm transition-all md:max-w-[90vw] [.scrolled_&]:h-16"
 	>
 		<a class="flex items-center text-base transition-opacity hover:opacity-75 ltr:mr-auto rtl:ml-auto" href={`/${lang}`}>
 			<span class="text-foreground font-medium tracking-wide uppercase">{t("site.title")}</span>
