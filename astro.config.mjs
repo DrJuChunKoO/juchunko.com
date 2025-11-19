@@ -74,12 +74,19 @@ export default defineConfig({
 		build: {
 			assetsInlineLimit: 0,
 			rollupOptions: {
+				external: ["@resvg/resvg-js", "jsdom"],
 				output: {
 					manualChunks: {
 						react: ["react", "react-dom"],
 					},
 				},
 			},
+		},
+		optimizeDeps: {
+			exclude: ["@resvg/resvg-js", "jsdom"],
+		},
+		ssr: {
+			external: ["@resvg/resvg-js", "jsdom"],
 		},
 	},
 });
