@@ -68,3 +68,22 @@ export function timeAgo(dateString: string, lang: "zh-TW" | "en"): string {
 		return lang === "zh-TW" ? "今天" : "Today";
 	}
 }
+
+export function stripMarkdown(markdown: string): string {
+	if (!markdown) return "";
+	return markdown
+		.replace(/!\[.*?\]\(.*?\)/g, "") // Remove images
+		.replace(/\[([^\]]+)\]\(.*?\)/g, "$1") // Replace links with text
+		.replace(/^\s*import\s+.*?$/gm, "") // Remove import statements
+		.replace(/#{1,6}\s+/g, "") // Remove headers
+		.replace(/(\*\*|__)(.*?)\1/g, "$2") // Remove bold
+		.replace(/(\*|_)(.*?)\1/g, "$2") // Remove italic
+		.replace(/`{3}[\s\S]*?`{3}/g, "") // Remove code blocks
+		.replace(/`(.+?)`/g, "$1") // Remove inline code
+		.replace(/^\s*>\s+/gm, "") // Remove blockquotes
+		.replace(/^\s*[-+*]\s+/gm, "") // Remove list items
+		.replace(/^\s*\d+\.\s+/gm, "") // Remove numbered list items
+		.replace(/<[^>]*>/g, "") // Remove HTML tags
+		.replace(/\n+/g, " ") // Replace newlines with spaces
+		.trim();
+}

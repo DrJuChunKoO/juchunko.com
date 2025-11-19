@@ -35,21 +35,24 @@ const prevPost = index >= 0 && index + 1 < allInCollection.length ? allInCollect
  * 直接使用目前 collection 名稱，避免寫死映射，方便未來擴充新分類
  */
 const categoryForCard: string = currentCollection;
+
+import { stripMarkdown } from "@/lib/utils";
+const description = post.data.description || stripMarkdown(post.body).slice(0, 150) + (post.body.length > 150 ? "..." : "");
 ---
 
-<PageLayout post={post}>
+<PageLayout post={post} description={description}>
 	<span
 		class="absolute top-0 right-8 hidden h-24 w-16 items-end justify-center rounded-b-xl bg-gradient-to-b from-gray-100 to-gray-200 p-3 text-4xl transition-all md:flex dark:from-white/10 dark:to-white/5"
 		>{post.data.emoji}</span
 	>
-	<div class="prose prose-slate dark:prose-invert mx-auto max-w-[768px]">
+	<div class="prose prose-slate dark:prose-invert mx-auto max-w-3xl">
 		{categoryKey && <h4 class="font-medium tracking-tight text-gray-500 opacity-75 dark:text-gray-400">{t(`cat.${categoryKey}`)}</h4>}
 		<Content />
 	</div>
 
 	{
 		(prevPost || nextPost) && (
-			<div class="mx-auto mt-20 max-w-[768px] border-t-2 border-black/5 py-6 dark:border-white/5">
+			<div class="mx-auto mt-20 max-w-3xl border-t-2 border-black/5 py-6 dark:border-white/5">
 				<h2 class="mb-3 text-xl font-semibold">{t("post.recommend")}</h2>
 				<div class="grid grid-cols-2 gap-2">
 					{nextPost && <CardLink post={nextPost} lang={lang} category={categoryForCard} />}
