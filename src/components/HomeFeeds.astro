@@ -157,14 +157,14 @@ const calcAlbumTransform = (index: number) => {
 								>
 									{/* animated inner wrapper; we keep transform/positioning on the outer element */}
 									<div class="home-card-appear">
-										<div class="flex h-28 flex-col justify-between">
+										<div class={cn("flex flex-col", c.description ? "h-28 justify-between" : "h-18 justify-center gap-3")}>
 											<div class="flex items-center gap-2">
 												<span class="relative inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-50/50 text-gray-500 drop-shadow-md dark:bg-white/5 dark:text-white/80">
 													<Icon class="h-4 w-4" />
 												</span>
 												<p class={`line-clamp-2 text-sm font-medium dark:text-white/80`}>{c.title}</p>
 											</div>
-											<p class="line-clamp-2 text-sm dark:text-white/50">{removeMarkdown(c.description || "")}</p>
+											{c.description && <p class="line-clamp-2 text-sm dark:text-white/50">{removeMarkdown(c.description || "")}</p>}
 											<p class="text-muted-foreground text-xs">{c.date}</p>
 										</div>
 									</div>

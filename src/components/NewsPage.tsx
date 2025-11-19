@@ -7,8 +7,6 @@ type NewsItem = {
 	time: string;
 	title?: string;
 	title_en?: string;
-	summary?: string;
-	summary_en?: string;
 	source?: string;
 };
 
@@ -206,34 +204,35 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 				</form>
 			</section>
 
-			<section id="news-results" className="flex flex-col gap-2">
+			<section id="news-results" className="grid gap-3">
 				{items.map((item, idx) => {
 					const title = lang === "en" ? item.title_en || item.title || "" : item.title || "";
-					const summary: string = lang === "en" ? item.summary_en || item.summary || "" : item.summary || "";
 					return (
 						<a
 							key={idx}
 							href={item.url}
 							target="_blank"
 							rel="noopener noreferrer"
-							className="group block w-full rounded-lg bg-gray-50 p-4 no-underline transition-colors hover:bg-gray-100 dark:bg-white/5 dark:hover:bg-white/10"
+							className="group bg-muted/50 hover:bg-muted relative flex items-center gap-4 rounded-xl p-5 no-underline transition-all"
 						>
-							<h3 className="text-lg leading-tight font-medium">{title}</h3>
-							<Markdown className="text-muted-foreground [&_strong]:text-primary/75 mt-2 text-sm [&_strong]:font-medium">
-								{summary
-									.split("葛如鈞")
-									.map((part) => part.trim())
-									.join("**葛如鈞**")}
-							</Markdown>
+							{/* News icon */}
+							<div className="bg-muted-foreground/10 flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-2xl">📰</div>
 
-							<div className="flex items-center justify-between gap-4">
-								<div className="text-muted-foreground mt-2 flex items-center gap-2 text-xs">
-									<span>{item.source}</span>
-									<span>·</span>
+							{/* Content */}
+							<div className="min-w-0 flex-1">
+								<h3 className="text-primary mb-2 text-base leading-snug font-semibold transition-colors">{title}</h3>
+								<div className="text-muted-foreground flex items-center gap-2 text-xs">
+									{item.source && (
+										<span className="bg-muted-foreground/10 text-muted-foreground inline-flex items-center gap-1 rounded-full px-2 py-0.5">
+											{item.source}
+										</span>
+									)}
 									<span>{timeAgo(item.time)}</span>
 								</div>
-								<ArrowUpRight className="size-4 -translate-x-1 translate-y-1 opacity-0 transition-all group-hover:translate-none group-hover:opacity-100" />
 							</div>
+
+							{/* Arrow icon */}
+							<ArrowUpRight className="size-5 shrink-0 -translate-x-0.5 translate-y-0.5 opacity-0 transition-all group-hover:translate-none group-hover:opacity-100" />
 						</a>
 					);
 				})}

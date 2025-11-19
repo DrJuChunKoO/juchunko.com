@@ -37,8 +37,7 @@ export async function getIndexCards(lang: "en" | "zh-TW") {
 			const newsItems = Array.isArray(data?.data) ? data.data.slice(0, 3) : [];
 			result.newsCards = newsItems.map((item: any) => ({
 				title: lang === "en" ? decodeHtmlEntities(item.title_en) : decodeHtmlEntities(item.title),
-				description: lang === "en" ? decodeHtmlEntities(item.summary_en) : decodeHtmlEntities(item.summary),
-				date: timeAgo(item.time, lang),
+				date: `${item.source}‧${timeAgo(item.time, lang)}`,
 				href: item.url,
 				icon: "newspaper",
 			}));
