@@ -221,12 +221,8 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 							{/* Content */}
 							<div className="min-w-0 flex-1">
 								<h3 className="text-primary mb-2 text-base leading-snug font-semibold transition-colors">{title}</h3>
-								<div className="text-muted-foreground flex items-center gap-2 text-xs">
-									{item.source && (
-										<span className="bg-muted-foreground/10 text-muted-foreground inline-flex items-center gap-1 rounded-full px-2 py-0.5">
-											{item.source}
-										</span>
-									)}
+								<div className="text-muted-foreground flex items-center text-xs">
+									{item.source && <span>{item.source}‧</span>}
 									<span>{timeAgo(item.time)}</span>
 								</div>
 							</div>
