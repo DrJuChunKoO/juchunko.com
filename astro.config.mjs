@@ -16,7 +16,7 @@ import { customRenderer } from "./src/lib/og-renderer";
 // https://astro.build/config
 export default defineConfig({
 	output: "static",
-	site: "https://juchunko.com",
+	site: "https://beta.juchunko.com",
 	integrations: [
 		react(),
 		sitemap(),
