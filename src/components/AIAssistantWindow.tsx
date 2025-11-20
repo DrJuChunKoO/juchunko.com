@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence, useMotionValue } from "motion/react";
-import { BotMessageSquare, Send, X, ArrowRight, ArrowUp } from "lucide-react";
+import { BotMessageSquare, X, ArrowRight, ArrowUp } from "lucide-react";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import Markdown from "markdown-to-jsx";
