@@ -49,17 +49,12 @@ export default {
 current page: https://juchunko.com${filename}
 </viewPage>`;
 
-			// Ensure messages is a valid array
-			const validMessages = Array.isArray(messages) ? messages : [];
-			const inputMessages = [{ role: "system", content: systemPrompt }, ...convertToModelMessages(validMessages)];
-			console.log("Input Messages:", inputMessages);
-
 			// --------------------------------------------------------------
 			// 執行 LLM，並注入各種 tool
 			// --------------------------------------------------------------
 			const result = streamText({
 				model: openai("gpt-4.1-mini"),
-				messages: inputMessages,
+				messages: [{ role: "system", content: systemPrompt }, ...convertToModelMessages(messages)],
 				tools: {
 					// ----------------- 讀取目前頁面 -----------------
 					viewPage: tool({
