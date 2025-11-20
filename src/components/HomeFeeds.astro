@@ -1,14 +1,10 @@
 ---
-import { getIndexCards } from "../lib/indexCards";
 import { ui } from "src/i18n/ui";
 import { Sparkles, Newspaper, BookText, Signature, User, Rss, Mic, ArrowRight, ArrowUpRight } from "@lucide/astro";
 import { cn } from "@/lib/utils";
 import { removeMarkdown } from "@excalidraw/markdown-to-text";
 type SupportedLang = "en" | "zh-TW";
 const { lang = "zh-TW" } = Astro.props as { lang?: SupportedLang };
-
-// Server-side: 聚合各外部資料來源
-const { newsCards, blogCards, transpalCards, legislatorCards } = await getIndexCards(lang);
 
 const titles = {
 	legislator: ui[lang]["home.legislatorActivity.title"],
@@ -25,14 +21,13 @@ const subtitles = {
 };
 
 // Section configuration array (separates data from rendering)
-const sections = [
+const sectionsConfig = [
 	{
 		key: "news",
 		title: titles.news,
 		subtitle: subtitles.news,
 		href: `/${lang}/news`,
 		type: "display",
-		cards: newsCards ?? [],
 		max: 3,
 	},
 	{
@@ -41,7 +36,6 @@ const sections = [
 		subtitle: subtitles.legislator,
 		href: `/${lang}/activities`,
 		type: "display",
-		cards: legislatorCards?.slice().reverse() ?? [],
 		max: 3,
 	},
 	{
@@ -50,7 +44,6 @@ const sections = [
 		subtitle: subtitles.blog,
 		href: `https://blog.juchunko.com/`,
 		type: "album",
-		cards: blogCards.reverse() ?? [],
 		max: 3,
 	},
 	{
@@ -59,7 +52,6 @@ const sections = [
 		subtitle: subtitles.transpal,
 		href: `https://transpal.juchunko.com/`,
 		type: "album",
-		cards: transpalCards ?? [],
 		max: 3,
 	},
 ];
@@ -129,48 +121,31 @@ const calcAlbumTransform = (index: number) => {
 			transform: none !important;
 		}
 	}
+
+	.home-card-skeleton {
+		background: linear-gradient(90deg, hsl(var(--muted)) 25%, hsl(var(--muted) / 0.5) 50%, hsl(var(--muted)) 75%);
+		background-size: 200% 100%;
+		animation: skeleton-loading 1.5s ease-in-out infinite;
+	}
+
+	@keyframes skeleton-loading {
+		0% {
+			background-position: 200% 0;
+		}
+		100% {
+			background-position: -200% 0;
+		}
+	}
 </style>
-<div class="homefeeds-grid mb-4 flex gap-4 overflow-x-auto max-lg:-mx-4 max-lg:px-4 max-lg:pb-2 lg:grid lg:grid-cols-2">
+
+<div class="homefeeds-grid mb-4 flex gap-4 overflow-x-auto max-lg:-mx-4 max-lg:px-4 max-lg:pb-2 lg:grid lg:grid-cols-2" id="homefeeds-container" data-lang={lang}>
+	<!-- Loading state skeleton cards -->
 	{
-		sections.map((sec, sIndex) => (
-			<a
-				class="section-card group bg-muted/50 hover:bg-muted relative flex shrink-0 flex-col overflow-hidden rounded-lg transition-colors max-lg:w-[50vw] max-md:w-[70vw]"
-				href={sec.href}
-			>
+		sectionsConfig.map((sec) => (
+			<div class="section-card skeleton-card group bg-muted/50 relative flex shrink-0 flex-col overflow-hidden rounded-lg max-lg:w-[50vw] max-md:w-[70vw]">
 				<div class="p-4 md:p-6">
-					<div class="relative flex h-60 flex-col data-[type=display]:max-md:scale-75" data-type={sec.type}>
-						{sec.cards?.slice(0, sec.max).map((c, index) => {
-							const delayMs = sIndex * 150 + index * 120;
-							const transformStyle = sec.type === "display" ? calcDisplayTransform(index) : calcAlbumTransform(index);
-							const styleStr = `--delay:${delayMs}ms; ${transformStyle}`;
-							const Icon = getIcon(c.icon);
-							return (
-								<div
-									class={cn(
-										"border-muted-foreground/10 absolute top-1/2 left-1/2 w-[min(26rem,65vw)] -translate-x-1/2 -translate-y-1/2 transform-gpu rounded-xl border px-6 py-4 backdrop-blur-sm select-none",
-										// gradientClass
-										`data-[type=album]:bg-linear-to-b data-[type=display]:bg-linear-to-br`,
-										"from-muted/50 to-muted/25",
-									)}
-									style={styleStr}
-									data-type={sec.type}
-								>
-									{/* animated inner wrapper; we keep transform/positioning on the outer element */}
-									<div class="home-card-appear">
-										<div class={cn("flex flex-col", c.description ? "h-28 justify-between" : "h-18 justify-center gap-3")}>
-											<div class="flex items-center gap-2">
-												<span class="relative inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-50/50 text-gray-500 drop-shadow-md dark:bg-white/5 dark:text-white/80">
-													<Icon class="h-4 w-4" />
-												</span>
-												<p class={`line-clamp-2 text-sm font-medium dark:text-white/80`}>{c.title}</p>
-											</div>
-											{c.description && <p class="line-clamp-2 text-sm dark:text-white/50">{removeMarkdown(c.description || "")}</p>}
-											<p class="text-muted-foreground text-xs">{c.date}</p>
-										</div>
-									</div>
-								</div>
-							);
-						})}
+					<div class="relative flex h-60 flex-col">
+						<div class="home-card-skeleton absolute top-1/2 left-1/2 w-[min(26rem,65vw)] -translate-x-1/2 -translate-y-1/2 rounded-xl h-32"></div>
 					</div>
 				</div>
 				<div class="text-foreground relative z-10 flex w-full items-center justify-between gap-2 bg-black/5 p-4 py-3 backdrop-blur-sm md:p-6 md:py-4 dark:bg-white/5">
@@ -179,12 +154,142 @@ const calcAlbumTransform = (index: number) => {
 						<p class="text-muted-foreground line-clamp-1 text-sm opacity-75 md:text-base">{sec.subtitle}</p>
 					</header>
 					{sec.href && sec.href.startsWith("http") ? (
-						<ArrowUpRight class="h-6 w-6 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+						<ArrowUpRight class="h-6 w-6" />
 					) : (
-						<ArrowRight class="h-6 w-6 transition-transform group-hover:translate-x-0.5" />
+						<ArrowRight class="h-6 w-6" />
 					)}
 				</div>
-			</a>
+			</div>
 		))
 	}
 </div>
+
+<script is:inline define:vars={{ lang, sectionsConfig, calcDisplayTransform, calcAlbumTransform }}>
+	// Helper function to remove markdown (simplified version)
+	function removeMarkdown(text) {
+		if (!text) return '';
+		return text
+			.replace(/!\[.*?\]\(.*?\)/g, '')
+			.replace(/\[([^\]]+)\]\(.*?\)/g, '$1')
+			.replace(/#{1,6}\s+/g, '')
+			.replace(/(\*\*|__)(.*?)\1/g, '$2')
+			.replace(/(\*|_)(.*?)\1/g, '$2')
+			.replace(/`{3}[\s\S]*?`{3}/g, '')
+			.replace(/`(.+?)`/g, '$1')
+			.trim();
+	}
+
+	// Get icon emoji/symbol based on icon type
+	function getIconSymbol(icon) {
+		const iconMap = {
+			'newspaper': '📰',
+			'propose': '📜',
+			'cosign': '✍️',
+			'meet': '👤',
+			'blog': '📡',
+			'transpal': '🎙️'
+		};
+		return iconMap[icon] || '✨';
+	}
+
+	// Fetch index cards data from worker API
+	async function loadHomeFeeds() {
+		const container = document.getElementById('homefeeds-container');
+		if (!container) return;
+
+		const currentLang = container.dataset.lang || 'zh-TW';
+
+		try {
+			const response = await fetch(`/api/index-cards?lang=${currentLang}`);
+			if (!response.ok) {
+				throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+			}
+
+			const data = await response.json();
+
+			// Map data to sections
+			const sections = sectionsConfig.map(config => {
+				let cards = [];
+				if (config.key === 'news') {
+					cards = data.newsCards || [];
+				} else if (config.key === 'legislator') {
+					cards = (data.legislatorCards || []).slice().reverse();
+				} else if (config.key === 'blog') {
+					cards = (data.blogCards || []).reverse();
+				} else if (config.key === 'transpal') {
+					cards = data.transpalCards || [];
+				}
+				return { ...config, cards };
+			});
+
+			// Render sections
+			container.innerHTML = sections.map((sec, sIndex) => {
+				const cardsHtml = (sec.cards || []).slice(0, sec.max).map((c, index) => {
+					const delayMs = sIndex * 150 + index * 120;
+					const transformStyle = sec.type === 'display'
+						? calcDisplayTransform(index)
+						: calcAlbumTransform(index);
+					const styleStr = `--delay:${delayMs}ms; ${transformStyle}`;
+					const iconSymbol = getIconSymbol(c.icon);
+
+					return `
+						<div
+							class="border-muted-foreground/10 absolute top-1/2 left-1/2 w-[min(26rem,65vw)] -translate-x-1/2 -translate-y-1/2 transform-gpu rounded-xl border px-6 py-4 backdrop-blur-sm select-none data-[type=album]:bg-linear-to-b data-[type=display]:bg-linear-to-br from-muted/50 to-muted/25"
+							style="${styleStr}"
+							data-type="${sec.type}"
+						>
+							<div class="home-card-appear">
+								<div class="${c.description ? 'flex flex-col h-28 justify-between' : 'flex flex-col h-18 justify-center gap-3'}">
+									<div class="flex items-center gap-2">
+										<span class="relative inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-50/50 text-gray-500 drop-shadow-md dark:bg-white/5 dark:text-white/80 text-base">
+											${iconSymbol}
+										</span>
+										<p class="line-clamp-2 text-sm font-medium dark:text-white/80">${c.title || ''}</p>
+									</div>
+									${c.description ? `<p class="line-clamp-2 text-sm dark:text-white/50">${removeMarkdown(c.description)}</p>` : ''}
+									<p class="text-muted-foreground text-xs">${c.date || ''}</p>
+								</div>
+							</div>
+						</div>
+					`;
+				}).join('');
+
+				const arrowIcon = sec.href && sec.href.startsWith('http')
+					? '<svg class="lucide-arrow-up-right h-6 w-6 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>'
+					: '<svg class="lucide-arrow-right h-6 w-6 transition-transform group-hover:translate-x-0.5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>';
+
+				return `
+					<a
+						class="section-card group bg-muted/50 hover:bg-muted relative flex shrink-0 flex-col overflow-hidden rounded-lg transition-colors max-lg:w-[50vw] max-md:w-[70vw]"
+						href="${sec.href}"
+					>
+						<div class="p-4 md:p-6">
+							<div class="relative flex h-60 flex-col data-[type=display]:max-md:scale-75" data-type="${sec.type}">
+								${cardsHtml}
+							</div>
+						</div>
+						<div class="text-foreground relative z-10 flex w-full items-center justify-between gap-2 bg-black/5 p-4 py-3 backdrop-blur-sm md:p-6 md:py-4 dark:bg-white/5">
+							<header>
+								<h2 class="line-clamp-1 font-semibold md:text-xl">${sec.title}</h2>
+								<p class="text-muted-foreground line-clamp-1 text-sm opacity-75 md:text-base">${sec.subtitle}</p>
+							</header>
+							${arrowIcon}
+						</div>
+					</a>
+				`;
+			}).join('');
+
+		} catch (error) {
+			console.error('Failed to load home feeds:', error);
+			// Show error state - keep skeleton cards visible
+			// Could enhance this with a retry button or error message
+		}
+	}
+
+	// Load data when DOM is ready
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', loadHomeFeeds);
+	} else {
+		loadHomeFeeds();
+	}
+</script>
