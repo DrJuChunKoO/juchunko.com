@@ -39,11 +39,13 @@ export default {
 
 			const { messages = [], filename = "/" } = body;
 
-		// Ensure messages is a valid array
-		const validMessages = Array.isArray(messages) ? messages : [];
+			// Ensure messages is a valid array
+			const validMessages = Array.isArray(messages) ? messages : [];
+			const inputMessages = [{ role: "system", content: systemPrompt }, ...convertToModelMessages(validMessages)];
+			console.log("Input Messages:", inputMessages);
 
-		// 系統提示詞
-		const systemPrompt = `你是國民黨立委葛如鈞（寶博士）逐字稿網站的 AI 助手
+			// 系統提示詞
+			const systemPrompt = `你是國民黨立委葛如鈞（寶博士）逐字稿網站的 AI 助手
 - 盡可能簡短、友善回答
 - 盡可能使用工具來提供使用者盡可能準確與完整的資訊
 - 請以使用者的語言回答問題
@@ -61,7 +63,7 @@ current page: https://transpal.juchunko.com/speeches/${filename}
 			// --------------------------------------------------------------
 			const result = streamText({
 				model: openai("gpt-4.1-mini"),
-				messages: convertToModelMessages([{ role: "system", content: systemPrompt }, ...validMessages]),
+				messages: inputMessages,
 				tools: {
 					// ----------------- 讀取目前頁面 -----------------
 					viewPage: tool({
