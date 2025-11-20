@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence, useMotionValue } from "motion/react";
-import { BotMessageSquare, Send, X, ArrowRight } from "lucide-react";
+import { BotMessageSquare, Send, X, ArrowRight, ArrowUp } from "lucide-react";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import Markdown from "markdown-to-jsx";
@@ -71,24 +71,12 @@ export default function AIAssistantWindow({ isOpen, onClose }: AIAssistantWindow
 	// Quick prompts definitions
 	const quickPrompts = [
 		{
-			text: "重點摘要",
-			prompt: "摘要此對話的重點",
+			text: "重點整理",
+			prompt: "整理此頁面的重點",
 		},
 		{
-			text: "背景資訊",
-			prompt: "提供此內容的背景資訊",
-		},
-		{
-			text: "主要觀點",
-			prompt: "說明此內容的主要觀點?",
-		},
-		{
-			text: "詳細解釋",
-			prompt: "詳細解釋此內容?",
-		},
-		{
-			text: `生成問答`,
-			prompt: "為此內容生成問答",
+			text: "最新新聞",
+			prompt: "可以告訴我和葛如鈞有關的新聞嗎？",
 		},
 	] as { text: string; prompt: string }[];
 
@@ -141,7 +129,7 @@ export default function AIAssistantWindow({ isOpen, onClose }: AIAssistantWindow
 					exit={{ opacity: 0, scale: 0.5, y: 16 }}
 					transition={{ type: "spring", stiffness: 300, damping: 30 }}
 					style={{ bottom: y }}
-					className="fixed right-4 z-40 flex h-120 w-80 origin-bottom-right flex-col rounded-lg bg-white shadow-2xl ring-1 ring-black/5 backdrop-blur-xl dark:bg-gray-900 dark:ring-white/10"
+					className="fixed right-4 z-40 flex w-100 origin-bottom-right flex-col rounded-lg bg-white shadow-2xl backdrop-blur-xl dark:bg-gray-900"
 				>
 					{/* 標題欄 */}
 					<div className="flex items-center justify-between rounded-t-lg bg-gray-500 p-3 text-white">
@@ -162,7 +150,7 @@ export default function AIAssistantWindow({ isOpen, onClose }: AIAssistantWindow
 					</div>
 
 					{/* 聊天內容 */}
-					<div className="h-96 max-h-[60vh] overflow-y-auto border-t border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-950">
+					<div className="h-100 overflow-y-auto border-t border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-950">
 						<motion.div
 							className="flex flex-col space-y-3 p-4 text-sm"
 							initial={{ opacity: 0, y: 10 }}
@@ -272,11 +260,11 @@ export default function AIAssistantWindow({ isOpen, onClose }: AIAssistantWindow
 							handleSubmit(e);
 							setInput("");
 						}}
-						className="dark:border-gray-800"
+						className="p-1"
 					>
-						<div className="flex items-center gap-2 rounded-b-lg border-t border-gray-200 p-3 dark:border-gray-800">
+						<div className="flex gap-2 rounded-md outline outline-gray-200 has-focus:outline-blue-500 dark:outline-gray-800 dark:has-focus:outline-blue-400">
 							<textarea
-								className="h-10 w-full flex-1 resize-none rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-blue-400"
+								className="w-full flex-1 resize-none rounded-lg bg-transparent px-3 py-2 text-sm text-gray-900 placeholder-gray-400 outline-none dark:text-gray-100 dark:placeholder-gray-500"
 								placeholder="請輸入您的問題..."
 								value={input}
 								onChange={handleInputChange}
@@ -284,15 +272,16 @@ export default function AIAssistantWindow({ isOpen, onClose }: AIAssistantWindow
 								tabIndex={0}
 								aria-describedby="chat-bot-instructions"
 								ref={inputRef}
+								rows={1}
 							/>
 							<button
 								type="submit"
 								disabled={status === "streaming" || input.trim() === ""}
 								aria-label="送出訊息"
 								aria-disabled={status === "streaming" || input.trim() === "" ? "true" : "false"}
-								className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-500 text-white transition-colors hover:bg-blue-600 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:opacity-50 dark:bg-blue-600 dark:hover:bg-blue-700 dark:disabled:bg-gray-800"
+								className="flex w-9 items-center justify-center rounded-r-md bg-blue-500 text-white transition-colors hover:bg-blue-600 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:opacity-50 dark:bg-blue-600 dark:hover:bg-blue-700 dark:disabled:bg-gray-800"
 							>
-								<Send className="h-4 w-4" />
+								<ArrowUp className="size-4" />
 							</button>
 							<div id="chat-bot-instructions" className="sr-only">
 								按下 Enter 鍵送出訊息
