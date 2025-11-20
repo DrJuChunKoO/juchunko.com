@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { createOpenAI, type OpenAI } from "@ai-sdk/openai";
-import { streamText, tool, smoothStream, embed, convertToModelMessages } from "ai";
+import { streamText, tool, smoothStream, convertToModelMessages, stepCountIs } from "ai";
 import { z } from "zod";
 import type { ExportedHandler, Fetcher } from "@cloudflare/workers-types";
 
@@ -218,6 +218,10 @@ current page: https://juchunko.com${filename}
 						},
 					}),
 				},
+				stopWhen: stepCountIs(5),
+				experimental_transform: smoothStream({
+					chunking: /[\u4E00-\u9FFF]|\S+\s+/,
+				}),
 			});
 
 			const response = result.toUIMessageStreamResponse();
