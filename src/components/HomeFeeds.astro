@@ -297,6 +297,17 @@ const calcAlbumTransform = (index: number) => {
 				`;
 			}).join('');
 
+			// Trigger animations by forcing a reflow after DOM insertion
+			requestAnimationFrame(() => {
+				const animatedCards = container.querySelectorAll('.home-card-appear');
+				animatedCards.forEach(card => {
+					// Force reflow to restart animation
+					card.style.animation = 'none';
+					card.offsetHeight; // Trigger reflow
+					card.style.animation = '';
+				});
+			});
+
 		} catch (error) {
 			console.error('Failed to load home feeds:', error);
 			// Show error state - keep skeleton cards visible
@@ -309,5 +320,4 @@ const calcAlbumTransform = (index: number) => {
 		document.addEventListener('DOMContentLoaded', loadHomeFeeds);
 	} else {
 		loadHomeFeeds();
-	}
 </script>
