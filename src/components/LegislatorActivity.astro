@@ -1,7 +1,7 @@
 ---
+import { ArrowRight } from "lucide-react";
 import { useTranslations } from "../i18n/utils";
 import { timeAgo } from "../lib/utils";
-import DataFeed from "./DataFeed.astro";
 import LegislatorActivityPage from "./LegislatorActivityPage.astro";
 
 type SupportedLang = "en" | "zh-TW";
@@ -37,13 +37,11 @@ type Activity = {
 
 type LegislatorActivityProps = {
 	lang: SupportedLang;
-	variant?: "card" | "page";
 };
 
-const { lang = "zh-TW", variant = "card" } = Astro.props as LegislatorActivityProps;
+const { lang = "zh-TW" } = Astro.props as LegislatorActivityProps;
 
-const isCard = variant === "card";
-const limit = isCard ? 3 : 100;
+const limit = 100;
 const t = useTranslations(lang);
 
 const locale = lang === "en" ? "en-US" : "zh-TW";
@@ -347,18 +345,20 @@ const cardItems = allActivities.map((activity) => {
 });
 ---
 
-<DataFeed
-	variant={variant}
-	title={t("home.legislatorActivity.title")}
-	subtitle={t("home.legislatorActivity.subtitle")}
-	viewMoreLink={`/${lang}/activities`}
-	fetchError={fetchError}
-	hasData={hasData}
-	emptyMessage={t("home.legislatorActivity.empty")}
-	fetchErrorMessage={t("home.legislatorActivity.fetchError")}
->
-	<div slot="card"></div>
-	<div slot="page">
-		<LegislatorActivityPage lang={lang} activities={allActivities} labels={carouselLabels} />
-	</div>
-</DataFeed>
+<section>
+	{
+		fetchError ? (
+			<p class="mt-6 rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-900/30 dark:text-red-200">
+				{t("home.legislatorActivity.fetchError")}
+			</p>
+		) : !hasData ? (
+			<p class="mt-6 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-300">
+				{t("home.legislatorActivity.empty")}
+			</p>
+		) : (
+			<div>
+				<LegislatorActivityPage lang={lang} activities={allActivities} labels={carouselLabels} />
+			</div>
+		)
+	}
+</section>
