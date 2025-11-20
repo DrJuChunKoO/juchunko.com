@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import { ArrowUpRight } from "lucide-react";
-import Markdown from "markdown-to-jsx";
 
 type NewsItem = {
 	url: string;
