@@ -43,7 +43,9 @@ export default {
   - 盡可能簡短、友善回答
   - 盡可能使用工具來提供使用者盡可能準確與完整的資訊
   - 請以使用者的語言回答問題，目前新聞只有中文結果，若使用者不是用中文進行提問，請翻譯成使用者的語言
-  - 新聞來源有多個，會出現重複新聞，請自行總結後再和使用者說，並附上所有網址和來源名稱，像這樣 [自由時報](https://xxx) [中央社](https://xxx)
+	- 新聞來源有多個，會出現重複新聞，請自行總結後再和使用者說，並附上所有網址和來源名稱，像這樣 [自由時報](https://xxx) [中央社](https://xxx)
+	- 如果使用者想要搜尋新聞，請使用 'searchNews' 工具(範例: searchNews q=關鍵字)。
+	- 如果使用者想要列出最新新聞，請使用 'latestNews' 工具(範例: latestNews count=10)。
   - 葛如鈞=寶博士=Ju-Chun KO
 <viewPage>
 current page: https://juchunko.com${filename}
@@ -94,6 +96,124 @@ current page: https://juchunko.com${filename}
 							} catch (error) {
 								console.error("Error fetching file data:", error);
 								return `base: https://juchunko.com/\n目前頁面內容：\n無法讀取目前頁面內容：${error.message}`;
+							}
+						},
+					}),
+					// ----------------- 搜尋新聞 / 列出最新新聞 -----------------
+					searchNews: tool({
+						description: "Search news by query. Returns a readable summary with urls and sources.",
+						inputSchema: z
+							.object({
+								q: z.string().min(1),
+								page: z.number().int().positive().optional(),
+								pageSize: z.number().int().positive().optional(),
+								lang: z.union([z.literal("en"), z.literal("zh-TW")]).optional(),
+							})
+							.strict(),
+						execute: async (input) => {
+							try {
+								const { q, page = 1, pageSize = 20 } = input as any;
+								const params = new URLSearchParams();
+								params.set("page", String(page));
+								params.set("pageSize", String(pageSize));
+								params.set("q", q);
+
+								const res = await fetch(`https://aifferent.juchunko.com/api/news?${params.toString()}`);
+								if (!res.ok) {
+									throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+								}
+								const payload = await res.json();
+								if (!payload || !payload.success) {
+									throw new Error(payload?.message || "Failed to fetch news");
+								}
+								let data = payload.data || [];
+
+								// dedupe by url to avoid duplicate links
+								const seen = new Set();
+								data = data.filter((it: any) => {
+									const u = String(it?.url || "");
+									if (!u) return true;
+									if (seen.has(u)) return false;
+									seen.add(u);
+									return true;
+								});
+								const totalPages = payload.totalPages ?? null;
+
+								if (!data || data.length === 0) {
+									return `搜尋結果為空。`;
+								}
+
+								// Format concise result list for the model
+								const formatted = data
+									.slice(0, pageSize)
+									.map((i: any, idx: number) => {
+										const title = i.title || i.title_en || "(no title)";
+										const src = i.source || "未知來源";
+										const time = i.time || "";
+										const url = i.url || "";
+										return `${idx + 1}. ${title} (${src}) - ${time} - ${url}`;
+									})
+									.join("\n");
+
+								return `搜尋新聞結果（query=${q}，page=${page}，pageSize=${pageSize}，totalPages=${totalPages}）:\n${formatted}`;
+							} catch (error: any) {
+								console.error("searchNews error:", error);
+								return `搜尋新聞失敗：${error.message || String(error)}`;
+							}
+						},
+					}),
+					latestNews: tool({
+						description: "Get latest news items; pass count (pageSize) to control how many are returned.",
+						inputSchema: z
+							.object({
+								count: z.number().int().positive().optional(),
+								lang: z.union([z.literal("en"), z.literal("zh-TW")]).optional(),
+							})
+							.strict(),
+						execute: async (input) => {
+							try {
+								const { count = 10 } = input as any;
+								const params = new URLSearchParams();
+								params.set("page", String(1));
+								params.set("pageSize", String(count));
+
+								const res = await fetch(`https://aifferent.juchunko.com/api/news?${params.toString()}`);
+								if (!res.ok) {
+									throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+								}
+								const payload = await res.json();
+								if (!payload || !payload.success) {
+									throw new Error(payload?.message || "Failed to fetch news");
+								}
+								let data = payload.data || [];
+								const seen = new Set();
+								data = data.filter((it: any) => {
+									const u = String(it?.url || "");
+									if (!u) return true;
+									if (seen.has(u)) return false;
+									seen.add(u);
+									return true;
+								});
+
+								if (!data || data.length === 0) {
+									return `目前沒有最新新聞。`;
+								}
+
+								const formatted = data
+									.slice(0, count)
+									.map((i: any, idx: number) => {
+										const title = i.title || i.title_en || "(no title)";
+										const src = i.source || "未知來源";
+										const time = i.time || "";
+										const url = i.url || "";
+										return `${idx + 1}. ${title} (${src}) - ${time} - ${url}`;
+									})
+									.join("\n");
+
+								return `最新新聞（count=${count}）:\n${formatted}`;
+							} catch (error: any) {
+								console.error("latestNews error:", error);
+								return `取得最新新聞失敗：${error.message || String(error)}`;
 							}
 						},
 					}),
