@@ -56,7 +56,6 @@ export default function AIAssistantWindow({ isOpen, onClose }: AIAssistantWindow
 		return () => window.removeEventListener("scroll", handleScroll);
 	}, []);
 
-	// 手動管理輸入狀態 (AI SDK 5.0 移除了管理的輸入狀態)
 	const [input, setInput] = useState("");
 
 	// useChat hook for API integration with transport

@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { createOpenAI, type OpenAI } from "@ai-sdk/openai";
-import { streamText, tool, smoothStream, convertToModelMessages, stepCountIs } from "ai";
+import { streamText, tool, smoothStream, convertToModelMessages, stepCountIs, UIMessage } from "ai";
 import { z } from "zod";
 import type { ExportedHandler, Fetcher } from "@cloudflare/workers-types";
 
@@ -37,7 +37,7 @@ export default {
 				});
 			}
 
-			const { messages = [], filename = "/" } = body;
+			const { messages = [], filename = "/" }: { messages: UIMessage[]; filename: string } = body;
 			// 系統提示詞
 			const systemPrompt = `你是國民黨立委葛如鈞（寶博士）網站的 AI 助手
   - 盡可能簡短、友善回答
