@@ -196,15 +196,22 @@ export default function HomeFeeds({ lang = "zh-TW" }: HomeFeedsProps) {
 										return (
 											<motion.div
 												key={`${sec.key}-${index}`}
-												initial={{ opacity: 0, y: 18, scale: 0.8 }}
-												animate={{ opacity: 1, y: 0, scale: 1 }}
+												initial={
+													sec.type === "display"
+														? {
+																y: 200,
+																scale: 0.8,
+																opacity: 0,
+															}
+														: { opacity: 0, y: 200, scale: 0.8 }
+												}
+												animate={{ opacity: 1, ...style }}
 												transition={{
 													duration: 0.48,
 													ease: [0.2, 0.9, 0.2, 1],
-													delay: sIndex * 0.15 + index * 0.12,
+													delay: sIndex * 0.15 + (3 - index) * 0.12,
 												}}
 												className="border-muted-foreground/10 from-muted/50 to-muted/25 absolute top-1/2 left-1/2 w-[min(26rem,65vw)] -translate-x-1/2 -translate-y-1/2 transform-gpu rounded-xl border px-6 py-4 backdrop-blur-sm select-none data-[type=album]:bg-linear-to-b data-[type=display]:bg-linear-to-br"
-												style={style}
 												data-type={sec.type}
 											>
 												<div className={c.description ? "flex h-28 flex-col justify-between" : "flex h-18 flex-col justify-center gap-3"}>
