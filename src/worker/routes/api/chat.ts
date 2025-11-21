@@ -34,7 +34,7 @@ app.post("/", async (c) => {
   - 請以使用者的語言回答問題，目前新聞只有中文結果，若使用者不是用中文進行提問，請翻譯成使用者的語言
 	- 新聞來源有多個，會出現重複新聞，請自行總結後再和使用者說，並附上所有網址和來源名稱，像這樣 [自由時報](https://xxx) [中央社](https://xxx)
 	- 如果使用者想要搜尋新聞，請使用 'searchNews' 工具(範例: searchNews q=關鍵字)。
-	- 如果使用者想要列出最新新聞，請使用 'latestNews' 工具(範例: latestNews count=10)。
+	- 如果使用者想要列出最新新聞，請使用 'latestNews' 工具。
   - 葛如鈞=寶博士=Ju-Chun KO
 <viewPage>
 current page: https://juchunko.com${filename}
@@ -53,7 +53,19 @@ current page: https://juchunko.com${filename}
 					try {
 						const cleanFilename = filename.replace(/^\/+|\/+$/g, "");
 						const pathParts = cleanFilename.split("/");
-
+						if (pathParts.length === 1) {
+							const [lang] = pathParts;
+							return `base: https://juchunko.com/\n目前頁面內容：\n歡迎蒞臨科技立委葛如鈞．寶博士宇宙！這是中華民國第十一屆全國不分區立法委員葛如鈞（寶博士）的個人網站，在這片宇宙當中，您將探索寶博士的思維、興趣、品味，以及對法案行動、虛擬智慧法規調適和多元宇宙倡議的內容。`;
+						}
+						if (pathParts.length === 2) {
+							const [lang, page] = pathParts;
+							if (page === "news") {
+								return `base: https://juchunko.com/\n目前頁面內容：\n這是一個新聞列表頁面，顯示最新的新聞文章摘要和連結。使用者可以點擊每篇新聞標題以閱讀完整內容。`;
+							}
+							if (page === "activities") {
+								return `base: https://juchunko.com/\n目前頁面內容：\n這是立法委員最新動態頁面，展示最新提案、連署與出席會議狀態。`;
+							}
+						}
 						if (pathParts.length >= 3) {
 							const [lang, contentCategory, ...slugParts] = pathParts;
 							const slug = slugParts.join("/");
