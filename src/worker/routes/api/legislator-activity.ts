@@ -216,41 +216,41 @@ app.get("/", async (c) => {
 	const page = parseInt(c.req.query("page") || "1", 10);
 	const pageSize = parseInt(c.req.query("pageSize") || "20", 10);
 
-    // Strategy: Fetch a large chunk from the beginning of each list (page=1, limit=N)
-    // to ensure we have enough items to merge and sort correctly.
-    // This simulates a "merged" view of multiple data sources.
-    const fetchLimit = Math.max(100, page * pageSize);
+	// Try to get from cache first
+	const cache = caches.default;
+	const cacheUrl = new URL(c.req.url);
+	let response = await cache.match(cacheUrl);
+
+	if (response) {
+		return response;
+	}
+
+	// Strategy: Fetch a large chunk from the beginning of each list (page=1, limit=N)
+	// to ensure we have enough items to merge and sort correctly.
+	// This simulates a "merged" view of multiple data sources.
+	const fetchLimit = Math.max(100, page * pageSize);
 
 	try {
 		const [proposeRes, cosignRes, meetsRes] = await Promise.all([
 			fetchJSON<BillsResponse>(`/legislators/${LEGISLATOR_TERM}/${encodedName}/propose_bills`, {
-                page: 1,
-                limit: fetchLimit
-            }),
+				page: 1,
+				limit: fetchLimit,
+			}),
 			fetchJSON<BillsResponse>(`/legislators/${LEGISLATOR_TERM}/${encodedName}/cosign_bills`, {
-                page: 1,
-                limit: fetchLimit
-            }),
+				page: 1,
+				limit: fetchLimit,
+			}),
 			fetchJSON<MeetsResponse>(`/legislators/${LEGISLATOR_TERM}/${encodedName}/meets`, {
-                page: 1,
-                limit: fetchLimit
-            }),
+				page: 1,
+				limit: fetchLimit,
+			}),
 		]);
 
-		const proposedBills =
-			proposeRes?.bills
-				?.map((entry) => mapBillActivity(entry))
-				.filter((item): item is BillActivity => !!item) ?? [];
+		const proposedBills = proposeRes?.bills?.map((entry) => mapBillActivity(entry)).filter((item): item is BillActivity => !!item) ?? [];
 
-		const cosignedBills =
-			cosignRes?.bills
-				?.map((entry) => mapBillActivity(entry))
-				.filter((item): item is BillActivity => !!item) ?? [];
+		const cosignedBills = cosignRes?.bills?.map((entry) => mapBillActivity(entry)).filter((item): item is BillActivity => !!item) ?? [];
 
-		const meetList =
-			meetsRes?.meets
-				?.map((entry) => mapMeetActivity(entry))
-				.filter((item): item is MeetActivity => !!item) ?? [];
+		const meetList = meetsRes?.meets?.map((entry) => mapMeetActivity(entry)).filter((item): item is MeetActivity => !!item) ?? [];
 
 		const activities: ActivityItem[] = [
 			...proposedBills.map(
@@ -291,27 +291,33 @@ app.get("/", async (c) => {
 		activities.sort((a, b) => {
 			const dateA = a.date ? new Date(a.date).getTime() : 0;
 			const dateB = b.date ? new Date(b.date).getTime() : 0;
-            // Descending order
+			// Descending order
 			return dateB - dateA;
 		});
 
-        // Pagination
-        const startIndex = (page - 1) * pageSize;
-        const endIndex = startIndex + pageSize;
-        const pagedActivities = activities.slice(startIndex, endIndex);
-        const totalItems = activities.length;
-        const totalPages = Math.ceil(totalItems / pageSize);
+		// Pagination
+		const startIndex = (page - 1) * pageSize;
+		const endIndex = startIndex + pageSize;
+		const pagedActivities = activities.slice(startIndex, endIndex);
+		const totalItems = activities.length;
+		const totalPages = Math.ceil(totalItems / pageSize);
 
-		return c.json({
-            success: true,
-            data: pagedActivities,
-            meta: {
-                page,
-                pageSize,
-                totalItems,
-                totalPages
-            }
-        });
+		response = c.json({
+			success: true,
+			data: pagedActivities,
+			meta: {
+				page,
+				pageSize,
+				totalItems,
+				totalPages,
+			},
+		});
+
+		// Cache for 1 hour
+		response.headers.set("Cache-Control", "public, max-age=3600");
+		c.executionCtx.waitUntil(cache.put(cacheUrl, response.clone()));
+
+		return response;
 	} catch (error: any) {
 		console.error("Failed to fetch legislator activity:", error);
 		return c.json({ success: false, message: error.message }, 500);
