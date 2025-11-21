@@ -171,22 +171,21 @@ export default function HomeFeeds({ lang = "zh-TW" }: HomeFeedsProps) {
 
 	return (
 		<div
-			className="homefeeds-grid mb-4 flex gap-4 max-lg:-mx-4 max-lg:px-4 max-lg:pb-2 max-md:overflow-x-auto lg:grid lg:grid-cols-2"
-			id="homefeeds-container"
+			className="mb-4 flex gap-4 max-lg:-mx-4 max-lg:-mt-2 max-lg:overflow-x-auto max-lg:px-4 max-lg:py-2 lg:grid lg:grid-cols-2"
 			data-lang={lang}
 		>
 			{sections.map((sec, sIndex) => (
 				<a
 					key={sec.key}
-					className="section-card group bg-muted/50 hover:bg-muted hover:outline-primary/50 relative flex shrink-0 flex-col overflow-hidden rounded-lg transition-colors hover:outline-2 hover:outline-offset-2 max-lg:w-[50vw] max-md:w-[70vw]"
+					className="group bg-muted/50 hover:bg-muted hover:outline-primary/50 relative flex shrink-0 flex-col overflow-hidden rounded-lg transition-colors hover:outline-2 hover:outline-offset-2 max-lg:w-[50vw] max-md:w-[70vw]"
 					href={sec.href}
 				>
-					<div className="p-4 md:p-6">
-						{loading ? (
-							<div className="relative flex h-60 flex-col">
-								<div className="home-card-skeleton from-muted via-muted/50 to-muted absolute top-1/2 left-1/2 h-32 w-[min(26rem,65vw)] -translate-x-1/2 -translate-y-1/2 animate-pulse rounded-xl bg-linear-to-r bg-[length:200%_100%]" />
-							</div>
-						) : (
+					{loading ? (
+						<div className="p-4 md:p-6">
+							<div className="h-60" />
+						</div>
+					) : (
+						<div className="p-4 md:p-6">
 							<div className="relative flex h-60 flex-col data-[type=display]:max-md:scale-75" data-type={sec.type}>
 								<AnimatePresence>
 									{(sec.cards || []).slice(0, sec.max).map((c, index) => {
@@ -196,15 +195,7 @@ export default function HomeFeeds({ lang = "zh-TW" }: HomeFeedsProps) {
 										return (
 											<motion.div
 												key={`${sec.key}-${index}`}
-												initial={
-													sec.type === "display"
-														? {
-																y: 200,
-																scale: 0.8,
-																opacity: 0,
-															}
-														: { opacity: 0, y: 200, scale: 0.8 }
-												}
+												initial={{ opacity: 0, y: 64, scale: 0.8 }}
 												animate={{ opacity: 1, ...style }}
 												transition={{
 													duration: 0.48,
@@ -229,8 +220,8 @@ export default function HomeFeeds({ lang = "zh-TW" }: HomeFeedsProps) {
 									})}
 								</AnimatePresence>
 							</div>
-						)}
-					</div>
+						</div>
+					)}
 					<div className="text-foreground relative z-10 flex w-full items-center justify-between gap-2 bg-black/5 p-4 py-3 backdrop-blur-sm md:p-6 md:py-4 dark:bg-white/5">
 						<header>
 							<h2 className="line-clamp-1 font-semibold md:text-xl">{sec.title}</h2>
