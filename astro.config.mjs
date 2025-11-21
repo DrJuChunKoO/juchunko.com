@@ -88,5 +88,13 @@ export default defineConfig({
 		ssr: {
 			external: ["@resvg/resvg-js", "jsdom"],
 		},
+		server: {
+			proxy: {
+				"/api": {
+					target: "https://beta.juchunko.com/",
+					changeOrigin: true,
+				},
+			},
+		},
 	},
 });
