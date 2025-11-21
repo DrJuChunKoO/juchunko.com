@@ -4,7 +4,7 @@ const { post, lang, category } = Astro.props;
 
 <a
 	href={`/${lang}/${category}/${post.id.replace(/^.+?\//, "").replace(/\.(md|mdx)$/, "")}`}
-	class="group relative flex flex-col items-start overflow-hidden rounded-lg bg-gray-50 p-0.5 transition-colors hover:bg-gray-100 md:p-4 md:pr-24 dark:bg-white/5 dark:hover:bg-white/10"
+	class="group hover:outline-primary/50 relative flex flex-col items-start overflow-hidden rounded-lg bg-gray-50 p-0.5 transition-colors hover:bg-gray-100 hover:outline-2 hover:outline-offset-2 md:p-4 md:pr-24 dark:bg-white/5 dark:hover:bg-white/10"
 >
 	<div class="bg-primary/5 dark:bg-primary/7.5 flex h-16 w-full items-center justify-center rounded-lg text-3xl md:hidden">
 		{post.data.emoji}
