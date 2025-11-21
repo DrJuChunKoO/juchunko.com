@@ -71,12 +71,28 @@ export default function AIAssistantWindow({ isOpen, onClose }: AIAssistantWindow
 	// Quick prompts definitions
 	const quickPrompts = [
 		{
-			text: "重點整理",
+			text: "📝 此頁重點",
 			prompt: "整理此頁面的重點",
 		},
 		{
-			text: "最新新聞",
-			prompt: "可以告訴我和葛如鈞有關的新聞嗎？",
+			text: "ℹ️ 提供背景資訊",
+			prompt: "請查看頁面內容並提供相關的背景資訊",
+		},
+		{
+			text: "🔍 主要觀點",
+			prompt: "這頁的主要觀點是什麼",
+		},
+		{
+			text: "📖 詳細解釋",
+			prompt: "請查看頁面內容並給我這個主題的詳細解釋嗎",
+		},
+		{
+			text: "❓ 生成問答",
+			prompt: "請查看頁面內容並幫我生成一個這段內容的問答",
+		},
+		{
+			text: "📰 最新新聞",
+			prompt: "可以告訴我和葛如鈞有關的最新新聞嗎",
 		},
 	] as { text: string; prompt: string }[];
 
