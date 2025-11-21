@@ -153,16 +153,11 @@ current page: https://juchunko.com${filename}
 			}),
 			// 列出最新新聞
 			latestNews: tool({
-				description: "Get latest news items; pass count (pageSize) to control how many are returned.",
-				inputSchema: z
-					.object({
-						count: z.number().int().positive().optional(),
-						lang: z.union([z.literal("en"), z.literal("zh-TW")]).optional(),
-					})
-					.strict(),
+				description: "葛如鈞最新新聞列表。Returns a readable summary of the latest news with urls and sources.",
+				inputSchema: z.object({}).strict(),
 				execute: async (input) => {
 					try {
-						const { count = 10 } = input as any;
+						const count = 10;
 						const params = new URLSearchParams();
 						params.set("page", String(1));
 						params.set("pageSize", String(count));
