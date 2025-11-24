@@ -1,46 +1,48 @@
-# Astro Starter Kit: Basics
+# 科技立委葛如鈞．寶博士 (Dr. Ju-Chun KO) 官方網站
 
-```sh
-pnpm create astro@latest -- --template basics
-```
+這是中華民國第十一屆全國不分區立法委員葛如鈞（寶博士）的個人網站原始碼。
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## 🚀 專案簡介
 
-## 🚀 Project Structure
+本網站使用 [Astro](https://astro.build) 框架建置，結合 React 與 Tailwind CSS，打造高效能且具備現代化設計的靜態網站。內容涵蓋法案行動、寶博士使用說明書以及各類雜項文章。
 
-Inside of your Astro project, you'll see the following folders and files:
+## 🛠️ 技術堆疊
+
+- **核心框架**: [Astro](https://astro.build)
+- **UI 框架**: [React](https://react.dev)
+- **樣式**: [Tailwind CSS](https://tailwindcss.com)
+- **圖示**: [Lucide React](https://lucide.dev)
+- **內容管理**: Astro Content Collections (Markdown / MDX)
+- **多語言支援**: 內建 i18n 路由 (en / zh-TW)
+
+## 📝 內容編輯與管理
+
+關於如何新增文章、編輯現有內容以及新增分類，請參閱詳細教學文件：
+
+👉 **[網站編輯教學 (EDITING.md)](./EDITING.md)**
+
+## 💻 開發與執行
+
+所有指令請在專案根目錄下執行：
+
+| 指令           | 說明                                  |
+| :------------- | :------------------------------------ |
+| `pnpm install` | 安裝專案依賴                          |
+| `pnpm dev`     | 啟動本地開發伺服器 (`localhost:4321`) |
+| `pnpm build`   | 建置生產環境版本至 `./dist/`          |
+| `pnpm preview` | 預覽建置後的網站                      |
+
+## 📂 專案結構
 
 ```text
 /
-├── public/
-│   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
-└── package.json
+├── public/          # 靜態資源
+├── src/
+│   ├── components/  # React 與 Astro 元件
+│   ├── content/     # 網站內容 (文章)
+│   ├── layouts/     # 頁面佈局
+│   ├── pages/       # 路由頁面
+│   ├── styles/      # 全域樣式
+│   └── i18n/        # 多語言設定
+└── astro.config.mjs # Astro 設定檔
 ```
-
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                | Action                                           |
-| :--------------------- | :----------------------------------------------- |
-| `pnpm install`         | Installs dependencies                            |
-| `pnpm dev`             | Starts local dev server at `localhost:4321`      |
-| `pnpm build`           | Build your production site to `./dist/`          |
-| `pnpm preview`         | Preview your build locally, before deploying     |
-| `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `pnpm astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
