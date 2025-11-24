@@ -62,14 +62,14 @@ export default function VoiceReaderWindow({ isOpen, onClose }: VoiceReaderWindow
 					</div>
 
 					{/* 主要內容 */}
-					<div className="p-4">
+					<div>
 						<ElevenLabsAudioNative
 							publicUserId="e826f7db9aa74a5b23ec481d0d24467f232dbc1622ceb065c98ff3c4adb99830"
 							size="small"
 							textColorRgba="rgba(0, 0, 0, 1.0)"
 							backgroundColorRgba="rgba(255, 255, 255, 1.0)"
 						/>
-						<p className="mt-2 text-center text-xs text-gray-500 dark:text-gray-400">
+						<p className="p-2 text-center text-xs text-gray-500 dark:text-gray-400">
 							由 ElevenLabs 提供技術支援
 						</p>
 					</div>
