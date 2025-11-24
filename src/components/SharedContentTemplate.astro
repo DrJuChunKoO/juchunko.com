@@ -45,10 +45,10 @@ const description = post.data.description || stripMarkdown(post.body).slice(0, 1
 		class="absolute top-0 right-8 hidden h-24 w-16 items-end justify-center rounded-b-xl bg-gradient-to-b from-gray-100 to-gray-200 p-3 text-4xl transition-all md:flex dark:from-white/10 dark:to-white/5"
 		>{post.data.emoji}</span
 	>
-	<div class="prose prose-slate dark:prose-invert mx-auto max-w-3xl">
+	<article class="prose prose-slate dark:prose-invert mx-auto max-w-3xl" id="content">
 		{categoryKey && <h4 class="font-medium tracking-tight text-gray-500 opacity-75 dark:text-gray-400">{t(`cat.${categoryKey}`)}</h4>}
 		<Content />
-	</div>
+	</article>
 
 	{
 		(prevPost || nextPost) && (
