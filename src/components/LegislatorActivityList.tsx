@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { BookText, Signature, User } from "lucide-react";
+import { ArrowUpRight, BookText, Signature, User } from "lucide-react";
 import { timeAgo } from "../lib/utils";
 
 type ActivityItem = {
@@ -80,19 +80,19 @@ export default function LegislatorActivityList({ lang, labels }: Props) {
 			// The NewsPage used `https://aifferent.juchunko.com/api/news`, which is an absolute URL.
 			// For this new endpoint, if it's deployed to the same worker, we might need the full URL or relative if on same domain.
 			// Let's assume relative `/api/legislator-activity` works if served from same origin,
-            // or we might need to configure the base URL.
-            // Given the user request mentions "Worker", and `NewsPage` uses a specific domain,
-            // I should probably use a relative path if the main site proxies to worker,
-            // OR use the worker domain if known.
-            // Since I don't know the deployed worker domain for this new route yet,
-            // I will use `/api/legislator-activity` and hope the dev server or prod setup handles it.
-            // Wait, `NewsPage` uses `https://aifferent.juchunko.com/api/news`.
-            // If I am adding to the SAME worker, maybe I should use that domain?
-            // But I am adding to `src/worker/routes/api/index.ts`.
-            // If `aifferent.juchunko.com` is the production worker, I can't deploy to it immediately.
-            // For local dev, it should be localhost.
-            // I'll use a relative path `/api/legislator-activity` which is standard for Next.js/Astro with API routes or proxy.
-            // If that fails, I might need to make it configurable.
+			// or we might need to configure the base URL.
+			// Given the user request mentions "Worker", and `NewsPage` uses a specific domain,
+			// I should probably use a relative path if the main site proxies to worker,
+			// OR use the worker domain if known.
+			// Since I don't know the deployed worker domain for this new route yet,
+			// I will use `/api/legislator-activity` and hope the dev server or prod setup handles it.
+			// Wait, `NewsPage` uses `https://aifferent.juchunko.com/api/news`.
+			// If I am adding to the SAME worker, maybe I should use that domain?
+			// But I am adding to `src/worker/routes/api/index.ts`.
+			// If `aifferent.juchunko.com` is the production worker, I can't deploy to it immediately.
+			// For local dev, it should be localhost.
+			// I'll use a relative path `/api/legislator-activity` which is standard for Next.js/Astro with API routes or proxy.
+			// If that fails, I might need to make it configurable.
 
 			const res = await fetch(`/api/legislator-activity?${params.toString()}`);
 			if (!res.ok) {
@@ -128,68 +128,78 @@ export default function LegislatorActivityList({ lang, labels }: Props) {
 	}
 
 	return (
-		<div className="relative">
-			<ol className="relative">
+		<div>
+			<section className="grid gap-3">
 				{items.map((activity) => {
 					const Wrapper = activity.url ? "a" : "div";
-					const wrapperProps =
-						activity.url
-							? {
-									href: activity.url,
-									target: "_blank",
-									rel: "noopener noreferrer",
-							  }
-							: {};
+					const wrapperProps = activity.url
+						? {
+								href: activity.url,
+								target: "_blank",
+								rel: "noopener noreferrer",
+						  }
+						: {};
 
-                    // Construct details map for display
-                    const detailsMap: Record<string, string | undefined> = {};
-                    if (activity.type === "propose" || activity.type === "cosign") {
-                        detailsMap[labels["billStatus"]] = activity.status;
-                        detailsMap[labels["law"]] = activity.law;
-                    } else if (activity.type === "meet") {
-                        detailsMap[labels["meetingType"]] = activity.meetingType;
-                        detailsMap[labels["location"]] = activity.location;
-                    }
+					// Construct details map for display
+					const detailsMap: Record<string, string | undefined> = {};
+					if (activity.type === "propose" || activity.type === "cosign") {
+						detailsMap[labels["billStatus"]] = activity.status;
+						detailsMap[labels["law"]] = activity.law;
+					} else if (activity.type === "meet") {
+						detailsMap[labels["meetingType"]] = activity.meetingType;
+						detailsMap[labels["location"]] = activity.location;
+					}
 
 					return (
-						<li key={activity.id} className="mb-2" data-id={activity.id}>
-							<Wrapper
-								className="border-accent hover:border-primary/25 group relative flex flex-col items-start overflow-hidden rounded-md border p-2 shadow-black/5 transition-all hover:bg-slate-50 dark:hover:bg-slate-800/50"
-								{...wrapperProps}
-							>
-								<div className="mb-1 flex w-full items-center justify-between">
-									<span className="flex items-center gap-2 rounded bg-slate-100 px-2 py-1 text-xs font-medium text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-										{activity.type === "propose" && <BookText className="size-4" />}
-										{activity.type === "cosign" && <Signature className="size-4" />}
-										{activity.type === "meet" && <User className="size-4" />}
+						<Wrapper
+							key={activity.id}
+							className="group bg-muted/50 hover:bg-muted relative flex items-center gap-4 rounded-xl p-5 no-underline transition-all"
+							{...wrapperProps}
+						>
+							{/* Icon */}
+							<div className="bg-muted-foreground/10 flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-2xl text-slate-700 dark:text-slate-300">
+								{activity.type === "propose" && <BookText className="size-6" />}
+								{activity.type === "cosign" && <Signature className="size-6" />}
+								{activity.type === "meet" && <User className="size-6" />}
+							</div>
+
+							{/* Content */}
+							<div className="min-w-0 flex-1">
+								<div className="mb-1 flex items-center gap-2">
+									<span className="rounded bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700 dark:bg-slate-800 dark:text-slate-300">
 										{labels[activity.type]}
 									</span>
-									<time className="text-xs leading-none font-normal text-slate-500 dark:text-slate-400">
+									<time className="text-muted-foreground text-xs">
 										{activity.date ? timeAgo(activity.date, lang) : ""}
 									</time>
 								</div>
-								<div>
-									<h3 className="font-semibold text-slate-900 dark:text-white">{activity.title}</h3>
-									<div className="mt-1 flex flex-col gap-0.5 text-xs text-slate-600 dark:text-slate-400">
-										{Object.entries(detailsMap)
-											.filter(([, value]) => value)
-											.map(([key, value]) => (
-												<p key={key}>
-													<span className="font-medium">{key}</span>: {value}
-												</p>
-											))}
-									</div>
+								<h3 className="text-primary mb-2 text-base leading-snug font-semibold transition-colors">
+									{activity.title}
+								</h3>
+								<div className="text-muted-foreground flex flex-col gap-0.5 text-xs">
+									{Object.entries(detailsMap)
+										.filter(([, value]) => value)
+										.map(([key, value]) => (
+											<span key={key}>
+												{key}: {value}
+											</span>
+										))}
 								</div>
-							</Wrapper>
-						</li>
+							</div>
+
+							{/* Arrow icon */}
+							{activity.url && (
+								<ArrowUpRight className="size-5 shrink-0 -translate-x-0.5 translate-y-0.5 opacity-0 transition-all group-hover:translate-none group-hover:opacity-100" />
+							)}
+						</Wrapper>
 					);
 				})}
-			</ol>
+			</section>
 
-            <div className="text-muted-foreground my-4 text-center text-sm">
-                {loading && (lang === "en" ? "Loading..." : "載入中...")}
-                {error && <span className="text-red-500">{error}</span>}
-            </div>
+			<div className="text-muted-foreground my-4 text-center text-sm">
+				{loading && (lang === "en" ? "Loading..." : "載入中...")}
+				{error && <span className="text-red-500">{error}</span>}
+			</div>
 
 			<div ref={sentinelRef} style={{ minHeight: 1 }} />
 		</div>
