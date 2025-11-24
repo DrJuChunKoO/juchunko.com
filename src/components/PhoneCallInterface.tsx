@@ -56,22 +56,6 @@ export default function PhoneCallInterface({ isOpen, onClose }: PhoneCallInterfa
 		}, 1000);
 	}, [conversation, onClose]);
 
-	/*
-	const toggleMute = useCallback(async () => {
-		// 目前 SDK 似乎沒有直接的 mute 方法，這裡僅切換 UI 狀態
-		// 實際應用可能需要透過 AudioContext 或其他方式處理靜音
-		// 或者等待 SDK 更新提供 setMicMuted
-		// 根據文件，可以透過 controlled state 來控制
-		// 但這裡我們暫時只做 UI 上的切換，因為 useConversation 參數中沒有直接暴露 setMicMuted
-		// 除非我們在初始化時傳入 micMuted 狀態
-		// 讓我們嘗試重新初始化 conversation 或者查看是否有其他方式
-		// 根據文件: const [micMuted, setMicMuted] = useState(false); const conversation = useConversation({ micMuted });
-		// 由於 useConversation 是 hook，我們不能在 callback 中重新初始化
-		// 我們需要將 micMuted 傳遞給 useConversation
-		setIsMuted((prev) => !prev);
-	}, []);
-	*/
-
 	const formatDuration = (seconds: number) => {
 		const mins = Math.floor(seconds / 60);
 		const secs = seconds % 60;
@@ -194,31 +178,15 @@ export default function PhoneCallInterface({ isOpen, onClose }: PhoneCallInterfa
 							)}
 
 							{(conversation.status === "connected" || conversation.status === "connecting") && (
-								<>
-									{/* 靜音按鈕 - 暫時隱藏，因為需要更複雜的狀態管理來正確實作 */}
-									{/* <motion.button
-										whileTap={{ scale: 0.95 }}
-										whileHover={{ scale: 1.05 }}
-										onClick={toggleMute}
-										className={`flex h-14 w-14 items-center justify-center rounded-full text-white shadow-lg transition-colors ${
-											isMuted ? "bg-red-500 hover:bg-red-600" : "bg-gray-600 hover:bg-gray-700"
-										}`}
-										aria-label={isMuted ? "取消靜音" : "靜音"}
-									>
-										{isMuted ? <MicOff className="h-6 w-6" /> : <Mic className="h-6 w-6" />}
-									</motion.button> */}
-
-									{/* 掛斷按鈕 */}
-									<motion.button
-										whileTap={{ scale: 0.95 }}
-										whileHover={{ scale: 1.05 }}
-										onClick={handleEndCall}
-										className="flex h-16 w-16 items-center justify-center rounded-full bg-red-500 text-white shadow-lg transition-colors hover:bg-red-600"
-										aria-label="結束通話"
-									>
-										<PhoneOff className="h-8 w-8" />
-									</motion.button>
-								</>
+								<motion.button
+									whileTap={{ scale: 0.95 }}
+									whileHover={{ scale: 1.05 }}
+									onClick={handleEndCall}
+									className="flex h-16 w-16 items-center justify-center rounded-full bg-red-500 text-white shadow-lg transition-colors hover:bg-red-600"
+									aria-label="結束通話"
+								>
+									<PhoneOff className="h-8 w-8" />
+								</motion.button>
 							)}
 						</motion.div>
 					</div>

@@ -161,7 +161,9 @@ export default function Agent() {
 			{!hasWindowOpen && (
 				<div className="hidden flex-col items-end justify-end gap-2 md:flex">
 					<AgentButton icon={<Phone className="size-6 md:size-5" />} label="打給 AI 寶博" showLabel={open} onClick={handlePhoneCall} />
-					{showVoiceReader && <AgentButton icon={<BookAudio className="size-6 md:size-5" />} label="語音朗讀" showLabel={open} onClick={handleVoiceReader} />}
+					{showVoiceReader && (
+						<AgentButton icon={<BookAudio className="size-6 md:size-5" />} label="語音朗讀" showLabel={open} onClick={handleVoiceReader} />
+					)}
 					<AgentButton
 						icon={<BotMessageSquare className="size-6 md:size-5" />}
 						label="和 AI 聊聊"

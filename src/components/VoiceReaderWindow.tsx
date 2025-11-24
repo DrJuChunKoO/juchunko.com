@@ -69,13 +69,10 @@ export default function VoiceReaderWindow({ isOpen, onClose }: VoiceReaderWindow
 							textColorRgba="rgba(0, 0, 0, 1.0)"
 							backgroundColorRgba="rgba(255, 255, 255, 1.0)"
 						/>
-						<p className="p-2 text-center text-xs text-gray-500 dark:text-gray-400">
-							由 ElevenLabs 提供技術支援
-						</p>
+						<p className="p-2 text-center text-xs text-gray-500 dark:text-gray-400">由 ElevenLabs 提供技術支援</p>
 					</div>
 				</motion.div>
 			)}
 		</AnimatePresence>
 	);
 }
-
