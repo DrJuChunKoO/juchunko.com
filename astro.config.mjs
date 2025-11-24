@@ -20,7 +20,11 @@ export default defineConfig({
 	integrations: [
 		react(),
 		sitemap(),
-		partytown(),
+		partytown({
+			config: {
+				forward: ["dataLayer.push"],
+			},
+		}),
 		mdx(),
 		opengraphImages({
 			render: customRenderer,

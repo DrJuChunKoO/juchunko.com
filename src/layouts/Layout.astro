@@ -25,5 +25,15 @@ const t = useTranslations(lang);
 		<slot />
 		<LanguagePrompt currentUrl={Astro.url.href} client:only="react" />
 		<script type="module" src="https://unpkg.com/@splinetool/viewer@1.0.18/build/spline-viewer.js"></script>
+		<script type="text/partytown" src="https://www.googletagmanager.com/gtag/js?id=GTM-M7WLQNGR"></script>
+		<script type="text/partytown">
+			window.dataLayer = window.dataLayer || [];
+			window.gtag = function gtag() {
+				dataLayer.push(arguments);
+			};
+			gtag("js", new Date());
+
+			gtag("config", "GTM-M7WLQNGR");
+		</script>
 	</body>
 </html>
