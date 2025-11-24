@@ -117,6 +117,41 @@ export default function Agent() {
 		setOpen(false); // 關閉手機選單
 	};
 
+	// 檢查是否顯示語音朗讀按鈕
+	const [showVoiceReader, setShowVoiceReader] = useState(true);
+	useEffect(() => {
+		const checkShowVoiceReader = () => {
+			const filename = window.location.pathname;
+			const cleanFilename = filename.replace(/^\/+|\/+$/g, "");
+			const pathParts = cleanFilename.split("/");
+
+			if (pathParts.length === 1) {
+				// 首頁
+				setShowVoiceReader(false);
+				return;
+			}
+			if (pathParts.length === 2) {
+				const [lang, page] = pathParts;
+				if (page === "news") {
+					// 新聞列表
+					setShowVoiceReader(false);
+					return;
+				}
+				if (page === "activities") {
+					// 活動列表
+					setShowVoiceReader(false);
+					return;
+				}
+			}
+			setShowVoiceReader(true);
+		};
+
+		checkShowVoiceReader();
+		// 監聽路由變化（如果有的話，Astro 主要是 MPA，但也可能有 View Transitions）
+		window.addEventListener("popstate", checkShowVoiceReader);
+		return () => window.removeEventListener("popstate", checkShowVoiceReader);
+	}, []);
+
 	// 檢查是否有任何窗口打開
 	const hasWindowOpen = phoneCallOpen || aiAssistantOpen || voiceReaderOpen;
 
@@ -126,7 +161,7 @@ export default function Agent() {
 			{!hasWindowOpen && (
 				<div className="hidden flex-col items-end justify-end gap-2 md:flex">
 					<AgentButton icon={<Phone className="size-6 md:size-5" />} label="打給 AI 寶博" showLabel={open} onClick={handlePhoneCall} />
-					<AgentButton icon={<BookAudio className="size-6 md:size-5" />} label="語音朗讀" showLabel={open} onClick={handleVoiceReader} />
+					{showVoiceReader && <AgentButton icon={<BookAudio className="size-6 md:size-5" />} label="語音朗讀" showLabel={open} onClick={handleVoiceReader} />}
 					<AgentButton
 						icon={<BotMessageSquare className="size-6 md:size-5" />}
 						label="和 AI 聊聊"
@@ -176,16 +211,18 @@ export default function Agent() {
 						>
 							<AgentButton icon={<Phone className="size-6" />} label="打給 AI 寶博" showLabel onClick={handlePhoneCall} />
 						</motion.div>
-						<motion.div
-							variants={itemVariants}
-							custom={USE_BOTTOM_UP ? 1 : 1}
-							initial="hidden"
-							animate="visible"
-							exit="exit"
-							style={{ willChange: "transform, opacity" }}
-						>
-							<AgentButton icon={<BookAudio className="size-6" />} label="語音朗讀" showLabel onClick={handleVoiceReader} />
-						</motion.div>
+						{showVoiceReader && (
+							<motion.div
+								variants={itemVariants}
+								custom={USE_BOTTOM_UP ? 1 : 1}
+								initial="hidden"
+								animate="visible"
+								exit="exit"
+								style={{ willChange: "transform, opacity" }}
+							>
+								<AgentButton icon={<BookAudio className="size-6" />} label="語音朗讀" showLabel onClick={handleVoiceReader} />
+							</motion.div>
+						)}
 						<motion.div
 							variants={itemVariants}
 							custom={USE_BOTTOM_UP ? 0 : 2}
