@@ -18,13 +18,16 @@ import { BookOpenText, BotMessageSquare, Scale } from "lucide-react";
 ## Related Resources
 
 <Cards>
-	<Card href="https://bit.ly/GrandpaChou" target="_blank" title="Grandpa Chou" icon={<BookOpenText strokeWidth={1} />} />
+	<Card href="https://bit.ly/GrandpaChou" target="_blank" title="Grandpa Chou">
+		<BookOpenText slot="icon" />
+	</Card>
 	<Card
 		href="https://ipfs.juchunko.com/ipfs/QmQSDfE36VTRHExyfUW3ZJXZ3WXCt59okkwKYyMLGzQB5w/"
 		target="_blank"
 		title="Compilation of Parliamentary Motion Documents"
-		icon={<Scale strokeWidth={1} />}
-	/>
+	>
+		<Scale slot="icon" />
+	</Card>
 </Cards>
 
 ## Q&A
