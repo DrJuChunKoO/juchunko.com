@@ -9,10 +9,10 @@ app.route("/api", api);
 
 // Redirects
 app.get("/en-US/docs/news", (c) =>
-	c.redirect("https://beta.juchunko.com/en/news", 301),
+	c.redirect("https://juchunko.com/en/news", 301),
 );
 app.get("/docs/news", (c) =>
-	c.redirect("https://beta.juchunko.com/zh-TW/news", 301),
+	c.redirect("https://juchunko.com/zh-TW/news", 301),
 );
 
 app.get("/en-US/docs/*", (c) => {
