@@ -5,6 +5,13 @@ import AgentButton from "./AgentButton";
 import PhoneCallInterface from "./PhoneCallInterface";
 import AIAssistantWindow from "./AIAssistantWindow";
 import VoiceReaderWindow from "./VoiceReaderWindow";
+import { ui } from "src/i18n/ui";
+
+type SupportedLang = "en" | "zh-TW";
+
+interface AgentProps {
+	lang?: SupportedLang;
+}
 
 /**
  * 特性旗標：由下至上的動畫順序（可於 runtime 切換）
@@ -68,7 +75,7 @@ const createItemVariants = (reduced: boolean): Variants =>
 				exit: { opacity: 0, y: 6, scale: 0.98, transition: { duration: DUR_OUT, ease: EASE } },
 			};
 
-export default function Agent() {
+export default function Agent({ lang = "zh-TW" }: AgentProps = {}) {
 	// useReducedMotion 可能回傳 boolean | null，在 Astro Island 初期需確保為 boolean
 	const prefersReduced = Boolean(useReducedMotion());
 	const panelVariants = createPanelVariants(prefersReduced);
@@ -160,13 +167,13 @@ export default function Agent() {
 			{/* 三顆功能按鈕：桌面永遠顯示；手機在 open=true 時以動畫顯示（並顯示標籤） */}
 			{!hasWindowOpen && (
 				<div className="hidden flex-col items-end justify-end gap-2 md:flex">
-					<AgentButton icon={<Phone className="size-6 md:size-5" />} label="打給 AI 寶博" showLabel={open} onClick={handlePhoneCall} />
+					<AgentButton icon={<Phone className="size-6 md:size-5" />} label={ui[lang]["agent.callAI"]} showLabel={open} onClick={handlePhoneCall} />
 					{showVoiceReader && (
-						<AgentButton icon={<BookAudio className="size-6 md:size-5" />} label="語音朗讀" showLabel={open} onClick={handleVoiceReader} />
+						<AgentButton icon={<BookAudio className="size-6 md:size-5" />} label={ui[lang]["agent.voiceReader"]} showLabel={open} onClick={handleVoiceReader} />
 					)}
 					<AgentButton
 						icon={<BotMessageSquare className="size-6 md:size-5" />}
-						label="和 AI 聊聊"
+						label={ui[lang]["agent.chatWithAI"]}
 						showLabel={open}
 						onClick={handleAIAssistant}
 					/>
@@ -184,7 +191,7 @@ export default function Agent() {
 						animate="visible"
 						exit="exit"
 						role="group"
-						aria-label="快捷操作群組"
+						aria-label={ui[lang]["agent.quickActions"]}
 						onAnimationStart={() => {
 							// 標記效能，避免 layout thrash 僅使用 transform/opacity
 							performance.mark?.("agent:panel:anim:start");
@@ -211,7 +218,7 @@ export default function Agent() {
 							exit="exit"
 							style={{ willChange: "transform, opacity" }}
 						>
-							<AgentButton icon={<Phone className="size-6" />} label="打給 AI 寶博" showLabel onClick={handlePhoneCall} />
+							<AgentButton icon={<Phone className="size-6" />} label={ui[lang]["agent.callAI"]} showLabel onClick={handlePhoneCall} />
 						</motion.div>
 						{showVoiceReader && (
 							<motion.div
@@ -222,7 +229,7 @@ export default function Agent() {
 								exit="exit"
 								style={{ willChange: "transform, opacity" }}
 							>
-								<AgentButton icon={<BookAudio className="size-6" />} label="語音朗讀" showLabel onClick={handleVoiceReader} />
+								<AgentButton icon={<BookAudio className="size-6" />} label={ui[lang]["agent.voiceReader"]} showLabel onClick={handleVoiceReader} />
 							</motion.div>
 						)}
 						<motion.div
@@ -233,7 +240,7 @@ export default function Agent() {
 							exit="exit"
 							style={{ willChange: "transform, opacity" }}
 						>
-							<AgentButton icon={<BotMessageSquare className="size-6" />} label="和 AI 聊聊" showLabel onClick={handleAIAssistant} />
+							<AgentButton icon={<BotMessageSquare className="size-6" />} label={ui[lang]["agent.chatWithAI"]} showLabel onClick={handleAIAssistant} />
 						</motion.div>
 					</motion.div>
 				)}
@@ -246,7 +253,7 @@ export default function Agent() {
 					onClick={() => setOpen((v) => !v)}
 					className="flex cursor-pointer items-center gap-1.5 rounded-full border-2 border-gray-200 bg-white p-3 text-gray-600 shadow-2xl shadow-black/5 backdrop-blur-xl hover:bg-gray-100 md:hidden dark:border-white/20 dark:bg-black/80 dark:text-gray-300 dark:hover:bg-slate-950"
 					aria-expanded={open}
-					aria-label={open ? "收合快捷操作" : "開啟快捷操作"}
+					aria-label={open ? ui[lang]["agent.closeQuickActions"] : ui[lang]["agent.openQuickActions"]}
 					whileTap={{ scale: 0.95 }}
 					whileHover={{ scale: 1.05 }}
 					transition={{ type: "spring", stiffness: 400, damping: 30 }}
@@ -256,13 +263,13 @@ export default function Agent() {
 			)}
 
 			{/* 全螢幕撥打電話介面 */}
-			<PhoneCallInterface isOpen={phoneCallOpen} onClose={() => setPhoneCallOpen(false)} />
+			<PhoneCallInterface isOpen={phoneCallOpen} onClose={() => setPhoneCallOpen(false)} lang={lang} />
 
 			{/* AI 助手小窗口 */}
-			<AIAssistantWindow isOpen={aiAssistantOpen} onClose={() => setAiAssistantOpen(false)} />
+			<AIAssistantWindow isOpen={aiAssistantOpen} onClose={() => setAiAssistantOpen(false)} lang={lang} />
 
 			{/* 語音朗讀小窗口 */}
-			<VoiceReaderWindow isOpen={voiceReaderOpen} onClose={() => setVoiceReaderOpen(false)} />
+			<VoiceReaderWindow isOpen={voiceReaderOpen} onClose={() => setVoiceReaderOpen(false)} lang={lang} />
 		</motion.div>
 	);
 }

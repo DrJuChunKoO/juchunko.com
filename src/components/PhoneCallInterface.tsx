@@ -1,15 +1,18 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { useConversation } from "@elevenlabs/react";
-
 import { X, Phone, PhoneOff } from "lucide-react";
+import { ui } from "src/i18n/ui";
+
+type SupportedLang = "en" | "zh-TW";
 
 interface PhoneCallInterfaceProps {
 	isOpen: boolean;
 	onClose: () => void;
+	lang?: SupportedLang;
 }
 
-export default function PhoneCallInterface({ isOpen, onClose }: PhoneCallInterfaceProps) {
+export default function PhoneCallInterface({ isOpen, onClose, lang = "zh-TW" }: PhoneCallInterfaceProps) {
 	const conversation = useConversation();
 	const [callDuration, setCallDuration] = useState(0);
 	// const [isMuted, setIsMuted] = useState(false);
@@ -65,13 +68,13 @@ export default function PhoneCallInterface({ isOpen, onClose }: PhoneCallInterfa
 	const getStatusText = () => {
 		switch (conversation.status) {
 			case "connecting":
-				return "正在撥號...";
+				return ui[lang]["agent.phone.status.connecting"];
 			case "connected":
-				return conversation.isSpeaking ? "對方正在說話" : "通話中";
+				return conversation.isSpeaking ? ui[lang]["agent.phone.status.speaking"] : ui[lang]["agent.phone.status.connected"];
 			case "disconnecting":
-				return "正在結束...";
+				return ui[lang]["agent.phone.status.disconnecting"];
 			default:
-				return "準備撥號";
+				return ui[lang]["agent.phone.status.ready"];
 		}
 	};
 
@@ -92,7 +95,7 @@ export default function PhoneCallInterface({ isOpen, onClose }: PhoneCallInterfa
 						transition={{ delay: 0.2 }}
 						onClick={handleEndCall}
 						className="absolute top-6 right-6 flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-lg transition-colors hover:bg-white/20"
-						aria-label="關閉通話介面"
+						aria-label={ui[lang]["agent.phone.closeInterface"]}
 					>
 						<X className="h-6 w-6" />
 					</motion.button>
@@ -126,7 +129,7 @@ export default function PhoneCallInterface({ isOpen, onClose }: PhoneCallInterfa
 							transition={{ delay: 0.2 }}
 							className="mb-4 text-center"
 						>
-							<h2 className="mb-2 text-3xl font-bold">AI 寶博</h2>
+							<h2 className="mb-2 text-3xl font-bold">{ui[lang]["agent.phone.aiName"]}</h2>
 							<p className="text-lg text-white/80">{getStatusText()}</p>
 							{conversation.status === "connected" && (
 								<motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-2 text-sm text-white/60">
@@ -171,7 +174,7 @@ export default function PhoneCallInterface({ isOpen, onClose }: PhoneCallInterfa
 									whileHover={{ scale: 1.05 }}
 									onClick={handleCall}
 									className="flex h-16 w-16 items-center justify-center rounded-full bg-green-500 text-white shadow-lg transition-colors hover:bg-green-600"
-									aria-label="撥打電話"
+									aria-label={ui[lang]["agent.phone.dial"]}
 								>
 									<Phone className="h-8 w-8" />
 								</motion.button>
@@ -183,7 +186,7 @@ export default function PhoneCallInterface({ isOpen, onClose }: PhoneCallInterfa
 									whileHover={{ scale: 1.05 }}
 									onClick={handleEndCall}
 									className="flex h-16 w-16 items-center justify-center rounded-full bg-red-500 text-white shadow-lg transition-colors hover:bg-red-600"
-									aria-label="結束通話"
+									aria-label={ui[lang]["agent.phone.endCall"]}
 								>
 									<PhoneOff className="h-8 w-8" />
 								</motion.button>

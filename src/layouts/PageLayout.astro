@@ -42,7 +42,7 @@ const pageImage = image || post?.data.image || "/favicon.png";
 		>
 			<slot />
 		</div>
-		<Agent client:only="react" />
+		<Agent client:only="react" lang={lang} />
 		<Footer />
 	</div>
 </Layout>

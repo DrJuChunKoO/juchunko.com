@@ -2,13 +2,17 @@ import { useEffect } from "react";
 import { motion, AnimatePresence, useMotionValue } from "motion/react";
 import { BookAudio, X } from "lucide-react";
 import ElevenLabsAudioNative from "./ElevenLabsAudioNative";
+import { ui } from "src/i18n/ui";
+
+type SupportedLang = "en" | "zh-TW";
 
 interface VoiceReaderWindowProps {
 	isOpen: boolean;
 	onClose: () => void;
+	lang?: SupportedLang;
 }
 
-export default function VoiceReaderWindow({ isOpen, onClose }: VoiceReaderWindowProps) {
+export default function VoiceReaderWindow({ isOpen, onClose, lang = "zh-TW" }: VoiceReaderWindowProps) {
 	// 以 y 控制與底部距離，避免覆蓋 footer
 	const y = useMotionValue(16);
 
@@ -47,14 +51,14 @@ export default function VoiceReaderWindow({ isOpen, onClose }: VoiceReaderWindow
 					<div className="flex items-center justify-between bg-blue-600 p-3 text-white">
 						<div className="flex items-center gap-2">
 							<BookAudio className="h-5 w-5" />
-							<h3 className="font-semibold">語音朗讀</h3>
+							<h3 className="font-semibold">{ui[lang]["agent.voiceReader.title"]}</h3>
 						</div>
 						<div className="flex items-center gap-1">
 							<motion.button
 								whileTap={{ scale: 0.95 }}
 								onClick={onClose}
 								className="rounded p-1 transition-colors hover:bg-white/20"
-								aria-label="關閉"
+								aria-label={ui[lang]["agent.voiceReader.close"]}
 							>
 								<X className="h-4 w-4" />
 							</motion.button>
@@ -69,7 +73,7 @@ export default function VoiceReaderWindow({ isOpen, onClose }: VoiceReaderWindow
 							textColorRgba="rgba(0, 0, 0, 1.0)"
 							backgroundColorRgba="rgba(255, 255, 255, 1.0)"
 						/>
-						<p className="p-2 text-center text-xs text-gray-500 dark:text-gray-400">由 ElevenLabs 提供技術支援</p>
+						<p className="p-2 text-center text-xs text-gray-500 dark:text-gray-400">{ui[lang]["agent.voiceReader.poweredBy"]}</p>
 					</div>
 				</motion.div>
 			)}

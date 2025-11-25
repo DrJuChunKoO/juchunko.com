@@ -4,10 +4,14 @@ import { BotMessageSquare, X, ArrowRight, ArrowUp } from "lucide-react";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import Markdown from "markdown-to-jsx";
+import { ui } from "src/i18n/ui";
+
+type SupportedLang = "en" | "zh-TW";
 
 interface AIAssistantWindowProps {
 	isOpen: boolean;
 	onClose: () => void;
+	lang?: SupportedLang;
 }
 
 // Loading dots component
@@ -33,7 +37,7 @@ function LoadingDots() {
 	);
 }
 
-export default function AIAssistantWindow({ isOpen, onClose }: AIAssistantWindowProps) {
+export default function AIAssistantWindow({ isOpen, onClose, lang = "zh-TW" }: AIAssistantWindowProps) {
 	const messagesEndRef = useRef<HTMLDivElement>(null);
 	const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -71,28 +75,28 @@ export default function AIAssistantWindow({ isOpen, onClose }: AIAssistantWindow
 	// Quick prompts definitions
 	const quickPrompts = [
 		{
-			text: "📝 此頁重點",
-			prompt: "整理此頁面的重點",
+			text: ui[lang]["agent.assistant.prompt.summary"],
+			prompt: ui[lang]["agent.assistant.prompt.summaryText"],
 		},
 		{
-			text: "ℹ️ 提供背景資訊",
-			prompt: "請查看頁面內容並提供相關的背景資訊",
+			text: ui[lang]["agent.assistant.prompt.background"],
+			prompt: ui[lang]["agent.assistant.prompt.backgroundText"],
 		},
 		{
-			text: "🔍 主要觀點",
-			prompt: "這頁的主要觀點是什麼",
+			text: ui[lang]["agent.assistant.prompt.mainPoints"],
+			prompt: ui[lang]["agent.assistant.prompt.mainPointsText"],
 		},
 		{
-			text: "📖 詳細解釋",
-			prompt: "請查看頁面內容並給我這個主題的詳細解釋嗎",
+			text: ui[lang]["agent.assistant.prompt.explain"],
+			prompt: ui[lang]["agent.assistant.prompt.explainText"],
 		},
 		{
-			text: "❓ 生成問答",
-			prompt: "請查看頁面內容並幫我生成一個這段內容的問答",
+			text: ui[lang]["agent.assistant.prompt.quiz"],
+			prompt: ui[lang]["agent.assistant.prompt.quizText"],
 		},
 		{
-			text: "📰 最新新聞",
-			prompt: "可以告訴我和葛如鈞有關的最新新聞嗎",
+			text: ui[lang]["agent.assistant.prompt.news"],
+			prompt: ui[lang]["agent.assistant.prompt.newsText"],
 		},
 	] as { text: string; prompt: string }[];
 
@@ -151,14 +155,14 @@ export default function AIAssistantWindow({ isOpen, onClose }: AIAssistantWindow
 					<div className="flex items-center justify-between rounded-t-lg bg-gray-500 p-3 text-white">
 						<div className="flex items-center gap-2">
 							<BotMessageSquare className="h-5 w-5" />
-							<h3 className="font-semibold">AI 助手</h3>
+							<h3 className="font-semibold">{ui[lang]["agent.assistant.title"]}</h3>
 						</div>
 						<div className="flex items-center gap-1">
 							<motion.button
 								whileTap={{ scale: 0.95 }}
 								onClick={onClose}
 								className="rounded p-1 transition-colors hover:bg-white/20"
-								aria-label="關閉"
+								aria-label={ui[lang]["agent.assistant.close"]}
 							>
 								<X className="h-4 w-4" />
 							</motion.button>
@@ -174,13 +178,13 @@ export default function AIAssistantWindow({ isOpen, onClose }: AIAssistantWindow
 							exit={{ opacity: 0, y: 10 }}
 							transition={{ delay: 0.35 }}
 						>
-							<div className="text-center text-xs text-gray-500">AI 可能會犯錯，可能會有錯誤或不準確的回應。</div>
+							<div className="text-center text-xs text-gray-500">{ui[lang]["agent.assistant.disclaimer"]}</div>
 
 							{[
 								{
 									id: "system",
 									role: "assistant",
-									parts: [{ type: "text", text: "嗨，我是 AI 助手，隨時準備回答您的問題！請問有什麼我可以幫助您的？" }],
+									parts: [{ type: "text", text: ui[lang]["agent.assistant.greeting"] }],
 								},
 								...messages,
 							].map((m) => (
@@ -193,7 +197,7 @@ export default function AIAssistantWindow({ isOpen, onClose }: AIAssistantWindow
 												: "dark:prose-invert origin-left bg-gray-100 dark:bg-gray-800",
 										].join(" ")}
 										role="article"
-										aria-label={m.role === "user" ? "使用者訊息" : "助理訊息"}
+										aria-label={m.role === "user" ? ui[lang]["agent.assistant.userMessage"] : ui[lang]["agent.assistant.assistantMessage"]}
 										initial={{
 											opacity: 0,
 											x: m.role === "user" ? 10 : -10,
@@ -216,7 +220,7 @@ export default function AIAssistantWindow({ isOpen, onClose }: AIAssistantWindow
 												if (part.type === "text") {
 													return part.text === "" ? (
 														<div key={index} className="flex items-center gap-1">
-															<span className="text-sm text-gray-500">載入中</span>
+															<span className="text-sm text-gray-500">{ui[lang]["agent.assistant.loading"]}</span>
 															<LoadingDots />
 														</div>
 													) : (
@@ -227,7 +231,7 @@ export default function AIAssistantWindow({ isOpen, onClose }: AIAssistantWindow
 											})
 										) : (
 											<div className="flex items-center gap-1">
-												<span className="text-sm text-gray-500">載入中</span>
+												<span className="text-sm text-gray-500">{ui[lang]["agent.assistant.loading"]}</span>
 												<LoadingDots />
 											</div>
 										)}
@@ -271,7 +275,7 @@ export default function AIAssistantWindow({ isOpen, onClose }: AIAssistantWindow
 					{/* 輸入區域 */}
 					<form
 						role="form"
-						aria-label="聊天表單"
+						aria-label={ui[lang]["agent.assistant.chatForm"]}
 						onSubmit={(e) => {
 							handleSubmit(e);
 							setInput("");
@@ -281,7 +285,7 @@ export default function AIAssistantWindow({ isOpen, onClose }: AIAssistantWindow
 						<div className="flex gap-2 rounded-md outline outline-gray-200 has-focus:outline-blue-500 dark:outline-gray-800 dark:has-focus:outline-blue-400">
 							<textarea
 								className="w-full flex-1 resize-none rounded-lg bg-transparent px-3 py-2 text-sm text-gray-900 placeholder-gray-400 outline-none dark:text-gray-100 dark:placeholder-gray-500"
-								placeholder="請輸入您的問題..."
+								placeholder={ui[lang]["agent.assistant.placeholder"]}
 								value={input}
 								onChange={handleInputChange}
 								onKeyDown={handleKeyDown}
@@ -293,14 +297,14 @@ export default function AIAssistantWindow({ isOpen, onClose }: AIAssistantWindow
 							<button
 								type="submit"
 								disabled={status === "streaming" || input.trim() === ""}
-								aria-label="送出訊息"
+								aria-label={ui[lang]["agent.assistant.send"]}
 								aria-disabled={status === "streaming" || input.trim() === "" ? "true" : "false"}
 								className="flex w-9 items-center justify-center rounded-r-md bg-blue-500 text-white transition-colors hover:bg-blue-600 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:opacity-50 dark:bg-blue-600 dark:hover:bg-blue-700 dark:disabled:bg-gray-800"
 							>
 								<ArrowUp className="size-4" />
 							</button>
 							<div id="chat-bot-instructions" className="sr-only">
-								按下 Enter 鍵送出訊息
+								{ui[lang]["agent.assistant.instructions"]}
 							</div>
 						</div>
 					</form>
