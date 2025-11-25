@@ -95,7 +95,7 @@ export default defineConfig({
 		server: {
 			proxy: {
 				"/api": {
-					target: "https://beta.juchunko.com/",
+					target: "https://juchunko.com/",
 					changeOrigin: true,
 				},
 			},
