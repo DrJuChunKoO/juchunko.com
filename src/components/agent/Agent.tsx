@@ -271,7 +271,7 @@ export default function Agent({ lang = "zh-TW" }: AgentProps = {}) {
 				<motion.button
 					type="button"
 					onClick={() => setOpen((v) => !v)}
-					className="flex cursor-pointer items-center gap-1.5 rounded-full border-2 border-gray-200 bg-white p-3 text-gray-600 shadow-2xl shadow-black/5 backdrop-blur-xl hover:bg-gray-100 md:hidden dark:border-white/20 dark:bg-black/80 dark:text-gray-300 dark:hover:bg-slate-950"
+					className="flex cursor-pointer items-center gap-1.5 rounded-full border-2 border-border/50 bg-card p-3 text-card-foreground shadow-2xl shadow-black/5 backdrop-blur-xl transition-colors hover:bg-accent hover:text-accent-foreground md:hidden"
 					aria-expanded={open}
 					aria-label={open ? ui[lang]["agent.closeQuickActions"] : ui[lang]["agent.openQuickActions"]}
 					whileTap={{ scale: 0.95 }}

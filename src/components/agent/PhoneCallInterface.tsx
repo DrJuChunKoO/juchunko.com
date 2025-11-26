@@ -86,7 +86,7 @@ export default function PhoneCallInterface({ isOpen, onClose, lang = "zh-TW" }: 
 					animate={{ opacity: 1 }}
 					exit={{ opacity: 0, scale: 1.25, filter: "blur(8px)" }}
 					transition={{ duration: 0.3 }}
-					className="fixed inset-0 z-50 flex items-center justify-center bg-black"
+					className="fixed inset-0 z-50 flex items-center justify-center bg-background/90 backdrop-blur-md"
 				>
 					{/* 關閉按鈕 */}
 					<motion.button
@@ -94,14 +94,14 @@ export default function PhoneCallInterface({ isOpen, onClose, lang = "zh-TW" }: 
 						animate={{ opacity: 1, scale: 1 }}
 						transition={{ delay: 0.2 }}
 						onClick={handleEndCall}
-						className="absolute top-6 right-6 flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-lg transition-colors hover:bg-white/20"
+						className="absolute top-6 right-6 flex h-12 w-12 items-center justify-center rounded-full bg-muted/50 text-muted-foreground backdrop-blur-lg transition-colors hover:bg-muted hover:text-foreground"
 						aria-label={ui[lang]["agent.phone.closeInterface"]}
 					>
 						<X className="h-6 w-6" />
 					</motion.button>
 
 					{/* 主要內容 */}
-					<div className="relative z-10 flex flex-col items-center text-white">
+					<div className="relative z-10 flex flex-col items-center text-foreground">
 						{/* AI 頭像 */}
 						<motion.div
 							initial={{ scale: 0.8, opacity: 0 }}
@@ -130,9 +130,9 @@ export default function PhoneCallInterface({ isOpen, onClose, lang = "zh-TW" }: 
 							className="mb-4 text-center"
 						>
 							<h2 className="mb-2 text-3xl font-bold">{ui[lang]["agent.phone.aiName"]}</h2>
-							<p className="text-lg text-white/80">{getStatusText()}</p>
+							<p className="text-lg text-muted-foreground">{getStatusText()}</p>
 							{conversation.status === "connected" && (
-								<motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-2 text-sm text-white/60">
+								<motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-2 text-sm text-muted-foreground/80">
 									{formatDuration(callDuration)}
 								</motion.p>
 							)}
@@ -154,7 +154,7 @@ export default function PhoneCallInterface({ isOpen, onClose, lang = "zh-TW" }: 
 												repeat: Infinity,
 												delay: i * 0.2,
 											}}
-											className="h-2 w-2 rounded-full bg-white"
+											className="h-2 w-2 rounded-full bg-primary"
 										/>
 									))}
 								</div>
@@ -173,7 +173,7 @@ export default function PhoneCallInterface({ isOpen, onClose, lang = "zh-TW" }: 
 									whileTap={{ scale: 0.95 }}
 									whileHover={{ scale: 1.05 }}
 									onClick={handleCall}
-									className="flex h-16 w-16 items-center justify-center rounded-full bg-green-500 text-white shadow-lg transition-colors hover:bg-green-600"
+									className="flex h-16 w-16 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-colors hover:bg-primary/90"
 									aria-label={ui[lang]["agent.phone.dial"]}
 								>
 									<Phone className="h-8 w-8" />
@@ -185,7 +185,7 @@ export default function PhoneCallInterface({ isOpen, onClose, lang = "zh-TW" }: 
 									whileTap={{ scale: 0.95 }}
 									whileHover={{ scale: 1.05 }}
 									onClick={handleEndCall}
-									className="flex h-16 w-16 items-center justify-center rounded-full bg-red-500 text-white shadow-lg transition-colors hover:bg-red-600"
+									className="flex h-16 w-16 items-center justify-center rounded-full bg-destructive text-destructive-foreground shadow-lg transition-colors hover:bg-destructive/90"
 									aria-label={ui[lang]["agent.phone.endCall"]}
 								>
 									<PhoneOff className="h-8 w-8" />

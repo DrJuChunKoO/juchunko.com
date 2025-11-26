@@ -31,8 +31,8 @@ const sizeClasses: Record<Size, string> = {
 
 const variantClasses: Record<Variant, string> = {
 	default:
-		"border-2 border-gray-200 bg-white text-gray-600 hover:bg-gray-100 dark:border-white/20 dark:bg-black/80 dark:text-gray-300 dark:hover:bg-slate-950",
-	ghost: "border border-transparent bg-white/60 text-gray-700 hover:bg-white/80 dark:bg-white/5 dark:text-gray-200 hover:dark:bg-white/10",
+		"border-2 border-border/50 bg-card text-card-foreground hover:bg-accent hover:text-accent-foreground hover:border-accent-foreground/20",
+	ghost: "border border-transparent bg-background/60 text-foreground hover:bg-accent/80 hover:text-accent-foreground",
 };
 
 export default function AgentButton({
@@ -45,16 +45,16 @@ export default function AgentButton({
 	...buttonProps
 }: AgentButtonProps) {
 	const composed =
-		`flex cursor-pointer items-center gap-1.5 rounded-full shadow-2xl shadow-black/5 backdrop-blur-xl ` +
+		`flex cursor-pointer items-center gap-1.5 rounded-full shadow-2xl shadow-black/5 backdrop-blur-xl transition-colors ` +
 		`${sizeClasses[size]} ${variantClasses[variant]} ` +
 		`max-md:right-0 max-md:left-0 md:right-2 ` +
 		(className ? ` ${className}` : "");
 
 	// 共用 label 樣式（桌面與手機）
 	const labelBase =
-		"pointer-events-none absolute top-1/2 right-full mr-2 -translate-y-1/2 rounded-full text-sm font-light tracking-tight whitespace-nowrap shadow-lg select-none";
-	const labelPadding = "px-2 py-1";
-	const labelTone = "bg-white text-gray-700 ring-2 ring-black/5 dark:bg-black dark:text-gray-200 dark:ring-white/10";
+		"pointer-events-none absolute top-1/2 right-full mr-2 -translate-y-1/2 rounded-full text-sm font-medium tracking-tight whitespace-nowrap shadow-lg select-none";
+	const labelPadding = "px-3 py-1.5";
+	const labelTone = "bg-popover text-popover-foreground ring-1 ring-border/50 backdrop-blur-md";
 
 	return (
 		<div className="group relative">
@@ -71,7 +71,7 @@ export default function AgentButton({
 
 			{/* 桌面：hover 顯示的 label（不影響手機） */}
 			<span
-				className={`${labelBase} ${labelPadding} ${labelTone} translate-x-2 opacity-0 transition-all duration-150 group-hover:translate-x-0 group-hover:opacity-100 max-md:hidden`}
+				className={`${labelBase} ${labelPadding} ${labelTone} translate-x-2 opacity-0 transition-all duration-200 group-hover:translate-x-0 group-hover:opacity-100 max-md:hidden`}
 			>
 				{label}
 			</span>

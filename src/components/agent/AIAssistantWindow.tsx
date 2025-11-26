@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence, useMotionValue } from "motion/react";
-import { BotMessageSquare, X, ArrowRight, ArrowUp } from "lucide-react";
+import { BotMessageSquare, X, ArrowRight, ArrowUp, Wrench, Eye, Search, Rss, Newspaper } from "lucide-react";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import Markdown from "markdown-to-jsx";
@@ -136,6 +136,61 @@ export default function AIAssistantWindow({ isOpen, onClose, lang = "zh-TW" }: A
 		setInput(e.target.value);
 	};
 
+	const getToolUI = (toolName: string, args?: any, iconClass: string = "size-4") => {
+		if (toolName === "viewPage") {
+			return {
+				icon: <Eye className={iconClass} />,
+				text: ui[lang]["agent.assistant.tool.viewPage"],
+			};
+		}
+		if (toolName === "searchNews") {
+			return {
+				icon: <Search className={iconClass} />,
+				text: ui[lang]["agent.assistant.tool.searchNews"].replace("{keyword}", args?.keyword || ""),
+			};
+		}
+		if (toolName === "latestNews") {
+			return {
+				icon: <Rss className={iconClass} />,
+				text: ui[lang]["agent.assistant.tool.latestNews"],
+			};
+		}
+		if (toolName === "getNewsByUrl") {
+			return {
+				icon: <Newspaper className={iconClass} />,
+				text: ui[lang]["agent.assistant.tool.getNewsByUrl"],
+			};
+		}
+		if (toolName === "semanticSiteSearch") {
+			return {
+				icon: <Search className={iconClass} />,
+				text: ui[lang]["agent.assistant.tool.semanticSiteSearch"].replace("{keyword}", args?.keyword || ""),
+			};
+		}
+		return {
+			icon: <Wrench className={iconClass} />,
+			text: ui[lang]["agent.assistant.tool.default"],
+		};
+	};
+
+	const getStatusUI = () => {
+		if (status !== "submitted" && status !== "streaming") return null;
+
+		const lastMessage = messages[messages.length - 1];
+		if (lastMessage?.role === "assistant" && lastMessage.parts) {
+			const lastPart = lastMessage.parts[lastMessage.parts.length - 1];
+			if (lastPart?.type?.startsWith("tool-")) {
+				const toolName = lastPart.type.replace("tool-", "");
+				return getToolUI(toolName, (lastPart as any).args, "size-4");
+			}
+		}
+
+		return {
+			icon: <BotMessageSquare className="size-4" />,
+			text: ui[lang]["agent.assistant.thinking"],
+		};
+	};
+
 	return (
 		<AnimatePresence>
 			{isOpen && (
@@ -149,19 +204,19 @@ export default function AIAssistantWindow({ isOpen, onClose, lang = "zh-TW" }: A
 					exit={{ opacity: 0, scale: 0.5, y: 16 }}
 					transition={{ type: "spring", stiffness: 300, damping: 30 }}
 					style={{ bottom: y }}
-					className="fixed right-4 z-40 flex w-100 origin-bottom-right flex-col rounded-lg bg-white shadow-2xl backdrop-blur-xl dark:bg-gray-900"
+					className="ring-border/50 bg-card/75 fixed right-4 z-40 flex w-100 origin-bottom-right flex-col overflow-hidden rounded-lg shadow-2xl ring-1 backdrop-blur-xl"
 				>
 					{/* 標題欄 */}
-					<div className="flex items-center justify-between rounded-t-lg bg-gray-500 p-3 text-white">
+					<div className="bg-muted text-foreground border-border flex items-center justify-between rounded-t-lg border-b p-3">
 						<div className="flex items-center gap-2">
-							<BotMessageSquare className="h-5 w-5" />
+							<BotMessageSquare className="text-primary h-5 w-5" />
 							<h3 className="font-semibold">{ui[lang]["agent.assistant.title"]}</h3>
 						</div>
 						<div className="flex items-center gap-1">
 							<motion.button
 								whileTap={{ scale: 0.95 }}
 								onClick={onClose}
-								className="rounded p-1 transition-colors hover:bg-white/20"
+								className="hover:bg-muted-foreground/20 text-muted-foreground hover:text-foreground rounded p-1 transition-colors"
 								aria-label={ui[lang]["agent.assistant.close"]}
 							>
 								<X className="h-4 w-4" />
@@ -170,7 +225,7 @@ export default function AIAssistantWindow({ isOpen, onClose, lang = "zh-TW" }: A
 					</div>
 
 					{/* 聊天內容 */}
-					<div className="h-100 overflow-y-auto border-t border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-950">
+					<div className="bg-card/50 h-100 overflow-y-auto">
 						<motion.div
 							className="flex flex-col space-y-3 p-4 text-sm"
 							initial={{ opacity: 0, y: 10 }}
@@ -178,72 +233,83 @@ export default function AIAssistantWindow({ isOpen, onClose, lang = "zh-TW" }: A
 							exit={{ opacity: 0, y: 10 }}
 							transition={{ delay: 0.35 }}
 						>
-							<div className="text-center text-xs text-gray-500">{ui[lang]["agent.assistant.disclaimer"]}</div>
+							<div className="text-muted-foreground text-center text-xs">{ui[lang]["agent.assistant.disclaimer"]}</div>
 
 							{[
 								{
 									id: "system",
 									role: "assistant",
 									parts: [{ type: "text", text: ui[lang]["agent.assistant.greeting"] }],
+									toolInvocations: undefined,
 								},
 								...messages,
 							].map((m) => (
-								<div key={m.id} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
-									<motion.div
-										className={[
-											"prose prose-sm prose-neutral prose-tight max-w-[80%] rounded-lg px-3 py-1 wrap-break-word whitespace-pre-wrap",
-											m.role === "user"
-												? "prose-invert origin-right bg-blue-500 text-white"
-												: "dark:prose-invert origin-left bg-gray-100 dark:bg-gray-800",
-										].join(" ")}
-										role="article"
-										aria-label={m.role === "user" ? ui[lang]["agent.assistant.userMessage"] : ui[lang]["agent.assistant.assistantMessage"]}
-										initial={{
-											opacity: 0,
-											x: m.role === "user" ? 10 : -10,
-											rotate: m.role === "user" ? 1 : -1,
-										}}
-										animate={{
-											opacity: 1,
-											x: 0,
-											rotate: 0,
-										}}
-										exit={{
-											opacity: 0,
-											x: m.role === "user" ? 10 : -10,
-											rotate: m.role === "user" ? -1 : 1,
-										}}
-										transition={{ duration: 0.2 }}
-									>
-										{m.parts && m.parts.length > 0 ? (
-											m.parts.map((part, index) => {
+								<div key={m.id} className={`flex flex-col gap-2 ${m.role === "user" ? "items-end" : "items-start"}`}>
+									{/* Text Content - Rendered inside bubble */}
+									{m.parts && m.parts.some((part) => part.type === "text" && part.text !== "") && (
+										<motion.div
+											className={[
+												"prose prose-sm prose-neutral prose-tight max-w-[80%] rounded-2xl px-4 py-2 wrap-break-word whitespace-pre-wrap",
+												m.role === "user"
+													? "prose-invert bg-primary text-primary-foreground origin-right"
+													: "dark:prose-invert bg-muted text-foreground border-border/50 origin-left border",
+											].join(" ")}
+											role="article"
+											aria-label={
+												m.role === "user" ? ui[lang]["agent.assistant.userMessage"] : ui[lang]["agent.assistant.assistantMessage"]
+											}
+											initial={{
+												opacity: 0,
+												x: m.role === "user" ? 10 : -10,
+												rotate: m.role === "user" ? 1 : -1,
+											}}
+											animate={{
+												opacity: 1,
+												x: 0,
+												rotate: 0,
+											}}
+											exit={{
+												opacity: 0,
+												x: m.role === "user" ? 10 : -10,
+												rotate: m.role === "user" ? -1 : 1,
+											}}
+											transition={{ duration: 0.2 }}
+										>
+											{m.parts.map((part, index) => {
 												if (part.type === "text") {
-													return part.text === "" ? (
-														<div key={index} className="flex items-center gap-1">
-															<span className="text-sm text-gray-500">{ui[lang]["agent.assistant.loading"]}</span>
-															<LoadingDots />
-														</div>
-													) : (
-														<Markdown key={index}>{part.text}</Markdown>
-													);
+													return part.text === "" ? null : <Markdown key={index}>{part.text}</Markdown>;
 												}
 												return null;
-											})
-										) : (
-											<div className="flex items-center gap-1">
-												<span className="text-sm text-gray-500">{ui[lang]["agent.assistant.loading"]}</span>
-												<LoadingDots />
-											</div>
-										)}
-									</motion.div>
+											})}
+										</motion.div>
+									)}
 								</div>
 							))}
+
+							{/* Thinking Indicator for 'submitted' state or when waiting for response */}
+							{(() => {
+								const statusUI = getStatusUI();
+								if (!statusUI) return null;
+								// Only show if it's not the default thinking state OR if status is submitted
+								if (status === "streaming" && statusUI.text === ui[lang]["agent.assistant.thinking"]) return null;
+
+								return (
+									<motion.div
+										initial={{ opacity: 0, y: 5 }}
+										animate={{ opacity: 1, y: 0 }}
+										className="text-muted-foreground ml-1 flex items-center gap-1 text-sm"
+									>
+										{statusUI.icon}
+										<span>{statusUI.text}</span>
+									</motion.div>
+								);
+							})()}
 
 							{/* Quick prompt buttons */}
 							<AnimatePresence>
 								{status === "ready" && (
 									<motion.div
-										className="-mt-1.5 flex flex-col dark:border-gray-800"
+										className="-mt-1.5 flex flex-col"
 										initial={{ opacity: 0 }}
 										animate={{ opacity: 1 }}
 										exit={{ opacity: 0 }}
@@ -260,7 +326,7 @@ export default function AIAssistantWindow({ isOpen, onClose, lang = "zh-TW" }: A
 													aria-pressed={false}
 													role="button"
 													tabIndex={0}
-													className="group flex cursor-pointer items-center gap-0.5 rounded p-1 text-left text-sm text-gray-500 transition-all hover:font-medium hover:tracking-wide hover:text-gray-700 disabled:opacity-50 dark:text-gray-400 dark:hover:text-gray-200"
+													className="group text-muted-foreground hover:text-foreground flex cursor-pointer items-center gap-0.5 rounded p-1 text-left text-sm transition-all hover:font-medium hover:tracking-wide disabled:opacity-50"
 												>
 													{qp.text}
 													<ArrowRight className="h-4 w-4 opacity-50 transition-all group-hover:translate-x-0.5 group-hover:opacity-100" />
@@ -280,11 +346,11 @@ export default function AIAssistantWindow({ isOpen, onClose, lang = "zh-TW" }: A
 							handleSubmit(e);
 							setInput("");
 						}}
-						className="p-1"
+						className="border-border/50 bg-card border-t p-2"
 					>
-						<div className="flex gap-2 rounded-md outline outline-gray-200 has-focus:outline-blue-500 dark:outline-gray-800 dark:has-focus:outline-blue-400">
+						<div className="bg-muted/50 ring-border/50 focus-within:ring-primary/50 focus-within:bg-muted flex gap-2 rounded-xl p-1 ring-1 transition-all">
 							<textarea
-								className="w-full flex-1 resize-none rounded-lg bg-transparent px-3 py-2 text-sm text-gray-900 placeholder-gray-400 outline-none dark:text-gray-100 dark:placeholder-gray-500"
+								className="text-foreground placeholder-muted-foreground w-full flex-1 resize-none bg-transparent px-3 py-2 text-sm outline-none"
 								placeholder={ui[lang]["agent.assistant.placeholder"]}
 								value={input}
 								onChange={handleInputChange}
@@ -299,7 +365,7 @@ export default function AIAssistantWindow({ isOpen, onClose, lang = "zh-TW" }: A
 								disabled={status === "streaming" || input.trim() === ""}
 								aria-label={ui[lang]["agent.assistant.send"]}
 								aria-disabled={status === "streaming" || input.trim() === "" ? "true" : "false"}
-								className="flex w-9 items-center justify-center rounded-r-md bg-blue-500 text-white transition-colors hover:bg-blue-600 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:opacity-50 dark:bg-blue-600 dark:hover:bg-blue-700 dark:disabled:bg-gray-800"
+								className="bg-primary text-primary-foreground hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground flex w-9 items-center justify-center rounded-lg transition-all disabled:cursor-not-allowed"
 							>
 								<ArrowUp className="size-4" />
 							</button>
