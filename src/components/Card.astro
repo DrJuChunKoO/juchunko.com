@@ -6,10 +6,15 @@ const { href, target = "_self", title } = Astro.props;
 <a
 	href={href}
 	target={target}
-	class="flex items-center gap-2 rounded-lg border p-4 underline-offset-2 transition not-hover:decoration-dashed hover:bg-gray-100 dark:hover:bg-white/5"
+	class="not-prose group flex items-start gap-2 rounded-lg border p-4 transition hover:bg-gray-100 dark:hover:bg-white/5"
 >
 	<span class="dark:text-opacity-70 text-gray-600 dark:text-white">
 		<slot name="icon" />
 	</span>
-	<span class="font-medium">{title}</span>
+	<div class="flex flex-col">
+		<div class="font-medium underline decoration-dashed underline-offset-2 group-hover:decoration-solid">{title}</div>
+		<div class="text-sm">
+			<slot />
+		</div>
+	</div>
 </a>
