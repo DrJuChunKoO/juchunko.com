@@ -5,7 +5,7 @@ import Footer from "@/components/Footer.astro";
 import BaseHead from "@/components/BaseHead.astro";
 import { getLangFromUrl, useTranslations } from "../i18n/utils";
 import type { CollectionEntry } from "astro:content";
-import Agent from "@/components/Agent";
+import Agent from "@/components/agent/Agent";
 import { cn } from "@/lib/utils";
 
 const lang = getLangFromUrl(Astro.url);

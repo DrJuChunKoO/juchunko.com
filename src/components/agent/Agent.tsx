@@ -167,9 +167,19 @@ export default function Agent({ lang = "zh-TW" }: AgentProps = {}) {
 			{/* 三顆功能按鈕：桌面永遠顯示；手機在 open=true 時以動畫顯示（並顯示標籤） */}
 			{!hasWindowOpen && (
 				<div className="hidden flex-col items-end justify-end gap-2 md:flex">
-					<AgentButton icon={<Phone className="size-6 md:size-5" />} label={ui[lang]["agent.callAI"]} showLabel={open} onClick={handlePhoneCall} />
+					<AgentButton
+						icon={<Phone className="size-6 md:size-5" />}
+						label={ui[lang]["agent.callAI"]}
+						showLabel={open}
+						onClick={handlePhoneCall}
+					/>
 					{showVoiceReader && (
-						<AgentButton icon={<BookAudio className="size-6 md:size-5" />} label={ui[lang]["agent.voiceReader"]} showLabel={open} onClick={handleVoiceReader} />
+						<AgentButton
+							icon={<BookAudio className="size-6 md:size-5" />}
+							label={ui[lang]["agent.voiceReader"]}
+							showLabel={open}
+							onClick={handleVoiceReader}
+						/>
 					)}
 					<AgentButton
 						icon={<BotMessageSquare className="size-6 md:size-5" />}
@@ -229,7 +239,12 @@ export default function Agent({ lang = "zh-TW" }: AgentProps = {}) {
 								exit="exit"
 								style={{ willChange: "transform, opacity" }}
 							>
-								<AgentButton icon={<BookAudio className="size-6" />} label={ui[lang]["agent.voiceReader"]} showLabel onClick={handleVoiceReader} />
+								<AgentButton
+									icon={<BookAudio className="size-6" />}
+									label={ui[lang]["agent.voiceReader"]}
+									showLabel
+									onClick={handleVoiceReader}
+								/>
 							</motion.div>
 						)}
 						<motion.div
@@ -240,7 +255,12 @@ export default function Agent({ lang = "zh-TW" }: AgentProps = {}) {
 							exit="exit"
 							style={{ willChange: "transform, opacity" }}
 						>
-							<AgentButton icon={<BotMessageSquare className="size-6" />} label={ui[lang]["agent.chatWithAI"]} showLabel onClick={handleAIAssistant} />
+							<AgentButton
+								icon={<BotMessageSquare className="size-6" />}
+								label={ui[lang]["agent.chatWithAI"]}
+								showLabel
+								onClick={handleAIAssistant}
+							/>
 						</motion.div>
 					</motion.div>
 				)}
