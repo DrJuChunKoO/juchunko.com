@@ -1,55 +1,91 @@
 ---
 title: "Autonomous Driving Deployment Initiative"
-description: "Immediately establish an inter-ministerial platform and take the first step toward legalizing autonomous driving. Allow advanced technologies like FSD to conduct general road tests to end regulatory stagnation and free Taiwan from the stigma of being 'third-class citizens in transportation technology.'"
+description: "Immediately establish an inter-ministerial platform and take the first step toward legalizing autonomous driving. Allow FSD and other advanced technologies to be tested on public roads to end regulatory stagnation and free Taiwan from being labeled a 'third-class citizen in transportation technology.'"
 date: 2025-11-25
 emoji: "🚗"
 ---
 
+import Cards from "@/components/Cards.astro";
+import Card from "@/components/Card.astro";
+import { Scale, Globe, Zap, AlertTriangle, MapPin, Video } from "lucide-react";
+import { YouTube } from "@astro-community/astro-embed-youtube";
+
 # Autonomous Driving Deployment Initiative
 
-**🚨 Taiwan's Transportation Technology Stagnation! Legislator Ju-Chun Ko Criticizes: Don't Let Taiwanese Become 'Third-Class Citizens in Transportation Technology'!**
+<div className="flex items-center gap-2 text-xl font-bold text-blue-600 mb-2">
+  <span className="text-3xl">🚗</span> Autonomous Driving: Letting Technology Navigate Traffic Safety
+</div>
 
-### Frozen in Time: Taiwan's Longest Wait for Autonomous Driving Legislation
+<div className="w-full bg-gray-200 rounded-full h-4 dark:bg-gray-700 mb-2">
+  <div className="bg-blue-600 h-4 rounded-full" style={{width: "30%"}}></div>
+</div>
+<p className="text-sm text-gray-500 mb-8">Current Progress: Advocating for legislation and inter-ministerial coordination (30%)</p>
 
-The application of unmanned vehicle technology is expanding infinitely in major cities around the world. It not only enhances people's work efficiency and quality of life, but can also effectively **reduce loss of life and property caused by traffic accidents** through its high level of safety. However, looking back at Taiwan, since **the passage of the Unmanned Vehicle Technology Innovation Experimentation Act in 2018, there has been no progress in amending regulations by relevant ministries, as if frozen in time**.
+## Resource Hub
 
-Currently, for unmanned vehicles or autonomous vehicle services (such as Robotaxi unmanned taxis), **there is still only the Unmanned Vehicle Technology Innovation Experimentation Act, with no relevant legal basis** to allow Taiwanese people to enjoy the latest transportation technology. This administrative negligence forces Taiwanese people to become **"third-class citizens in transportation technology"**.
+<Cards>
+	<Card title="UK: Automated Vehicles Act 2024" href="https://www.legislation.gov.uk/ukpga/2024/10/enacted" target="_blank">
+		<Scale slot="icon" />
+        **Regulatory Paradigm**: Clearly defines liability—when a vehicle is in self-driving mode, the driver is not held responsible for accidents; the manufacturer or operator is liable instead.
+	</Card>
+	<Card title="Tesla 2024 Safety Report" href="https://www.tesla.com/VehicleSafetyReport" target="_blank">
+		<Zap slot="icon" />
+        **Scientific Data**: FSD driving safety is 7 times better than human drivers, with urban road collision rates reduced by 5 times.
+	</Card>
+	<Card title="Taiwan Autonomous Driving Test Sites Map" href="https://www.artc.org.tw/" target="_blank">
+		<MapPin slot="icon" />
+        **Test Facilities**: Includes Tainan Shalun "Taiwan CAR Lab" and Changhua ARTC "Smart Vehicle Autonomous Driving Test Site."
+	</Card>
+</Cards>
 
-### International Competition Intensifies: We Cannot Remain Complacent
+## Timeline
 
-Global top experts predict that **2026 will be a year of major breakthroughs in unmanned vehicles and autonomous driving technology**. Countries around the world have long regarded the legalization of autonomous driving as core to national competitiveness:
+### 2025
 
-- **United Kingdom**: Completed legislation of the **Automated Vehicles Act in May 2024**, and plans to update related implementation details in 2025.
-- **Germany**: Has established **Level 4 autonomous driving legislation since 2021**, allowing operation within specific operational domains, and will **permit remote driving on roads starting December 1, 2025**.
-- **Japan**: The Ministry of Land, Infrastructure, Transport and Tourism released OTA update guidelines on October 10, 2025, and is expected to **approve general road testing and official operation of FSD (Full Self-Driving) by the end of 2025**.
-- **South Korea**: The latest news indicates that **FSD (Full Self-Driving) has been launched in South Korea**, making it the second market in Asia to get FSD.
+- **2025.11.25**
+  **[General Inquiry] Call to Allow FSD Public Road Testing**
+  Legislator Bao Ge (Ge Rujun) pointed out during the Legislative Yuan's general policy inquiry that global autonomous driving technology has matured, and Taiwan should not adhere to outdated 2018 regulations. He urged the Executive Yuan to immediately establish an inter-ministerial platform to study allowing Full Self-Driving (FSD) public road testing, preventing Taiwanese citizens from becoming "third-class citizens in transportation technology."
 
-Additionally, competition between Chinese and American tech giants in the Robotaxi field is heating up. For example, Baidu and Waymo **plan to conduct robotaxi experiments in London, UK in 2026**, becoming the first commercial pilot in Europe.
+  <YouTube id="40H6xqQZOBs" params="start=538" title="General Inquiry Video" />
 
-### Scientific Data Proves: Autonomous Systems Are Safer!
+- **2025.10**
+  **[Facility Launch] Changhua ARTC Smart Vehicle Autonomous Driving Test Site**
+  Built with a 1 billion NTD investment from the Ministry of Economic Affairs, featuring all-weather, full-speed testing capabilities and simulations of extreme weather conditions like dense fog and heavy rain, providing an international-grade verification environment for Taiwan's autonomous driving industry.
 
-In response to safety concerns that the Ministry of Transportation might raise about opening up autonomous vehicles, Legislator Ju-Chun Ko strongly refutes administrative negligence with objective scientific data:
+### 2024
 
-Tesla's FSD safety report shows a total of 6.3 billion miles driven, including 2.8 billion miles on urban roads. The data proves that when using FSD:
+- **2024.05.27**
+  **[Committee Review] Transportation Technology Regulatory Stagnation**
+  During the Transportation Committee's review of the "AI Basic Act," expressed serious concerns about the slow progress of amendments to the Unmanned Vehicle Technology Innovation Experimentation Act.
 
-- **Major collisions (serious accidents)** are reduced by **7 times**.
-- **Minor collisions (fender benders)** are reduced by **7 times**.
-- **General road collisions** are reduced by **5 times**.
+  <YouTube id="6QaE1Skf4SU" title="Education and Culture Committee AI Basic Act Review Video" />
 
-**Scientific data is fair and objective, and can always refute politicians who are unwilling to work.** The legislator advocates that autonomous vehicles developed by Taiwanese engineers should be allowed to officially operate on Taiwan's roads.
+### 2019
 
-### Legislator Ju-Chun Ko's Strong Advocacy: Immediately Establish an Inter-Ministerial Platform and Start Legalization!
+- **2019.02.25**
+  **[Facility Launch] Tainan Shalun Taiwan CAR Lab**
+  Taiwan's first closed autonomous vehicle testing site was launched, providing basic scenario testing including tunnels and pedestrian crossings.
 
-**Taiwan absolutely cannot remain complacent and stay on the sidelines**. Whether amending the Road Traffic Management and Penalty Act, the Highway Act, or drafting new Unmanned Vehicle Special Laws, we must open our doors and maintain a friendly attitude toward foreign technology.
+### 2018
 
-Legislator Ju-Chun Ko has made the following specific demands to the Executive Yuan, requiring the government to act immediately:
+- **2018.12.19**
+  **[Legislation] Unmanned Vehicle Technology Innovation Experimentation Act Promulgated**
+  The starting point for Taiwan's autonomous vehicle development, establishing a sandbox experimentation mechanism, but also marking the beginning of subsequent regulatory stagnation.
 
-#### 1. Immediately Establish an Inter-Ministerial Platform to Study Legislative Feasibility!
+## Key Issues & Q&A
 
-The Executive Yuan should be tasked to **immediately coordinate the Ministry of Transportation, Ministry of Economic Affairs and other relevant ministries**, **establish an inter-ministerial platform immediately**, and **study the feasibility of amending laws regarding unmanned vehicles and autonomous driving technology**, allowing Taiwanese to rid themselves of the stigma of being third-class citizens in transportation technology.
+### Q1: If autonomous vehicles are allowed, who is responsible when accidents occur?
+**A: Following the UK model, responsibility lies with the "system" not the "individual."**
+Currently, the public's biggest concern is liability attribution. Legislator Ge advocates following the UK's Automated Vehicles Act: when a vehicle is certified as operating in "autonomous driving" mode, legal responsibility for accidents should be borne by the vehicle manufacturer or software operator, not the passengers or "supervisors" in the vehicle. This not only protects user rights but also incentivizes manufacturers to improve safety.
 
-#### 2. Take the First Step in Legalization by Allowing FSD to Conduct General Road Tests!
+### Q2: Taiwan's road environment is so complex (many motorcycles)—can autonomous vehicles really work here?
+**A: Precisely because it's complex, AI assistance is more necessary.**
+Human drivers get fatigued, distracted, and emotional—AI doesn't. Tesla FSD data shows that driving on urban roads (the most complex environment) is 5 times safer than human driving. Taiwan has advanced testing facilities like Changhua ARTC that can simulate extreme scenarios such as motorcycles weaving through traffic and backlight glare. We should first allow testing in sandboxes and specific road sections to let AI learn Taiwan's local road conditions, rather than outright prohibition.
 
-Following the practices of other countries, **FSD should be gradually allowed to conduct general road tests**, with a commitment to take at least the first step in the autonomous driving legalization process next year.
+### Q3: What benefits does allowing autonomous vehicles bring to Taiwan's industry?
+**A: Taiwan is a hidden champion in automotive electronics—what's missing is a "training ground."**
+Taiwan has a powerful semiconductor and automotive electronics supply chain (like TSMC, Foxconn, Pegatron, etc.), but due to the lack of local autonomous vehicle road regulations, our technology can only be deployed abroad. Allowing autonomous vehicles on roads would enable Taiwanese manufacturers to obtain valuable real-world testing data locally, accelerate technology iteration, and truly achieve "developed in Taiwan, deployed in Taiwan, marketed globally."
 
-**Success or failure hinges on this decision!** We need the government to accelerate the promotion of a technology legal framework with a higher vision and perspective, ensure the safety of people's lives and property, and secure Taiwan's position in the global wave of transportation technology!
+---
+
+> **Call to Action**: Technology waits for no one; regulations should not be stumbling blocks. Support Legislator Ge Rujun in promoting autonomous vehicle legalization to make Taiwan's transportation safer and industries more competitive!

@@ -1,53 +1,82 @@
 ---
 title: "Multi-Satellite Regulatory Adaptation"
-description: "Immediately adapt the Telecommunications Management Act to build a 'submarine cable + microwave + satellite' diverse heterogeneous communication network, strengthen national resilience, and prevent Taiwan from becoming an 'information island' due to complete network disconnection."
+description: "Immediately adapt the Telecommunications Management Act to build a diverse, heterogeneous communication network of 'submarine cables + microwave + satellites' to strengthen national resilience and prevent Taiwan from becoming an 'information island' due to complete network disruption."
 date: 2025-11-25
 emoji: "🛰️"
 ---
 
+import Cards from "@/components/Cards.astro";
+import Card from "@/components/Card.astro";
+import { Satellite, Signal, Globe2, AlertOctagon, Radio, Rocket } from "lucide-react";
+import { YouTube } from "@astro-community/astro-embed-youtube";
+
 # Multi-Satellite Regulatory Adaptation
 
-**🚀 Breaking Through Communication Isolation! Legislator Ju-Chun Ko Strongly Advocates: Immediately Adapt Satellite Regulations, Build 'Submarine Cable + Microwave + Satellite' Diverse Resilient Network!**
+<div className="flex items-center gap-2 text-xl font-bold text-indigo-600 mb-2">
+  <span className="text-3xl">🛰️</span> Multi-Satellite: Building a Digital Shield for Communication Resilience
+</div>
 
-### Crisis at Hand: Taiwan's Last Mile in Communication Resilience
+<div className="w-full bg-gray-200 rounded-full h-4 dark:bg-gray-700 mb-2">
+  <div className="bg-indigo-600 h-4 rounded-full" style={{width: "40%"}}></div>
+</div>
+<p className="text-sm text-gray-500 mb-8">Current Progress: Advocating for legislative amendments and project permit assessment (40%)</p>
 
-Strengthening national communication network resilience is a key mechanism to ensure that communication networks remain available, secure, and can quickly recover during natural disasters, cyberattacks, or emergencies. However, there are significant concerns with the current national communication network architecture.
+## Resource Hub
 
-Currently, **over 90% of Taiwan's international internet traffic relies on submarine cable transmission**. Once these submarine cables are damaged by earthquakes, accidental ship damage, or more seriously, deliberately sabotaged by military operations, Taiwan will face a national security crisis of **complete network disconnection, becoming an 'information island'**. The international community even worries that Taiwan is only fourteen submarine cables away from "network disconnection."
+<Cards>
+	<Card title="Telecommunications Management Act Article 36" href="https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=K0060117&flno=36" target="_blank">
+		<AlertOctagon slot="icon" />
+        **Regulatory Bottleneck**: Foreign ownership limits (49%) and chairman nationality restrictions hinder international LEO satellite operators from entering Taiwan.
+	</Card>
+	<Card title="Japan Starlink Direct-to-Phone" href="https://news.kddi.com/kddi/corporate/newsrelease/2024/04/10/7428.html" target="_blank">
+		<Signal slot="icon" />
+        **Success Story**: Japan's KDDI launched service in 2024, achieving "signal wherever you can see the sky."
+	</Card>
+	<Card title="Taiwan LEO Satellite Program" href="#" target="_blank">
+		<Rocket slot="icon" />
+		**Domestic Progress**: NSTC plans to launch Taiwan's first domestically-made LEO communication satellite in 2027, but it's too slow for urgent needs.
+	</Card>
+</Cards>
 
-More worryingly, in the "National Communication Network Resilience Enhancement Program" announced by the Executive Yuan, **the satellite portion only includes one ST2 geostationary orbit satellite**. According to public information, this ST2 satellite **is owned by a company with 62% Singaporean shareholding**. Chunghwa Telecom only leases the satellite transponder capacity; we are merely lessees. Whether communications will be cut off in a real emergency cannot actually be guaranteed.
+## Timeline
 
-### Outdated Regulations Hinder National Security Upgrades
+### 2025
 
-Countries around the world have long regarded low-earth orbit satellites as an important solution for emergency backup communication systems. For example, during wartime, when other communication infrastructure is destroyed, low-earth orbit satellites can still ensure important communications continue to operate normally.
+- **2025.11.25**
+  **[General Inquiry] Call to Break Communication Isolation**
+  Legislator Ge Rujun pointed out during the Transportation Committee's general inquiry that 90% of Taiwan's internet relies on submarine cables—an extremely high risk. He urged the Executive Yuan to review Article 36 of the Telecommunications Management Act or adopt a "project permit" approach similar to Japan to allow foreign satellite services.
+  <YouTube id="40H6xqQZOBs" title="Satellite Communication Resilience Inquiry" />
 
-- **Ukraine** has become the first country in Europe to provide customers with **Starlink direct-to-cell service**, providing life-saving connectivity even in areas where networks are frequently damaged.
-- **Japan**, with its many mountains and islands, also has nearly 40% of areas lacking signal. It has successfully tested direct-to-cell Starlink satellite services, where in remote signal areas **"as long as you can see the sky, you can connect"**.
+- **2025.10**
+  **[Inquiry] LEO Satellite Communication Resilience**
+  Legislator Ge questioned the Ministry of Digital Affairs (MODA) and NCC, pointing out that Taiwan currently relies solely on the ST2 geostationary satellite (Singapore-dominated) for backup, and OneWeb's coverage capacity is insufficient, revealing a huge gap in national communication resilience.
 
-In contrast, Taiwan's various ministries under the Executive Yuan currently have inconsistent positions on building communication resilience:
+  <YouTube id="IzWs4YvcYKE" title="Satellite Communication Resilience Inquiry" />
 
-**The outdated provisions of Article 36 of the current Telecommunications Management Act are tightly blocking the door to Taiwan's diverse communication development:**
+- **2025.04**
+  **[International Development] Japan KDDI Launches Starlink Direct Connection**
+  Japan officially activated Starlink direct-to-phone service, solving communication dead zones in mountainous areas and remote islands, providing an excellent reference for Taiwan.
 
-1.  Those establishing public telecommunications networks using telecommunications resources must have a **chairperson with Republic of China nationality**.
-2.  **Foreign direct shareholding cannot exceed 49%**.
-3.  Direct and indirect shareholding combined cannot exceed **60%**.
+### 2027 (Projected)
 
-These restrictions prevent foreign satellite companies from directly providing services to Taiwan. Legislator Ju-Chun Ko believes that in an era of explosive space technology development, the country should not use backward regulations to hinder the free development of the communications market while also depriving people of the right to choose the most affordable and convenient communication services.
+- **2027**
+  **[Future Outlook] Taiwan's First Domestically-Made LEO Satellite**
+  NSTC plans to launch Taiwan's first domestically-made LEO communication satellite (B5G program), taking the first step in domestic space communications.
 
-### Legislator Ju-Chun Ko's Strong Advocacy and Specific Demands
+## Key Issues & Q&A
 
-**Strengthening communication resilience is strengthening national security!** We need to make the most rigorous preparations for emergency situations. In the transportation committee's general questioning, Legislator Ju-Chun Ko presented the following strong advocacy and specific demands to the Executive Yuan:
+### Q1: Will allowing foreign satellites (like Starlink) create national security concerns?
+**A: Communication blackout is the greatest national security crisis.**
+Some worry that foreign satellite companies may be controlled by other governments. However, Legislator Ge argues that the real national security crisis is "Taiwan being completely cut off from the internet during war or disaster." By allowing "diverse" satellites (not just one provider but multiple coexisting ones) and requiring ground data to pass through Taiwan's gateways, we can ensure communication resilience while maintaining information security.
 
-#### 1. Immediately Review the Telecommunications Management Act and Move Toward Full Liberalization!
+### Q2: Why can't we rely solely on our own satellites?
+**A: Too slow to help and too costly.**
+Taiwan's domestically-made satellite is only projected to launch its first unit in 2027. Building a "constellation" capable of covering all of Taiwan (typically requiring hundreds of satellites) could take over a decade. Facing imminent geopolitical risks, we cannot wait. Adopting a dual-track approach of "leasing international services + autonomous R&D" is the most pragmatic strategy.
 
-The NCC and the Ministry of Digital Affairs should be tasked to **study and re-examine the relevant provisions of the Telecommunications Management Act**, especially Article 36, paragraphs 4 and 5, which restrict foreign investment and nationality, **allowing Taiwan's skies to open to satellite services worldwide**. The prerequisite for national communication resilience is to establish a hybrid network architecture of "submarine cable + microwave + satellite" to ensure that basic overall communication operations can be maintained when a single system is damaged.
+### Q3: How does this affect ordinary citizens?
+**A: Signal in mountains, at sea, and in remote areas; faster disaster response.**
+Beyond national security, LEO satellites can solve Taiwan's long-standing poor signal problems in mountainous areas and offshore islands. If "direct phone-to-satellite" is allowed in the future, citizens hiking Taiwan's hundred peaks, fishing at sea, or even during earthquakes when base stations collapse, will still have phone signal for emergency calls. This is the most direct form of "digital equality" and life preservation.
 
-#### 2. Evaluate Special Permits to Accelerate National Communication Resilience Establishment!
+---
 
-To avoid a lengthy legislative process that affects national security, the Executive Yuan should coordinate the Ministry of Digital Affairs and the NCC to **refer to models from Japan, Malaysia, and the Philippines**, and evaluate allowing foreign satellite companies to provide satellite communication services to Taiwan through **special project permits** when necessary. The more foreign companies are allowed to provide services in Taiwan, the higher Taiwan's communication heterogeneity and security will be.
-
-### Conclusion
-
-Now is the best time for regulatory adjustment. We must break the predicament of "only one satellite above Taiwan," shed the outdated regulations of 70 years of rigid thinking, and with a higher vision and perspective, accelerate the promotion of technology policies and legal frameworks to make our country "Advanced Taiwan 2.0."
-
-Legislator Ju-Chun Ko will continue to monitor and ensure that the government keeps its promises and acts immediately!
+> **Call to Action**: The sky is open; regulations should not be self-restricted. Support legislative amendments to allow diverse satellites and make Taiwan's communication network unbreakable and more resilient!
