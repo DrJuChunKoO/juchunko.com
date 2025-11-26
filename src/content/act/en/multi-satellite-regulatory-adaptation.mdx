@@ -12,29 +12,35 @@ import { YouTube } from "@astro-community/astro-embed-youtube";
 
 # Multi-Satellite Regulatory Adaptation
 
-<div className="flex items-center gap-2 text-xl font-bold text-indigo-600 mb-2">
-  <span className="text-3xl">🛰️</span> Multi-Satellite: Building a Digital Shield for Communication Resilience
+<div className="mb-2 flex items-center gap-2 text-xl font-bold text-indigo-600">
+	Multi-Satellite: Building a Digital Shield for Communication Resilience
 </div>
 
-<div className="w-full bg-gray-200 rounded-full h-4 dark:bg-gray-700 mb-2">
-  <div className="bg-indigo-600 h-4 rounded-full" style={{width: "40%"}}></div>
+<div className="mb-2 h-4 w-full rounded-full bg-gray-200 dark:bg-gray-700">
+	<div className="h-4 rounded-full bg-indigo-600" style={{ width: "40%" }}></div>
 </div>
-<p className="text-sm text-gray-500 mb-8">Current Progress: Advocating for legislative amendments and project permit assessment (40%)</p>
+<p className="mb-8 text-sm text-gray-500">Current Progress: Advocating for legislative amendments and project permit assessment (40%)</p>
 
 ## Resource Hub
 
 <Cards>
-	<Card title="Telecommunications Management Act Article 36" href="https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=K0060117&flno=36" target="_blank">
+	<Card
+		title="Telecommunications Management Act Article 36"
+		href="https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=K0060117&flno=36"
+		target="_blank"
+	>
 		<AlertOctagon slot="icon" />
-        **Regulatory Bottleneck**: Foreign ownership limits (49%) and chairman nationality restrictions hinder international LEO satellite operators from entering Taiwan.
+		**Regulatory Bottleneck**: Foreign ownership limits (49%) and chairman nationality restrictions hinder international LEO satellite
+		operators from entering Taiwan.
 	</Card>
 	<Card title="Japan Starlink Direct-to-Phone" href="https://news.kddi.com/kddi/corporate/newsrelease/2024/04/10/7428.html" target="_blank">
 		<Signal slot="icon" />
-        **Success Story**: Japan's KDDI launched service in 2024, achieving "signal wherever you can see the sky."
+		**Success Story**: Japan's KDDI launched service in 2024, achieving "signal wherever you can see the sky."
 	</Card>
 	<Card title="Taiwan LEO Satellite Program" href="#" target="_blank">
 		<Rocket slot="icon" />
-		**Domestic Progress**: NSTC plans to launch Taiwan's first domestically-made LEO communication satellite in 2027, but it's too slow for urgent needs.
+		**Domestic Progress**: NSTC plans to launch Taiwan's first domestically-made LEO communication satellite in 2027, but it's too slow for
+		urgent needs.
 	</Card>
 </Cards>
 
@@ -45,6 +51,7 @@ import { YouTube } from "@astro-community/astro-embed-youtube";
 - **2025.11.25**
   **[General Inquiry] Call to Break Communication Isolation**
   Legislator Ge Rujun pointed out during the Transportation Committee's general inquiry that 90% of Taiwan's internet relies on submarine cables—an extremely high risk. He urged the Executive Yuan to review Article 36 of the Telecommunications Management Act or adopt a "project permit" approach similar to Japan to allow foreign satellite services.
+
   <YouTube id="40H6xqQZOBs" title="Satellite Communication Resilience Inquiry" />
 
 - **2025.10**
@@ -66,14 +73,17 @@ import { YouTube } from "@astro-community/astro-embed-youtube";
 ## Key Issues & Q&A
 
 ### Q1: Will allowing foreign satellites (like Starlink) create national security concerns?
+
 **A: Communication blackout is the greatest national security crisis.**
 Some worry that foreign satellite companies may be controlled by other governments. However, Legislator Ge argues that the real national security crisis is "Taiwan being completely cut off from the internet during war or disaster." By allowing "diverse" satellites (not just one provider but multiple coexisting ones) and requiring ground data to pass through Taiwan's gateways, we can ensure communication resilience while maintaining information security.
 
 ### Q2: Why can't we rely solely on our own satellites?
+
 **A: Too slow to help and too costly.**
 Taiwan's domestically-made satellite is only projected to launch its first unit in 2027. Building a "constellation" capable of covering all of Taiwan (typically requiring hundreds of satellites) could take over a decade. Facing imminent geopolitical risks, we cannot wait. Adopting a dual-track approach of "leasing international services + autonomous R&D" is the most pragmatic strategy.
 
 ### Q3: How does this affect ordinary citizens?
+
 **A: Signal in mountains, at sea, and in remote areas; faster disaster response.**
 Beyond national security, LEO satellites can solve Taiwan's long-standing poor signal problems in mountainous areas and offshore islands. If "direct phone-to-satellite" is allowed in the future, citizens hiking Taiwan's hundred peaks, fishing at sea, or even during earthquakes when base stations collapse, will still have phone signal for emergency calls. This is the most direct form of "digital equality" and life preservation.
 

@@ -12,29 +12,27 @@ import { YouTube } from "@astro-community/astro-embed-youtube";
 
 # 自動駕駛落地倡議
 
-<div className="flex items-center gap-2 text-xl font-bold text-blue-600 mb-2">
-  <span className="text-3xl">�</span> 自動駕駛落地：讓科技為交通安全導航
-</div>
+<div className="mb-2 flex items-center gap-2 text-xl font-bold text-blue-600">自動駕駛落地：讓科技為交通安全導航</div>
 
-<div className="w-full bg-gray-200 rounded-full h-4 dark:bg-gray-700 mb-2">
-  <div className="bg-blue-600 h-4 rounded-full" style={{width: "30%"}}></div>
+<div className="mb-2 h-4 w-full rounded-full bg-gray-200 dark:bg-gray-700">
+	<div className="h-4 rounded-full bg-blue-600" style={{ width: "30%" }}></div>
 </div>
-<p className="text-sm text-gray-500 mb-8">目前進度：倡議修法與跨部會協調中 (30%)</p>
+<p className="mb-8 text-sm text-gray-500">目前進度：倡議修法與跨部會協調中 (30%)</p>
 
 ## 核心資源區 (Resource Hub)
 
 <Cards>
 	<Card title="英國：2024 自動駕駛車輛法" href="https://www.legislation.gov.uk/ukpga/2024/10/enacted" target="_blank">
 		<Scale slot="icon" />
-        **法規典範**：明確界定責任歸屬，當車輛處於自駕模式時，駕駛人無須承擔肇事責任，由車廠或營運商負責。
+		**法規典範**：明確界定責任歸屬，當車輛處於自駕模式時，駕駛人無須承擔肇事責任，由車廠或營運商負責。
 	</Card>
 	<Card title="Tesla 2024 安全報告" href="https://www.tesla.com/VehicleSafetyReport" target="_blank">
 		<Zap slot="icon" />
-        **科學數據**：FSD 行駛安全性比人類駕駛高出 7 倍，市區道路碰撞率降低 5 倍。
+		**科學數據**：FSD 行駛安全性比人類駕駛高出 7 倍，市區道路碰撞率降低 5 倍。
 	</Card>
 	<Card title="台灣自駕測試場域地圖" href="https://www.artc.org.tw/" target="_blank">
 		<MapPin slot="icon" />
-        **測試基地**：包含台南沙崙「台灣智駕測試實驗室」及彰化 ARTC「智慧車電自駕車場域」。
+		**測試基地**：包含台南沙崙「台灣智駕測試實驗室」及彰化 ARTC「智慧車電自駕車場域」。
 	</Card>
 </Cards>
 
@@ -75,14 +73,17 @@ import { YouTube } from "@astro-community/astro-embed-youtube";
 ## 關鍵議題與 Q&A (Key Issues)
 
 ### Q1：開放自駕車，發生事故誰負責？
+
 **A：參考英國模式，責任在「系統」而非「個人」。**
 目前民眾最大的疑慮在於責任歸屬。葛如鈞委員主張參考英國《自動駕駛車輛法》，當車輛被認證為「自動駕駛」模式時，若發生事故，法律責任應由車輛製造商或軟體營運商承擔，而非車上的乘客或「監管者」。這不僅能保障使用者權益，也能倒逼車廠提升安全性。
 
 ### Q2：台灣的道路環境這麼複雜（機車多），自駕車真的能跑嗎？
+
 **A：正是因為複雜，才更需要 AI 輔助。**
 人類駕駛會疲勞、會分心、會情緒化，但 AI 不會。Tesla FSD 的數據顯示，在市區道路（最複雜的環境）行駛的安全性比人類高出 5 倍。台灣擁有彰化 ARTC 等高階測試場域，可以模擬機車鑽車縫、逆光等極端情境，我們應該先在沙盒與特定路段開放測試，讓 AI 學習台灣的在地路況，而不是直接禁止。
 
 ### Q3：開放自駕車對台灣產業有什麼好處？
+
 **A：台灣是車用電子的隱形冠軍，缺乏的是「練兵場」。**
 台灣擁有強大的半導體與車用電子供應鏈（如台積電、鴻海、和碩等），但因為缺乏本地的自駕車上路法規，導致我們的技術只能在國外落地。開放自駕車上路，能讓台灣廠商在本地獲得寶貴的實測數據，加速技術迭代，真正實現「台灣研發、台灣落地、行銷全球」。
 
