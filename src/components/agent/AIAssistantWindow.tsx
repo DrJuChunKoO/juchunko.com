@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence, useMotionValue } from "motion/react";
-import { BotMessageSquare, X, ArrowRight, ArrowUp, Wrench, Eye, Search, Rss, Newspaper } from "lucide-react";
+import { Bot, BotMessageSquare, X, ArrowRight, ArrowUp, Wrench, Eye, Search, Rss, Newspaper } from "lucide-react";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import Markdown from "markdown-to-jsx";
@@ -30,7 +30,7 @@ function LoadingDots() {
 						repeat: Infinity,
 						delay: i * 0.2,
 					}}
-					className="h-1 w-1 rounded-full bg-gray-400"
+					className="size-0.5 rounded-full bg-gray-400"
 				/>
 			))}
 		</div>
@@ -186,7 +186,7 @@ export default function AIAssistantWindow({ isOpen, onClose, lang = "zh-TW" }: A
 		}
 
 		return {
-			icon: <BotMessageSquare className="size-4" />,
+			icon: <Bot className="size-4" />,
 			text: ui[lang]["agent.assistant.thinking"],
 		};
 	};
@@ -204,22 +204,22 @@ export default function AIAssistantWindow({ isOpen, onClose, lang = "zh-TW" }: A
 					exit={{ opacity: 0, scale: 0.5, y: 16 }}
 					transition={{ type: "spring", stiffness: 300, damping: 30 }}
 					style={{ bottom: y }}
-					className="ring-border/50 bg-card/75 fixed right-4 z-40 flex w-100 origin-bottom-right flex-col overflow-hidden rounded-lg shadow-2xl ring-1 backdrop-blur-xl"
+					className="ring-border/50 bg-card/75 fixed right-4 z-40 flex w-100 origin-bottom-right flex-col overflow-hidden rounded-xl shadow-2xl ring-1 backdrop-blur-xl"
 				>
 					{/* 標題欄 */}
-					<div className="bg-muted text-foreground border-border flex items-center justify-between rounded-t-lg border-b p-3">
+					<div className="bg-muted text-foreground border-border flex items-center justify-between rounded-t-lg border-b p-2 pl-4">
 						<div className="flex items-center gap-2">
-							<BotMessageSquare className="text-primary h-5 w-5" />
+							<Bot className="text-primary h-5 w-5" />
 							<h3 className="font-semibold">{ui[lang]["agent.assistant.title"]}</h3>
 						</div>
 						<div className="flex items-center gap-1">
 							<motion.button
 								whileTap={{ scale: 0.95 }}
 								onClick={onClose}
-								className="hover:bg-muted-foreground/20 text-muted-foreground hover:text-foreground rounded p-1 transition-colors"
+								className="hover:bg-muted-foreground/10 text-muted-foreground hover:text-foreground cursor-pointer rounded-lg p-2 transition-colors"
 								aria-label={ui[lang]["agent.assistant.close"]}
 							>
-								<X className="h-4 w-4" />
+								<X className="size-5" />
 							</motion.button>
 						</div>
 					</div>
@@ -228,10 +228,10 @@ export default function AIAssistantWindow({ isOpen, onClose, lang = "zh-TW" }: A
 					<div className="bg-card/50 h-100 overflow-y-auto">
 						<motion.div
 							className="flex flex-col space-y-3 p-4 text-sm"
-							initial={{ opacity: 0, y: 10 }}
+							initial={{ opacity: 0, y: 20 }}
 							animate={{ opacity: 1, y: 0 }}
-							exit={{ opacity: 0, y: 10 }}
-							transition={{ delay: 0.35 }}
+							exit={{ opacity: 0, y: 20 }}
+							transition={{ delay: 0.2 }}
 						>
 							<div className="text-muted-foreground text-center text-xs">{ui[lang]["agent.assistant.disclaimer"]}</div>
 
@@ -290,9 +290,6 @@ export default function AIAssistantWindow({ isOpen, onClose, lang = "zh-TW" }: A
 							{(() => {
 								const statusUI = getStatusUI();
 								if (!statusUI) return null;
-								// Only show if it's not the default thinking state OR if status is submitted
-								if (status === "streaming" && statusUI.text === ui[lang]["agent.assistant.thinking"]) return null;
-
 								return (
 									<motion.div
 										initial={{ opacity: 0, y: 5 }}
@@ -301,6 +298,7 @@ export default function AIAssistantWindow({ isOpen, onClose, lang = "zh-TW" }: A
 									>
 										{statusUI.icon}
 										<span>{statusUI.text}</span>
+										<LoadingDots />
 									</motion.div>
 								);
 							})()}
@@ -346,9 +344,9 @@ export default function AIAssistantWindow({ isOpen, onClose, lang = "zh-TW" }: A
 							handleSubmit(e);
 							setInput("");
 						}}
-						className="border-border/50 bg-card border-t p-2"
+						className="p-2"
 					>
-						<div className="bg-muted/50 ring-border/50 focus-within:ring-primary/50 focus-within:bg-muted flex gap-2 rounded-xl p-1 ring-1 transition-all">
+						<div className="bg-muted/50 ring-border/50 focus-within:ring-primary/50 focus-within:bg-muted flex gap-2 rounded-lg p-1 ring-1 transition-all">
 							<textarea
 								className="text-foreground placeholder-muted-foreground w-full flex-1 resize-none bg-transparent px-3 py-2 text-sm outline-none"
 								placeholder={ui[lang]["agent.assistant.placeholder"]}
@@ -365,7 +363,7 @@ export default function AIAssistantWindow({ isOpen, onClose, lang = "zh-TW" }: A
 								disabled={status === "streaming" || input.trim() === ""}
 								aria-label={ui[lang]["agent.assistant.send"]}
 								aria-disabled={status === "streaming" || input.trim() === "" ? "true" : "false"}
-								className="bg-primary text-primary-foreground hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground flex w-9 items-center justify-center rounded-lg transition-all disabled:cursor-not-allowed"
+								className="bg-primary text-primary-foreground hover:bg-primary/90 disabled:bg-primary/5 disabled:text-primary/25 flex w-9 items-center justify-center rounded-lg transition-all disabled:cursor-not-allowed"
 							>
 								<ArrowUp className="size-4" />
 							</button>

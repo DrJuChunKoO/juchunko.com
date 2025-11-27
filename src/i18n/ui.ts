@@ -85,7 +85,7 @@ export const ui = {
 		"agent.assistant.send": "Send message",
 		"agent.assistant.instructions": "Press Enter to send message",
 		"agent.assistant.chatForm": "Chat form",
-		"agent.assistant.thinking": "Thinking...",
+		"agent.assistant.thinking": "Thinking",
 		// Quick Prompts
 		"agent.assistant.prompt.summary": "📝 Page summary",
 		"agent.assistant.prompt.summaryText": "Summarize the key points of this page",
@@ -101,10 +101,10 @@ export const ui = {
 		"agent.assistant.prompt.newsText": "Can you tell me the latest news about Ju-Chun Ko?",
 		"agent.assistant.tool.latestNews": "View latest news",
 		"agent.assistant.tool.viewPage": "View page content",
-		"agent.assistant.tool.searchNews": "Search news for \"{keyword}\"",
+		"agent.assistant.tool.searchNews": 'Search news for "{keyword}"',
 		"agent.assistant.tool.getNewsByUrl": "Get detailed news content",
-		"agent.assistant.tool.semanticSiteSearch": "Search site for \"{keyword}\"",
-		"agent.assistant.tool.default": "Using tool...",
+		"agent.assistant.tool.semanticSiteSearch": 'Search site for "{keyword}"',
+		"agent.assistant.tool.default": "Using tool",
 		// Voice Reader
 		"agent.voiceReader.title": "Voice Reader",
 		"agent.voiceReader.close": "Close",
@@ -189,7 +189,7 @@ export const ui = {
 		"agent.assistant.send": "送出訊息",
 		"agent.assistant.instructions": "按下 Enter 鍵送出訊息",
 		"agent.assistant.chatForm": "聊天表單",
-		"agent.assistant.thinking": "思考中...",
+		"agent.assistant.thinking": "思考中",
 		// Quick Prompts
 		"agent.assistant.prompt.summary": "📝 此頁重點",
 		"agent.assistant.prompt.summaryText": "整理此頁面的重點",
@@ -208,7 +208,7 @@ export const ui = {
 		"agent.assistant.tool.searchNews": "搜尋「{keyword}」相關新聞",
 		"agent.assistant.tool.getNewsByUrl": "取得詳細的新聞內容",
 		"agent.assistant.tool.semanticSiteSearch": "搜尋「{keyword}」網站內容",
-		"agent.assistant.tool.default": "使用工具...",
+		"agent.assistant.tool.default": "使用工具",
 		// Voice Reader
 		"agent.voiceReader.title": "語音朗讀",
 		"agent.voiceReader.close": "關閉",

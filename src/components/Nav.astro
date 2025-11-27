@@ -15,16 +15,19 @@ import TablerBrandGithub from "./icon/TablerBrandGithub.astro";
 	>
 	</div>
 	<nav
-		class="mx-auto flex h-20 max-w-[90rem] items-center justify-end gap-2 pr-[max(env(safe-area-inset-right),2rem)] pl-[max(env(safe-area-inset-left),2rem)] text-sm transition-all md:max-w-[90vw] [.scrolled_&]:h-16"
+		class="mx-auto flex h-20 max-w-[90rem] items-center justify-end gap-3 pr-[max(env(safe-area-inset-right),2rem)] pl-[max(env(safe-area-inset-left),2rem)] text-sm transition-all md:max-w-[90vw] [.scrolled_&]:h-16"
 	>
-		<a class="flex items-center text-base transition-opacity hover:opacity-75 ltr:mr-auto rtl:ml-auto" href={`/${lang}`}>
+		<a
+			class="hover:outline-primary/50 -m-1 flex items-center rounded-lg p-1 text-base transition-opacity hover:opacity-75 hover:outline-2 hover:outline-offset-2 ltr:mr-auto rtl:ml-auto"
+			href={`/${lang}`}
+		>
 			<span class="text-foreground font-medium tracking-wide uppercase">{t("site.title")}</span>
 		</a>
 		<a
 			href="https://blog.juchunko.com/"
 			target="_blank"
 			rel="noreferrer"
-			class="hover:text-primary relative -ml-2 hidden p-2 whitespace-nowrap text-gray-600 transition-colors duration-200 contrast-more:text-gray-700 md:inline-block dark:text-white/75 dark:hover:text-white contrast-more:dark:text-white/90"
+			class="hover:text-primary hover:outline-primary/50 relative hidden rounded-lg p-1 whitespace-nowrap text-gray-600 transition-colors duration-200 hover:outline-2 hover:outline-offset-2 contrast-more:text-gray-700 md:inline-block dark:text-white/75 dark:hover:text-white contrast-more:dark:text-white/90"
 			aria-current="false"
 		>
 			{t("nav.blog")}
@@ -33,7 +36,7 @@ import TablerBrandGithub from "./icon/TablerBrandGithub.astro";
 			href="https://transpal.juchunko.com/"
 			target="_blank"
 			rel="noreferrer"
-			class="hover:text-primary relative -ml-2 hidden p-2 whitespace-nowrap text-gray-600 transition-colors duration-200 contrast-more:text-gray-700 md:inline-block dark:text-white/75 dark:hover:text-white contrast-more:dark:text-white/90"
+			class="hover:text-primary hover:outline-primary/50 relative hidden rounded-lg p-1 whitespace-nowrap text-gray-600 transition-colors duration-200 hover:outline-2 hover:outline-offset-2 contrast-more:text-gray-700 md:inline-block dark:text-white/75 dark:hover:text-white contrast-more:dark:text-white/90"
 			aria-current="false"
 		>
 			{t("nav.transript")}
@@ -42,7 +45,7 @@ import TablerBrandGithub from "./icon/TablerBrandGithub.astro";
 			href="https://github.com/DrJuChunKoO/juchunko.com"
 			target="_blank"
 			rel="noreferrer"
-			class="p-2 text-current transition-opacity hover:opacity-75"
+			class="hover:outline-primary/50 rounded-full p-1 text-current transition-opacity hover:opacity-75 hover:outline-2 hover:outline-offset-2"
 			title="GitHub repository for this site"
 			aria-label="GitHub repository for this site"
 		>
