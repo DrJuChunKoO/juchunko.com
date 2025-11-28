@@ -179,6 +179,7 @@ export default function HomeFeeds({ lang = "zh-TW" }: HomeFeedsProps) {
 					key={sec.key}
 					className="group bg-muted/50 hover:bg-muted hover:outline-primary/50 relative flex shrink-0 flex-col overflow-hidden rounded-lg transition-colors hover:outline-2 hover:outline-offset-2 max-lg:w-[50vw] max-md:w-[70vw]"
 					href={sec.href}
+					target={sec.href && sec.href.startsWith("http") ? "_blank" : "_self"}
 				>
 					{loading ? (
 						<div className="p-4 md:p-6">
