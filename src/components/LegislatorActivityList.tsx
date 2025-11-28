@@ -103,7 +103,7 @@ export default function LegislatorActivityList({ lang, labels }: Props) {
 				throw new Error(payload?.message || "Failed to fetch");
 			}
 
-            const data: ActivityItem[] = payload.data || [];
+			const data: ActivityItem[] = payload.data || [];
 			const newTotalPages = payload.meta?.totalPages ?? null;
 
 			if (reset) {
@@ -121,7 +121,7 @@ export default function LegislatorActivityList({ lang, labels }: Props) {
 		} catch (err: any) {
 			console.error("Fetch error:", err);
 			retryAttemptsRef.current++;
-            setError(lang === "en" ? "Failed to load activities" : "無法載入活動");
+			setError(lang === "en" ? "Failed to load activities" : "無法載入活動");
 		} finally {
 			setLoading(false);
 		}
@@ -137,7 +137,7 @@ export default function LegislatorActivityList({ lang, labels }: Props) {
 								href: activity.url,
 								target: "_blank",
 								rel: "noopener noreferrer",
-						  }
+							}
 						: {};
 
 					// Construct details map for display
@@ -153,7 +153,7 @@ export default function LegislatorActivityList({ lang, labels }: Props) {
 					return (
 						<Wrapper
 							key={activity.id}
-							className="group bg-muted/50 hover:bg-muted relative flex items-center gap-4 rounded-xl p-5 no-underline transition-all"
+							className="group bg-muted/50 hover:bg-muted relative flex items-center gap-4 rounded-xl p-5 py-3 no-underline transition-all"
 							{...wrapperProps}
 						>
 							{/* Icon */}
@@ -166,16 +166,12 @@ export default function LegislatorActivityList({ lang, labels }: Props) {
 							{/* Content */}
 							<div className="min-w-0 flex-1">
 								<div className="mb-1 flex items-center gap-2">
-									<span className="rounded bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+									<span className="bg-muted-foreground/10 rounded px-2 py-0.5 text-xs text-slate-700 dark:text-white/75">
 										{labels[activity.type]}
 									</span>
-									<time className="text-muted-foreground text-xs">
-										{activity.date ? timeAgo(activity.date, lang) : ""}
-									</time>
+									<time className="text-muted-foreground text-xs">{activity.date ? timeAgo(activity.date, lang) : ""}</time>
 								</div>
-								<h3 className="text-primary mb-2 text-base leading-snug font-semibold transition-colors">
-									{activity.title}
-								</h3>
+								<h3 className="text-primary mb-2 text-base leading-snug font-semibold transition-colors">{activity.title}</h3>
 								<div className="text-muted-foreground flex flex-col gap-0.5 text-xs">
 									{Object.entries(detailsMap)
 										.filter(([, value]) => value)
