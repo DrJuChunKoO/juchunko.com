@@ -45,7 +45,7 @@ export default function VoiceReaderWindow({ isOpen, onClose, lang = "zh-TW" }: V
 					exit={{ opacity: 0, scale: 0.5, y: 16 }}
 					transition={{ type: "spring", stiffness: 300, damping: 30 }}
 					style={{ bottom: y }}
-					className="bg-card ring-border/50 fixed right-4 z-40 h-max w-80 origin-bottom-right overflow-hidden rounded-xl shadow-2xl ring-1 backdrop-blur-xl"
+					className="bg-card ring-border/50 fixed right-4 z-40 h-max w-80 max-w-[calc(100vw-32px)] origin-bottom-right overflow-hidden rounded-xl shadow-lg ring-1 backdrop-blur-xl"
 				>
 					{/* 標題欄 */}
 					<div className="bg-muted text-foreground border-border flex items-center justify-between rounded-t-lg border-b p-2 pl-4">
@@ -70,8 +70,6 @@ export default function VoiceReaderWindow({ isOpen, onClose, lang = "zh-TW" }: V
 						<ElevenLabsAudioNative
 							publicUserId="e826f7db9aa74a5b23ec481d0d24467f232dbc1622ceb065c98ff3c4adb99830"
 							size="small"
-							textColorRgba="rgba(0, 0, 0, 1.0)"
-							backgroundColorRgba="rgba(255, 255, 255, 0.0)"
 						/>
 						<p className="text-muted-foreground mt-2 text-center text-xs">{ui[lang]["agent.voiceReader.poweredBy"]}</p>
 					</div>

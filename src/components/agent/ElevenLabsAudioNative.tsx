@@ -1,6 +1,4 @@
-'use client';
-
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export type ElevenLabsProps = {
   publicUserId: string;
@@ -17,6 +15,29 @@ export const ElevenLabsAudioNative = ({
   backgroundColorRgba,
   children,
 }: ElevenLabsProps) => {
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    // Initial check
+    setIsDark(document.documentElement.classList.contains('dark'));
+
+    // Observe class changes on html element
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.attributeName === 'class') {
+          setIsDark(document.documentElement.classList.contains('dark'));
+        }
+      });
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class'],
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   useEffect(() => {
     const script = document.createElement('script');
 
@@ -27,10 +48,14 @@ export const ElevenLabsAudioNative = ({
     return () => {
       document.body.removeChild(script);
     };
-  }, []);
+  }, [isDark]); // Re-run when theme changes to re-initialize player with new colors
+
+  const defaultTextColor = isDark ? 'rgba(255, 255, 255, 1.0)' : 'rgba(0, 0, 0, 1.0)';
+  const defaultBackgroundColor = isDark ? 'rgba(17, 17, 17, 1)' : 'rgba(255, 255, 255, 1.0)';
 
   return (
     <div
+      key={isDark ? 'dark' : 'light'}
       id="elevenlabs-audionative-widget"
       data-height={size === 'small' ? '90' : '120'}
       data-width="100%"
@@ -39,8 +64,8 @@ export const ElevenLabsAudioNative = ({
       data-publicuserid={publicUserId}
       data-playerurl="https://elevenlabs.io/player/index.html"
       data-small={size === 'small' ? 'True' : 'False'}
-      data-textcolor={textColorRgba ?? 'rgba(0, 0, 0, 1.0)'}
-      data-backgroundcolor={backgroundColorRgba ?? 'rgba(255, 255, 255, 1.0)'}
+      data-textcolor={textColorRgba ?? defaultTextColor}
+      data-backgroundcolor={backgroundColorRgba ?? defaultBackgroundColor}
     >
       {children ? children : 'Elevenlabs AudioNative Player'}
     </div>
