@@ -313,8 +313,8 @@ app.get("/", async (c) => {
 			},
 		});
 
-		// Cache for 1 hour
-		response.headers.set("Cache-Control", "public, max-age=3600");
+		// Cache for 1 day
+		response.headers.set("Cache-Control", "public, max-age=86400");
 		c.executionCtx.waitUntil(cache.put(cacheUrl, response.clone()));
 
 		return response;
