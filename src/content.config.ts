@@ -8,6 +8,7 @@ const act = defineCollection({
 		emoji: z.string().optional().default("🤓"),
 		description: z.string().optional(),
 		image: z.string().optional(),
+		status: z.string().optional(),
 	}),
 });
 const manual = defineCollection({

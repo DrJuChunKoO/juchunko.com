@@ -13,11 +13,13 @@ const { post, lang, category } = Astro.props;
 		<h2 class="text-sm font-semibold md:text-lg">{post.data.title}</h2>
 		<p class="text-muted-foreground text-xs tracking-tight md:text-sm">
 			{
-				post.data.date.toLocaleDateString(lang, {
-					year: "numeric",
-					month: "long",
-					day: "numeric",
-				})
+				post.data.status
+					? post.data.status
+					: post.data.date.toLocaleDateString(lang, {
+							year: "numeric",
+							month: "long",
+							day: "numeric",
+						})
 			}
 		</p>
 	</div>
