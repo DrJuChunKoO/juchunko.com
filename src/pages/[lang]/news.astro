@@ -24,12 +24,11 @@ const description = t("home.news.subtitle");
 			<h1>{t("home.news.title")}</h1>
 		</div>
 		<span
-			class="absolute top-0 right-8 hidden h-24 w-16 items-end justify-center rounded-b-xl bg-gradient-to-b from-gray-100 to-gray-200 p-3 text-4xl transition-all md:flex dark:from-white/10 dark:to-white/5"
+			class="absolute top-0 right-8 hidden h-24 w-16 items-end justify-center rounded-b-xl bg-linear-to-b from-gray-100 to-gray-200 p-3 text-4xl transition-all md:flex dark:from-white/10 dark:to-white/5"
 			>📰</span
 		>
 
 		<!-- React-based News page -->
-		<!-- client:only="react" 確保在瀏覽器載入 React 元件 -->
 		<NewsPage client:only="react" lang={lang as "en" | "zh-TW"} />
 	</div>
 </PageLayout>

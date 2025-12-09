@@ -8,12 +8,8 @@ const app = new Hono<{ Bindings: Env }>();
 app.route("/api", api);
 
 // Redirects
-app.get("/en-US/docs/news", (c) =>
-	c.redirect("https://juchunko.com/en/news", 301),
-);
-app.get("/docs/news", (c) =>
-	c.redirect("https://juchunko.com/zh-TW/news", 301),
-);
+app.get("/en-US/docs/news", (c) => c.redirect("https://juchunko.com/en/news", 301));
+app.get("/docs/news", (c) => c.redirect("https://juchunko.com/zh-TW/news", 301));
 
 app.get("/en-US/docs/*", (c) => {
 	const path = c.req.path.replace("/en-US/docs/", "");

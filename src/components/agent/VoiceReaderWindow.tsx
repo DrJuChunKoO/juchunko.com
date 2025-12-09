@@ -67,10 +67,7 @@ export default function VoiceReaderWindow({ isOpen, onClose, lang = "zh-TW" }: V
 
 					{/* 主要內容 */}
 					<div className="bg-card/50 p-4">
-						<ElevenLabsAudioNative
-							publicUserId="e826f7db9aa74a5b23ec481d0d24467f232dbc1622ceb065c98ff3c4adb99830"
-							size="small"
-						/>
+						<ElevenLabsAudioNative publicUserId="e826f7db9aa74a5b23ec481d0d24467f232dbc1622ceb065c98ff3c4adb99830" size="small" />
 						<p className="text-muted-foreground mt-2 text-center text-xs">{ui[lang]["agent.voiceReader.poweredBy"]}</p>
 					</div>
 				</motion.div>

@@ -108,17 +108,9 @@ export const ui = {
 複製現有的 Slug 頁面（例如 `src/pages/[lang]/act/[slug].astro`）到新分類目錄 `src/pages/[lang]/news/[slug].astro`，並修改 `getCollection` 的參數：
 
 ```astro
-// src/pages/[lang]/news/[slug].astro
----
-import { getCollection } from "astro:content";
-// ... 其他 import
+// src/pages/[lang]/news/[slug].astro import {getCollection} from "astro:content"; // ... 其他 import export async function getStaticPaths()
+{ const pages = await getCollection("news"); // 修改這裡為 "news" // ... } // ...
 
-export async function getStaticPaths() {
-	const pages = await getCollection("news"); // 修改這裡為 "news"
-    // ...
-}
-// ...
----
 <!-- 內容通常不需要修改，除非有特殊排版需求 -->
 ```
 
@@ -127,18 +119,13 @@ export async function getStaticPaths() {
 編輯 `src/pages/[lang]/index.astro`，加入新分類的資料獲取和顯示區塊：
 
 ```astro
-// src/pages/[lang]/index.astro
----
-// ...
-const news = (await getCollection("news"))
-	.filter((post) => post.id.startsWith(lang + "/"))
-	.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
----
+// src/pages/[lang]/index.astro // ... const news = (await getCollection("news")) .filter((post) => post.id.startsWith(lang + "/"))
+.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
 <PageLayout ...>
-    <!-- ... 其他區塊 ... -->
+	<!-- ... 其他區塊 ... -->
 
-    <!-- 新增 News 區塊 -->
+	<!-- 新增 News 區塊 -->
 	<h1 class="text-foreground mt-12 mb-6 text-center text-2xl font-bold md:text-left">{t("cat.news")}</h1>
 	<div class="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-3 md:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] md:gap-6">
 		{news.map((post) => <CardLink post={post} lang={lang} category="news" />)}
