@@ -225,7 +225,7 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 			<AnimatePresence>
 				{selectedNews && (
 					<motion.div
-						className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+						className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 p-4 pt-16"
 						onClick={() => setSelectedNews(null)}
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
