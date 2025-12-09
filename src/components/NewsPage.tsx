@@ -1,5 +1,17 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState, useEffect } from "react";
+import { QueryClient, useInfiniteQuery } from "@tanstack/react-query";
 import { ArrowUpRight } from "lucide-react";
+
+const queryClient = new QueryClient({
+	defaultOptions: {
+		queries: {
+			staleTime: 1000 * 60 * 5, // 5 minutes
+			gcTime: 1000 * 60 * 10, // 10 minutes
+			retry: 3,
+			refetchOnWindowFocus: false,
+		},
+	},
+});
 
 type NewsItem = {
 	url: string;
@@ -9,144 +21,65 @@ type NewsItem = {
 	source?: string;
 };
 
+type NewsResponse = {
+	success: boolean;
+	data: NewsItem[];
+	totalPages: number;
+	message?: string;
+};
+
+const PAGE_SIZE = 20;
+
+async function fetchNews({ pageParam = 1, query = "" }: { pageParam?: number; query?: string }): Promise<NewsResponse> {
+	const params = new URLSearchParams();
+	params.set("page", String(pageParam));
+	params.set("pageSize", String(PAGE_SIZE));
+	if (query) params.set("q", query);
+
+	const res = await fetch(`https://aifferent.juchunko.com/api/news?${params.toString()}`);
+	if (!res.ok) {
+		throw new Error("Server returned error");
+	}
+	const payload = await res.json();
+	if (!payload || !payload.success) {
+		throw new Error(payload?.message || "Failed to fetch");
+	}
+	return payload;
+}
+
 export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
-	const [items, setItems] = useState<NewsItem[]>([]);
-	const [page, setPage] = useState<number>(1);
-	const pageSize = 20;
-	const [totalPages, setTotalPages] = useState<number | null>(null);
-	const [loading, setLoading] = useState<boolean>(false);
-	const [error, setError] = useState<string | null>(null);
-	const [q, setQ] = useState<string>("");
-	const sentinelRef = useRef<HTMLDivElement | null>(null);
-	const observerRef = useRef<IntersectionObserver | null>(null);
-	const retryAttemptsRef = useRef<number>(0); // total retry attempts across fetches
+	const [searchQuery, setSearchQuery] = useState<string>("");
 
-	useEffect(() => {
-		// load first page on mount
-		fetchNews({ append: true, reset: false });
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
-
-	useEffect(() => {
-		// set up intersection observer for infinite scroll
-		if (!sentinelRef.current) return;
-		observerRef.current = new IntersectionObserver(
-			(entries) => {
-				for (const entry of entries) {
-					if (entry.isIntersecting && !loading) {
-						fetchNews({ append: true });
-					}
+	const { data, error, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError, refetch } = useInfiniteQuery(
+		{
+			queryKey: ["news", searchQuery],
+			queryFn: ({ pageParam }) => fetchNews({ pageParam, query: searchQuery }),
+			initialPageParam: 1,
+			getNextPageParam: (lastPage, pages) => {
+				if (pages.length < lastPage.totalPages) {
+					return pages.length + 1;
 				}
+				return undefined;
 			},
-			{ root: null, rootMargin: "200px", threshold: 0.1 },
-		);
-		observerRef.current.observe(sentinelRef.current);
-		return () => {
-			observerRef.current?.disconnect();
-		};
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [sentinelRef.current, loading]);
+			staleTime: 1000 * 60 * 5, // 5 minutes
+		},
+		queryClient,
+	);
 
-	async function fetchNews(opts: { append?: boolean; reset?: boolean } = {}) {
-		const append = opts.append ?? true;
-		const reset = opts.reset ?? false;
-		const MAX_TOTAL_RETRIES = 5; // global max attempts across failures
+	// Flatten all pages into a single array
+	const items = data?.pages.flatMap((page) => page.data) || [];
 
-		// if resetting, start from page 1
-		const fetchPage = reset ? 1 : page;
+	const handleSearchSubmit = (e: React.FormEvent) => {
+		e.preventDefault();
+		refetch();
+	};
 
-		// stop early if we've exhausted retries
-		if (retryAttemptsRef.current >= MAX_TOTAL_RETRIES) {
-			const msg = lang === "en" ? "Max retry attempts reached" : "已達最大重試次數";
-			setError(msg);
-			observerRef.current?.disconnect();
-			return;
-		}
+	const clearSearch = () => {
+		setSearchQuery("");
+		refetch();
+	};
 
-		if (loading) return;
-		if (totalPages !== null && fetchPage > totalPages) return;
-
-		setLoading(true);
-		setError(null);
-
-		const params = new URLSearchParams();
-		params.set("page", String(fetchPage));
-		params.set("pageSize", String(pageSize));
-		if (q) params.set("q", q);
-
-		let attempt = 0;
-		const PER_FETCH_MAX = 3; // limit retries per single fetch call to avoid long loops
-		while (attempt < PER_FETCH_MAX && retryAttemptsRef.current < MAX_TOTAL_RETRIES) {
-			try {
-				const res = await fetch(`https://aifferent.juchunko.com/api/news?${params.toString()}`);
-				if (!res.ok) {
-					throw new Error(lang === "en" ? "Server returned error" : "伺服器錯誤");
-				}
-				const payload = await res.json();
-				if (!payload || !payload.success) {
-					throw new Error(payload?.message || (lang === "en" ? "Failed to fetch" : "取得失敗"));
-				}
-				const data: NewsItem[] = payload.data || [];
-				const newTotalPages = payload.totalPages ?? null;
-
-				if (reset) {
-					setItems(data);
-					setPage(2); // next page will be 2
-				} else if (append) {
-					// append new items
-					setItems((prev) => [...prev, ...data]);
-					setPage((p) => p + 1);
-				} else {
-					// replace
-					setItems(data);
-					setPage(fetchPage + 1);
-				}
-				setTotalPages(newTotalPages);
-
-				// success => reset global retry counter for future fetches
-				retryAttemptsRef.current = 0;
-				break;
-			} catch (err: any) {
-				attempt++;
-				retryAttemptsRef.current++;
-				console.warn(`fetchNews attempt ${attempt} failed (global ${retryAttemptsRef.current}):`, err);
-
-				// if we've hit the global limit, stop and disconnect observer to prevent further attempts
-				if (retryAttemptsRef.current >= MAX_TOTAL_RETRIES) {
-					const msg = lang === "en" ? "Max retry attempts reached" : "已達最大重試次數";
-					setError(msg);
-					observerRef.current?.disconnect();
-					break;
-				}
-
-				// small exponential backoff before retrying
-				const backoff = Math.min(3000, 300 * Math.pow(2, attempt));
-				await new Promise((r) => setTimeout(r, backoff));
-				// continue to next attempt
-			}
-		}
-
-		setLoading(false);
-	}
-
-	function handleSearchSubmit(e?: React.FormEvent) {
-		e?.preventDefault();
-		// reset paging and fetch first page with q
-		setItems([]);
-		setPage(1);
-		setTotalPages(null);
-		fetchNews({ append: false, reset: true });
-	}
-
-	function clearSearch() {
-		setQ("");
-		setItems([]);
-		setPage(1);
-		setTotalPages(null);
-		fetchNews({ append: false, reset: true });
-	}
-
-	function timeAgo(ts?: string) {
+	const timeAgo = (ts?: string) => {
 		if (!ts) return "";
 		try {
 			const diff = Date.now() - new Date(ts).getTime();
@@ -161,18 +94,31 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 		} catch {
 			return "";
 		}
-	}
+	};
+
+	// Intersection Observer for infinite scroll
+	useEffect(() => {
+		const observer = new IntersectionObserver(
+			(entries) => {
+				if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+					fetchNextPage();
+				}
+			},
+			{ rootMargin: "200px" },
+		);
+
+		const sentinel = document.getElementById("news-sentinel");
+		if (sentinel) {
+			observer.observe(sentinel);
+		}
+
+		return () => observer.disconnect();
+	}, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
 	return (
 		<div>
 			<section className="mb-6">
-				<form
-					id="news-search-form-react"
-					className="flex gap-2"
-					onSubmit={(e) => {
-						handleSearchSubmit(e);
-					}}
-				>
+				<form id="news-search-form-react" className="flex gap-2" onSubmit={handleSearchSubmit}>
 					<label className="sr-only" htmlFor="q-react">
 						{lang === "en" ? "Search" : "搜尋"}
 					</label>
@@ -180,8 +126,8 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 						id="q-react"
 						name="q"
 						type="search"
-						value={q}
-						onChange={(e) => setQ(e.target.value)}
+						value={searchQuery}
+						onChange={(e) => setSearchQuery(e.target.value)}
 						placeholder={lang === "en" ? "Search news..." : "搜尋新聞..."}
 						className="focus-visible:border-primary/50 focus-visible:ring-primary/25 h-11 flex-1 rounded-lg border px-3 py-2 outline-0 transition-all focus-visible:ring-2"
 					/>
@@ -191,15 +137,14 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 					>
 						{lang === "en" ? "Search" : "搜尋"}
 					</button>
-					{/* optional clear button */}
-					{q ? (
+					{searchQuery && (
 						<button
 							onClick={clearSearch}
 							className="bg-muted text-muted-foreground inline-flex h-11 items-center rounded-lg px-4 transition-colors"
 						>
 							{lang === "en" ? "Clear" : "清除"}
 						</button>
-					) : null}
+					)}
 				</form>
 			</section>
 
@@ -208,7 +153,7 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 					const title = lang === "en" ? item.title_en || item.title || "" : item.title || "";
 					return (
 						<a
-							key={idx}
+							key={`${item.url}-${idx}`}
 							href={item.url}
 							target="_blank"
 							rel="noopener noreferrer"
@@ -233,11 +178,18 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 				})}
 			</section>
 
-			<div className="text-muted-foreground my-4 text-center text-sm">{loading ? (lang === "en" ? "Loading…" : "載入中…") : null}</div>
-			{error ? <div className="my-4 text-center text-sm text-red-500">{error}</div> : null}
+			<div className="text-muted-foreground my-4 text-center text-sm">
+				{isLoading && (lang === "en" ? "Loading…" : "載入中…")}
+				{isFetchingNextPage && (lang === "en" ? "Loading…" : "載入中…")}
+			</div>
+			{isError && (
+				<div className="my-4 text-center text-sm text-red-500">
+					{error?.message || (lang === "en" ? "Failed to load news" : "載入新聞失敗")}
+				</div>
+			)}
 
-			{/* sentinel */}
-			<div ref={sentinelRef} style={{ minHeight: 1 }} />
+			{/* Sentinel for infinite scroll */}
+			<div id="news-sentinel" style={{ minHeight: 1 }} />
 		</div>
 	);
 }
