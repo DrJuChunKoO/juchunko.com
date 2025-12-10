@@ -7,6 +7,8 @@ import TablerBrandInstagram from "./icon/TablerBrandInstagram.astro";
 import TablerBrandTiktok from "./icon/TablerBrandTiktok.astro";
 import TablerBrandYoutube from "./icon/TablerBrandYoutube.astro";
 import TablerBrandX from "./icon/TablerBrandX.astro";
+
+const currentPath = Astro.url.pathname;
 ---
 
 <footer id="footer" class="relative w-full print:hidden">
@@ -17,9 +19,13 @@ import TablerBrandX from "./icon/TablerBrandX.astro";
 	<div
 		class="relative mx-auto flex max-w-360 flex-col gap-8 py-8 pr-[max(env(safe-area-inset-right),2rem)] pl-[max(env(safe-area-inset-left),2rem)] md:max-w-[90vw]"
 	>
-		<div class="flex items-center gap-6 max-md:justify-center">
-			<LanguageSelector client:only="react" />
-		</div>
+		{
+			currentPath !== "/" && (
+				<div class="flex items-center gap-6 max-md:justify-center">
+					<LanguageSelector client:only="react" />
+				</div>
+			)
+		}
 		<div class="flex items-center gap-6 max-md:flex-col-reverse md:justify-between">
 			<div class="text-sm text-gray-500 dark:text-gray-300">
 				© {new Date().getFullYear()} JUCHUNKO.COM All rights reserved.

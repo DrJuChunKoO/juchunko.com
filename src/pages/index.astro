@@ -1,25 +1,10 @@
 ---
-import Layout from "../layouts/Layout.astro";
-import ThemeToggle from "@/components/ThemeToggle.astro";
-import BaseHead from "@/components/BaseHead.astro";
+import PageLayout from "../layouts/PageLayout.astro";
 import { ArrowRight } from "@lucide/astro";
-import { getLangFromUrl, useTranslations } from "src/i18n/utils";
-
-const lang = getLangFromUrl(Astro.url);
-const t = useTranslations(lang);
 ---
 
-<Layout>
-	<BaseHead slot="head" description={t("home.description")} />
-	<div
-		class="mx-auto flex h-20 max-w-360 items-center justify-end gap-2 pr-[max(env(safe-area-inset-right),2rem)] pl-[max(env(safe-area-inset-left),2rem)] text-sm md:max-w-[90vw]"
-	>
-		<a class="flex items-center text-base hover:opacity-75 ltr:mr-auto rtl:ml-auto" href="/">
-			<span class="font-medium uppercase" data-lang="sitename">科技立委葛如鈞．寶博士</span>
-		</a>
-		<ThemeToggle />
-	</div>
-	<div class="relative mx-auto aspect-square w-full max-w-3xl sm:aspect-video xl:mt-20">
+<PageLayout>
+	<div class="relative mx-auto aspect-square w-full max-w-3xl sm:aspect-video">
 		<script type="module" src="https://unpkg.com/@splinetool/viewer@1.0.18/build/spline-viewer.js"></script>
 		<spline-viewer
 			className="absolute inset-0"
@@ -41,7 +26,7 @@ const t = useTranslations(lang);
 			<ArrowRight class="size-5 animate-pulse transition-transform group-hover:translate-x-1" />
 		</a>
 	</div>
-</Layout>
+</PageLayout>
 <script>
 	const browserLang = navigator.language;
 	const lang = browserLang.startsWith("zh") ? "zh-TW" : "en";

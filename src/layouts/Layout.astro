@@ -1,9 +1,9 @@
 ---
 import "../styles/global.css";
-import { getLangFromUrl, useTranslations } from "../i18n/utils";
+import { getLangFromUrl } from "../i18n/utils";
 import LanguagePrompt from "../components/LanguagePrompt.tsx";
 const lang = getLangFromUrl(Astro.url);
-const t = useTranslations(lang);
+const currentPath = Astro.url.pathname;
 ---
 
 <!doctype html>
@@ -23,7 +23,7 @@ const t = useTranslations(lang);
 	</head>
 	<body class="overflow-x-hidden">
 		<slot />
-		<LanguagePrompt currentUrl={Astro.url.href} client:only="react" />
+		{currentPath !== "/" && <LanguagePrompt currentUrl={Astro.url.href} client:only="react" />}
 		<script type="module" src="https://unpkg.com/@splinetool/viewer@1.0.18/build/spline-viewer.js"></script>
 		<script type="text/partytown" src="https://www.googletagmanager.com/gtag/js?id=GTM-M7WLQNGR"></script>
 		<script type="text/partytown">
