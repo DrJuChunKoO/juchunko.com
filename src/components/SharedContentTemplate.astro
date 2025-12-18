@@ -62,3 +62,16 @@ const description = post.data.description || stripMarkdown(post.body).slice(0, 1
 		)
 	}
 </PageLayout>
+
+<style is:global>
+	#content table {
+		display: block;
+		width: 100%;
+		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
+	}
+	#content table th,
+	#content table td {
+		min-width: 120px;
+	}
+</style>
