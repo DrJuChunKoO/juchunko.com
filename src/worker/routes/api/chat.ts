@@ -11,6 +11,7 @@ app.post("/", async (c) => {
 	// 初始化 OpenRouter provider
 	const openrouter: OpenRouter = createOpenRouter({
 		apiKey: c.env.OPENROUTER_API_KEY,
+		baseURL: "https://gateway.ai.cloudflare.com/v1/3f1f83a939b2fc99ca45fd8987962514/juchunko-com/openrouter",
 	});
 
 	// 解析請求 body
@@ -41,7 +42,7 @@ current page: https://juchunko.com${filename}
 
 	// 執行 LLM
 	const result = streamText({
-		model: openrouter("google/gemini-3-flash-preview"),
+		model: openrouter.chat("google/gemini-3-flash-preview"),
 		system: systemPrompt,
 		messages: await convertToModelMessages(messages),
 		tools: {
@@ -209,11 +210,7 @@ current page: https://juchunko.com${filename}
 		}),
 	});
 
-	const response = result.toUIMessageStreamResponse();
-	response.headers.set("Content-Type", "text/event-stream");
-	response.headers.set("Cache-Control", "no-cache");
-	response.headers.set("Connection", "keep-alive");
-	return response;
+	return result.toUIMessageStreamResponse();
 });
 
 export default app;
