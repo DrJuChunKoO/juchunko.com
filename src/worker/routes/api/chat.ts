@@ -101,7 +101,7 @@ current page: https://juchunko.com${filename}
 					.strict(),
 				execute: async (input) => {
 					try {
-						const { q, page = 1, pageSize = 20 } = input as any;
+						const { q, page = 1, pageSize = 20 } = input;
 						const params = new URLSearchParams();
 						params.set("page", String(page));
 						params.set("pageSize", String(pageSize));
@@ -115,7 +115,7 @@ current page: https://juchunko.com${filename}
 						if (!payload || !payload.success) {
 							throw new Error(payload?.message || "Failed to fetch news");
 						}
-						let data = payload.data || [];
+						let data = Array.isArray(payload.data) ? payload.data : [];
 
 						// dedupe by url
 						const seen = new Set();
@@ -154,7 +154,7 @@ current page: https://juchunko.com${filename}
 			latestNews: tool({
 				description: "葛如鈞最新新聞列表。Returns a readable summary of the latest news with urls and sources.",
 				inputSchema: z.object({}).strict(),
-				execute: async (input) => {
+				execute: async () => {
 					try {
 						const count = 10;
 						const params = new URLSearchParams();
@@ -169,7 +169,7 @@ current page: https://juchunko.com${filename}
 						if (!payload || !payload.success) {
 							throw new Error(payload?.message || "Failed to fetch news");
 						}
-						let data = payload.data || [];
+						let data = Array.isArray(payload.data) ? payload.data : [];
 						const seen = new Set();
 						data = data.filter((it: any) => {
 							const u = String(it?.url || "");
