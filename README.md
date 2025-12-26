@@ -32,6 +32,12 @@
 | `pnpm build`   | 建置生產環境版本至 `./dist/`          |
 | `pnpm preview` | 預覽建置後的網站                      |
 
+## 🌐 部署與環境變數
+
+本專案使用 OpenRouter 處理 AI 聊天功能。部署前請確保設定以下環境變數：
+
+- `OPENROUTER_API_KEY`: [OpenRouter](https://openrouter.ai/) 的 API Key。
+
 ## 📂 專案結構
 
 ```text

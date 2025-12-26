@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence, useMotionValue } from "motion/react";
 import { Bot, BotMessageSquare, X, ArrowRight, ArrowUp, Wrench, Eye, Search, Rss, Newspaper } from "lucide-react";
 import { useChat } from "@ai-sdk/react";
-import { DefaultChatTransport } from "ai";
+import { DefaultChatTransport, isTextUIPart } from "ai";
 import Markdown from "markdown-to-jsx";
 import { ui } from "src/i18n/ui";
 
@@ -276,7 +276,7 @@ export default function AIAssistantWindow({ isOpen, onClose, lang = "zh-TW" }: A
 											transition={{ duration: 0.2 }}
 										>
 											{m.parts.map((part, index) => {
-												if (part.type === "text") {
+												if (isTextUIPart(part)) {
 													return part.text === "" ? null : <Markdown key={index}>{part.text}</Markdown>;
 												}
 												return null;
