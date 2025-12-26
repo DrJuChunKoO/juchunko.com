@@ -42,7 +42,8 @@ current page: https://juchunko.com${filename}
 	// 執行 LLM
 	const result = streamText({
 		model: openrouter("google/gemini-3-flash-preview"),
-		messages: await convertToModelMessages([{ role: "system", content: systemPrompt }, ...messages]),
+		system: systemPrompt,
+		messages: await convertToModelMessages(messages),
 		tools: {
 			// 讀取目前頁面
 			viewPage: tool({
