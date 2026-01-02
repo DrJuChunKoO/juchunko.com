@@ -171,8 +171,10 @@ export default function TTSPlayer({ isOpen, onClose, lang = "zh-TW" }: TTSPlayer
 
 		const handleEnded = () => {
 			if (isPlaying && currentIndex < segments.length - 1) {
-				setCurrentIndex(currentIndex + 1);
-				setCurrentTime(0);
+				const nextIndex = currentIndex + 1;
+				const startTime = segmentDurations.slice(0, nextIndex).reduce((acc, d) => acc + d, 0);
+				setCurrentIndex(nextIndex);
+				setCurrentTime(startTime);
 			} else {
 				setIsPlaying(false);
 			}
@@ -309,9 +311,16 @@ export default function TTSPlayer({ isOpen, onClose, lang = "zh-TW" }: TTSPlayer
 
 	const togglePlay = useCallback(() => setIsPlaying(!isPlaying), [isPlaying]);
 
+	const calculateSegmentStartTime = (index: number): number => {
+		if (index <= 0 || index >= segmentDurations.length) return 0;
+		return segmentDurations.slice(0, index).reduce((acc, d) => acc + d, 0);
+	};
+
 	const jumpToSegment = (index: number) => {
-		setCurrentIndex(Math.max(0, Math.min(segments.length - 1, index)));
-		setCurrentTime(0);
+		const newIndex = Math.max(0, Math.min(segments.length - 1, index));
+		const startTime = calculateSegmentStartTime(newIndex);
+		setCurrentIndex(newIndex);
+		setCurrentTime(startTime);
 	};
 
 	const seek = (time: number) => {
