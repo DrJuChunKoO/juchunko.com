@@ -180,16 +180,28 @@ export default function TTSPlayer({ isOpen, onClose, lang = "zh-TW" }: TTSPlayer
 			}
 		};
 
+		const handleError = (e: Event) => {
+			console.error("Audio segment failed to load:", e);
+			if (isPlaying) {
+				handleEnded();
+			}
+		};
+
 		audio.addEventListener("ended", handleEnded);
+		audio.addEventListener("error", handleError);
 
 		if (isPlaying) {
-			audio.play().catch(console.error);
+			audio.play().catch((err) => {
+				console.error("Playback failed, skipping segment:", err);
+				handleEnded();
+			});
 		} else {
 			audio.pause();
 		}
 
 		return () => {
 			audio.removeEventListener("ended", handleEnded);
+			audio.removeEventListener("error", handleError);
 		};
 	}, [currentIndex, isPlaying, mode, segments.length]);
 
@@ -458,7 +470,7 @@ export default function TTSPlayer({ isOpen, onClose, lang = "zh-TW" }: TTSPlayer
 	};
 
 	return (
-		<div className="flex h-[350px] flex-col p-4">
+		<div className="flex flex-col p-4">
 			{mode === "loading" && (
 				<div className="flex flex-1 flex-col items-center justify-center">
 					<Loader2 className="text-muted-foreground h-6 w-6 animate-spin" />
