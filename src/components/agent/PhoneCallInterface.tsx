@@ -46,6 +46,7 @@ export default function PhoneCallInterface({ isOpen, onClose, lang = "zh-TW" }: 
 			await navigator.mediaDevices.getUserMedia({ audio: true });
 			await conversation.startSession({
 				agentId: "4Wh96G5InzCrZUpH6K4Y",
+				connectionType: "webrtc",
 			});
 		} catch (error) {
 			console.error("Failed to start conversation:", error);
