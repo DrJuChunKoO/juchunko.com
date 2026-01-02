@@ -410,13 +410,20 @@ export default function TTSPlayer({ isOpen, lang = "zh-TW" }: TTSPlayerProps) {
 					});
 				}
 
-				if (matchedElement!.contains(el) || el === matchedElement) {
-					// Highlighted element: keep original color
+				const isMatchedOrChild = matchedElement!.contains(el) || el === matchedElement;
+				const isAncestor = isDescendantOf(matchedElement!, el);
+
+				if (isMatchedOrChild) {
+					// Highlighted element and its children: keep original color
 					htmlEl.style.color = "";
 					htmlEl.style.transition = "color 0.3s ease";
-				} else if (!isDescendantOf(matchedElement!, el)) {
-					// Dimmed elements: use CSS variable for dimmed color
+				} else if (!isAncestor) {
+					// Dimmed elements (not ancestors of matched element): use CSS variable for dimmed color
 					htmlEl.style.color = "var(--tts-dimmed)";
+					htmlEl.style.transition = "color 0.3s ease";
+				} else {
+					// Ancestors of matched element (like ul/ol for li): keep original color but add transition
+					htmlEl.style.color = "";
 					htmlEl.style.transition = "color 0.3s ease";
 				}
 			});
