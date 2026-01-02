@@ -372,150 +372,122 @@ export default function TTSPlayer({ isOpen, onClose, lang = "zh-TW" }: TTSPlayer
 	};
 
 	return (
-		<AnimatePresence>
-			{isOpen && (
-				<motion.div
-					initial={{ opacity: 0, scale: 0.5, y: 16 }}
-					animate={{
-						opacity: 1,
-						scale: 1,
-						y: 0,
-					}}
-					exit={{ opacity: 0, scale: 0.5, y: 16 }}
-					transition={{ type: "spring", stiffness: 300, damping: 30 }}
-					style={{ bottom: y }}
-					className="bg-card ring-border/50 fixed right-4 z-40 h-max w-80 max-w-[calc(100vw-32px)] origin-bottom-right overflow-hidden rounded-xl shadow-lg ring-1 backdrop-blur-xl"
-				>
-					<div className="bg-muted text-foreground border-border flex items-center justify-between rounded-t-lg border-b p-2 pl-4">
+		<div className="flex h-[350px] flex-col p-4">
+			{mode === "loading" && (
+				<div className="flex flex-1 flex-col items-center justify-center">
+					<Loader2 className="text-muted-foreground h-6 w-6 animate-spin" />
+					<p className="text-muted-foreground mt-2 text-center text-xs">{ui[lang]["agent.voiceReader.loading"]}</p>
+				</div>
+			)}
+
+			{mode === "fallback" && (
+				<div className="flex flex-1 flex-col items-center justify-center space-y-2">
+					<ElevenLabsAudioNative publicUserId="e826f7db9aa74a5b23ec481d0d24467f232dbc1622ceb065c98ff3c4adb99830" size="small" />
+					<p className="text-muted-foreground text-center text-xs">{ui[lang]["agent.voiceReader.poweredBy"]}</p>
+				</div>
+			)}
+
+			{mode === "api" && segments.length > 0 && (
+				<div className="flex flex-1 flex-col space-y-4">
+					<div className="flex items-center justify-between">
+						<span className="text-muted-foreground text-xs">
+							{formatTime(currentTime)} / {formatTime(totalDuration)}
+						</span>
 						<div className="flex items-center gap-2">
-							<BookAudio className="h-5 w-5" />
-							<h3 className="font-semibold">{ui[lang]["agent.voiceReader.title"]}</h3>
-						</div>
-						<div className="flex items-center gap-1">
 							<motion.button
 								whileTap={{ scale: 0.95 }}
 								onClick={() => setHighlightEnabled(!highlightEnabled)}
-								className={`text-muted-foreground cursor-pointer rounded-lg p-2 transition-colors ${highlightEnabled ? "bg-primary/20" : ""}`}
+								className={`text-muted-foreground cursor-pointer rounded-lg p-1.5 transition-colors ${highlightEnabled ? "bg-primary/20" : ""}`}
 								title={highlightEnabled ? "關閉文字凸顯" : "開啟文字凸顯"}
 							>
-								<BookAudio className="size-5" />
+								<BookAudio className="size-4" />
 							</motion.button>
-							<motion.button
-								whileTap={{ scale: 0.95 }}
-								onClick={onClose}
-								className="hover:bg-muted-foreground/10 text-muted-foreground hover:text-foreground cursor-pointer rounded-lg p-2 transition-colors"
-								aria-label={ui[lang]["agent.voiceReader.close"]}
-							>
-								<X className="size-5" />
-							</motion.button>
+							<span className="text-muted-foreground max-w-[150px] truncate text-xs">
+								{segments[currentIndex]?.Text?.slice(0, 50)}
+								{segments[currentIndex]?.Text?.length > 50 ? "..." : ""}
+							</span>
 						</div>
 					</div>
 
-					<div className="bg-card/50 p-4">
-						{mode === "loading" && (
-							<div className="flex flex-col items-center justify-center py-4">
-								<Loader2 className="text-muted-foreground h-6 w-6 animate-spin" />
-								<p className="text-muted-foreground mt-2 text-center text-xs">{ui[lang]["agent.voiceReader.loading"]}</p>
-							</div>
-						)}
-
-						{mode === "fallback" && (
-							<>
-								<ElevenLabsAudioNative publicUserId="e826f7db9aa74a5b23ec481d0d24467f232dbc1622ceb065c98ff3c4adb99830" size="small" />
-								<p className="text-muted-foreground mt-2 text-center text-xs">{ui[lang]["agent.voiceReader.poweredBy"]}</p>
-							</>
-						)}
-
-						{mode === "api" && segments.length > 0 && (
-							<div className="space-y-3">
-								<div className="flex items-center justify-between">
-									<span className="text-muted-foreground text-xs">
-										{formatTime(currentTime)} / {formatTime(totalDuration)}
-									</span>
-									<span className="text-muted-foreground text-xs">
-										{segments[currentIndex]?.Text?.slice(0, 50)}
-										{segments[currentIndex]?.Text?.length > 50 ? "..." : ""}
-									</span>
-								</div>
-
-								<div className="relative w-full">
-									<div className="bg-muted h-1.5 w-full overflow-hidden rounded-full">
-										<motion.div
-											className="bg-primary h-full"
-											initial={{ width: 0 }}
-											animate={{ width: `${progressPercentage}%` }}
-											transition={{ duration: 0.1 }}
-										/>
-									</div>
-									<input
-										type="range"
-										min="0"
-										max={totalDuration}
-										value={currentTime}
-										onChange={(e) => seek(Number(e.target.value))}
-										className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-									/>
-								</div>
-
-								<div className="flex items-center justify-center gap-2">
-									<motion.button
-										whileTap={{ scale: 0.95 }}
-										onClick={() => jumpToSegment(currentIndex - 1)}
-										disabled={currentIndex === 0}
-										className="hover:bg-muted-foreground/10 text-muted-foreground cursor-pointer rounded-lg p-2 transition-colors disabled:opacity-50"
-										aria-label={ui[lang]["agent.voiceReader.previous"]}
-									>
-										<SkipBack className="size-5" />
-									</motion.button>
-
-									<motion.button
-										whileTap={{ scale: 0.95 }}
-										onClick={seekBackward}
-										disabled={currentTime < 15 && currentIndex === 0}
-										className="hover:bg-muted-foreground/10 text-muted-foreground cursor-pointer rounded-lg p-2 transition-colors disabled:opacity-50"
-										aria-label={ui[lang]["agent.voiceReader.rewind15s"]}
-									>
-										<Rewind className="size-5" />
-									</motion.button>
-
-									<motion.button
-										whileTap={{ scale: 0.95 }}
-										onClick={togglePlay}
-										className="hover:bg-muted-foreground/10 text-foreground cursor-pointer rounded-lg p-3 transition-colors"
-										aria-label={isPlaying ? ui[lang]["agent.voiceReader.pause"] : ui[lang]["agent.voiceReader.play"]}
-									>
-										{isPlaying ? <Pause className="size-5" /> : <Play className="size-5" />}
-									</motion.button>
-
-									<motion.button
-										whileTap={{ scale: 0.95 }}
-										onClick={seekForward}
-										disabled={totalDuration > 0 && currentTime >= totalDuration - 15}
-										className="hover:bg-muted-foreground/10 text-muted-foreground cursor-pointer rounded-lg p-2 transition-colors disabled:opacity-50"
-										aria-label={ui[lang]["agent.voiceReader.forward15s"]}
-									>
-										<FastForward className="size-5" />
-									</motion.button>
-
-									<motion.button
-										whileTap={{ scale: 0.95 }}
-										onClick={() => jumpToSegment(currentIndex + 1)}
-										disabled={currentIndex === segments.length - 1}
-										className="hover:bg-muted-foreground/10 text-muted-foreground cursor-pointer rounded-lg p-2 transition-colors disabled:opacity-50"
-										aria-label={ui[lang]["agent.voiceReader.next"]}
-									>
-										<SkipForward className="size-5" />
-									</motion.button>
-								</div>
-
-								<p className="text-muted-foreground text-center text-xs">{ui[lang]["agent.voiceReader.poweredBy"]}</p>
-							</div>
-						)}
-
-						{mode === "error" && <p className="text-destructive text-center text-xs">{ui[lang]["agent.voiceReader.error"]}</p>}
+					<div className="relative w-full">
+						<div className="bg-muted h-1.5 w-full overflow-hidden rounded-full">
+							<motion.div
+								className="bg-primary h-full"
+								initial={{ width: 0 }}
+								animate={{ width: `${progressPercentage}%` }}
+								transition={{ duration: 0.1 }}
+							/>
+						</div>
+						<input
+							type="range"
+							min="0"
+							max={totalDuration}
+							value={currentTime}
+							onChange={(e) => seek(Number(e.target.value))}
+							className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+						/>
 					</div>
-				</motion.div>
+
+					<div className="flex items-center justify-center gap-2">
+						<motion.button
+							whileTap={{ scale: 0.95 }}
+							onClick={() => jumpToSegment(currentIndex - 1)}
+							disabled={currentIndex === 0}
+							className="hover:bg-muted-foreground/10 text-muted-foreground cursor-pointer rounded-lg p-2 transition-colors disabled:opacity-50"
+							aria-label={ui[lang]["agent.voiceReader.previous"]}
+						>
+							<SkipBack className="size-5" />
+						</motion.button>
+
+						<motion.button
+							whileTap={{ scale: 0.95 }}
+							onClick={seekBackward}
+							disabled={currentTime < 15 && currentIndex === 0}
+							className="hover:bg-muted-foreground/10 text-muted-foreground cursor-pointer rounded-lg p-2 transition-colors disabled:opacity-50"
+							aria-label={ui[lang]["agent.voiceReader.rewind15s"]}
+						>
+							<Rewind className="size-5" />
+						</motion.button>
+
+						<motion.button
+							whileTap={{ scale: 0.95 }}
+							onClick={togglePlay}
+							className="hover:bg-muted-foreground/10 text-foreground cursor-pointer rounded-lg p-3 transition-colors"
+							aria-label={isPlaying ? ui[lang]["agent.voiceReader.pause"] : ui[lang]["agent.voiceReader.play"]}
+						>
+							{isPlaying ? <Pause className="size-5" /> : <Play className="size-5" />}
+						</motion.button>
+
+						<motion.button
+							whileTap={{ scale: 0.95 }}
+							onClick={seekForward}
+							disabled={totalDuration > 0 && currentTime >= totalDuration - 15}
+							className="hover:bg-muted-foreground/10 text-muted-foreground cursor-pointer rounded-lg p-2 transition-colors disabled:opacity-50"
+							aria-label={ui[lang]["agent.voiceReader.forward15s"]}
+						>
+							<FastForward className="size-5" />
+						</motion.button>
+
+						<motion.button
+							whileTap={{ scale: 0.95 }}
+							onClick={() => jumpToSegment(currentIndex + 1)}
+							disabled={currentIndex === segments.length - 1}
+							className="hover:bg-muted-foreground/10 text-muted-foreground cursor-pointer rounded-lg p-2 transition-colors disabled:opacity-50"
+							aria-label={ui[lang]["agent.voiceReader.next"]}
+						>
+							<SkipForward className="size-5" />
+						</motion.button>
+					</div>
+
+					<p className="text-muted-foreground text-center text-xs">{ui[lang]["agent.voiceReader.poweredBy"]}</p>
+				</div>
 			)}
-		</AnimatePresence>
+
+			{mode === "error" && (
+				<p className="text-destructive flex flex-1 items-center justify-center text-center text-xs">
+					{ui[lang]["agent.voiceReader.error"]}
+				</p>
+			)}
+		</div>
 	);
 }
