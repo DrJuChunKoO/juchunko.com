@@ -216,42 +216,38 @@ export default function TTSPlayer({ isOpen, onClose, lang = "zh-TW" }: TTSPlayer
 		const mainContent = document.querySelector("main") || document.querySelector("article") || document.body;
 		if (!mainContent) return;
 
-		const textNodes: Text[] = [];
-		const walker = document.createTreeWalker(mainContent, NodeFilter.SHOW_TEXT, {
-			acceptNode: (node) => {
-				if (node.nodeValue && node.nodeValue.trim().length > 10) {
-					return NodeFilter.FILTER_ACCEPT;
-				}
-				return NodeFilter.FILTER_REJECT;
-			},
-		});
-
-		while (walker.nextNode()) {
-			textNodes.push(walker.currentNode as Text);
-		}
-
 		const currentSegmentText = segments[currentIndex]?.Text?.trim() || "";
-		const currentElement = new Map<HTMLElement, number>();
+		if (!currentSegmentText) return;
 
-		textNodes.forEach((node) => {
-			const parent = node.parentElement;
-			if (!parent) return;
+		const candidateElements: HTMLElement[] = [];
 
-			const nodeText = node.nodeValue?.trim();
-			if (!nodeText) return;
+		const blockElements = mainContent.querySelectorAll("p, li, h1, h2, h3, h4, h5, h6, div, span");
 
-			const similarity = calculateSimilarity(currentSegmentText, nodeText);
-			if (similarity > 0.3) {
-				currentElement.set(parent, similarity);
+		blockElements.forEach((el) => {
+			const htmlEl = el as HTMLElement;
+			const elText = htmlEl.textContent?.trim() || "";
+			if (elText.length > 5) {
+				const similarity = calculateSimilarity(currentSegmentText, elText);
+				if (similarity > 0.4) {
+					candidateElements.push(htmlEl);
+				}
 			}
 		});
 
-		const maxSimilarity = Math.max(...currentElement.values(), 0);
-		const bestMatch = Array.from(currentElement.entries())
-			.filter(([, score]) => score >= maxSimilarity * 0.8)
-			.sort(([, a], [, b]) => b - a)[0];
+		let bestMatch: HTMLElement | null = null;
+		let maxSimilarity = 0;
 
-		if (bestMatch && maxSimilarity > 0.4) {
+		candidateElements.forEach((el) => {
+			const elText = el.textContent?.trim() || "";
+			const similarity = calculateSimilarity(currentSegmentText, elText);
+
+			if (similarity > maxSimilarity) {
+				maxSimilarity = similarity;
+				bestMatch = el;
+			}
+		});
+
+		if (bestMatch && maxSimilarity > 0.5) {
 			mainContent.querySelectorAll("*").forEach((el) => {
 				const htmlEl = el as HTMLElement;
 				if (htmlEl.style.opacity) {
@@ -261,18 +257,18 @@ export default function TTSPlayer({ isOpen, onClose, lang = "zh-TW" }: TTSPlayer
 					});
 				}
 
-				if (bestMatch[0].contains(el)) {
+				if (bestMatch!.contains(el) || el === bestMatch) {
 					htmlEl.style.opacity = "1";
 					htmlEl.style.transition = "opacity 0.3s ease";
 					htmlEl.style.filter = "brightness(1.1)";
-				} else if (!isDescendantOf(bestMatch[0], el)) {
+				} else if (!isDescendantOf(bestMatch!, el)) {
 					htmlEl.style.opacity = "0.3";
 					htmlEl.style.transition = "opacity 0.3s ease";
 					htmlEl.style.filter = "brightness(0.9)";
 				}
 			});
 
-			bestMatch[0].scrollIntoView({ behavior: "smooth", block: "center" });
+			bestMatch.scrollIntoView({ behavior: "smooth", block: "center" });
 		}
 
 		return () => {
