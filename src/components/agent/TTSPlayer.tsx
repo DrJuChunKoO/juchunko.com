@@ -412,10 +412,16 @@ export default function TTSPlayer({ isOpen, lang = "zh-TW" }: TTSPlayerProps) {
 
 				const isMatchedOrChild = matchedElement!.contains(el) || el === matchedElement;
 				const isAncestor = isDescendantOf(matchedElement!, el);
+				const tagName = htmlEl.tagName.toLowerCase();
 
 				if (isMatchedOrChild) {
 					// Highlighted element and its children: keep original color
-					htmlEl.style.color = "";
+					if (tagName === "li") {
+						// Force li to use prose body color to avoid inheriting from ul/ol
+						htmlEl.style.color = "var(--tw-prose-body)";
+					} else {
+						htmlEl.style.color = "";
+					}
 					htmlEl.style.transition = "color 0.3s ease";
 				} else if (!isAncestor) {
 					// Dimmed elements (not ancestors of matched element): use CSS variable for dimmed color
