@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { QueryClient, useQuery } from "@tanstack/react-query";
-import { motion, useMotionValue } from "motion/react";
+import { motion } from "motion/react";
 import { BookAudio, Play, Pause, Rewind, FastForward, Loader2, StepForward, StepBack } from "lucide-react";
 import ElevenLabsAudioNative from "./ElevenLabsAudioNative";
 import { ui } from "src/i18n/ui";
@@ -25,7 +25,6 @@ type AudioSegment = {
 
 interface TTSPlayerProps {
 	isOpen: boolean;
-	onClose: () => void;
 	lang?: SupportedLang;
 }
 
@@ -56,9 +55,7 @@ async function fetchTTSAudioSegments(domain: string, path: string): Promise<Audi
 	}
 }
 
-export default function TTSPlayer({ isOpen, onClose, lang = "zh-TW" }: TTSPlayerProps) {
-	const y = useMotionValue(16);
-
+export default function TTSPlayer({ isOpen, lang = "zh-TW" }: TTSPlayerProps) {
 	const [mode, setMode] = useState<Mode>("loading");
 	const [isPlaying, setIsPlaying] = useState(false);
 	const [currentIndex, setCurrentIndex] = useState(0);
@@ -66,18 +63,13 @@ export default function TTSPlayer({ isOpen, onClose, lang = "zh-TW" }: TTSPlayer
 	const [totalDuration, setTotalDuration] = useState(0);
 	const [segmentDurations, setSegmentDurations] = useState<number[]>([]);
 	const [highlightEnabled, setHighlightEnabled] = useState(true);
+
 	const currentAudioRef = useRef<HTMLAudioElement | null>(null);
 	const progressUpdateIntervalRef = useRef<NodeJS.Timeout | null>(null);
 	const audioElementsRef = useRef<HTMLAudioElement[]>([]);
-	const originalStylesRef = useRef<Map<HTMLElement, { opacity: string; transition: string }>>(new Map());
+	const originalStylesRef = useRef<Map<HTMLElement, { opacity: string; transition: string; filter: string }>>(new Map());
 
-	const currentUrl = useRef("");
-
-	useEffect(() => {
-		if (isOpen && typeof window !== "undefined") {
-			currentUrl.current = window.location.href;
-		}
-	}, [isOpen]);
+	const currentUrl = typeof window !== "undefined" ? window.location.href : "";
 
 	const {
 		data: segments = [],
@@ -85,84 +77,122 @@ export default function TTSPlayer({ isOpen, onClose, lang = "zh-TW" }: TTSPlayer
 		isError,
 	} = useQuery(
 		{
-			queryKey: ["ttsSegments", currentUrl.current],
+			queryKey: ["ttsSegments", currentUrl],
 			queryFn: async () => {
-				const url = new URL(currentUrl.current);
+				const url = new URL(currentUrl);
 				const domain = url.hostname;
 				const path = url.pathname.slice(1).replace(/\/$/, "");
 				return fetchTTSAudioSegments(domain, path);
 			},
-			enabled: isOpen && !!currentUrl.current,
+			enabled: isOpen && !!currentUrl,
 		},
 		ttsQueryClient,
 	);
 
+	const loadAudioElements = useCallback(async (segData: AudioSegment[]) => {
+		try {
+			const audios = segData.map((seg) => {
+				const audio = new Audio(seg.Audio);
+				audio.preload = "metadata";
+				return audio;
+			});
+			audioElementsRef.current = audios;
+
+			setSegmentDurations(new Array(audios.length).fill(0));
+			setMode("api");
+
+			audios.forEach((audio, index) => {
+				const updateDuration = () => {
+					setSegmentDurations((prev) => {
+						const next = [...prev];
+						next[index] = audio.duration || 0;
+						return next;
+					});
+					audio.removeEventListener("loadedmetadata", updateDuration);
+					audio.removeEventListener("error", onMetaError);
+				};
+				const onMetaError = () => {
+					audio.removeEventListener("loadedmetadata", updateDuration);
+					audio.removeEventListener("error", onMetaError);
+				};
+
+				if (audio.readyState >= 1) {
+					updateDuration();
+				} else {
+					audio.addEventListener("loadedmetadata", updateDuration);
+					audio.addEventListener("error", onMetaError);
+				}
+			});
+		} catch (error) {
+			console.error("loadAudioElements error:", error);
+			setMode("fallback");
+		}
+	}, []);
+
 	useEffect(() => {
 		if (isOpen) {
-			setMode("loading");
-			setCurrentIndex(0);
-			setIsPlaying(false);
-			setCurrentTime(0);
-			setTotalDuration(0);
-			setSegmentDurations([]);
-			if (currentAudioRef.current) {
-				currentAudioRef.current.pause();
-				currentAudioRef.current = null;
-			}
-			if (progressUpdateIntervalRef.current) {
-				clearInterval(progressUpdateIntervalRef.current);
-				progressUpdateIntervalRef.current = null;
-			}
-
 			if (isLoading) {
 				setMode("loading");
 			} else if (isError) {
 				setMode("fallback");
-			} else if (segments.length > 0) {
-				loadAudioElements(segments);
-			} else {
+			} else if (segments && segments.length > 0) {
+				if (mode === "loading") {
+					loadAudioElements(segments);
+				}
+			} else if (!isLoading) {
 				setMode("fallback");
 			}
+		} else {
+			if (currentAudioRef.current) {
+				currentAudioRef.current.pause();
+				currentAudioRef.current = null;
+			}
+			setIsPlaying(false);
+			setCurrentTime(0);
+			setCurrentIndex(0);
+			setSegmentDurations([]);
+			setTotalDuration(0);
+			if (progressUpdateIntervalRef.current) {
+				clearInterval(progressUpdateIntervalRef.current);
+				progressUpdateIntervalRef.current = null;
+			}
+			// Reset styles
+			resetAllStyles();
 		}
-	}, [isOpen, isLoading, isError, segments]);
-
-	const loadAudioElements = async (segData: AudioSegment[]) => {
-		const audios = segData.map((seg) => new Audio(seg.Audio));
-		audioElementsRef.current = audios;
-
-		const durations = audios.map((audio) => {
-			return new Promise<number>((resolve) => {
-				if (audio.duration) {
-					resolve(audio.duration);
-				} else {
-					audio.addEventListener("loadedmetadata", () => {
-						resolve(audio.duration || 0);
-					});
-				}
-			});
-		});
-
-		const resolvedDurations = await Promise.all(durations);
-		setSegmentDurations(resolvedDurations);
-		setTotalDuration(resolvedDurations.reduce((acc, d) => acc + d, 0));
-		setMode("api");
-	};
+	}, [isOpen, isLoading, isError, segments, mode, loadAudioElements]);
 
 	useEffect(() => {
-		function handleScroll() {
-			const footer = document.getElementById("footer");
-			if (!footer) return;
-			const rect = footer.getBoundingClientRect();
-			const windowHeight = window.innerHeight;
-			const top = rect.y - windowHeight;
-			const isBottom = top < 0;
+		setTotalDuration(segmentDurations.reduce((acc, d) => acc + d, 0));
+	}, [segmentDurations]);
 
-			y.set(isBottom ? 16 - top : 16);
+	const calculateSegmentStartTime = useCallback(
+		(index: number): number => {
+			if (index <= 0 || index >= segmentDurations.length) return 0;
+			return segmentDurations.slice(0, index).reduce((acc, d) => acc + d, 0);
+		},
+		[segmentDurations],
+	);
+
+	const jumpToSegment = useCallback(
+		(index: number) => {
+			const newIndex = Math.max(0, Math.min(segments.length - 1, index));
+			const startTime = calculateSegmentStartTime(newIndex);
+			setCurrentIndex(newIndex);
+			setCurrentTime(startTime);
+		},
+		[segments.length, calculateSegmentStartTime],
+	);
+
+	const handleEnded = useCallback(() => {
+		if (isPlaying && currentIndex < segments.length - 1) {
+			const nextIndex = currentIndex + 1;
+			const startTime = calculateSegmentStartTime(nextIndex);
+			setCurrentIndex(nextIndex);
+			setCurrentTime(startTime);
+		} else {
+			setIsPlaying(false);
 		}
-		window.addEventListener("scroll", handleScroll);
-		handleScroll();
-		return () => window.removeEventListener("scroll", handleScroll);
-	}, []);
+	}, [isPlaying, currentIndex, segments.length, calculateSegmentStartTime]);
 
 	useEffect(() => {
 		if (mode !== "api" || audioElementsRef.current.length === 0 || currentIndex >= audioElementsRef.current.length) return;
@@ -174,22 +204,9 @@ export default function TTSPlayer({ isOpen, onClose, lang = "zh-TW" }: TTSPlayer
 
 		currentAudioRef.current = audio;
 
-		const handleEnded = () => {
-			if (isPlaying && currentIndex < segments.length - 1) {
-				const nextIndex = currentIndex + 1;
-				const startTime = segmentDurations.slice(0, nextIndex).reduce((acc, d) => acc + d, 0);
-				setCurrentIndex(nextIndex);
-				setCurrentTime(startTime);
-			} else {
-				setIsPlaying(false);
-			}
-		};
-
 		const handleError = (e: Event) => {
-			console.error("Audio segment failed to load:", e);
-			if (isPlaying) {
-				handleEnded();
-			}
+			console.error("Audio segment error, skipping:", e);
+			if (isPlaying) handleEnded();
 		};
 
 		audio.addEventListener("ended", handleEnded);
@@ -197,7 +214,7 @@ export default function TTSPlayer({ isOpen, onClose, lang = "zh-TW" }: TTSPlayer
 
 		if (isPlaying) {
 			audio.play().catch((err) => {
-				console.error("Playback failed, skipping segment:", err);
+				console.error("Playback failed:", err);
 				handleEnded();
 			});
 		} else {
@@ -208,7 +225,7 @@ export default function TTSPlayer({ isOpen, onClose, lang = "zh-TW" }: TTSPlayer
 			audio.removeEventListener("ended", handleEnded);
 			audio.removeEventListener("error", handleError);
 		};
-	}, [currentIndex, isPlaying, mode, segments.length]);
+	}, [currentIndex, isPlaying, mode, segments.length, handleEnded]);
 
 	useEffect(() => {
 		if (mode !== "api" || !isPlaying) return;
@@ -228,131 +245,117 @@ export default function TTSPlayer({ isOpen, onClose, lang = "zh-TW" }: TTSPlayer
 			}
 		};
 	}, [mode, isPlaying, currentIndex, segmentDurations]);
+
+	const normalizeText = (text: string): string => {
+		return text
+			.replace(/^#{1,6}\s+/g, "")
+			.replace(/\*\*(.*?)\*\*/g, "$1")
+			.replace(/\*(.*?)\*/g, "$1")
+			.replace(/\[(.*?)\]\(.*?\)/g, "$1")
+			.replace(/`{1,3}.*?`{1,3}/g, "")
+			.replace(/^\|.*\|$/gm, "")
+			.replace(/^\|?[-: ]+\|?$/gm, "")
+			.replace(/^\s*[-*+]\s+/gm, "")
+			.replace(/^\s*\d+\.\s+/gm, "")
+			.replace(/^>\s+/gm, "")
+			.replace(/\s+/g, " ")
+			.trim();
+	};
+
+	const extractTextFromHTML = (element: HTMLElement): string => {
+		let text = "";
+		const processNode = (node: ChildNode): void => {
+			if (node.nodeType === Node.TEXT_NODE) {
+				text += node.textContent || "";
+			} else if (node.nodeType === Node.ELEMENT_NODE) {
+				const el = node as Element;
+				if (el.tagName === "TIMELINEITEM") {
+					const date = el.getAttribute("date");
+					const title = el.getAttribute("title");
+					let inner = "";
+					for (const child of Array.from(el.childNodes)) {
+						if (child.nodeType === Node.TEXT_NODE) inner += child.textContent || "";
+						else if (child.nodeType === Node.ELEMENT_NODE) {
+							const cel = child as Element;
+							if (cel.tagName === "CARD") inner += (cel.getAttribute("title") || "") + "。";
+							else if (cel.tagName === "YOUTUBE") inner += `影片：${cel.getAttribute("title") || ""}。`;
+							else if (!["TIMELINE", "CARD", "YOUTUBE"].includes(cel.tagName)) {
+								for (const sc of Array.from(cel.childNodes)) {
+									if (sc.nodeType === Node.TEXT_NODE) inner += sc.textContent || "";
+								}
+							}
+						}
+					}
+					inner = inner.trim();
+					if (date && title) text += `於${date}，${title}。${inner}`;
+					else if (title) text += `${title}。${inner}`;
+					else if (date) text += `於${date}：${inner}`;
+					else text += inner;
+					return;
+				}
+				if (el.tagName === "CARD") {
+					text += (el.getAttribute("title") || "") + "。";
+					return;
+				}
+				if (el.tagName === "YOUTUBE") {
+					text += `影片：${el.getAttribute("title") || ""}。`;
+					return;
+				}
+				if (!["TIMELINE", "CARD", "YOUTUBE"].includes(el.tagName)) {
+					for (const child of Array.from(node.childNodes)) processNode(child);
+				}
+			}
+		};
+		for (const child of Array.from(element.childNodes)) processNode(child);
+		return text.trim();
+	};
+
+	const isDescendantOf = (parent: HTMLElement, element: Element): boolean => {
+		let current: Element | null = element;
+		while (current) {
+			if (current === parent) return true;
+			current = current.parentElement;
+		}
+		return false;
+	};
+
+	const resetAllStyles = useCallback(() => {
+		originalStylesRef.current.forEach((style, el) => {
+			el.style.opacity = style.opacity;
+			el.style.transition = style.transition;
+			el.style.filter = style.filter;
+		});
+		originalStylesRef.current.clear();
+		// Also clean up any lingering styles on all elements in main
+		const main = document.querySelector("main") || document.querySelector("article");
+		if (main) {
+			main.querySelectorAll("*").forEach((el) => {
+				const htmlEl = el as HTMLElement;
+				htmlEl.style.opacity = "";
+				htmlEl.style.transition = "";
+				htmlEl.style.filter = "";
+			});
+		}
+	}, []);
+
 	useEffect(() => {
-		if (mode !== "api" || segments.length === 0 || !highlightEnabled) return;
+		if (mode !== "api" || segments.length === 0 || !highlightEnabled) {
+			resetAllStyles();
+			return;
+		}
 
 		const mainContent = document.querySelector("main") || document.querySelector("article") || document.body;
 		if (!mainContent) return;
 
-		const currentSegmentText = segments[currentIndex]?.Text?.trim() || "";
-		if (!currentSegmentText) return;
+		const targetText = normalizeText(segments[currentIndex]?.Text || "");
+		if (!targetText) return;
 
-		const normalizeText = (text: string): string => {
-			return text
-				.replace(/^#{1,6}\s+/g, "") // Headings
-				.replace(/\*\*(.*?)\*\*/g, "$1") // Bold
-				.replace(/\*(.*?)\*/g, "$1") // Italic
-				.replace(/\[(.*?)\]\(.*?\)/g, "$1") // Links
-				.replace(/`{1,3}.*?`{1,3}/g, "") // Inline code
-				.replace(/^\|.*\|$/gm, "") // Table rows
-				.replace(/^\|?[-: ]+\|?$/gm, "") // Table separators
-				.replace(/^\s*[-*+]\s+/gm, "") // List markers
-				.replace(/^\s*\d+\.\s+/gm, "") // Numbered list markers
-				.replace(/^>\s+/gm, "") // Blockquotes
-				.replace(/\s+/g, " ") // Multiple spaces to single space
-				.trim();
-		};
-
-		const extractTextFromHTML = (element: HTMLElement): string => {
-			let text = "";
-
-			const processChildNode = (childNode: ChildNode): void => {
-				if (childNode.nodeType === Node.TEXT_NODE) {
-					text += childNode.textContent || "";
-				} else if (childNode.nodeType === Node.ELEMENT_NODE) {
-					const el = childNode as Element;
-
-					if (el.tagName === "TIMELINEITEM") {
-						const date = el.getAttribute("date");
-						const title = el.getAttribute("title");
-
-						let innerContent = "";
-						for (const subChild of Array.from(el.childNodes)) {
-							if (subChild.nodeType === Node.TEXT_NODE) {
-								innerContent += subChild.textContent || "";
-							} else if (subChild.nodeType === Node.ELEMENT_NODE) {
-								const childEl = subChild as Element;
-
-								if (childEl.tagName === "CARD") {
-									const cardTitle = childEl.getAttribute("title");
-									if (cardTitle) {
-										innerContent += `${cardTitle}。`;
-									}
-								} else if (childEl.tagName === "YOUTUBE") {
-									const youtubeTitle = childEl.getAttribute("title");
-									if (youtubeTitle) {
-										innerContent += `影片：${youtubeTitle}。`;
-									}
-								} else if (childEl.tagName !== "TIMELINE" && childEl.tagName !== "CARD" && childEl.tagName !== "YOUTUBE") {
-									for (const subSubChild of Array.from(childEl.childNodes)) {
-										if (subSubChild.nodeType === Node.TEXT_NODE) {
-											innerContent += subSubChild.textContent || "";
-										}
-									}
-								}
-							}
-						}
-
-						innerContent = innerContent.trim();
-
-						if (date && title) {
-							text += `於${date}，${title}。${innerContent}`;
-						} else if (title) {
-							text += `${title}。${innerContent}`;
-						} else if (date) {
-							text += `於${date}：${innerContent}`;
-						} else {
-							text += innerContent;
-						}
-						return;
-					}
-
-					if (el.tagName === "CARD") {
-						const cardTitle = el.getAttribute("title");
-						if (cardTitle) {
-							text += `${cardTitle}。`;
-						}
-						return;
-					}
-
-					if (el.tagName === "YOUTUBE") {
-						const youtubeTitle = el.getAttribute("title");
-						if (youtubeTitle) {
-							text += `影片：${youtubeTitle}。`;
-						}
-						return;
-					}
-
-					if (el.tagName === "TIMELINE" || el.tagName === "CARD" || el.tagName === "YOUTUBE") {
-						return;
-					}
-
-					if (el.children.length === 0) {
-						processChildNode(el.firstChild!);
-					} else {
-						for (const subChild of Array.from(el.childNodes)) {
-							processChildNode(subChild);
-						}
-					}
-				}
-			};
-
-			for (const child of Array.from(element.childNodes)) {
-				processChildNode(child);
-			}
-
-			return text.trim();
-		};
-
-		const targetText = normalizeText(currentSegmentText);
 		let matchedElement: HTMLElement | null = null;
-
 		const blockElements = Array.from(mainContent.querySelectorAll("p, li, h1, h2, h3, h4, h5, h6, div"));
 
 		for (const el of blockElements) {
 			const htmlEl = el as HTMLElement;
 			const elText = normalizeText(extractTextFromHTML(htmlEl));
-
 			if (elText === targetText) {
 				matchedElement = htmlEl;
 				break;
@@ -362,10 +365,11 @@ export default function TTSPlayer({ isOpen, onClose, lang = "zh-TW" }: TTSPlayer
 		if (matchedElement) {
 			mainContent.querySelectorAll("*").forEach((el) => {
 				const htmlEl = el as HTMLElement;
-				if (htmlEl.style.opacity) {
+				if (!originalStylesRef.current.has(htmlEl)) {
 					originalStylesRef.current.set(htmlEl, {
 						opacity: htmlEl.style.opacity,
-						transition: htmlEl.style.transition || "",
+						transition: htmlEl.style.transition,
+						filter: htmlEl.style.filter,
 					});
 				}
 
@@ -379,91 +383,43 @@ export default function TTSPlayer({ isOpen, onClose, lang = "zh-TW" }: TTSPlayer
 					htmlEl.style.filter = "brightness(0.9)";
 				}
 			});
-
 			matchedElement.scrollIntoView({ behavior: "smooth", block: "center" });
 		}
 
 		return () => {
-			originalStylesRef.current.forEach((style, el) => {
-				el.style.opacity = style.opacity;
-				el.style.transition = style.transition;
-			});
-			originalStylesRef.current.clear();
+			// Styles will be reset on next effect call or cleanup
 		};
-	}, [mode, segments, currentIndex, highlightEnabled]);
-
-	useEffect(() => {
-		if (!isOpen) {
-			if (currentAudioRef.current) {
-				currentAudioRef.current.pause();
-				currentAudioRef.current = null;
-			}
-			setIsPlaying(false);
-			if (progressUpdateIntervalRef.current) {
-				clearInterval(progressUpdateIntervalRef.current);
-				progressUpdateIntervalRef.current = null;
-			}
-
-			document.querySelectorAll("*").forEach((el) => {
-				const htmlEl = el as HTMLElement;
-				htmlEl.style.opacity = "";
-				htmlEl.style.transition = "";
-				htmlEl.style.filter = "";
-			});
-		}
-	}, [isOpen]);
-
-	const isDescendantOf = (parent: HTMLElement, element: Element): boolean => {
-		let current: Element | null = element;
-		while (current) {
-			if (current === parent) return true;
-			current = current.parentElement;
-		}
-		return false;
-	};
+	}, [mode, segments, currentIndex, highlightEnabled, resetAllStyles]);
 
 	const togglePlay = useCallback(() => setIsPlaying(!isPlaying), [isPlaying]);
 
-	const calculateSegmentStartTime = (index: number): number => {
-		if (index <= 0 || index >= segmentDurations.length) return 0;
-		return segmentDurations.slice(0, index).reduce((acc, d) => acc + d, 0);
-	};
-
-	const jumpToSegment = (index: number) => {
-		const newIndex = Math.max(0, Math.min(segments.length - 1, index));
-		const startTime = calculateSegmentStartTime(newIndex);
-		setCurrentIndex(newIndex);
-		setCurrentTime(startTime);
-	};
-
-	const seek = (time: number) => {
-		let accumulated = 0;
-		for (let i = 0; i < segmentDurations.length; i++) {
-			if (accumulated + segmentDurations[i] >= time) {
-				setCurrentIndex(i);
-				const audio = audioElementsRef.current[i];
-				if (audio) {
-					audio.currentTime = time - accumulated;
-					setCurrentTime(time);
+	const seek = useCallback(
+		(time: number) => {
+			let accumulated = 0;
+			for (let i = 0; i < segmentDurations.length; i++) {
+				if (accumulated + segmentDurations[i] >= time) {
+					setCurrentIndex(i);
+					const audio = audioElementsRef.current[i];
+					if (audio) {
+						audio.currentTime = Math.max(0, time - accumulated);
+						setCurrentTime(time);
+					}
+					return;
 				}
-				return;
+				accumulated += segmentDurations[i];
 			}
-			accumulated += segmentDurations[i];
-		}
-	};
+		},
+		[segmentDurations],
+	);
 
 	const seekForward = () => {
-		const newTime = currentTime + 15;
-		if (newTime <= totalDuration) {
-			seek(newTime);
-		}
+		const newTime = Math.min(totalDuration, currentTime + 15);
+		seek(newTime);
 	};
 
 	const seekBackward = () => {
-		const newTime = currentTime - 15;
-		if (newTime >= 0) {
-			seek(newTime);
-		}
+		const newTime = Math.max(0, currentTime - 15);
+		seek(newTime);
 	};
 
 	const progressPercentage = totalDuration > 0 ? (currentTime / totalDuration) * 100 : 0;
@@ -475,7 +431,7 @@ export default function TTSPlayer({ isOpen, onClose, lang = "zh-TW" }: TTSPlayer
 	};
 
 	return (
-		<div className="flex flex-col p-4">
+		<div className="flex h-[350px] flex-col p-4">
 			{mode === "loading" && (
 				<div className="flex flex-1 flex-col items-center justify-center">
 					<Loader2 className="text-muted-foreground h-6 w-6 animate-spin" />
@@ -486,29 +442,25 @@ export default function TTSPlayer({ isOpen, onClose, lang = "zh-TW" }: TTSPlayer
 			{mode === "fallback" && (
 				<div className="flex flex-1 flex-col items-center justify-center space-y-2">
 					<ElevenLabsAudioNative publicUserId="e826f7db9aa74a5b23ec481d0d24467f232dbc1622ceb065c98ff3c4adb99830" size="small" />
-					<p className="text-muted-foreground text-center text-xs">{ui[lang]["agent.voiceReader.poweredBy"]}</p>
 				</div>
 			)}
 
 			{mode === "api" && segments.length > 0 && (
 				<div className="flex flex-1 flex-col space-y-4">
 					<div className="flex items-center justify-between">
-						<span className="text-muted-foreground text-xs">
+						<span className="text-muted-foreground font-mono text-xs">
 							{formatTime(currentTime)} / {formatTime(totalDuration)}
 						</span>
 						<div className="flex items-center gap-2">
 							<motion.button
 								whileTap={{ scale: 0.95 }}
 								onClick={() => setHighlightEnabled(!highlightEnabled)}
-								className={`text-muted-foreground cursor-pointer rounded-lg p-1.5 transition-colors ${highlightEnabled ? "bg-primary/20" : ""}`}
+								className={`text-muted-foreground cursor-pointer rounded-lg p-1.5 transition-colors ${highlightEnabled ? "bg-primary/20 text-primary" : ""}`}
 								title={highlightEnabled ? "關閉文字凸顯" : "開啟文字凸顯"}
 							>
 								<BookAudio className="size-4" />
 							</motion.button>
-							<span className="text-muted-foreground max-w-[150px] truncate text-xs">
-								{segments[currentIndex]?.Text?.slice(0, 50)}
-								{segments[currentIndex]?.Text?.length > 50 ? "..." : ""}
-							</span>
+							<span className="text-muted-foreground max-w-[150px] truncate text-xs">{segments[currentIndex]?.Text?.slice(0, 50)}</span>
 						</div>
 					</div>
 
@@ -524,7 +476,8 @@ export default function TTSPlayer({ isOpen, onClose, lang = "zh-TW" }: TTSPlayer
 						<input
 							type="range"
 							min="0"
-							max={totalDuration}
+							max={totalDuration || 0}
+							step="0.1"
 							value={currentTime}
 							onChange={(e) => seek(Number(e.target.value))}
 							className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
@@ -545,7 +498,7 @@ export default function TTSPlayer({ isOpen, onClose, lang = "zh-TW" }: TTSPlayer
 						<motion.button
 							whileTap={{ scale: 0.95 }}
 							onClick={seekBackward}
-							disabled={currentTime < 15 && currentIndex === 0}
+							disabled={currentTime < 1}
 							className="hover:bg-muted-foreground/10 text-muted-foreground cursor-pointer rounded-lg p-2 transition-colors disabled:opacity-50"
 							aria-label={ui[lang]["agent.voiceReader.rewind15s"]}
 						>
@@ -555,16 +508,16 @@ export default function TTSPlayer({ isOpen, onClose, lang = "zh-TW" }: TTSPlayer
 						<motion.button
 							whileTap={{ scale: 0.95 }}
 							onClick={togglePlay}
-							className="hover:bg-muted-foreground/10 text-foreground cursor-pointer rounded-lg p-3 transition-colors"
+							className="bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer rounded-full p-3 shadow-sm transition-colors"
 							aria-label={isPlaying ? ui[lang]["agent.voiceReader.pause"] : ui[lang]["agent.voiceReader.play"]}
 						>
-							{isPlaying ? <Pause className="size-5" /> : <Play className="size-5" />}
+							{isPlaying ? <Pause className="size-6" /> : <Play className="size-6" />}
 						</motion.button>
 
 						<motion.button
 							whileTap={{ scale: 0.95 }}
 							onClick={seekForward}
-							disabled={totalDuration > 0 && currentTime >= totalDuration - 15}
+							disabled={currentTime >= totalDuration - 1}
 							className="hover:bg-muted-foreground/10 text-muted-foreground cursor-pointer rounded-lg p-2 transition-colors disabled:opacity-50"
 							aria-label={ui[lang]["agent.voiceReader.forward15s"]}
 						>
@@ -584,7 +537,7 @@ export default function TTSPlayer({ isOpen, onClose, lang = "zh-TW" }: TTSPlayer
 				</div>
 			)}
 
-			{mode === "error" && (
+			{(mode === "error" || (mode === "api" && segments.length === 0)) && (
 				<p className="text-destructive flex flex-1 items-center justify-center text-center text-xs">
 					{ui[lang]["agent.voiceReader.error"]}
 				</p>

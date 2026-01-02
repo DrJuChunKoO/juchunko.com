@@ -63,7 +63,7 @@ export default function VoiceReaderWindow({ isOpen, onClose, lang = "zh-TW" }: V
 						</div>
 					</div>
 
-					<TTSPlayer isOpen={isOpen} onClose={onClose} lang={lang} />
+					<TTSPlayer isOpen={isOpen} lang={lang} />
 				</motion.div>
 			)}
 		</AnimatePresence>
