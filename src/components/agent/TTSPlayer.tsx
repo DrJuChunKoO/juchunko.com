@@ -68,7 +68,7 @@ export default function TTSPlayer({ isOpen, lang = "zh-TW" }: TTSPlayerProps) {
 	const currentAudioRef = useRef<HTMLAudioElement | null>(null);
 	const progressUpdateIntervalRef = useRef<NodeJS.Timeout | null>(null);
 	const audioElementsRef = useRef<HTMLAudioElement[]>([]);
-	const originalStylesRef = useRef<Map<HTMLElement, { opacity: string; transition: string; filter: string }>>(new Map());
+	const originalStylesRef = useRef<Map<HTMLElement, { color: string; transition: string }>>(new Map());
 
 	const currentUrl = typeof window !== "undefined" ? window.location.href : "";
 
@@ -265,9 +265,8 @@ export default function TTSPlayer({ isOpen, lang = "zh-TW" }: TTSPlayerProps) {
 
 	const resetAllStyles = useCallback(() => {
 		originalStylesRef.current.forEach((style, el) => {
-			el.style.opacity = style.opacity;
+			el.style.color = style.color;
 			el.style.transition = style.transition;
-			el.style.filter = style.filter;
 		});
 		originalStylesRef.current.clear();
 		// Also clean up any lingering styles on all elements in main
@@ -275,9 +274,8 @@ export default function TTSPlayer({ isOpen, lang = "zh-TW" }: TTSPlayerProps) {
 		if (main) {
 			main.querySelectorAll("*").forEach((el) => {
 				const htmlEl = el as HTMLElement;
-				htmlEl.style.opacity = "";
+				htmlEl.style.color = "";
 				htmlEl.style.transition = "";
-				htmlEl.style.filter = "";
 			});
 		}
 	}, []);
@@ -324,20 +322,19 @@ export default function TTSPlayer({ isOpen, lang = "zh-TW" }: TTSPlayerProps) {
 				const htmlEl = el as HTMLElement;
 				if (!originalStylesRef.current.has(htmlEl)) {
 					originalStylesRef.current.set(htmlEl, {
-						opacity: htmlEl.style.opacity,
+						color: htmlEl.style.color,
 						transition: htmlEl.style.transition,
-						filter: htmlEl.style.filter,
 					});
 				}
 
 				if (matchedElement!.contains(el) || el === matchedElement) {
-					htmlEl.style.opacity = "1";
-					htmlEl.style.transition = "opacity 0.3s ease";
-					htmlEl.style.filter = "brightness(1.1)";
+					// Highlighted element: keep original color
+					htmlEl.style.color = "";
+					htmlEl.style.transition = "color 0.3s ease";
 				} else if (!isDescendantOf(matchedElement!, el)) {
-					htmlEl.style.opacity = "0.3";
-					htmlEl.style.transition = "opacity 0.3s ease";
-					htmlEl.style.filter = "brightness(0.9)";
+					// Dimmed elements: mix 35% of current color with background
+					htmlEl.style.color = "color-mix(in oklch, currentColor 35%, var(--color-background))";
+					htmlEl.style.transition = "color 0.3s ease";
 				}
 			});
 			matchedElement.scrollIntoView({ behavior: "smooth", block: "center" });
