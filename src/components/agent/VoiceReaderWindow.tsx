@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { motion, AnimatePresence, useMotionValue } from "motion/react";
 import { BookAudio, X } from "lucide-react";
-import ElevenLabsAudioNative from "./ElevenLabsAudioNative";
+import TTSPlayer from "./TTSPlayer";
 import { ui } from "src/i18n/ui";
 
 type SupportedLang = "en" | "zh-TW";
@@ -13,7 +13,6 @@ interface VoiceReaderWindowProps {
 }
 
 export default function VoiceReaderWindow({ isOpen, onClose, lang = "zh-TW" }: VoiceReaderWindowProps) {
-	// 以 y 控制與底部距離，避免覆蓋 footer
 	const y = useMotionValue(16);
 
 	useEffect(() => {
@@ -47,7 +46,6 @@ export default function VoiceReaderWindow({ isOpen, onClose, lang = "zh-TW" }: V
 					style={{ bottom: y }}
 					className="bg-card ring-border/50 fixed right-4 z-40 h-max w-80 max-w-[calc(100vw-32px)] origin-bottom-right overflow-hidden rounded-xl shadow-lg ring-1 backdrop-blur-xl"
 				>
-					{/* 標題欄 */}
 					<div className="bg-muted text-foreground border-border flex items-center justify-between rounded-t-lg border-b p-2 pl-4">
 						<div className="flex items-center gap-2">
 							<BookAudio className="h-5 w-5" />
@@ -65,11 +63,7 @@ export default function VoiceReaderWindow({ isOpen, onClose, lang = "zh-TW" }: V
 						</div>
 					</div>
 
-					{/* 主要內容 */}
-					<div className="bg-card/50 p-4">
-						<ElevenLabsAudioNative publicUserId="e826f7db9aa74a5b23ec481d0d24467f232dbc1622ceb065c98ff3c4adb99830" size="small" />
-						<p className="text-muted-foreground mt-2 text-center text-xs">{ui[lang]["agent.voiceReader.poweredBy"]}</p>
-					</div>
+					<TTSPlayer isOpen={isOpen} onClose={onClose} lang={lang} />
 				</motion.div>
 			)}
 		</AnimatePresence>

@@ -108,6 +108,14 @@ export const ui = {
 		// Voice Reader
 		"agent.voiceReader.title": "Voice Reader",
 		"agent.voiceReader.close": "Close",
+		"agent.voiceReader.loading": "Loading...",
+		"agent.voiceReader.error": "Failed to load audio",
+		"agent.voiceReader.play": "Play",
+		"agent.voiceReader.pause": "Pause",
+		"agent.voiceReader.previous": "Previous segment",
+		"agent.voiceReader.next": "Next segment",
+		"agent.voiceReader.rewind15s": "Rewind 15 seconds",
+		"agent.voiceReader.forward15s": "Forward 15 seconds",
 		"agent.voiceReader.poweredBy": "Powered by ElevenLabs",
 	},
 	"zh-TW": {
@@ -212,6 +220,14 @@ export const ui = {
 		// Voice Reader
 		"agent.voiceReader.title": "語音朗讀",
 		"agent.voiceReader.close": "關閉",
+		"agent.voiceReader.loading": "載入中...",
+		"agent.voiceReader.error": "載入失敗",
+		"agent.voiceReader.play": "播放",
+		"agent.voiceReader.pause": "暫停",
+		"agent.voiceReader.previous": "上一段",
+		"agent.voiceReader.next": "下一段",
+		"agent.voiceReader.rewind15s": "倒退 15 秒",
+		"agent.voiceReader.forward15s": "快進 15 秒",
 		"agent.voiceReader.poweredBy": "由 ElevenLabs 提供技術支援",
 	},
 } as const;
