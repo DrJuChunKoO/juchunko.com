@@ -289,13 +289,31 @@ export default function TTSPlayer({ isOpen, lang = "zh-TW" }: TTSPlayerProps) {
 		const mainContent = document.querySelector("main") || document.querySelector("article") || document.body;
 		if (!mainContent) return;
 
-		const targetText = segments[currentIndex]?.text || "";
+		const targetText = normalizeText(segments[currentIndex]?.text || "");
 		if (!targetText) return;
 
 		let matchedElement: HTMLElement | null = null;
-		const blockElements = Array.from(mainContent.querySelectorAll("p, li, h1, h2, h3, h4, h5, h6, blockquote"));
 
-		// Try exact match first
+		// Get all text nodes and their parent elements
+		const walker = document.createTreeWalker(mainContent, NodeFilter.SHOW_TEXT, null);
+		const textNodes: { node: Text; parent: HTMLElement; text: string }[] = [];
+
+		let node: Node | null;
+		while ((node = walker.nextNode())) {
+			const textNode = node as Text;
+			const parent = textNode.parentElement;
+			if (parent && textNode.textContent) {
+				const text = normalizeText(textNode.textContent);
+				if (text) {
+					textNodes.push({ node: textNode, parent, text });
+				}
+			}
+		}
+
+		// Try to find the smallest element containing the target text
+		const blockElements = Array.from(mainContent.querySelectorAll("p, li, h1, h2, h3, h4, h5, h6, blockquote, div, time"));
+
+		// Strategy 1: Find exact match in block elements
 		for (const el of blockElements) {
 			const htmlEl = el as HTMLElement;
 			const elText = normalizeText(htmlEl.textContent || "");
@@ -305,19 +323,82 @@ export default function TTSPlayer({ isOpen, lang = "zh-TW" }: TTSPlayerProps) {
 			}
 		}
 
-		// If no exact match, try partial match (segment might be part of a larger element)
+		// Strategy 2: Find partial match with minimum size
 		if (!matchedElement) {
+			let minLength = Infinity;
 			for (const el of blockElements) {
 				const htmlEl = el as HTMLElement;
 				const elText = normalizeText(htmlEl.textContent || "");
-				if (elText.includes(targetText) || targetText.includes(elText)) {
-					matchedElement = htmlEl;
+
+				// Check if element contains target text
+				if (elText.includes(targetText)) {
+					const textLength = elText.length;
+					// Prefer smaller containers that still contain the full text
+					if (textLength < minLength) {
+						matchedElement = htmlEl;
+						minLength = textLength;
+					}
+				}
+			}
+		}
+
+		// Strategy 3: If still no match, try finding by text nodes
+		if (!matchedElement) {
+			// Build text from consecutive text nodes
+			for (let i = 0; i < textNodes.length; i++) {
+				let combinedText = "";
+				let endIndex = i;
+				let commonAncestor: HTMLElement | null = null;
+
+				for (let j = i; j < textNodes.length; j++) {
+					combinedText += (combinedText ? " " : "") + textNodes[j].text;
+
+					if (normalizeText(combinedText) === targetText || normalizeText(combinedText).includes(targetText)) {
+						endIndex = j;
+						// Find common ancestor of all nodes from i to j
+						if (i === j) {
+							commonAncestor = textNodes[i].parent;
+						} else {
+							// Find the smallest common ancestor
+							let ancestor: HTMLElement | null = textNodes[i].parent;
+							while (ancestor) {
+								let isCommon = true;
+								for (let k = i; k <= j; k++) {
+									if (!ancestor.contains(textNodes[k].node)) {
+										isCommon = false;
+										break;
+									}
+								}
+								if (isCommon) {
+									commonAncestor = ancestor;
+									break;
+								}
+								ancestor = ancestor.parentElement;
+							}
+						}
+
+						if (commonAncestor) {
+							matchedElement = commonAncestor;
+							if (normalizeText(combinedText) === targetText) {
+								break;
+							}
+						}
+					}
+
+					// Stop if text is getting too long
+					if (combinedText.length > targetText.length * 2) {
+						break;
+					}
+				}
+
+				if (matchedElement && normalizeText(matchedElement.textContent || "") === targetText) {
 					break;
 				}
 			}
 		}
 
 		if (matchedElement) {
+			// Store original styles and apply highlighting
 			mainContent.querySelectorAll("*").forEach((el) => {
 				const htmlEl = el as HTMLElement;
 				if (!originalStylesRef.current.has(htmlEl)) {
