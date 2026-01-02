@@ -219,35 +219,32 @@ export default function TTSPlayer({ isOpen, onClose, lang = "zh-TW" }: TTSPlayer
 		const currentSegmentText = segments[currentIndex]?.Text?.trim() || "";
 		if (!currentSegmentText) return;
 
-		const candidateElements: HTMLElement[] = [];
+		const cleanText = (text: string): string => {
+			return text.replace(/\s+/g, " ").trim();
+		};
 
-		const blockElements = mainContent.querySelectorAll("p, li, h1, h2, h3, h4, h5, h6, div, span");
+		const targetText = cleanText(currentSegmentText);
+		let matchedElement: HTMLElement | null = null;
 
-		blockElements.forEach((el) => {
+		const blockElements = mainContent.querySelectorAll("p, li, h1, h2, h3, h4, h5, h6, div");
+
+		for (const el of blockElements) {
 			const htmlEl = el as HTMLElement;
-			const elText = htmlEl.textContent?.trim() || "";
-			if (elText.length > 5) {
-				const similarity = calculateSimilarity(currentSegmentText, elText);
-				if (similarity > 0.4) {
-					candidateElements.push(htmlEl);
+			const elText = cleanText(htmlEl.textContent || "");
+
+			if (elText === targetText) {
+				matchedElement = htmlEl;
+				break;
+			}
+
+			if (elText.includes(targetText) && targetText.length > 20) {
+				if (!matchedElement || (htmlEl.textContent?.length || 0) > (matchedElement.textContent?.length || 0)) {
+					matchedElement = htmlEl;
 				}
 			}
-		});
+		}
 
-		let bestMatch: HTMLElement | null = null;
-		let maxSimilarity = 0;
-
-		candidateElements.forEach((el) => {
-			const elText = el.textContent?.trim() || "";
-			const similarity = calculateSimilarity(currentSegmentText, elText);
-
-			if (similarity > maxSimilarity) {
-				maxSimilarity = similarity;
-				bestMatch = el;
-			}
-		});
-
-		if (bestMatch && maxSimilarity > 0.5) {
+		if (matchedElement) {
 			mainContent.querySelectorAll("*").forEach((el) => {
 				const htmlEl = el as HTMLElement;
 				if (htmlEl.style.opacity) {
@@ -257,18 +254,18 @@ export default function TTSPlayer({ isOpen, onClose, lang = "zh-TW" }: TTSPlayer
 					});
 				}
 
-				if (bestMatch!.contains(el) || el === bestMatch) {
+				if (matchedElement!.contains(el) || el === matchedElement) {
 					htmlEl.style.opacity = "1";
 					htmlEl.style.transition = "opacity 0.3s ease";
 					htmlEl.style.filter = "brightness(1.1)";
-				} else if (!isDescendantOf(bestMatch!, el)) {
+				} else if (!isDescendantOf(matchedElement!, el)) {
 					htmlEl.style.opacity = "0.3";
 					htmlEl.style.transition = "opacity 0.3s ease";
 					htmlEl.style.filter = "brightness(0.9)";
 				}
 			});
 
-			bestMatch.scrollIntoView({ behavior: "smooth", block: "center" });
+			matchedElement.scrollIntoView({ behavior: "smooth", block: "center" });
 		}
 
 		return () => {
@@ -300,18 +297,6 @@ export default function TTSPlayer({ isOpen, onClose, lang = "zh-TW" }: TTSPlayer
 			});
 		}
 	}, [isOpen]);
-
-	const calculateSimilarity = (str1: string, str2: string): number => {
-		if (!str1 || !str2) return 0;
-
-		const set1 = new Set(str1.split(""));
-		const set2 = new Set(str2.split(""));
-
-		const intersection = new Set([...set1].filter((x) => set2.has(x)));
-		const union = new Set([...set1, ...set2]);
-
-		return intersection.size / union.size;
-	};
 
 	const isDescendantOf = (parent: HTMLElement, element: Element): boolean => {
 		let current: Element | null = element;
