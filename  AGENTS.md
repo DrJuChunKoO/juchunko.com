@@ -1,0 +1,3 @@
+- Use `pnpm` and `pnpx` instead of `npm` and `npx` for package management commands.
+  - `npm` -> `pnpm`
+  - `npx` -> `pnpx`
