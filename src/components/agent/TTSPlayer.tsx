@@ -416,8 +416,8 @@ export default function TTSPlayer({ isOpen, lang = "zh-TW" }: TTSPlayerProps) {
 
 				if (isMatchedOrChild) {
 					// Highlighted element and its children: keep original color
-					if (tagName === "li") {
-						// Force li to use prose body color to avoid inheriting from ul/ol
+					if (tagName === "li" || tagName === "p") {
+						// Force li/p to use prose body color to avoid inheriting from parent containers
 						htmlEl.style.color = "var(--tw-prose-body)";
 					} else {
 						htmlEl.style.color = "";
