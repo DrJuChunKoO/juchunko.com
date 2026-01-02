@@ -44,7 +44,7 @@ export default function VoiceReaderWindow({ isOpen, onClose, lang = "zh-TW" }: V
 					exit={{ opacity: 0, scale: 0.5, y: 16 }}
 					transition={{ type: "spring", stiffness: 300, damping: 30 }}
 					style={{ bottom: y }}
-					className="bg-card ring-border/50 fixed right-4 z-40 h-[400px] w-[360px] max-w-[calc(100vw-32px)] origin-bottom-right rounded-xl shadow-lg ring-1 backdrop-blur-xl"
+					className="bg-card ring-border/50 fixed right-4 z-40 h-[180px] w-[360px] max-w-[calc(100vw-32px)] origin-bottom-right rounded-xl shadow-lg ring-1 backdrop-blur-xl"
 				>
 					<div className="bg-muted text-foreground border-border flex h-[50px] items-center justify-between rounded-t-xl border-b px-4">
 						<div className="flex items-center gap-2">
