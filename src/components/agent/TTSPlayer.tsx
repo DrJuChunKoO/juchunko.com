@@ -248,12 +248,45 @@ export default function TTSPlayer({ isOpen, onClose, lang = "zh-TW" }: TTSPlayer
 					if (el.tagName === "TIMELINEITEM") {
 						const date = el.getAttribute("date");
 						const title = el.getAttribute("title");
+
+						let innerContent = "";
+
+						for (const child of Array.from(el.childNodes)) {
+							if (child.nodeType === Node.TEXT_NODE) {
+								innerContent += child.textContent || "";
+							} else if (child.nodeType === Node.ELEMENT_NODE) {
+								const childEl = child as Element;
+
+								if (childEl.tagName === "CARD") {
+									const cardTitle = childEl.getAttribute("title");
+									if (cardTitle) {
+										innerContent += `${cardTitle}。`;
+									}
+								} else if (childEl.tagName === "YOUTUBE") {
+									const youtubeTitle = childEl.getAttribute("title");
+									if (youtubeTitle) {
+										innerContent += `影片：${youtubeTitle}。`;
+									}
+								} else if (childEl.tagName !== "TIMELINE" && childEl.tagName !== "CARD" && childEl.tagName !== "YOUTUBE") {
+									for (const subChild of Array.from(childEl.childNodes)) {
+										if (subChild.nodeType === Node.TEXT_NODE) {
+											innerContent += subChild.textContent || "";
+										}
+									}
+								}
+							}
+						}
+
+						innerContent = innerContent.trim();
+
 						if (date && title) {
-							text += `於${date}，${title}。`;
+							text += `於${date}，${title}。${innerContent}`;
 						} else if (title) {
-							text += `${title}。`;
+							text += `${title}。${innerContent}`;
 						} else if (date) {
-							text += `於${date}：`;
+							text += `於${date}：${innerContent}`;
+						} else {
+							text += innerContent;
 						}
 						return;
 					}
