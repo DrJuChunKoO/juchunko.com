@@ -478,8 +478,6 @@ export default function TTSPlayer({ isOpen, onClose, lang = "zh-TW" }: TTSPlayer
 							<SkipForward className="size-5" />
 						</motion.button>
 					</div>
-
-					<p className="text-muted-foreground text-center text-xs">{ui[lang]["agent.voiceReader.poweredBy"]}</p>
 				</div>
 			)}
 
