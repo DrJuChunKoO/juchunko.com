@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { QueryClient, useQuery } from "@tanstack/react-query";
 import { motion, useMotionValue } from "motion/react";
-import { BookAudio, SkipBack, Play, Pause, SkipForward, Rewind, FastForward, Loader2 } from "lucide-react";
+import { BookAudio, Play, Pause, Rewind, FastForward, Loader2, StepForward, StepBack } from "lucide-react";
 import ElevenLabsAudioNative from "./ElevenLabsAudioNative";
 import { ui } from "src/i18n/ui";
 
@@ -432,7 +432,7 @@ export default function TTSPlayer({ isOpen, onClose, lang = "zh-TW" }: TTSPlayer
 							className="hover:bg-muted-foreground/10 text-muted-foreground cursor-pointer rounded-lg p-2 transition-colors disabled:opacity-50"
 							aria-label={ui[lang]["agent.voiceReader.previous"]}
 						>
-							<SkipBack className="size-5" />
+							<StepBack className="size-5" />
 						</motion.button>
 
 						<motion.button
@@ -471,7 +471,7 @@ export default function TTSPlayer({ isOpen, onClose, lang = "zh-TW" }: TTSPlayer
 							className="hover:bg-muted-foreground/10 text-muted-foreground cursor-pointer rounded-lg p-2 transition-colors disabled:opacity-50"
 							aria-label={ui[lang]["agent.voiceReader.next"]}
 						>
-							<SkipForward className="size-5" />
+							<StepForward className="size-5" />
 						</motion.button>
 					</div>
 				</div>
