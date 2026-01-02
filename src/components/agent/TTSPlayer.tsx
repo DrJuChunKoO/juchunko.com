@@ -32,23 +32,28 @@ interface TTSPlayerProps {
 type Mode = "loading" | "api" | "fallback" | "error";
 
 async function fetchTTSAudioSegments(domain: string, path: string): Promise<AudioSegment[]> {
-	const response = await fetch(`https://tts-api.juchunko.com/v1/audio/${domain}/${path}`);
+	try {
+		const response = await fetch(`https://tts-api.juchunko.com/v1/audio/${domain}/${path}`);
 
-	if (response.status === 404) {
-		throw new Error("NOT_FOUND");
+		if (response.status === 404) {
+			throw new Error("NOT_FOUND");
+		}
+
+		if (!response.ok) {
+			throw new Error(`API error: ${response.status}`);
+		}
+
+		const data = await response.json();
+
+		if (!Array.isArray(data) || data.length === 0) {
+			throw new Error("NOT_FOUND");
+		}
+
+		return data;
+	} catch (error) {
+		console.error("fetchTTSAudioSegments error:", error);
+		throw error;
 	}
-
-	if (!response.ok) {
-		throw new Error(`API error: ${response.status}`);
-	}
-
-	const data = await response.json();
-
-	if (!Array.isArray(data) || data.length === 0) {
-		throw new Error("NOT_FOUND");
-	}
-
-	return data;
 }
 
 export default function TTSPlayer({ isOpen, onClose, lang = "zh-TW" }: TTSPlayerProps) {
