@@ -221,28 +221,29 @@ export default function TTSPlayer({ isOpen, onClose, lang = "zh-TW" }: TTSPlayer
 		const currentSegmentText = segments[currentIndex]?.Text?.trim() || "";
 		if (!currentSegmentText) return;
 
-		const cleanText = (text: string): string => {
-			return text.replace(/\s+/g, " ").trim();
+		const normalizeText = (text: string): string => {
+			return text
+				.replace(/^#{1,6}\s+/g, "")
+				.replace(/\*\*(.*?)\*\*/g, "$1")
+				.replace(/\*(.*?)\*/g, "$1")
+				.replace(/\[(.*?)\]\(.*?\)/g, "$1")
+				.replace(/`{1,3}.*?`{1,3}/g, "")
+				.replace(/\s+/g, " ")
+				.trim();
 		};
 
-		const targetText = cleanText(currentSegmentText);
+		const targetText = normalizeText(currentSegmentText);
 		let matchedElement: HTMLElement | null = null;
 
-		const blockElements = mainContent.querySelectorAll("p, li, h1, h2, h3, h4, h5, h6, div");
+		const blockElements = Array.from(mainContent.querySelectorAll("p, li, h1, h2, h3, h4, h5, h6, div"));
 
 		for (const el of blockElements) {
 			const htmlEl = el as HTMLElement;
-			const elText = cleanText(htmlEl.textContent || "");
+			const elText = normalizeText(htmlEl.textContent || "");
 
 			if (elText === targetText) {
 				matchedElement = htmlEl;
 				break;
-			}
-
-			if (elText.includes(targetText) && targetText.length > 20) {
-				if (!matchedElement || (htmlEl.textContent?.length || 0) > (matchedElement.textContent?.length || 0)) {
-					matchedElement = htmlEl;
-				}
 			}
 		}
 
