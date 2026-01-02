@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { QueryClient, useQuery } from "@tanstack/react-query";
-import { motion, AnimatePresence, useMotionValue } from "motion/react";
-import { BookAudio, X, SkipBack, Play, Pause, SkipForward, Rewind, FastForward, Loader2 } from "lucide-react";
+import { motion, useMotionValue } from "motion/react";
+import { BookAudio, SkipBack, Play, Pause, SkipForward, Rewind, FastForward, Loader2 } from "lucide-react";
 import ElevenLabsAudioNative from "./ElevenLabsAudioNative";
 import { ui } from "src/i18n/ui";
 
