@@ -211,7 +211,6 @@ export default function TTSPlayer({ isOpen, onClose, lang = "zh-TW" }: TTSPlayer
 			}
 		};
 	}, [mode, isPlaying, currentIndex, segmentDurations]);
-
 	useEffect(() => {
 		if (mode !== "api" || segments.length === 0 || !highlightEnabled) return;
 
@@ -223,13 +222,77 @@ export default function TTSPlayer({ isOpen, onClose, lang = "zh-TW" }: TTSPlayer
 
 		const normalizeText = (text: string): string => {
 			return text
-				.replace(/^#{1,6}\s+/g, "")
-				.replace(/\*\*(.*?)\*\*/g, "$1")
-				.replace(/\*(.*?)\*/g, "$1")
-				.replace(/\[(.*?)\]\(.*?\)/g, "$1")
-				.replace(/`{1,3}.*?`{1,3}/g, "")
-				.replace(/\s+/g, " ")
+				.replace(/^#{1,6}\s+/g, "") // Headings
+				.replace(/\*\*(.*?)\*\*/g, "$1") // Bold
+				.replace(/\*(.*?)\*/g, "$1") // Italic
+				.replace(/\[(.*?)\]\(.*?\)/g, "$1") // Links
+				.replace(/`{1,3}.*?`{1,3}/g, "") // Inline code
+				.replace(/\|.*\|/g, "") // Table rows
+				.replace(/^\|?[-: ]+\|?$/gm, "") // Table separators
+				.replace(/^[-*+]\s+/gm, "") // List markers
+				.replace(/^\d+\.\s+/gm, "") // Numbered list markers
+				.replace(/^>\s+/gm, "") // Blockquotes
+				.replace(/\s+/g, " ") // Multiple spaces to single space
 				.trim();
+		};
+
+		const extractTextFromHTML = (element: HTMLElement): string => {
+			let text = "";
+
+			const processChild = (child: ChildNode): void => {
+				if (child.nodeType === Node.TEXT_NODE) {
+					text += child.textContent || "";
+				} else if (child.nodeType === Node.ELEMENT_NODE) {
+					const el = child as Element;
+
+					if (el.tagName === "TIMELINEITEM") {
+						const date = el.getAttribute("date");
+						const title = el.getAttribute("title");
+						if (date && title) {
+							text += `於${date}，${title}。`;
+						} else if (title) {
+							text += `${title}。`;
+						} else if (date) {
+							text += `於${date}：`;
+						}
+						return;
+					}
+
+					if (el.tagName === "CARD") {
+						const title = el.getAttribute("title");
+						if (title) {
+							text += `${title}。`;
+						}
+						return;
+					}
+
+					if (el.tagName === "YOUTUBE") {
+						const title = el.getAttribute("title");
+						if (title) {
+							text += `影片：${title}。`;
+						}
+						return;
+					}
+
+					if (el.tagName === "TIMELINE" || el.tagName === "CARD" || el.tagName === "YOUTUBE") {
+						return;
+					}
+
+					if (el.children.length === 0) {
+						processChild(el.firstChild!);
+					} else {
+						for (const subChild of Array.from(el.childNodes)) {
+							processChild(subChild);
+						}
+					}
+				}
+			};
+
+			for (const child of Array.from(element.childNodes)) {
+				processChild(child);
+			}
+
+			return text.trim();
 		};
 
 		const targetText = normalizeText(currentSegmentText);
@@ -239,7 +302,7 @@ export default function TTSPlayer({ isOpen, onClose, lang = "zh-TW" }: TTSPlayer
 
 		for (const el of blockElements) {
 			const htmlEl = el as HTMLElement;
-			const elText = normalizeText(htmlEl.textContent || "");
+			const elText = normalizeText(extractTextFromHTML(htmlEl));
 
 			if (elText === targetText) {
 				matchedElement = htmlEl;
