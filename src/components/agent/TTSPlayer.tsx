@@ -227,10 +227,10 @@ export default function TTSPlayer({ isOpen, onClose, lang = "zh-TW" }: TTSPlayer
 				.replace(/\*(.*?)\*/g, "$1") // Italic
 				.replace(/\[(.*?)\]\(.*?\)/g, "$1") // Links
 				.replace(/`{1,3}.*?`{1,3}/g, "") // Inline code
-				.replace(/\|.*\|/g, "") // Table rows
+				.replace(/^\|.*\|$/gm, "") // Table rows
 				.replace(/^\|?[-: ]+\|?$/gm, "") // Table separators
-				.replace(/^[-*+]\s+/gm, "") // List markers
-				.replace(/^\d+\.\s+/gm, "") // Numbered list markers
+				.replace(/^\s*[-*+]\s+/gm, "") // List markers
+				.replace(/^\s*\d+\.\s+/gm, "") // Numbered list markers
 				.replace(/^>\s+/gm, "") // Blockquotes
 				.replace(/\s+/g, " ") // Multiple spaces to single space
 				.trim();
@@ -239,23 +239,22 @@ export default function TTSPlayer({ isOpen, onClose, lang = "zh-TW" }: TTSPlayer
 		const extractTextFromHTML = (element: HTMLElement): string => {
 			let text = "";
 
-			const processChild = (child: ChildNode): void => {
-				if (child.nodeType === Node.TEXT_NODE) {
-					text += child.textContent || "";
-				} else if (child.nodeType === Node.ELEMENT_NODE) {
-					const el = child as Element;
+			const processChildNode = (childNode: ChildNode): void => {
+				if (childNode.nodeType === Node.TEXT_NODE) {
+					text += childNode.textContent || "";
+				} else if (childNode.nodeType === Node.ELEMENT_NODE) {
+					const el = childNode as Element;
 
 					if (el.tagName === "TIMELINEITEM") {
 						const date = el.getAttribute("date");
 						const title = el.getAttribute("title");
 
 						let innerContent = "";
-
-						for (const child of Array.from(el.childNodes)) {
-							if (child.nodeType === Node.TEXT_NODE) {
-								innerContent += child.textContent || "";
-							} else if (child.nodeType === Node.ELEMENT_NODE) {
-								const childEl = child as Element;
+						for (const subChild of Array.from(el.childNodes)) {
+							if (subChild.nodeType === Node.TEXT_NODE) {
+								innerContent += subChild.textContent || "";
+							} else if (subChild.nodeType === Node.ELEMENT_NODE) {
+								const childEl = subChild as Element;
 
 								if (childEl.tagName === "CARD") {
 									const cardTitle = childEl.getAttribute("title");
@@ -268,9 +267,9 @@ export default function TTSPlayer({ isOpen, onClose, lang = "zh-TW" }: TTSPlayer
 										innerContent += `影片：${youtubeTitle}。`;
 									}
 								} else if (childEl.tagName !== "TIMELINE" && childEl.tagName !== "CARD" && childEl.tagName !== "YOUTUBE") {
-									for (const subChild of Array.from(childEl.childNodes)) {
-										if (subChild.nodeType === Node.TEXT_NODE) {
-											innerContent += subChild.textContent || "";
+									for (const subSubChild of Array.from(childEl.childNodes)) {
+										if (subSubChild.nodeType === Node.TEXT_NODE) {
+											innerContent += subSubChild.textContent || "";
 										}
 									}
 								}
@@ -292,17 +291,17 @@ export default function TTSPlayer({ isOpen, onClose, lang = "zh-TW" }: TTSPlayer
 					}
 
 					if (el.tagName === "CARD") {
-						const title = el.getAttribute("title");
-						if (title) {
-							text += `${title}。`;
+						const cardTitle = el.getAttribute("title");
+						if (cardTitle) {
+							text += `${cardTitle}。`;
 						}
 						return;
 					}
 
 					if (el.tagName === "YOUTUBE") {
-						const title = el.getAttribute("title");
-						if (title) {
-							text += `影片：${title}。`;
+						const youtubeTitle = el.getAttribute("title");
+						if (youtubeTitle) {
+							text += `影片：${youtubeTitle}。`;
 						}
 						return;
 					}
@@ -312,17 +311,17 @@ export default function TTSPlayer({ isOpen, onClose, lang = "zh-TW" }: TTSPlayer
 					}
 
 					if (el.children.length === 0) {
-						processChild(el.firstChild!);
+						processChildNode(el.firstChild!);
 					} else {
 						for (const subChild of Array.from(el.childNodes)) {
-							processChild(subChild);
+							processChildNode(subChild);
 						}
 					}
 				}
 			};
 
 			for (const child of Array.from(element.childNodes)) {
-				processChild(child);
+				processChildNode(child);
 			}
 
 			return text.trim();
