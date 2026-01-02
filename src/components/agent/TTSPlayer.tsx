@@ -19,8 +19,9 @@ const ttsQueryClient = new QueryClient({
 type SupportedLang = "en" | "zh-TW";
 
 type AudioSegment = {
-	Text: string;
-	Audio: string;
+	text: string;
+	hash: string;
+	audio: string;
 };
 
 interface TTSPlayerProps {
@@ -92,7 +93,7 @@ export default function TTSPlayer({ isOpen, lang = "zh-TW" }: TTSPlayerProps) {
 	const loadAudioElements = useCallback(async (segData: AudioSegment[]) => {
 		try {
 			const audios = segData.map((seg) => {
-				const audio = new Audio(seg.Audio);
+				const audio = new Audio(seg.audio);
 				audio.preload = "metadata";
 				return audio;
 			});
@@ -246,68 +247,11 @@ export default function TTSPlayer({ isOpen, lang = "zh-TW" }: TTSPlayerProps) {
 		};
 	}, [mode, isPlaying, currentIndex, segmentDurations]);
 
+	/**
+	 * Normalize text for matching by removing extra whitespace
+	 */
 	const normalizeText = (text: string): string => {
-		return text
-			.replace(/^#{1,6}\s+/g, "")
-			.replace(/\*\*(.*?)\*\*/g, "$1")
-			.replace(/\*(.*?)\*/g, "$1")
-			.replace(/\[(.*?)\]\(.*?\)/g, "$1")
-			.replace(/`{1,3}.*?`{1,3}/g, "")
-			.replace(/^\|.*\|$/gm, "")
-			.replace(/^\|?[-: ]+\|?$/gm, "")
-			.replace(/^\s*[-*+]\s+/gm, "")
-			.replace(/^\s*\d+\.\s+/gm, "")
-			.replace(/^>\s+/gm, "")
-			.replace(/\s+/g, " ")
-			.trim();
-	};
-
-	const extractTextFromHTML = (element: HTMLElement): string => {
-		let text = "";
-		const processNode = (node: ChildNode): void => {
-			if (node.nodeType === Node.TEXT_NODE) {
-				text += node.textContent || "";
-			} else if (node.nodeType === Node.ELEMENT_NODE) {
-				const el = node as Element;
-				if (el.tagName === "TIMELINEITEM") {
-					const date = el.getAttribute("date");
-					const title = el.getAttribute("title");
-					let inner = "";
-					for (const child of Array.from(el.childNodes)) {
-						if (child.nodeType === Node.TEXT_NODE) inner += child.textContent || "";
-						else if (child.nodeType === Node.ELEMENT_NODE) {
-							const cel = child as Element;
-							if (cel.tagName === "CARD") inner += (cel.getAttribute("title") || "") + "。";
-							else if (cel.tagName === "YOUTUBE") inner += `影片：${cel.getAttribute("title") || ""}。`;
-							else if (!["TIMELINE", "CARD", "YOUTUBE"].includes(cel.tagName)) {
-								for (const sc of Array.from(cel.childNodes)) {
-									if (sc.nodeType === Node.TEXT_NODE) inner += sc.textContent || "";
-								}
-							}
-						}
-					}
-					inner = inner.trim();
-					if (date && title) text += `於${date}，${title}。${inner}`;
-					else if (title) text += `${title}。${inner}`;
-					else if (date) text += `於${date}：${inner}`;
-					else text += inner;
-					return;
-				}
-				if (el.tagName === "CARD") {
-					text += (el.getAttribute("title") || "") + "。";
-					return;
-				}
-				if (el.tagName === "YOUTUBE") {
-					text += `影片：${el.getAttribute("title") || ""}。`;
-					return;
-				}
-				if (!["TIMELINE", "CARD", "YOUTUBE"].includes(el.tagName)) {
-					for (const child of Array.from(node.childNodes)) processNode(child);
-				}
-			}
-		};
-		for (const child of Array.from(element.childNodes)) processNode(child);
-		return text.trim();
+		return text.replace(/\s+/g, " ").trim();
 	};
 
 	const isDescendantOf = (parent: HTMLElement, element: Element): boolean => {
@@ -347,18 +291,31 @@ export default function TTSPlayer({ isOpen, lang = "zh-TW" }: TTSPlayerProps) {
 		const mainContent = document.querySelector("main") || document.querySelector("article") || document.body;
 		if (!mainContent) return;
 
-		const targetText = normalizeText(segments[currentIndex]?.Text || "");
+		const targetText = segments[currentIndex]?.text || "";
 		if (!targetText) return;
 
 		let matchedElement: HTMLElement | null = null;
-		const blockElements = Array.from(mainContent.querySelectorAll("p, li, h1, h2, h3, h4, h5, h6, div"));
+		const blockElements = Array.from(mainContent.querySelectorAll("p, li, h1, h2, h3, h4, h5, h6, blockquote"));
 
+		// Try exact match first
 		for (const el of blockElements) {
 			const htmlEl = el as HTMLElement;
-			const elText = normalizeText(extractTextFromHTML(htmlEl));
+			const elText = normalizeText(htmlEl.textContent || "");
 			if (elText === targetText) {
 				matchedElement = htmlEl;
 				break;
+			}
+		}
+
+		// If no exact match, try partial match (segment might be part of a larger element)
+		if (!matchedElement) {
+			for (const el of blockElements) {
+				const htmlEl = el as HTMLElement;
+				const elText = normalizeText(htmlEl.textContent || "");
+				if (elText.includes(targetText) || targetText.includes(elText)) {
+					matchedElement = htmlEl;
+					break;
+				}
 			}
 		}
 
@@ -460,7 +417,7 @@ export default function TTSPlayer({ isOpen, lang = "zh-TW" }: TTSPlayerProps) {
 							>
 								<BookAudio className="size-4" />
 							</motion.button>
-							<span className="text-muted-foreground max-w-[150px] truncate text-xs">{segments[currentIndex]?.Text?.slice(0, 50)}</span>
+							<span className="text-muted-foreground max-w-[150px] truncate text-xs">{segments[currentIndex]?.text?.slice(0, 50)}</span>
 						</div>
 					</div>
 
