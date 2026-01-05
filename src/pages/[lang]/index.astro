@@ -37,10 +37,32 @@ const fragments = (await getCollection("fragment"))
 
 	{
 		lang === "zh-TW" && (
-			<Callout key="ai-basic-act-2025-07" actionText="前往查看" actionHref={`/${lang}/act/ai-basic-act`} class="mb-4" closable={false}>
+			<Callout
+				key="ai-basic-act-2025-07"
+				actionText="前往查看"
+				actionHref={`/${lang}/act/ai-basic-act`}
+				class="mb-4"
+				closable={false}
+			>
 				<div class="space-y-1">
 					<div class="text-base font-bold">AI 基本法</div>
 					<div class="text-muted-foreground text-xs">AI基本法於2025年12月23日三讀通過。</div>
+				</div>
+			</Callout>
+		)
+	}
+	{
+		lang === "en" && (
+			<Callout
+				key="ai-basic-act-2025-07"
+				actionText="View Details"
+				actionHref={`/${lang}/act/ai-basic-act`}
+				class="mb-4"
+				closable={false}
+			>
+				<div class="space-y-1">
+					<div class="text-base font-bold">AI Basic Act</div>
+					<div class="text-muted-foreground text-xs">The AI Basic Act was passed on the third reading on December 23, 2025.</div>
 				</div>
 			</Callout>
 		)
