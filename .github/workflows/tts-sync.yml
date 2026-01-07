@@ -1,0 +1,28 @@
+name: TTS Sync
+
+on:
+  push:
+    paths:
+      - "src/content/**/zh-TW/*.mdx"
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v45
+        with:
+          files: src/content/**/zh-TW/*.mdx
+
+      - name: Sync TTS
+        if: steps.changed-files.outputs.any_changed == 'true'
+        env:
+          TTS_API_TOKEN: ${{ secrets.TTS_API_TOKEN }}
+        run: |
+          ./scripts/sync-tts.sh ${{ steps.changed-files.outputs.all_changed_files }}
