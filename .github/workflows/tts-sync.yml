@@ -5,6 +5,10 @@ on:
     paths:
       - "src/content/**/zh-TW/*.mdx"
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   sync:
     runs-on: ubuntu-latest
