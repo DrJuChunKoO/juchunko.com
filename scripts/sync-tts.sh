@@ -10,10 +10,6 @@ fi
 FILES=$@
 
 for file in $FILES; do
-  if [[ ! "$file" == *"zh-TW"* ]]; then
-    echo "Skipping $file (not zh-TW)"
-    continue
-  fi
 
   if [ ! -f "$file" ]; then
     echo "File $file does not exist, skipping."
