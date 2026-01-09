@@ -504,7 +504,7 @@ export default function TTSPlayer({ isOpen, lang = "zh-TW" }: TTSPlayerProps) {
 				>
 					{/* Currently Playing Text */}
 					<div className="bg-muted/30 border-border/50 rounded-lg border px-3 py-2.5">
-						<div className="text-muted-foreground mb-1 text-xs">正在播放</div>
+						<div className="text-muted-foreground mb-1 text-xs">{ui[lang]["agent.voiceReader.playing"]}</div>
 						<div className="text-foreground line-clamp-2 text-sm leading-relaxed">{segments[currentIndex]?.text || ""}</div>
 					</div>
 
@@ -538,7 +538,7 @@ export default function TTSPlayer({ isOpen, lang = "zh-TW" }: TTSPlayerProps) {
 									className={`cursor-pointer rounded-md p-1.5 transition-colors ${
 										highlightEnabled ? "bg-primary/15 text-primary" : "text-muted-foreground hover:bg-muted-foreground/10"
 									}`}
-									title={highlightEnabled ? "關閉文字凸顯" : "開啟文字凸顯"}
+									title={highlightEnabled ? ui[lang]["agent.voiceReader.disableHighlight"] : ui[lang]["agent.voiceReader.enableHighlight"]}
 								>
 									<BookAudio className="size-3.5" />
 								</motion.button>
@@ -551,7 +551,7 @@ export default function TTSPlayer({ isOpen, lang = "zh-TW" }: TTSPlayerProps) {
 										setPlaybackRate(rates[nextIdx]);
 									}}
 									className="text-muted-foreground hover:bg-muted-foreground/10 cursor-pointer rounded-md px-2 py-1 font-mono text-xs tabular-nums transition-colors"
-									title="調整播放速度"
+									title={ui[lang]["agent.voiceReader.speed"]}
 								>
 									{playbackRate}×
 								</motion.button>

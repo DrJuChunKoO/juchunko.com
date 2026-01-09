@@ -117,6 +117,10 @@ export const ui = {
 		"agent.voiceReader.rewind15s": "Rewind 15 seconds",
 		"agent.voiceReader.forward15s": "Forward 15 seconds",
 		"agent.voiceReader.poweredBy": "Powered by ElevenLabs",
+		"agent.voiceReader.playing": "Now playing",
+		"agent.voiceReader.enableHighlight": "Enable text highlight",
+		"agent.voiceReader.disableHighlight": "Disable text highlight",
+		"agent.voiceReader.speed": "Playback speed",
 	},
 	"zh-TW": {
 		"site.title": "科技立委葛如鈞．寶博士",
@@ -229,5 +233,9 @@ export const ui = {
 		"agent.voiceReader.rewind15s": "倒退 15 秒",
 		"agent.voiceReader.forward15s": "快進 15 秒",
 		"agent.voiceReader.poweredBy": "由 ElevenLabs 提供技術支援",
+		"agent.voiceReader.playing": "正在播放",
+		"agent.voiceReader.enableHighlight": "開啟文字凸顯",
+		"agent.voiceReader.disableHighlight": "關閉文字凸顯",
+		"agent.voiceReader.speed": "調整播放速度",
 	},
 } as const;
