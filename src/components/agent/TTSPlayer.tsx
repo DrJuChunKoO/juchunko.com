@@ -31,6 +31,22 @@ interface TTSPlayerProps {
 
 type Mode = "loading" | "api" | "fallback" | "error";
 
+/**
+ * Normalize text for matching by removing extra whitespace
+ */
+const normalizeText = (text: string): string => {
+	return text.replace(/\s+/g, " ").trim();
+};
+
+const isDescendantOf = (parent: HTMLElement, element: Element): boolean => {
+	let current: Element | null = element;
+	while (current) {
+		if (current === parent) return true;
+		current = current.parentElement;
+	}
+	return false;
+};
+
 async function fetchTTSAudioSegments(domain: string, path: string): Promise<AudioSegment[]> {
 	try {
 		const response = await fetch(`https://tts-api.juchunko.com/v1/audio/${domain}/${path}`);
@@ -72,6 +88,23 @@ export default function TTSPlayer({ isOpen, lang = "zh-TW" }: TTSPlayerProps) {
 	const originalStylesRef = useRef<Map<HTMLElement, { color: string; transition: string }>>(new Map());
 
 	const currentUrl = typeof window !== "undefined" ? window.location.href : "";
+
+	const resetAllStyles = useCallback(() => {
+		originalStylesRef.current.forEach((style, el) => {
+			el.style.color = style.color;
+			el.style.transition = style.transition;
+		});
+		originalStylesRef.current.clear();
+		// Also clean up any lingering styles on all elements in main
+		const main = document.querySelector("main") || document.querySelector("article");
+		if (main) {
+			main.querySelectorAll("*").forEach((el) => {
+				const htmlEl = el as HTMLElement;
+				htmlEl.style.color = "";
+				htmlEl.style.transition = "";
+			});
+		}
+	}, []);
 
 	const {
 		data: segments = [],
@@ -145,11 +178,20 @@ export default function TTSPlayer({ isOpen, lang = "zh-TW" }: TTSPlayerProps) {
 				setMode("fallback");
 			}
 		} else {
+			// Stop all audio
+			audioElementsRef.current.forEach((audio) => {
+				audio.pause();
+				audio.src = "";
+			});
+			audioElementsRef.current = [];
+
 			if (currentAudioRef.current) {
 				currentAudioRef.current.pause();
 				currentAudioRef.current = null;
 			}
+
 			setIsPlaying(false);
+			setMode("loading");
 			setCurrentTime(0);
 			setCurrentIndex(0);
 			setSegmentDurations([]);
@@ -161,7 +203,7 @@ export default function TTSPlayer({ isOpen, lang = "zh-TW" }: TTSPlayerProps) {
 			// Reset styles
 			resetAllStyles();
 		}
-	}, [isOpen, isLoading, isError, segments, mode, loadAudioElements]);
+	}, [isOpen, isLoading, isError, segments, mode, loadAudioElements, resetAllStyles]);
 
 	useEffect(() => {
 		setTotalDuration(segmentDurations.reduce((acc, d) => acc + d, 0));
@@ -248,39 +290,6 @@ export default function TTSPlayer({ isOpen, lang = "zh-TW" }: TTSPlayerProps) {
 			}
 		};
 	}, [mode, isPlaying, currentIndex, segmentDurations]);
-
-	/**
-	 * Normalize text for matching by removing extra whitespace
-	 */
-	const normalizeText = (text: string): string => {
-		return text.replace(/\s+/g, " ").trim();
-	};
-
-	const isDescendantOf = (parent: HTMLElement, element: Element): boolean => {
-		let current: Element | null = element;
-		while (current) {
-			if (current === parent) return true;
-			current = current.parentElement;
-		}
-		return false;
-	};
-
-	const resetAllStyles = useCallback(() => {
-		originalStylesRef.current.forEach((style, el) => {
-			el.style.color = style.color;
-			el.style.transition = style.transition;
-		});
-		originalStylesRef.current.clear();
-		// Also clean up any lingering styles on all elements in main
-		const main = document.querySelector("main") || document.querySelector("article");
-		if (main) {
-			main.querySelectorAll("*").forEach((el) => {
-				const htmlEl = el as HTMLElement;
-				htmlEl.style.color = "";
-				htmlEl.style.transition = "";
-			});
-		}
-	}, []);
 
 	useEffect(() => {
 		if (mode !== "api" || segments.length === 0 || !highlightEnabled) {
