@@ -489,6 +489,30 @@ export default function TTSPlayer({ isOpen, lang = "zh-TW" }: TTSPlayerProps) {
 		return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
 	};
 
+	// Cleanup on unmount
+	useEffect(() => {
+		return () => {
+			// Stop all audio
+			audioElementsRef.current.forEach((audio) => {
+				audio.pause();
+				audio.src = "";
+			});
+			audioElementsRef.current = [];
+
+			if (currentAudioRef.current) {
+				currentAudioRef.current.pause();
+				currentAudioRef.current = null;
+			}
+
+			if (progressUpdateIntervalRef.current) {
+				clearInterval(progressUpdateIntervalRef.current);
+				progressUpdateIntervalRef.current = null;
+			}
+
+			resetAllStyles();
+		};
+	}, [resetAllStyles]);
+
 	return (
 		<div className="bg-card/50 flex flex-col p-4">
 			{mode === "loading" && (
