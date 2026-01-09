@@ -3,6 +3,7 @@ import { QueryClient, useQuery } from "@tanstack/react-query";
 import { motion } from "motion/react";
 import { BookAudio, Play, Pause, Rewind, FastForward, Loader2, StepForward, StepBack } from "lucide-react";
 import ElevenLabsAudioNative from "./ElevenLabsAudioNative";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "src/components/ui/select";
 import { ui } from "src/i18n/ui";
 
 const ttsQueryClient = new QueryClient({
@@ -575,19 +576,22 @@ export default function TTSPlayer({ isOpen, lang = "zh-TW" }: TTSPlayerProps) {
 								>
 									<BookAudio className="size-3.5" />
 								</motion.button>
-								<motion.button
-									whileTap={{ scale: 0.95 }}
-									onClick={() => {
-										const rates = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
-										const currentIdx = rates.indexOf(playbackRate);
-										const nextIdx = (currentIdx + 1) % rates.length;
-										setPlaybackRate(rates[nextIdx]);
-									}}
-									className="text-muted-foreground hover:bg-muted-foreground/10 cursor-pointer rounded-md px-2 py-1 font-mono text-xs tabular-nums transition-colors"
-									title={ui[lang]["agent.voiceReader.speed"]}
-								>
-									{playbackRate}×
-								</motion.button>
+
+								<Select value={playbackRate.toString()} onValueChange={(v) => setPlaybackRate(Number(v))}>
+									<SelectTrigger
+										className="text-muted-foreground hover:bg-muted-foreground/10 h-7 w-auto min-w-[3rem] gap-1 border-0 bg-transparent px-2 font-mono text-xs shadow-none focus:ring-0 [&>svg]:opacity-50"
+										title={ui[lang]["agent.voiceReader.speed"]}
+									>
+										<SelectValue />
+									</SelectTrigger>
+									<SelectContent align="end" className="min-w-[4rem]">
+										{[0.5, 0.75, 1, 1.25, 1.5, 1.75, 2].map((rate) => (
+											<SelectItem key={rate} value={rate.toString()} className="font-mono text-xs tabular-nums">
+												{rate}×
+											</SelectItem>
+										))}
+									</SelectContent>
+								</Select>
 							</div>
 							<span className="text-muted-foreground font-mono text-xs tabular-nums">{formatTime(totalDuration)}</span>
 						</div>
