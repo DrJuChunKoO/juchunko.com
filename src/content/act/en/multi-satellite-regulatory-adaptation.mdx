@@ -8,10 +8,47 @@ status: "Amendment Passed First Reading"
 
 import Cards from "@/components/Cards.astro";
 import Card from "@/components/Card.astro";
-import { Satellite, Signal, Globe2, AlertOctagon, Radio, Rocket } from "lucide-react";
+import { Satellite, Signal, Globe2, AlertOctagon, Radio, Rocket, FileText } from "lucide-react";
 import { YouTube } from "@astro-community/astro-embed-youtube";
 
 # Multi-Satellite Regulatory Adaptation
+
+
+<div className="p-6 mb-6 bg-blue-50 border border-blue-200 rounded-xl dark:bg-blue-900/20 dark:border-blue-800">
+  <div className="flex items-start gap-4">
+    <div className="p-3 bg-blue-100 rounded-full dark:bg-blue-800 text-blue-600 dark:text-blue-300">
+      <Rocket className="w-6 h-6" />
+    </div>
+    <div className="flex-1">
+      <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">
+        Latest Progress: Amendment Passed First Reading
+      </h3>
+      <p className="text-gray-600 dark:text-gray-300 mb-4 leading-relaxed">
+        Legislator JU CHUN KO proposed an amendment to Article 36 of the Telecommunications Management Act to relax outdated foreign ownership and nationality restrictions. The draft has officially passed the first reading.
+      </p>
+      <div className="flex flex-wrap gap-3">
+        <a href="https://ipfs.juchunko.com/ipfs/bafybeifeioryvdxsgvg3tlgxqa42bq7osp5txsvgihwdzwainmc7dcs2ya/LCEWA01_110415_00040.pdf" 
+           target="_blank"
+           className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 transition-colors text-sm font-medium text-gray-700 dark:text-gray-200 no-underline">
+           <FileText className="w-4 h-4" />
+           Download Draft (PDF)
+        </a>
+        <a href="https://ipfs.juchunko.com/ipfs/bafybeifeioryvdxsgvg3tlgxqa42bq7osp5txsvgihwdzwainmc7dcs2ya/LCEWA01_110415_00040.doc" 
+           target="_blank"
+           className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 transition-colors text-sm font-medium text-gray-700 dark:text-gray-200 no-underline">
+           <FileText className="w-4 h-4" />
+           Download Draft (DOC)
+        </a>
+        <a href="https://ppg.ly.gov.tw/ppg/bills/202110181020000/details" 
+           target="_blank"
+           className="flex items-center gap-2 px-4 py-2 bg-blue-600 border border-blue-600 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium text-white no-underline ml-auto">
+           <Rocket className="w-4 h-4" />
+           View Bill Details
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
 
 <div className="mb-2 flex items-center gap-2 text-xl font-bold text-indigo-600">
 	Multi-Satellite: Building a Digital Shield for Communication Resilience
@@ -25,11 +62,6 @@ import { YouTube } from "@astro-community/astro-embed-youtube";
 ## Resource Hub
 
 <Cards>
-	<Card title="Telecommunications Act Art. 36 Amendment" href="https://ppg.ly.gov.tw/ppg/bills/202110181020000/details" target="_blank">
-		<Rocket slot="icon" />
-		**Latest Progress**: Amendment proposed by Legislator JU CHUN KO to relax foreign restrictions has passed the first reading.
-		[PDF](https://ipfs.juchunko.com/ipfs/bafybeifeioryvdxsgvg3tlgxqa42bq7osp5txsvgihwdzwainmc7dcs2ya/LCEWA01_110415_00040.pdf) | [DOC](https://ipfs.juchunko.com/ipfs/bafybeifeioryvdxsgvg3tlgxqa42bq7osp5txsvgihwdzwainmc7dcs2ya/LCEWA01_110415_00040.doc)
-	</Card>
 	<Card
 		title="Telecommunications Management Act Article 36"
 		href="https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=K0060117&flno=36"

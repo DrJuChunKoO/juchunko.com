@@ -8,10 +8,47 @@ status: "修正草案一讀付委"
 
 import Cards from "@/components/Cards.astro";
 import Card from "@/components/Card.astro";
-import { Satellite, Signal, Globe2, AlertOctagon, Radio, Rocket } from "lucide-react";
+import { Satellite, Signal, Globe2, AlertOctagon, Radio, Rocket, FileText } from "lucide-react";
 import { YouTube } from "@astro-community/astro-embed-youtube";
 
 # 多元衛星法規調適
+
+
+<div className="p-6 mb-6 bg-blue-50 border border-blue-200 rounded-xl dark:bg-blue-900/20 dark:border-blue-800">
+  <div className="flex items-start gap-4">
+    <div className="p-3 bg-blue-100 rounded-full dark:bg-blue-800 text-blue-600 dark:text-blue-300">
+      <Rocket className="w-6 h-6" />
+    </div>
+    <div className="flex-1">
+      <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">
+        最新立法進度：修正草案一讀付委
+      </h3>
+      <p className="text-gray-600 dark:text-gray-300 mb-4 leading-relaxed">
+        葛如鈞委員提案修正《電信管理法》第 36 條，主張放寬不合時宜的外資與國籍限制，草案已正式送出一讀。
+      </p>
+      <div className="flex flex-wrap gap-3">
+        <a href="https://ipfs.juchunko.com/ipfs/bafybeifeioryvdxsgvg3tlgxqa42bq7osp5txsvgihwdzwainmc7dcs2ya/LCEWA01_110415_00040.pdf" 
+           target="_blank"
+           className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 transition-colors text-sm font-medium text-gray-700 dark:text-gray-200 no-underline">
+           <FileText className="w-4 h-4" />
+           下載修正草案 (PDF)
+        </a>
+        <a href="https://ipfs.juchunko.com/ipfs/bafybeifeioryvdxsgvg3tlgxqa42bq7osp5txsvgihwdzwainmc7dcs2ya/LCEWA01_110415_00040.doc" 
+           target="_blank"
+           className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 transition-colors text-sm font-medium text-gray-700 dark:text-gray-200 no-underline">
+           <FileText className="w-4 h-4" />
+           下載修正草案 (DOC)
+        </a>
+        <a href="https://ppg.ly.gov.tw/ppg/bills/202110181020000/details" 
+           target="_blank"
+           className="flex items-center gap-2 px-4 py-2 bg-blue-600 border border-blue-600 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium text-white no-underline ml-auto">
+           <Rocket className="w-4 h-4" />
+           查看議案內容
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
 
 <div className="mb-2 flex items-center gap-2 text-xl font-bold text-indigo-600">多元衛星：打造通訊韌性的數位護盾</div>
 
@@ -23,11 +60,6 @@ import { YouTube } from "@astro-community/astro-embed-youtube";
 ## 核心資源區 (Resource Hub)
 
 <Cards>
-	<Card title="電信管理法第 36 條修正草案" href="https://ppg.ly.gov.tw/ppg/bills/202110181020000/details" target="_blank">
-		<Rocket slot="icon" />
-		**最新進度**：葛如鈞委員提案修正，放寬不合時宜的外資限制，草案已送出一讀。
-		[PDF下載](https://ipfs.juchunko.com/ipfs/bafybeifeioryvdxsgvg3tlgxqa42bq7osp5txsvgihwdzwainmc7dcs2ya/LCEWA01_110415_00040.pdf) | [DOC下載](https://ipfs.juchunko.com/ipfs/bafybeifeioryvdxsgvg3tlgxqa42bq7osp5txsvgihwdzwainmc7dcs2ya/LCEWA01_110415_00040.doc)
-	</Card>
 	<Card title="電信管理法第 36 條" href="https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=K0060117&flno=36" target="_blank">
 		<AlertOctagon slot="icon" />
 		**法規瓶頸**：外資持股限制（49%）與董事長國籍限制，阻礙國際低軌衛星業者落地台灣。
