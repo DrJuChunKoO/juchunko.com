@@ -140,6 +140,13 @@
 	text-autospace: normal;
 }
 .prose {
+	word-break: normal;
+	overflow-wrap: break-word;
+}
+
+.prose:lang(zh),
+.prose:lang(zh-TW),
+.prose:lang(zh-CN) {
 	word-break: break-all;
 }
 
