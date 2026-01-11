@@ -10,32 +10,70 @@ import Cards from "@/components/Cards.astro";
 import Card from "@/components/Card.astro";
 import Timeline from "@/components/Timeline.astro";
 import TimelineItem from "@/components/TimelineItem.astro";
-import { Files, Scale, Video, MessageCircle, FileText, ShieldCheck, Gavel, Users } from "lucide-react";
+import { Files, Scale, Video, MessageCircle, FileText, ShieldCheck, Gavel, Users, Languages } from "lucide-react";
 import { YouTube } from "@astro-community/astro-embed-youtube";
 
 # AI Basic Act
 
-<div className="p-4 mb-6 bg-blue-50 border border-blue-200 rounded-lg dark:bg-blue-900/30 dark:border-blue-700">
-  <div className="flex items-center gap-2 mb-4">
-    <Scale className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-    <span className="font-bold text-lg text-blue-800 dark:text-blue-200">Download Third Reading Version</span>
+<div className="p-6 mb-8 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-xl shadow-sm dark:bg-slate-800/60 dark:border-slate-700">
+  <div className="flex items-center gap-3 mb-5 border-b border-blue-100 pb-3 dark:border-slate-700">
+    <div className="p-2 bg-blue-600 rounded-lg text-white shadow-sm">
+      <Scale className="w-5 h-5" />
+    </div>
+    <h3 className="m-0 text-xl font-bold text-gray-900 dark:text-gray-100">
+      Latest Act Downloads
+    </h3>
   </div>
-  <Cards>
-    <Card
-      href="https://ipfs.juchunko.com/ipfs/bafybeic7bd67bj7o7calff5yo7ecubalwxpt7i6n3vihktiyqc5fys5mj4/1141223%E4%BA%BA%E5%B7%A5%E6%99%BA%E6%85%A7%E5%9F%BA%E6%9C%AC%E6%B3%95%E4%B8%89%E8%AE%80%E9%80%9A%E9%81%8E%E6%A2%9D%E6%96%87-%E5%90%AB%E8%AA%AA%E6%98%8E%E5%8F%8A%E9%99%84%E5%B8%B6%E6%B1%BA%E8%AD%B0v2.pdf"
-      target="_blank"
-      title="Passed Third Reading Articles (Inc. Explanations & Resolutions) v2.pdf"
-    >
-      <FileText slot="icon" />
-    </Card>
-    <Card
-      href="https://ipfs.juchunko.com/ipfs/bafybeic7bd67bj7o7calff5yo7ecubalwxpt7i6n3vihktiyqc5fys5mj4/1141223%E4%BA%BA%E5%B7%A5%E6%99%BA%E6%85%A7%E5%9F%BA%E6%9C%AC%E6%B3%95%E4%B8%89%E8%AE%80%E9%80%9A%E9%81%8E%E6%A2%9D%E6%96%87-%E5%90%AB%E8%AA%AA%E6%98%8E%E5%8F%8A%E9%99%84%E5%B8%B6%E6%B1%BA%E8%AD%B0v2.docx"
-      target="_blank"
-      title="Passed Third Reading Articles (Inc. Explanations & Resolutions) v2.docx"
-    >
-      <FileText slot="icon" />
-    </Card>
-  </Cards>
+
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    {/* Bilingual PDF */}
+    <a href="https://ipfs.juchunko.com/ipfs/bafybeigude52wj364ildy7c5omklbethenacmph7ktuhsylhkm7xpycywi/Taiwan_AI_Basic_Act_Bilingual_Final.pdf" 
+       target="_blank"
+       className="group flex flex-col p-4 bg-white border border-gray-200 rounded-xl hover:border-blue-400 hover:shadow-md transition-all dark:bg-slate-900 dark:border-slate-700 dark:hover:border-blue-500 no-underline">
+       <div className="flex items-center justify-between mb-3 text-blue-600 dark:text-blue-400">
+         <span className="px-2 py-1 text-xs font-bold bg-blue-50 rounded-md dark:bg-blue-900/30">PDF</span>
+         <Languages className="w-5 h-5 group-hover:scale-110 transition-transform" />
+       </div>
+       <div className="font-bold text-lg text-gray-900 dark:text-gray-100 mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400">
+         Full Text (Bilingual)
+       </div>
+       <div className="text-sm text-gray-500 dark:text-gray-400">
+         Third Reading Final (ZH/EN)
+       </div>
+    </a>
+
+    {/* Bilingual DOCX */}
+    <a href="https://ipfs.juchunko.com/ipfs/bafybeigude52wj364ildy7c5omklbethenacmph7ktuhsylhkm7xpycywi/Taiwan_AI_Basic_Act_Bilingual_Final.docx" 
+       target="_blank"
+       className="group flex flex-col p-4 bg-white border border-gray-200 rounded-xl hover:border-blue-400 hover:shadow-md transition-all dark:bg-slate-900 dark:border-slate-700 dark:hover:border-blue-500 no-underline">
+       <div className="flex items-center justify-between mb-3 text-blue-600 dark:text-blue-400">
+         <span className="px-2 py-1 text-xs font-bold bg-blue-50 rounded-md dark:bg-blue-900/30">DOCX</span>
+         <Languages className="w-5 h-5 group-hover:scale-110 transition-transform" />
+       </div>
+       <div className="font-bold text-lg text-gray-900 dark:text-gray-100 mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400">
+         Full Text (Bilingual)
+       </div>
+       <div className="text-sm text-gray-500 dark:text-gray-400">
+         Third Reading Final (ZH/EN)
+       </div>
+    </a>
+
+    {/* MODA Chinese Version */}
+    <a href="https://ipfs.juchunko.com/ipfs/bafybeic7bd67bj7o7calff5yo7ecubalwxpt7i6n3vihktiyqc5fys5mj4/1141223%E4%BA%BA%E5%B7%A5%E6%99%BA%E6%85%A7%E5%9F%BA%E6%9C%AC%E6%B3%95%E4%B8%89%E8%AE%80%E9%80%9A%E9%81%8E%E6%A2%9D%E6%96%87-%E5%90%AB%E8%AA%AA%E6%98%8E%E5%8F%8A%E9%99%84%E5%B8%B6%E6%B1%BA%E8%AD%B0v2.pdf" 
+       target="_blank"
+       className="group flex flex-col p-4 bg-white border border-gray-200 rounded-xl hover:border-emerald-400 hover:shadow-md transition-all dark:bg-slate-900 dark:border-slate-700 dark:hover:border-emerald-500 no-underline">
+       <div className="flex items-center justify-between mb-3 text-emerald-600 dark:text-emerald-400">
+         <span className="px-2 py-1 text-xs font-bold bg-emerald-50 rounded-md dark:bg-emerald-900/30">Explanations</span>
+         <FileText className="w-5 h-5 group-hover:scale-110 transition-transform" />
+       </div>
+       <div className="font-bold text-lg text-gray-900 dark:text-gray-100 mb-1 group-hover:text-emerald-600 dark:group-hover:text-emerald-400">
+         Articles & Explanations
+       </div>
+       <div className="text-sm text-gray-500 dark:text-gray-400">
+         MODA Official Version (ZH Only)
+       </div>
+    </a>
+  </div>
 </div>
 
 ## Latest Update
