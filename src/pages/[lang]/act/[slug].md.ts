@@ -1,5 +1,6 @@
 import type { APIRoute } from "astro";
 import { getCollection } from "astro:content";
+import { stripMarkdown } from "../../../lib/utils";
 
 export async function getStaticPaths() {
 	const acts = await getCollection("act");
@@ -16,8 +17,12 @@ export async function getStaticPaths() {
 
 export const GET: APIRoute = async ({ props }) => {
 	const post = props;
-	const content = `# ${post.data.title}\n\n${post.body}`;
+	const cleanBody = stripMarkdown(post.body);
+	const content = `# ${post.data.title}\n\n${cleanBody}`;
 	return new Response(content, {
-		headers: { "Content-Type": "text/plain; charset=utf-8" },
+		headers: { 
+			"Content-Type": "text/plain; charset=utf-8",
+			"X-Content-Type-Options": "nosniff"
+		},
 	});
 };

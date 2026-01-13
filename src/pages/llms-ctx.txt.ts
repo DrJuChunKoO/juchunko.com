@@ -1,6 +1,7 @@
 import type { APIRoute } from "astro";
 import { getCollection } from "astro:content";
 import { ui, defaultLang } from "../i18n/ui";
+import { stripMarkdown } from "../lib/utils";
 
 export const GET: APIRoute = async () => {
 	const lang = defaultLang;
@@ -33,7 +34,7 @@ export const GET: APIRoute = async () => {
 		content += `## ${section.title}\n\n`;
 		for (const post of section.posts) {
 			content += `### ${post.data.title}\n\n`;
-			content += `${post.body}\n\n`;
+			content += `${stripMarkdown(post.body)}\n\n`;
 			content += "---\n\n";
 		}
 	}
