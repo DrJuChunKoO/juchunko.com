@@ -21,29 +21,31 @@ export const GET: APIRoute = async () => {
 		.filter((post) => post.id.startsWith(lang + "/"))
 		.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
-	let content = "# " + t["site.title"] + "\n\n";
-	content += "> " + t["home.description"] + "\n\n";
+	const getSlug = (id: string) => id.replace(/\.(md|mdx)$/, "").split("/").pop();
 
-	content += "## " + t["cat.acts"] + "\n\n";
+	let content = `# ${t["site.title"]}\n\n`;
+	content += `> ${t["home.description"]}\n\n`;
+
+	content += `## ${t["cat.acts"]}\n\n`;
 	for (const post of filteredActs) {
-		const slug = post.id.split("/").pop();
-		content += "- [" + post.data.title + "](" + siteUrl + "/" + lang + "/act/" + slug + "): " + (post.data.description || "") + "\n";
+		const slug = getSlug(post.id);
+		content += `- [${post.data.title}](${siteUrl}/${lang}/act/${slug}.md): ${post.data.description || ""}\n`;
 	}
 
-	content += "\n## " + t["cat.manuals"] + "\n\n";
+	content += `\n## ${t["cat.manuals"]}\n\n`;
 	for (const post of filteredManuals) {
-		const slug = post.id.split("/").pop();
-		content += "- [" + post.data.title + "](" + siteUrl + "/" + lang + "/manual/" + slug + "): " + (post.data.description || "") + "\n";
+		const slug = getSlug(post.id);
+		content += `- [${post.data.title}](${siteUrl}/${lang}/manual/${slug}.md): ${post.data.description || ""}\n`;
 	}
 
-	content += "\n## 其他資訊\n\n";
+	content += `\n## 其他資訊\n\n`;
 	for (const post of filteredFragments) {
-		const slug = post.id.split("/").pop();
-		content += "- [" + post.data.title + "](" + siteUrl + "/" + lang + "/fragment/" + slug + "): " + (post.data.description || "") + "\n";
+		const slug = getSlug(post.id);
+		content += `- [${post.data.title}](${siteUrl}/${lang}/fragment/${slug}.md): ${post.data.description || ""}\n`;
 	}
 
-	content += "\n## Optional\n\n";
-	content += "- [Full Context](" + siteUrl + "/llms-ctx.txt): 包含所有文章內容的完整上下文文件。\n";
+	content += `\n## Optional\n\n`;
+	content += `- [Full Context](${siteUrl}/llms-ctx.txt): 包含所有文章內容的完整上下文文件。\n`;
 
 	return new Response(content, {
 		headers: {

@@ -20,8 +20,8 @@ export const GET: APIRoute = async () => {
 		.filter((post) => post.id.startsWith(lang + "/"))
 		.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
-	let content = "# " + t["site.title"] + " - Full Context\n\n";
-	content += "> " + t["home.description"] + "\n\n";
+	let content = `# ${t["site.title"]} - Full Context\n\n`;
+	content += `> ${t["home.description"]}\n\n`;
 
 	const allPosts = [
 		{ title: t["cat.acts"], posts: filteredActs },
@@ -30,10 +30,10 @@ export const GET: APIRoute = async () => {
 	];
 
 	for (const section of allPosts) {
-		content += "## " + section.title + "\n\n";
+		content += `## ${section.title}\n\n`;
 		for (const post of section.posts) {
-			content += "### " + post.data.title + "\n\n";
-			content += post.body + "\n\n";
+			content += `### ${post.data.title}\n\n`;
+			content += `${post.body}\n\n`;
 			content += "---\n\n";
 		}
 	}
