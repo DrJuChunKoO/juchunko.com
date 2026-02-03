@@ -82,18 +82,21 @@ import TablerBrandX from "./icon/TablerBrandX.astro";
 		data-menu
 		aria-hidden="true"
 	>
-		<button
-			class="hover:outline-primary/50 absolute right-6 top-6 inline-flex items-center justify-center rounded-full p-2 text-gray-600 transition-colors hover:text-gray-900 hover:outline-2 hover:outline-offset-2 dark:text-white/70 dark:hover:text-white"
-			type="button"
-			data-menu-close
-			aria-label="Close navigation menu"
-		>
-			<span class="sr-only">Close navigation menu</span>
-			<span class="block h-5 w-5">
-				<span class="absolute inset-x-2 top-1/2 h-0.5 -translate-y-1/2 rotate-45 rounded-full bg-current"></span>
-				<span class="absolute inset-x-2 top-1/2 h-0.5 -translate-y-1/2 -rotate-45 rounded-full bg-current"></span>
-			</span>
-		</button>
+		<div class="absolute right-6 top-6 flex items-center gap-2">
+			<LanguageSelector client:only="react" />
+			<button
+				class="hover:outline-primary/50 inline-flex items-center justify-center rounded-full p-2 text-gray-600 transition-colors hover:text-gray-900 hover:outline-2 hover:outline-offset-2 dark:text-white/70 dark:hover:text-white"
+				type="button"
+				data-menu-close
+				aria-label="Close navigation menu"
+			>
+				<span class="sr-only">Close navigation menu</span>
+				<span class="block h-5 w-5">
+					<span class="absolute inset-x-2 top-1/2 h-0.5 -translate-y-1/2 rotate-45 rounded-full bg-current"></span>
+					<span class="absolute inset-x-2 top-1/2 h-0.5 -translate-y-1/2 -rotate-45 rounded-full bg-current"></span>
+				</span>
+			</button>
+		</div>
 		<div class="flex flex-1 flex-col justify-center gap-6 text-2xl font-medium">
 			<a
 				href="https://blog.juchunko.com/"
@@ -111,9 +114,6 @@ import TablerBrandX from "./icon/TablerBrandX.astro";
 			>
 				{t("nav.transript")}
 			</a>
-			<div class="mt-4 border-t border-gray-100 pt-8 dark:border-white/10">
-				<LanguageSelector client:only="react" />
-			</div>
 		</div>
 		<div class="grid grid-cols-4 place-items-center gap-4">
 			<SoicalLink href="https://github.com/DrJuChunKoO/juchunko.com" className="flex aspect-square w-12 items-center justify-center">
