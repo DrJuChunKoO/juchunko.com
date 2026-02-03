@@ -78,14 +78,13 @@ import TablerBrandX from "./icon/TablerBrandX.astro";
 	</nav>
 	<div
 		id="mobile-nav"
-		class="nav-menu fixed inset-0 z-50 flex flex-col bg-white/90 px-8 pb-12 pt-24 text-gray-900 opacity-0 backdrop-blur-xl transition-all duration-300 pointer-events-none md:hidden dark:bg-[#161414]/90 dark:text-white"
+		class="nav-menu fixed inset-0 z-50 flex flex-col bg-white/90 px-8 pb-12 pt-8 text-gray-900 opacity-0 backdrop-blur-xl transition-all duration-300 pointer-events-none md:hidden dark:bg-[#161414]/90 dark:text-white"
 		data-menu
 		aria-hidden="true"
 	>
-		<div class="absolute right-6 top-6 flex items-center gap-2">
-			<LanguageSelector client:only="react" />
+		<div class="flex items-center justify-end">
 			<button
-				class="hover:outline-primary/50 inline-flex items-center justify-center rounded-full p-2 text-gray-600 transition-colors hover:text-gray-900 hover:outline-2 hover:outline-offset-2 dark:text-white/70 dark:hover:text-white"
+				class="hover:outline-primary/50 relative inline-flex items-center justify-center rounded-full p-2 text-gray-600 transition-colors hover:text-gray-900 hover:outline-2 hover:outline-offset-2 dark:text-white/70 dark:hover:text-white"
 				type="button"
 				data-menu-close
 				aria-label="Close navigation menu"
@@ -137,6 +136,10 @@ import TablerBrandX from "./icon/TablerBrandX.astro";
 			<SoicalLink href="https://x.com/@dAAAb" className="flex aspect-square w-12 items-center justify-center">
 				<TablerBrandX className="size-6" />
 			</SoicalLink>
+		</div>
+		<div class="mt-6 flex flex-col items-center gap-4">
+			<span class="h-px w-48 bg-gray-200 dark:bg-white/15"></span>
+			<LanguageSelector client:only="react" />
 		</div>
 	</div>
 </div>
