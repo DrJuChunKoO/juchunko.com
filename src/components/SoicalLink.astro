@@ -1,12 +1,12 @@
 ---
-const { href } = Astro.props;
+const { href, className } = Astro.props;
 ---
 
 <a
 	href={href}
 	target="_blank"
 	rel="noopener noreferrer"
-	class="hover:outline-primary/50 hover:bg-primary/5 text-primary/75 hover:text-primary/90 active:text-primary rounded-full p-1 hover:outline-2 hover:outline-offset-2"
+	class={`hover:outline-primary/50 hover:bg-primary/5 text-primary/75 hover:text-primary/90 active:text-primary rounded-full p-1 hover:outline-2 hover:outline-offset-2 ${className ?? ""}`}
 >
 	<slot />
 </a>

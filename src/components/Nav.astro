@@ -2,14 +2,21 @@
 import { getLangFromUrl, useTranslations } from "../i18n/utils";
 
 import ThemeToggle from "./ThemeToggle.astro";
+import SoicalLink from "./SoicalLink.astro";
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 
 import TablerBrandGithub from "./icon/TablerBrandGithub.astro";
+import TablerBrandThreads from "./icon/TablerBrandThreads.astro";
+import TablerBrandFacebook from "./icon/TablerBrandFacebook.astro";
+import TablerBrandInstagram from "./icon/TablerBrandInstagram.astro";
+import TablerBrandTiktok from "./icon/TablerBrandTiktok.astro";
+import TablerBrandYoutube from "./icon/TablerBrandYoutube.astro";
+import TablerBrandX from "./icon/TablerBrandX.astro";
 ---
 
-<div class="sticky top-0 z-20 w-full self-start bg-transparent print:hidden">
+<div class="sticky top-0 z-40 w-full self-start bg-transparent print:hidden">
 	<div
 		class="pointer-events-none absolute z-[-1] h-full w-full bg-white/80 shadow-[0_4px_32px_rgba(0,0,0,.1)] backdrop-blur-xl transition-all duration-500 contrast-more:shadow-[0_0_0_1px_#000] md:-translate-y-[100%] md:opacity-0 dark:bg-[#181616] dark:shadow-[0_-1px_0_rgba(255,255,255,.1)_inset] contrast-more:dark:shadow-[0_0_0_1px_#fff] [.scrolled__&]:translate-y-0 [.scrolled_&]:opacity-100"
 	>
@@ -45,15 +52,100 @@ import TablerBrandGithub from "./icon/TablerBrandGithub.astro";
 			href="https://github.com/DrJuChunKoO/juchunko.com"
 			target="_blank"
 			rel="noreferrer"
-			class="hover:outline-primary/50 rounded-full p-1 text-current transition-opacity hover:opacity-75 hover:outline-2 hover:outline-offset-2"
+			class="hover:outline-primary/50 hidden rounded-full p-1 text-current transition-opacity hover:opacity-75 hover:outline-2 hover:outline-offset-2 md:inline-flex"
 			title="GitHub repository for this site"
 			aria-label="GitHub repository for this site"
 		>
 			<TablerBrandGithub class="size-6" />
 		</a>
 		<ThemeToggle />
+		<button
+			class="hover:outline-primary/50 inline-flex items-center justify-center rounded-lg p-2 text-gray-700 transition-colors hover:text-gray-900 hover:outline-2 hover:outline-offset-2 md:hidden dark:text-white/80 dark:hover:text-white"
+			type="button"
+			data-menu-toggle
+			aria-label="Open navigation menu"
+			aria-controls="mobile-nav"
+			aria-expanded="false"
+		>
+			<span class="sr-only">Open navigation menu</span>
+			<span class="block h-4 w-5">
+				<span class="mb-1 block h-0.5 w-full rounded-full bg-current"></span>
+				<span class="mb-1 block h-0.5 w-full rounded-full bg-current"></span>
+				<span class="block h-0.5 w-full rounded-full bg-current"></span>
+			</span>
+		</button>
 	</nav>
+	<div
+		id="mobile-nav"
+		class="nav-menu fixed inset-0 z-50 flex flex-col bg-white/90 px-8 pb-12 pt-24 text-gray-900 opacity-0 backdrop-blur-xl transition-all duration-300 pointer-events-none md:hidden dark:bg-[#161414]/90 dark:text-white"
+		data-menu
+		aria-hidden="true"
+	>
+		<button
+			class="hover:outline-primary/50 absolute right-6 top-6 inline-flex items-center justify-center rounded-full p-2 text-gray-600 transition-colors hover:text-gray-900 hover:outline-2 hover:outline-offset-2 dark:text-white/70 dark:hover:text-white"
+			type="button"
+			data-menu-close
+			aria-label="Close navigation menu"
+		>
+			<span class="sr-only">Close navigation menu</span>
+			<span class="block h-5 w-5">
+				<span class="absolute inset-x-2 top-1/2 h-0.5 -translate-y-1/2 rotate-45 rounded-full bg-current"></span>
+				<span class="absolute inset-x-2 top-1/2 h-0.5 -translate-y-1/2 -rotate-45 rounded-full bg-current"></span>
+			</span>
+		</button>
+		<div class="flex flex-1 flex-col justify-center gap-6 text-2xl font-medium">
+			<a
+				href="https://blog.juchunko.com/"
+				target="_blank"
+				rel="noreferrer"
+				class="hover:text-primary transition-colors"
+			>
+				{t("nav.blog")}
+			</a>
+			<a
+				href="https://transpal.juchunko.com/"
+				target="_blank"
+				rel="noreferrer"
+				class="hover:text-primary transition-colors"
+			>
+				{t("nav.transript")}
+			</a>
+		</div>
+		<div class="grid grid-cols-4 place-items-center gap-4">
+			<SoicalLink href="https://github.com/DrJuChunKoO/juchunko.com" className="flex aspect-square w-12 items-center justify-center">
+				<TablerBrandGithub className="size-6" />
+			</SoicalLink>
+			<SoicalLink href="https://fb.com/dr.juchunko/" className="flex aspect-square w-12 items-center justify-center">
+				<TablerBrandFacebook className="size-6" />
+			</SoicalLink>
+			<SoicalLink href="https://instagr.am/dr.juchunko/" className="flex aspect-square w-12 items-center justify-center">
+				<TablerBrandInstagram className="size-6" />
+			</SoicalLink>
+			<SoicalLink href="https://tiktok.com/@dr.juchunko" className="flex aspect-square w-12 items-center justify-center">
+				<TablerBrandTiktok className="size-6" />
+			</SoicalLink>
+			<SoicalLink href="https://threads.net/@dr.juchunko" className="flex aspect-square w-12 items-center justify-center">
+				<TablerBrandThreads className="size-6" />
+			</SoicalLink>
+			<SoicalLink href="https://youtube.com/@dr.juchunko" className="flex aspect-square w-12 items-center justify-center">
+				<TablerBrandYoutube className="size-6" />
+			</SoicalLink>
+			<SoicalLink href="https://x.com/@dAAAb" className="flex aspect-square w-12 items-center justify-center">
+				<TablerBrandX className="size-6" />
+			</SoicalLink>
+		</div>
+	</div>
 </div>
+
+<style is:global>
+	body.nav-open {
+		overflow: hidden;
+	}
+	.nav-menu[data-open="true"] {
+		opacity: 1;
+		pointer-events: auto;
+	}
+</style>
 
 <script>
 	const browserLang = navigator.language;
@@ -81,17 +173,42 @@ import TablerBrandGithub from "./icon/TablerBrandGithub.astro";
 	// Update translations
 	const siteTitle = document.querySelector("#site-title");
 	const links = {
-		blog: document.querySelector('a[href="https://blog.juchunko.com/"]'),
-		transript: document.querySelector('a[href="https://transpal.juchunko.com/"]'),
+		blog: document.querySelectorAll('a[href="https://blog.juchunko.com/"]'),
+		transript: document.querySelectorAll('a[href="https://transpal.juchunko.com/"]'),
 	};
 
 	if (siteTitle) {
 		siteTitle.textContent = locale[lang].siteTitle;
 	}
-	if (links.blog) {
-		links.blog.textContent = locale[lang].blog;
+	links.blog.forEach((link) => {
+		link.textContent = locale[lang].blog;
+	});
+	links.transript.forEach((link) => {
+		link.textContent = locale[lang].transript;
+	});
+
+	const menu = document.querySelector("[data-menu]");
+	const toggle = document.querySelector("[data-menu-toggle]");
+	const close = document.querySelector("[data-menu-close]");
+	const setMenuState = (isOpen) => {
+		if (!menu || !toggle) return;
+		menu.setAttribute("data-open", String(isOpen));
+		menu.setAttribute("aria-hidden", String(!isOpen));
+		toggle.setAttribute("aria-expanded", String(isOpen));
+		document.body.classList.toggle("nav-open", isOpen);
+	};
+
+	setMenuState(false);
+	if (toggle) {
+		toggle.addEventListener("click", () => {
+			const isOpen = menu?.getAttribute("data-open") === "true";
+			setMenuState(!isOpen);
+		});
 	}
-	if (links.transript) {
-		links.transript.textContent = locale[lang].transript;
+	if (close) {
+		close.addEventListener("click", () => setMenuState(false));
 	}
+	menu?.querySelectorAll("a").forEach((link) => {
+		link.addEventListener("click", () => setMenuState(false));
+	});
 </script>
