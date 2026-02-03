@@ -8,7 +8,7 @@ app.get("/", async (c) => {
 	const lang = (c.req.query("lang") as "en" | "zh-TW") || "zh-TW";
 
 	// Try to get from cache first
-	const cache = caches.default;
+	const cache = (caches as CacheStorage & { default: Cache }).default;
 	const cacheUrl = new URL(c.req.url);
 	let response = await cache.match(cacheUrl);
 
@@ -23,7 +23,7 @@ app.get("/", async (c) => {
 
 		// Create response with cache headers
 		response = c.json(data);
-		response.headers.set("Cache-Control", "public, max-age=86400"); // 1 day
+		response.headers.set("Cache-Control", "public, max-age=900, s-maxage=900"); // 15 min
 		response.headers.set("Access-Control-Allow-Origin", "*");
 
 		// Store in cache

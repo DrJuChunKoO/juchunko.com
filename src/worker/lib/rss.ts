@@ -42,7 +42,11 @@ function parseRss(xml: string): FeedItem[] {
 
 export async function fetchRss(url: string): Promise<FeedItem[]> {
 	try {
-		const res = await fetch(url, { method: "GET", headers: { accept: "application/xml" } });
+		const res = await fetch(url, {
+			method: "GET",
+			headers: { accept: "application/xml" },
+			cache: "no-store",
+		});
 		if (!res.ok) throw new Error(`Failed to fetch RSS: ${res.status} ${res.statusText}`);
 		const xml = await res.text();
 		return parseRss(xml);
