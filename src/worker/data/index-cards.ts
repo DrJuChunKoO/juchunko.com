@@ -72,7 +72,7 @@ export async function getIndexCards(lang: "en" | "zh-TW") {
 			const isChinesePost = link.includes("/zh/") || (!link.includes("/en/") && !link.includes("/zh/"));
 			return (lang === "en" && isEnglishPost) || (lang === "zh-TW" && isChinesePost);
 		});
-		const blogItems = filtered.slice(0, 3);
+		const blogItems = filtered.toReversed().slice(0, 3);
 		result.blogCards = blogItems.map((it) => ({
 			title: it.title,
 			description: it.description,
