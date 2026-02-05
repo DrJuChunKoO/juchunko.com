@@ -65,7 +65,7 @@ export async function getIndexCards(lang: "en" | "zh-TW") {
 
 	// Blog RSS
 	try {
-		const all = await fetchRss("https://blog.juchunko.com/rss.xml");
+		const all = await fetchRss(`https://blog.juchunko.com/rss.xml?t=${Date.now()}`);
 		const filtered = all.filter((it) => {
 			const link = it.link || "";
 			const isEnglishPost = link.includes("/en/");
@@ -87,7 +87,7 @@ export async function getIndexCards(lang: "en" | "zh-TW") {
 
 	// Transpal RSS
 	try {
-		const transpalItems = await fetchRss("https://transpal.juchunko.com/rss.xml");
+		const transpalItems = await fetchRss(`https://transpal.juchunko.com/rss.xml?t=${Date.now()}`);
 		const tItems = (transpalItems || []).slice(0, 3);
 		result.transpalCards = tItems.map((it) => ({
 			title: it.title,
