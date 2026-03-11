@@ -42,7 +42,7 @@ current page: https://juchunko.com${filename}
 
 	// 執行 LLM
 	const result = streamText({
-		model: openrouter.chat("google/gemini-3-flash-preview"),
+		model: openrouter.chat("@preset/website-chatbot"),
 		system: systemPrompt,
 		messages: await convertToModelMessages(messages),
 		tools: {
