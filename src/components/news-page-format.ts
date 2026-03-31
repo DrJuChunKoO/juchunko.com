@@ -10,7 +10,9 @@ export type TopicArchiveCard = {
 	id: string;
 	emoji: string | null;
 	title: string;
+	titleEn?: string | null;
 	summary: string | null;
+	summaryEn?: string | null;
 	latestNewsTime: string;
 	totalNewsCount: number;
 	monthNewsCount: number;
@@ -43,6 +45,22 @@ export function formatTopicMeta(topic: TopicArchiveCard, lang: "en" | "zh-TW") {
 	}
 
 	return `${topic.monthNewsCount} this month - ${topic.totalNewsCount} total`;
+}
+
+export function getTopicDisplayTitle(topic: TopicArchiveCard, lang: "en" | "zh-TW") {
+	if (lang === "en") {
+		return topic.titleEn || topic.title;
+	}
+
+	return topic.title;
+}
+
+export function getTopicDisplaySummary(topic: TopicArchiveCard, lang: "en" | "zh-TW") {
+	if (lang === "en") {
+		return topic.summaryEn || topic.summary;
+	}
+
+	return topic.summary;
 }
 
 export function getTopicPreviewItems(topic: TopicArchiveCard, limit = 5) {

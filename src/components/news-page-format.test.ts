@@ -3,6 +3,8 @@ import assert from "node:assert/strict";
 import {
 	formatArchiveMonthLabel,
 	formatNewsTopicsLabel,
+	getTopicDisplaySummary,
+	getTopicDisplayTitle,
 	formatTopicMeta,
 	getTopicPreviewItems,
 	getVisibleMonthKeys,
@@ -13,7 +15,9 @@ const topic: TopicArchiveCard = {
 	id: "ai-basic-act",
 	emoji: "🤖",
 	title: "AI 基本法",
+	titleEn: "AI Basic Act",
 	summary: null,
+	summaryEn: null,
 	latestNewsTime: "2026-03-18T09:00:00+08:00",
 	totalNewsCount: 8,
 	monthNewsCount: 3,
@@ -55,6 +59,36 @@ test("formatNewsTopicsLabel uses the new wording instead of archive", () => {
 test("formatTopicMeta returns localized monthly and total counts", () => {
 	assert.equal(formatTopicMeta(topic, "zh-TW"), "本月 3 篇・共 8 篇");
 	assert.equal(formatTopicMeta(topic, "en"), "3 this month - 8 total");
+});
+
+test("getTopicDisplayTitle uses English topic title when available", () => {
+	assert.equal(getTopicDisplayTitle(topic, "en"), "AI Basic Act");
+	assert.equal(getTopicDisplayTitle(topic, "zh-TW"), "AI 基本法");
+});
+
+test("getTopicDisplaySummary falls back to Chinese when English summary is missing", () => {
+	assert.equal(
+		getTopicDisplaySummary(
+			{
+				...topic,
+				summary: "聚焦 AI 基本法與治理框架的立法進度。",
+				summaryEn: null,
+			},
+			"en",
+		),
+		"聚焦 AI 基本法與治理框架的立法進度。",
+	);
+	assert.equal(
+		getTopicDisplaySummary(
+			{
+				...topic,
+				summary: "聚焦 AI 基本法與治理框架的立法進度。",
+				summaryEn: "Tracks the legislative progress of Taiwan's AI Basic Act.",
+			},
+			"en",
+		),
+		"Tracks the legislative progress of Taiwan's AI Basic Act.",
+	);
 });
 
 test("getTopicPreviewItems caps preview lists to five items", () => {

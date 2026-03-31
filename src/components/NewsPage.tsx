@@ -7,6 +7,8 @@ import {
 	formatArchiveMonthLabel,
 	formatNewsTopicsLabel,
 	formatTopicMeta,
+	getTopicDisplaySummary,
+	getTopicDisplayTitle,
 	getTopicPreviewItems,
 	getVisibleMonthKeys,
 	type TopicArchiveCard,
@@ -71,7 +73,9 @@ type TopicDetailResponse = {
 		id: string;
 		emoji: string | null;
 		title: string;
+		titleEn?: string | null;
 		summary: string | null;
+		summaryEn?: string | null;
 		newsCount: number;
 		latestNewsTime: string | null;
 		firstNewsTime: string | null;
@@ -102,7 +106,9 @@ function mapTopicCard(card: any): TopicArchiveCard {
 		id: card.id,
 		emoji: card.emoji ?? null,
 		title: card.title,
+		titleEn: card.titleEn ?? card.title_en ?? null,
 		summary: card.summary ?? null,
+		summaryEn: card.summaryEn ?? card.summary_en ?? null,
 		latestNewsTime: card.latestNewsTime,
 		totalNewsCount: card.totalNewsCount,
 		monthNewsCount: card.monthNewsCount,
@@ -266,10 +272,10 @@ function MonthTopicsSection({
 											{topic.emoji || "📰"}
 										</div>
 										<div className="min-w-0 flex-1">
-											<h3 className="text-lg leading-snug font-semibold text-gray-900 dark:text-white">{topic.title}</h3>
+											<h3 className="text-lg leading-snug font-semibold text-gray-900 dark:text-white">{getTopicDisplayTitle(topic, lang)}</h3>
 											<p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{formatTopicMeta(topic, lang)}</p>
-											{topic.summary && (
-												<p className="mt-3 max-w-2xl text-sm leading-6 text-gray-600 dark:text-gray-300">{topic.summary}</p>
+											{getTopicDisplaySummary(topic, lang) && (
+												<p className="mt-3 max-w-2xl text-sm leading-6 text-gray-600 dark:text-gray-300">{getTopicDisplaySummary(topic, lang)}</p>
 											)}
 										</div>
 									</div>
@@ -427,6 +433,24 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 			setVisibleMonthCount(1);
 		}
 	}, [searchQuery]);
+
+	useEffect(() => {
+		const previousOverflow = document.body.style.overflow;
+		const previousPaddingRight = document.body.style.paddingRight;
+
+		if (selectedTopicId) {
+			const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+			document.body.style.overflow = "hidden";
+			if (scrollbarWidth > 0) {
+				document.body.style.paddingRight = `${scrollbarWidth}px`;
+			}
+		}
+
+		return () => {
+			document.body.style.overflow = previousOverflow;
+			document.body.style.paddingRight = previousPaddingRight;
+		};
+	}, [selectedTopicId]);
 
 	const handleSearchSubmit = (event: React.FormEvent) => {
 		event.preventDefault();
@@ -601,15 +625,15 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 												</p>
 												<h2 className="mt-2 text-2xl leading-tight font-semibold text-gray-900 dark:text-white">
 													<span className="mr-2">{selectedTopic.topic.emoji || "📰"}</span>
-													{selectedTopic.topic.title}
+													{lang === "en" ? selectedTopic.topic.titleEn || selectedTopic.topic.title : selectedTopic.topic.title}
 												</h2>
 												<p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
 													{lang === "en"
 														? `${selectedTopic.totalNewsCount} news items across the same topic`
 														: `同一主題共 ${selectedTopic.totalNewsCount} 則新聞`}
 												</p>
-												{selectedTopic.topic.summary && (
-													<p className="mt-3 max-w-2xl text-sm leading-6 text-gray-600 dark:text-gray-300">{selectedTopic.topic.summary}</p>
+												{(lang === "en" ? selectedTopic.topic.summaryEn || selectedTopic.topic.summary : selectedTopic.topic.summary) && (
+													<p className="mt-3 max-w-2xl text-sm leading-6 text-gray-600 dark:text-gray-300">{lang === "en" ? selectedTopic.topic.summaryEn || selectedTopic.topic.summary : selectedTopic.topic.summary}</p>
 												)}
 											</>
 										) : (
