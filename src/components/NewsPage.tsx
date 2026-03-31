@@ -129,9 +129,9 @@ async function fetchArchive(): Promise<ArchiveMonth[]> {
 
 	return Array.isArray(payload.months)
 		? payload.months.map((month) => ({
-			month: month.month,
-			topics: Array.isArray(month.topics) ? month.topics.map(mapTopicCard) : [],
-		}))
+				month: month.month,
+				topics: Array.isArray(month.topics) ? month.topics.map(mapTopicCard) : [],
+			}))
 		: [];
 }
 
@@ -150,9 +150,9 @@ async function fetchTopicDetail(topicId: string): Promise<TopicDetailResponse> {
 		...payload,
 		months: Array.isArray(payload.months)
 			? payload.months.map((month) => ({
-				month: month.month,
-				items: Array.isArray(month.items) ? month.items.map(mapTopicNewsItem) : [],
-			}))
+					month: month.month,
+					items: Array.isArray(month.items) ? month.items.map(mapTopicNewsItem) : [],
+				}))
 			: [],
 	};
 }
@@ -349,29 +349,24 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 
 					{isArchiveError && (
 						<div className="rounded-2xl border border-red-200 bg-red-50/80 p-4 text-sm text-red-600 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
-							{archiveError?.message || (lang === "en" ? "Failed to load archive" : "載入主題歸檔失敗")}
+							{archiveError?.message || (lang === "en" ? "Failed to load archive" : "載入主題失敗")}
 						</div>
 					)}
 
 					{archiveEmpty && (
 						<div className="rounded-2xl border border-dashed border-black/10 p-8 text-center text-sm text-gray-500 dark:border-white/10 dark:text-gray-400">
-							{lang === "en" ? "No archived topics yet." : "目前尚無可瀏覽的主題歸檔。"}
+							{lang === "en" ? "No archived topics yet." : "目前尚無可瀏覽的主題。"}
 						</div>
 					)}
 
 					{archiveMonths?.map((month) => (
 						<section key={month.month} className="space-y-4">
 							<div className="flex items-center justify-between gap-4">
-								<div>
-									<p className="text-xs font-semibold tracking-[0.24em] text-gray-400 uppercase dark:text-gray-500">
-										{lang === "en" ? "Archive" : "主題歸檔"}
-									</p>
-									<h2 className="mt-1 text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">
-										{formatArchiveMonthLabel(month.month, lang)}
-									</h2>
-								</div>
+								<h2 className="mt-1 text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">
+									{formatArchiveMonthLabel(month.month, lang)}
+								</h2>
 								<p className="text-sm text-gray-500 dark:text-gray-400">
-									{lang === "en" ? `${month.topics.length} topics updated` : `${month.topics.length} 個主題有更新`}
+									{lang === "en" ? `${month.topics.length} topics` : `${month.topics.length} 個主題`}
 								</p>
 							</div>
 
@@ -417,7 +412,9 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 														rel="noopener noreferrer"
 														className="group flex items-start gap-3 rounded-2xl border border-black/5 bg-white/70 px-4 py-3 transition hover:border-black/10 hover:bg-white dark:border-white/10 dark:bg-white/[0.03] dark:hover:bg-white/[0.06]"
 													>
-														<div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-black/5 text-xs dark:bg-white/10">•</div>
+														<div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-black/5 text-xs dark:bg-white/10">
+															•
+														</div>
 														<div className="min-w-0 flex-1">
 															<p className="text-sm leading-6 font-medium text-gray-900 dark:text-white">{title}</p>
 															<div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-gray-500 dark:text-gray-400">

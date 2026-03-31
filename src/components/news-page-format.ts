@@ -35,7 +35,7 @@ export function formatArchiveMonthLabel(month: string, lang: "en" | "zh-TW") {
 
 export function formatTopicMeta(topic: TopicArchiveCard, lang: "en" | "zh-TW") {
 	if (lang === "zh-TW") {
-		return `本月 ${topic.monthNewsCount} 篇・累計 ${topic.totalNewsCount} 篇`;
+		return `本月 ${topic.monthNewsCount} 篇・共 ${topic.totalNewsCount} 篇`;
 	}
 
 	return `${topic.monthNewsCount} this month - ${topic.totalNewsCount} total`;
