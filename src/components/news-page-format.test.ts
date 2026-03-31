@@ -1,6 +1,13 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { formatArchiveMonthLabel, formatTopicMeta, getTopicPreviewItems, type TopicArchiveCard } from "./news-page-format";
+import {
+	formatArchiveMonthLabel,
+	formatNewsTopicsLabel,
+	formatTopicMeta,
+	getTopicPreviewItems,
+	getVisibleMonthKeys,
+	type TopicArchiveCard,
+} from "./news-page-format";
 
 const topic: TopicArchiveCard = {
 	id: "ai-basic-act",
@@ -40,6 +47,11 @@ test("formatArchiveMonthLabel returns localized labels", () => {
 	assert.equal(formatArchiveMonthLabel("2026-03", "en"), "March 2026");
 });
 
+test("formatNewsTopicsLabel uses the new wording instead of archive", () => {
+	assert.equal(formatNewsTopicsLabel("zh-TW"), "新聞主題");
+	assert.equal(formatNewsTopicsLabel("en"), "News Topics");
+});
+
 test("formatTopicMeta returns localized monthly and total counts", () => {
 	assert.equal(formatTopicMeta(topic, "zh-TW"), "本月 3 篇・共 8 篇");
 	assert.equal(formatTopicMeta(topic, "en"), "3 this month - 8 total");
@@ -60,4 +72,10 @@ test("getTopicPreviewItems caps preview lists to five items", () => {
 		}).length,
 		5,
 	);
+});
+
+test("getVisibleMonthKeys reveals one month at a time for infinite scrolling", () => {
+	assert.deepEqual(getVisibleMonthKeys(["2026-03", "2026-02", "2026-01"], 1), ["2026-03"]);
+	assert.deepEqual(getVisibleMonthKeys(["2026-03", "2026-02", "2026-01"], 2), ["2026-03", "2026-02"]);
+	assert.deepEqual(getVisibleMonthKeys(["2026-03", "2026-02", "2026-01"], 99), ["2026-03", "2026-02", "2026-01"]);
 });

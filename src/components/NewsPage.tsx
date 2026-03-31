@@ -5,8 +5,10 @@ import { AnimatePresence, motion } from "motion/react";
 import { timeAgo } from "../lib/utils";
 import {
 	formatArchiveMonthLabel,
+	formatNewsTopicsLabel,
 	formatTopicMeta,
 	getTopicPreviewItems,
+	getVisibleMonthKeys,
 	type TopicArchiveCard,
 	type TopicArchiveNewsItem,
 } from "./news-page-format";
@@ -42,9 +44,23 @@ type ArchiveMonth = {
 	topics: TopicArchiveCard[];
 };
 
-type ArchiveResponse = {
+type ArchiveMonthResponse = {
 	success: boolean;
 	months: ArchiveMonth[];
+	totalMonths: number;
+	error?: string;
+};
+
+type ArchiveMonthIndexEntry = {
+	month: string;
+	newsCount: number;
+	topicCount: number;
+	latestNewsTime: string;
+};
+
+type ArchiveMonthIndexResponse = {
+	success: boolean;
+	months: ArchiveMonthIndexEntry[];
 	totalMonths: number;
 	error?: string;
 };
@@ -111,9 +127,27 @@ async function fetchNews({ pageParam = 1, query = "" }: { pageParam?: number; qu
 	return payload;
 }
 
-async function fetchArchive(): Promise<ArchiveMonth[]> {
+async function fetchArchiveMonthIndex(): Promise<ArchiveMonthIndexEntry[]> {
 	const params = new URLSearchParams({
 		months: String(ARCHIVE_MONTHS),
+	});
+
+	const res = await fetch(`https://aifferent.juchunko.com/api/news/archive/months?${params.toString()}`);
+	if (!res.ok) {
+		throw new Error("Server returned error");
+	}
+
+	const payload = (await res.json()) as ArchiveMonthIndexResponse;
+	if (!payload.success) {
+		throw new Error(payload.error || "Failed to load news topics");
+	}
+
+	return Array.isArray(payload.months) ? payload.months : [];
+}
+
+async function fetchArchiveMonth(month: string): Promise<ArchiveMonth | null> {
+	const params = new URLSearchParams({
+		month,
 		previewLimit: "5",
 	});
 
@@ -122,17 +156,20 @@ async function fetchArchive(): Promise<ArchiveMonth[]> {
 		throw new Error("Server returned error");
 	}
 
-	const payload = (await res.json()) as ArchiveResponse;
+	const payload = (await res.json()) as ArchiveMonthResponse;
 	if (!payload.success) {
-		throw new Error(payload.error || "Failed to load archive");
+		throw new Error(payload.error || "Failed to load month topics");
 	}
 
-	return Array.isArray(payload.months)
-		? payload.months.map((month) => ({
-				month: month.month,
-				topics: Array.isArray(month.topics) ? month.topics.map(mapTopicCard) : [],
-			}))
-		: [];
+	const monthEntry = Array.isArray(payload.months) ? payload.months[0] : null;
+	if (!monthEntry) {
+		return null;
+	}
+
+	return {
+		month: monthEntry.month,
+		topics: Array.isArray(monthEntry.topics) ? monthEntry.topics.map(mapTopicCard) : [],
+	};
 }
 
 async function fetchTopicDetail(topicId: string): Promise<TopicDetailResponse> {
@@ -150,27 +187,150 @@ async function fetchTopicDetail(topicId: string): Promise<TopicDetailResponse> {
 		...payload,
 		months: Array.isArray(payload.months)
 			? payload.months.map((month) => ({
-					month: month.month,
-					items: Array.isArray(month.items) ? month.items.map(mapTopicNewsItem) : [],
-				}))
+				month: month.month,
+				items: Array.isArray(month.items) ? month.items.map(mapTopicNewsItem) : [],
+			}))
 			: [],
 	};
+}
+
+function MonthTopicsSection({
+	monthMeta,
+	lang,
+	onOpenTopic,
+}: {
+	monthMeta: ArchiveMonthIndexEntry;
+	lang: "en" | "zh-TW";
+	onOpenTopic: (topicId: string) => void;
+}) {
+	const {
+		data: archiveMonth,
+		isLoading,
+		isError,
+		error,
+	} = useQuery(
+		{
+			queryKey: ["news-archive-month", monthMeta.month],
+			queryFn: () => fetchArchiveMonth(monthMeta.month),
+		},
+		queryClient,
+	);
+
+	return (
+		<section className="space-y-4">
+			<div className="flex items-center justify-between gap-4">
+				<div>
+					<p className="text-xs font-semibold tracking-[0.24em] text-gray-400 uppercase dark:text-gray-500">
+						{formatNewsTopicsLabel(lang)}
+					</p>
+					<h2 className="mt-1 text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">
+						{formatArchiveMonthLabel(monthMeta.month, lang)}
+					</h2>
+				</div>
+				<p className="text-sm text-gray-500 dark:text-gray-400">
+					{lang === "en"
+						? `${monthMeta.topicCount} topics · ${monthMeta.newsCount} stories`
+						: `${monthMeta.topicCount} 個主題・${monthMeta.newsCount} 則新聞`}
+				</p>
+			</div>
+
+			{isLoading && (
+				<div className="flex items-center justify-center rounded-2xl border border-dashed border-black/10 p-10 text-sm text-gray-500 dark:border-white/10 dark:text-gray-400">
+					{lang === "en" ? "Loading news topics..." : "新聞主題載入中..."}
+				</div>
+			)}
+
+			{isError && (
+				<div className="rounded-2xl border border-red-200 bg-red-50/80 p-4 text-sm text-red-600 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
+					{error?.message || (lang === "en" ? "Failed to load news topics" : "載入新聞主題失敗")}
+				</div>
+			)}
+
+			{archiveMonth && archiveMonth.topics.length === 0 && !isLoading && !isError && (
+				<div className="rounded-2xl border border-dashed border-black/10 p-8 text-center text-sm text-gray-500 dark:border-white/10 dark:text-gray-400">
+					{lang === "en" ? "No news topics in this month yet." : "這個月份目前還沒有新聞主題。"}
+				</div>
+			)}
+
+			{archiveMonth && archiveMonth.topics.length > 0 && (
+				<div className="grid gap-4">
+					{archiveMonth.topics.map((topic) => (
+						<article
+							key={`${monthMeta.month}-${topic.id}`}
+							className="overflow-hidden rounded-3xl border border-black/5 bg-linear-to-br from-white to-slate-50 p-5 shadow-sm shadow-black/5 dark:border-white/10 dark:from-white/8 dark:to-white/[0.03]"
+						>
+							<div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+								<div className="min-w-0 flex-1">
+									<div className="flex items-start gap-3">
+										<div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-black/[0.04] text-2xl dark:bg-white/8">
+											{topic.emoji || "📰"}
+										</div>
+										<div className="min-w-0 flex-1">
+											<h3 className="text-lg leading-snug font-semibold text-gray-900 dark:text-white">{topic.title}</h3>
+											<p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{formatTopicMeta(topic, lang)}</p>
+											{topic.summary && (
+												<p className="mt-3 max-w-2xl text-sm leading-6 text-gray-600 dark:text-gray-300">{topic.summary}</p>
+											)}
+										</div>
+									</div>
+								</div>
+
+								<button
+									type="button"
+									onClick={() => onOpenTopic(topic.id)}
+									className="inline-flex h-11 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-black/10 px-4 text-sm font-medium transition hover:bg-black/[0.04] dark:border-white/10 dark:hover:bg-white/5"
+								>
+									{lang === "en" ? "View more" : "查看更多"}
+								</button>
+							</div>
+
+							<div className="mt-5 grid gap-2">
+								{getTopicPreviewItems(topic).map((item) => {
+									const title = lang === "en" ? item.title_en || item.title : item.title;
+									return (
+										<a
+											key={item.url}
+											href={item.url}
+											target="_blank"
+											rel="noopener noreferrer"
+											className="group flex items-start gap-3 rounded-2xl border border-black/5 bg-white/70 px-4 py-3 transition hover:border-black/10 hover:bg-white dark:border-white/10 dark:bg-white/[0.03] dark:hover:bg-white/[0.06]"
+										>
+											<div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-black/5 text-xs dark:bg-white/10">•</div>
+											<div className="min-w-0 flex-1">
+												<p className="text-sm leading-6 font-medium text-gray-900 dark:text-white">{title}</p>
+												<div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+													{item.source && <span>{item.source}</span>}
+													<span>{timeAgo(item.time, lang)}</span>
+												</div>
+											</div>
+											<ExternalLink className="mt-0.5 size-4 shrink-0 text-gray-400 transition group-hover:text-gray-700 dark:group-hover:text-white" />
+										</a>
+									);
+								})}
+							</div>
+						</article>
+					))}
+				</div>
+			)}
+		</section>
+	);
 }
 
 export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 	const [searchDraft, setSearchDraft] = useState("");
 	const [searchQuery, setSearchQuery] = useState("");
 	const [selectedTopicId, setSelectedTopicId] = useState<string | null>(null);
+	const [visibleMonthCount, setVisibleMonthCount] = useState(1);
 
 	const {
-		data: archiveMonths,
-		isLoading: isArchiveLoading,
-		isError: isArchiveError,
-		error: archiveError,
+		data: archiveMonthIndex,
+		isLoading: isMonthIndexLoading,
+		isError: isMonthIndexError,
+		error: monthIndexError,
 	} = useQuery(
 		{
-			queryKey: ["news-archive", ARCHIVE_MONTHS],
-			queryFn: fetchArchive,
+			queryKey: ["news-archive-month-index", ARCHIVE_MONTHS],
+			queryFn: fetchArchiveMonthIndex,
 		},
 		queryClient,
 	);
@@ -213,6 +373,11 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 	);
 
 	const searchItems = searchData?.pages.flatMap((page) => page.data) || [];
+	const visibleMonthKeys = getVisibleMonthKeys(
+		(archiveMonthIndex ?? []).map((month) => month.month),
+		visibleMonthCount,
+	);
+	const visibleMonths = (archiveMonthIndex ?? []).filter((month) => visibleMonthKeys.includes(month.month));
 
 	useEffect(() => {
 		if (!searchQuery) return;
@@ -234,6 +399,35 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 		return () => observer.disconnect();
 	}, [fetchNextPage, hasNextPage, isFetchingNextPage, searchQuery]);
 
+	useEffect(() => {
+		if (searchQuery) return;
+
+		const totalMonths = archiveMonthIndex?.length ?? 0;
+		if (totalMonths === 0 || visibleMonthCount >= totalMonths) return;
+
+		const observer = new IntersectionObserver(
+			(entries) => {
+				if (entries[0]?.isIntersecting) {
+					setVisibleMonthCount((current) => Math.min(current + 1, totalMonths));
+				}
+			},
+			{ rootMargin: "320px" },
+		);
+
+		const sentinel = document.getElementById("news-months-sentinel");
+		if (sentinel) {
+			observer.observe(sentinel);
+		}
+
+		return () => observer.disconnect();
+	}, [archiveMonthIndex, searchQuery, visibleMonthCount]);
+
+	useEffect(() => {
+		if (!searchQuery) {
+			setVisibleMonthCount(1);
+		}
+	}, [searchQuery]);
+
 	const handleSearchSubmit = (event: React.FormEvent) => {
 		event.preventDefault();
 		setSearchQuery(searchDraft.trim());
@@ -244,7 +438,7 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 		setSearchQuery("");
 	};
 
-	const archiveEmpty = !isArchiveLoading && !isArchiveError && (archiveMonths?.length ?? 0) === 0;
+	const archiveEmpty = !isMonthIndexLoading && !isMonthIndexError && (archiveMonthIndex?.length ?? 0) === 0;
 
 	return (
 		<div>
@@ -286,11 +480,11 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 				<p className="mt-3 text-sm text-gray-500 dark:text-gray-400">
 					{searchQuery
 						? lang === "en"
-							? `Showing search results for “${searchQuery}”. Clear to return to topic cards.`
-							: `目前顯示「${searchQuery}」的搜尋結果；清除後可回到主題卡片。`
+							? `Showing search results for “${searchQuery}”. Clear to return to news topics.`
+							: `目前顯示「${searchQuery}」的搜尋結果；清除後可回到新聞主題。`
 						: lang === "en"
-							? "Browse news by month and topic, then open a topic to explore the full timeline."
-							: "依月份瀏覽新聞主題卡片，再透過「查看更多」探索同一主題的完整時間線。"}
+							? "Browse one month at a time, then open a news topic to explore the full timeline."
+							: "依月份逐月瀏覽新聞主題，再透過「查看更多」探索同一主題的完整時間線。"}
 				</p>
 			</section>
 
@@ -341,97 +535,42 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 				</section>
 			) : (
 				<section className="space-y-10">
-					{isArchiveLoading && (
+					{isMonthIndexLoading && (
 						<div className="flex items-center justify-center rounded-2xl border border-dashed border-black/10 p-10 text-sm text-gray-500 dark:border-white/10 dark:text-gray-400">
-							{lang === "en" ? "Loading topic archive..." : "主題卡片載入中..."}
+							{lang === "en" ? "Loading news topics..." : "新聞主題載入中..."}
 						</div>
 					)}
 
-					{isArchiveError && (
+					{isMonthIndexError && (
 						<div className="rounded-2xl border border-red-200 bg-red-50/80 p-4 text-sm text-red-600 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
-							{archiveError?.message || (lang === "en" ? "Failed to load archive" : "載入主題失敗")}
+							{monthIndexError?.message || (lang === "en" ? "Failed to load news topics" : "載入新聞主題失敗")}
 						</div>
 					)}
 
 					{archiveEmpty && (
 						<div className="rounded-2xl border border-dashed border-black/10 p-8 text-center text-sm text-gray-500 dark:border-white/10 dark:text-gray-400">
-							{lang === "en" ? "No archived topics yet." : "目前尚無可瀏覽的主題。"}
+							{lang === "en" ? "No news topics yet." : "目前尚無可瀏覽的新聞主題。"}
 						</div>
 					)}
 
-					{archiveMonths?.map((month) => (
-						<section key={month.month} className="space-y-4">
-							<div className="flex items-center justify-between gap-4">
-								<h2 className="mt-1 text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">
-									{formatArchiveMonthLabel(month.month, lang)}
-								</h2>
-								<p className="text-sm text-gray-500 dark:text-gray-400">
-									{lang === "en" ? `${month.topics.length} topics` : `${month.topics.length} 個主題`}
-								</p>
-							</div>
-
-							<div className="grid gap-4">
-								{month.topics.map((topic) => (
-									<article
-										key={`${month.month}-${topic.id}`}
-										className="overflow-hidden rounded-3xl border border-black/5 bg-linear-to-br from-white to-slate-50 p-5 shadow-sm shadow-black/5 dark:border-white/10 dark:from-white/8 dark:to-white/[0.03]"
-									>
-										<div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-											<div className="min-w-0 flex-1">
-												<div className="flex items-start gap-3">
-													<div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-black/[0.04] text-2xl dark:bg-white/8">
-														{topic.emoji || "📰"}
-													</div>
-													<div className="min-w-0 flex-1">
-														<h3 className="text-lg leading-snug font-semibold text-gray-900 dark:text-white">{topic.title}</h3>
-														<p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{formatTopicMeta(topic, lang)}</p>
-														{topic.summary && (
-															<p className="mt-3 max-w-2xl text-sm leading-6 text-gray-600 dark:text-gray-300">{topic.summary}</p>
-														)}
-													</div>
-												</div>
-											</div>
-
-											<button
-												type="button"
-												onClick={() => setSelectedTopicId(topic.id)}
-												className="inline-flex h-11 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-black/10 px-4 text-sm font-medium transition hover:bg-black/[0.04] dark:border-white/10 dark:hover:bg-white/5"
-											>
-												{lang === "en" ? "View more" : "查看更多"}
-											</button>
-										</div>
-
-										<div className="mt-5 grid gap-2">
-											{getTopicPreviewItems(topic).map((item) => {
-												const title = lang === "en" ? item.title_en || item.title : item.title;
-												return (
-													<a
-														key={item.url}
-														href={item.url}
-														target="_blank"
-														rel="noopener noreferrer"
-														className="group flex items-start gap-3 rounded-2xl border border-black/5 bg-white/70 px-4 py-3 transition hover:border-black/10 hover:bg-white dark:border-white/10 dark:bg-white/[0.03] dark:hover:bg-white/[0.06]"
-													>
-														<div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-black/5 text-xs dark:bg-white/10">
-															•
-														</div>
-														<div className="min-w-0 flex-1">
-															<p className="text-sm leading-6 font-medium text-gray-900 dark:text-white">{title}</p>
-															<div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
-																{item.source && <span>{item.source}</span>}
-																<span>{timeAgo(item.time, lang)}</span>
-															</div>
-														</div>
-														<ExternalLink className="mt-0.5 size-4 shrink-0 text-gray-400 transition group-hover:text-gray-700 dark:group-hover:text-white" />
-													</a>
-												);
-											})}
-										</div>
-									</article>
-								))}
-							</div>
-						</section>
+					{visibleMonths.map((monthMeta) => (
+						<MonthTopicsSection key={monthMeta.month} monthMeta={monthMeta} lang={lang} onOpenTopic={setSelectedTopicId} />
 					))}
+
+					{visibleMonths.length > 0 && visibleMonths.length < (archiveMonthIndex?.length ?? 0) && (
+						<>
+							<div className="text-center text-sm text-gray-500 dark:text-gray-400">
+								{lang === "en" ? "Scroll to load the next month..." : "往下捲動以載入下一個月份..."}
+							</div>
+							<div id="news-months-sentinel" style={{ minHeight: 1 }} />
+						</>
+					)}
+
+					{visibleMonths.length > 0 && visibleMonths.length >= (archiveMonthIndex?.length ?? 0) && (
+						<div className="text-center text-sm text-gray-500 dark:text-gray-400">
+							{lang === "en" ? "All available months are loaded." : "已載入所有可用月份。"}
+						</div>
+					)}
 				</section>
 			)}
 
