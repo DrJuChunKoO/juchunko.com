@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { getFeaturedAchievementMeta, getHomepageCopy, selectFeaturedEntries } from "./homepage";
 
 test("selectFeaturedEntries keeps the curated homepage order", () => {
@@ -43,4 +44,12 @@ test("getFeaturedAchievementMeta returns the icon for each highlighted issue", (
 		icon: "nuclear",
 		label: "Energy resilience",
 	});
+});
+
+test("homepage keeps the issues archive and scroll margin anchors", () => {
+	const source = readFileSync(new URL("../pages/[lang]/index.astro", import.meta.url), "utf8");
+
+	assert.match(source, /id="issues"/);
+	assert.match(source, /id="quick-links" class="mb-12 scroll-mt-24 space-y-6 md:scroll-mt-28"/);
+	assert.match(source, /id="reading" class="scroll-mt-24 space-y-10 md:scroll-mt-28"/);
 });
