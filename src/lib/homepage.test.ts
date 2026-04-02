@@ -19,22 +19,8 @@ test("selectFeaturedEntries keeps the curated homepage order", () => {
 test("getHomepageCopy exposes guided first-visit navigation", () => {
 	const copy = getHomepageCopy("zh-TW");
 
-	assert.equal(copy.hero.title, "葛如鈞．寶博士");
-	assert.equal(copy.quickLinks.length, 5);
-	assert.equal(copy.quickLinks[0]?.href, "/zh-TW/manual/introduction");
-	assert.equal(copy.quickLinks[1]?.href, "#achievements");
-	assert.equal(copy.quickLinks[4]?.title, "聯繫寶博");
+	assert.equal(copy.hero.title, "科技立委葛如鈞．寶博士");
 });
-
-test("getHomepageCopy assigns icon keys to quick links", () => {
-	const copy = getHomepageCopy("en");
-
-	assert.deepEqual(
-		copy.quickLinks.map((link) => link.icon),
-		["bio", "results", "issues", "updates", "contact"],
-	);
-});
-
 test("getFeaturedAchievementMeta returns the icon for each highlighted issue", () => {
 	assert.deepEqual(getFeaturedAchievementMeta("ai-basic-act", "zh-TW"), {
 		icon: "ai",
@@ -50,6 +36,5 @@ test("homepage keeps the issues archive and scroll margin anchors", () => {
 	const source = readFileSync(new URL("../pages/[lang]/index.astro", import.meta.url), "utf8");
 
 	assert.match(source, /id="issues"/);
-	assert.match(source, /id="quick-links" class="mb-12 scroll-mt-24 space-y-6 md:scroll-mt-28"/);
 	assert.match(source, /id="reading" class="scroll-mt-24 space-y-10 md:scroll-mt-28"/);
 });

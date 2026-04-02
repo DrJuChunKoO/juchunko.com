@@ -14,7 +14,6 @@ export interface HomepageHeroCopy {
 		label: string;
 		href: string;
 	};
-	tags: string[];
 }
 
 export interface HomepageQuickLink {
@@ -31,7 +30,6 @@ export interface HomepageAchievementMeta {
 
 export interface HomepageCopy {
 	hero: HomepageHeroCopy;
-	quickLinks: HomepageQuickLink[];
 	sectionTitles: {
 		achievements: string;
 		issues: string;
@@ -84,51 +82,17 @@ export function getHomepageCopy(lang: SupportedLang): HomepageCopy {
 		return {
 			hero: {
 				eyebrow: "立法委員 / 科技政策 / AI・資安・通訊韌性",
-				title: "葛如鈞．寶博士",
-				summary:
-					"葛如鈞是第十一屆立法委員，長期聚焦 AI 治理、資安韌性與通訊基礎建設。先看簡介，再看三個代表性成果，就能很快掌握他在做什麼。",
+				title: "科技立委葛如鈞．寶博士",
+				summary: "葛如鈞是中華民國第十一屆全國不分區立法委員，長期聚焦 AI 治理、資安韌性與通訊基礎建設。",
 				primaryCta: {
 					label: "閱讀簡介",
 					href: `/${lang}/manual/introduction`,
 				},
 				secondaryCta: {
-					label: "看代表成果",
-					href: "#achievements",
-				},
-				tags: ["AI 治理", "資安韌性", "通訊基礎建設"],
-			},
-			quickLinks: [
-				{
-					title: "認識葛如鈞",
-					description: "先讀簡介，快速建立背景。",
-					href: `/${lang}/manual/introduction`,
-					icon: "bio",
-				},
-				{
-					title: "代表成果",
-					description: "先看三件最值得了解的成果。",
-					href: "#achievements",
-					icon: "results",
-				},
-				{
-					title: "重點議題",
-					description: "直接跳到法案與議題總覽。",
-					href: "#issues",
-					icon: "issues",
-				},
-				{
-					title: "最新動態",
-					description: "新聞、活動與轉載更新。",
-					href: "#updates",
-					icon: "updates",
-				},
-				{
-					title: "聯繫寶博",
-					description: "找到官方聯繫方式。",
+					label: "聯繫寶博",
 					href: `/${lang}/fragment/contact`,
-					icon: "contact",
 				},
-			],
+			},
 			sectionTitles: {
 				achievements: "代表成果",
 				issues: "重點議題",
@@ -145,49 +109,16 @@ export function getHomepageCopy(lang: SupportedLang): HomepageCopy {
 			eyebrow: "Legislator / Tech policy / AI, cybersecurity, and network resilience",
 			title: "Ju Chun Ko",
 			summary:
-				"Ju-Chun Ko is a Legislative Yuan at-large legislator focused on AI governance, cybersecurity resilience, and communications infrastructure. Start with the bio and three representative achievements to understand his work quickly.",
+				"Ju-Chun Ko is a member of the 11th Legislative Yuan at-large seat in the Republic of China (Taiwan), focused on AI governance, cybersecurity resilience, and communications infrastructure.",
 			primaryCta: {
 				label: "Read the bio",
 				href: `/${lang}/manual/introduction`,
 			},
 			secondaryCta: {
-				label: "See achievements",
-				href: "#achievements",
-			},
-			tags: ["AI governance", "Cybersecurity", "Network resilience"],
-		},
-		quickLinks: [
-			{
-				title: "About Ju-Chun Ko",
-				description: "Start with a concise biography and role summary.",
-				href: `/${lang}/manual/introduction`,
-				icon: "bio",
-			},
-			{
-				title: "Representative results",
-				description: "See the three achievements worth reading first.",
-				href: "#achievements",
-				icon: "results",
-			},
-			{
-				title: "Key issues",
-				description: "Jump to the full issue archive.",
-				href: "#issues",
-				icon: "issues",
-			},
-			{
-				title: "Latest updates",
-				description: "News, activity, blog, and transcript updates.",
-				href: "#updates",
-				icon: "updates",
-			},
-			{
-				title: "Contact",
-				description: "Find the official contact path.",
+				label: "Contact",
 				href: `/${lang}/fragment/contact`,
-				icon: "contact",
 			},
-		],
+		},
 		sectionTitles: {
 			achievements: "Representative achievements",
 			issues: "Key issues",
