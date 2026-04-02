@@ -608,45 +608,35 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 							exit="closed"
 						>
 							<div className="border-b border-black/5 px-5 py-4 dark:border-white/10">
-								<div className="flex items-start justify-between gap-4">
-									<div className="min-w-0 flex-1">
+								<div className="flex gap-4">
+									<div className="flex min-w-0 flex-1 flex-col gap-1">
 										{selectedTopic?.topic ? (
-											<div className="flex items-start gap-3">
-												<div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-black/[0.04] text-2xl dark:bg-white/8">
-													{selectedTopic.topic.emoji || selectedTopicPreview?.emoji || "📰"}
-												</div>
-												<div className="min-w-0 flex-1">
-													<h2 className="text-2xl leading-tight font-semibold text-gray-900 dark:text-white">
-														{lang === "en" ? selectedTopic.topic.titleEn || selectedTopic.topic.title : selectedTopic.topic.title}
-													</h2>
-													<p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-														{lang === "en"
-															? `${selectedTopic.totalNewsCount} news items across the same topic`
-															: `同一主題共 ${selectedTopic.totalNewsCount} 則新聞`}
+											<>
+												<h2 className="text-2xl leading-tight font-semibold text-gray-900 dark:text-white">
+													{lang === "en" ? selectedTopic.topic.titleEn || selectedTopic.topic.title : selectedTopic.topic.title}
+												</h2>
+												<p className="text-sm text-gray-500 dark:text-gray-400">
+													{lang === "en"
+														? `${selectedTopic.totalNewsCount} news items across the same topic`
+														: `同一主題共 ${selectedTopic.totalNewsCount} 則新聞`}
+												</p>
+												{(lang === "en" ? selectedTopic.topic.summaryEn || selectedTopic.topic.summary : selectedTopic.topic.summary) && (
+													<p className="max-w-2xl text-sm leading-6 text-gray-600 dark:text-gray-300">
+														{lang === "en" ? selectedTopic.topic.summaryEn || selectedTopic.topic.summary : selectedTopic.topic.summary}
 													</p>
-													{(lang === "en" ? selectedTopic.topic.summaryEn || selectedTopic.topic.summary : selectedTopic.topic.summary) && (
-														<p className="mt-3 max-w-2xl text-sm leading-6 text-gray-600 dark:text-gray-300">
-															{lang === "en" ? selectedTopic.topic.summaryEn || selectedTopic.topic.summary : selectedTopic.topic.summary}
-														</p>
-													)}
-												</div>
-											</div>
+												)}
+											</>
 										) : selectedTopicPreview ? (
-											<div className="mt-3 flex items-start gap-3">
-												<div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-black/[0.04] text-2xl dark:bg-white/8">
-													{selectedTopicPreview.emoji || "📰"}
-												</div>
-												<div className="min-w-0 flex-1">
-													<h2 className="text-2xl leading-tight font-semibold text-gray-900 dark:text-white">
-														{getTopicDisplayTitle(selectedTopicPreview, lang)}
-													</h2>
-													{getTopicDisplaySummary(selectedTopicPreview, lang) && (
-														<p className="mt-3 max-w-2xl text-sm leading-6 text-gray-600 dark:text-gray-300">
-															{getTopicDisplaySummary(selectedTopicPreview, lang)}
-														</p>
-													)}
-												</div>
-											</div>
+											<>
+												<h2 className="text-2xl leading-tight font-semibold text-gray-900 dark:text-white">
+													{getTopicDisplayTitle(selectedTopicPreview, lang)}
+												</h2>
+												{getTopicDisplaySummary(selectedTopicPreview, lang) && (
+													<p className="max-w-2xl text-sm leading-6 text-gray-600 dark:text-gray-300">
+														{getTopicDisplaySummary(selectedTopicPreview, lang)}
+													</p>
+												)}
+											</>
 										) : (
 											<h2 className="text-lg font-semibold text-gray-900 dark:text-white">
 												{lang === "en" ? "Loading topic..." : "主題載入中..."}
@@ -654,13 +644,18 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 										)}
 									</div>
 
-									<button
-										type="button"
-										onClick={closeTopicDialog}
-										className="inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-black/10 transition hover:bg-black/[0.04] dark:border-white/10 dark:hover:bg-white/5"
-									>
-										<X className="size-4" />
-									</button>
+									<div className="flex flex-col items-end justify-between">
+										<button
+											type="button"
+											onClick={closeTopicDialog}
+											className="inline-flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-black/10 text-sm font-medium backdrop-blur-sm transition hover:bg-black/[0.04] dark:border-white/10 dark:hover:bg-white/5"
+										>
+											<X className="size-4" />
+										</button>
+										<div className="pointer-events-none text-4xl opacity-25">
+											{selectedTopic?.topic?.emoji || selectedTopicPreview?.emoji || "📰"}
+										</div>
+									</div>
 								</div>
 							</div>
 
@@ -695,13 +690,18 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 														href={item.url}
 														target="_blank"
 														rel="noopener noreferrer"
-														className="group flex items-start gap-3 rounded-2xl border border-black/5 px-4 py-3 transition hover:border-black/10 hover:bg-black/[0.02] dark:border-white/10 dark:hover:bg-white/[0.03]"
+														className="group flex items-start gap-3 rounded-lg border border-black/5 bg-white/70 px-3 py-2 transition hover:border-black/10 hover:bg-white dark:border-white/10 dark:bg-white/[0.03] dark:hover:bg-white/[0.06]"
 													>
 														<div className="min-w-0 flex-1">
 															<p className="text-sm leading-6 font-medium text-gray-900 dark:text-white">{title}</p>
-															<div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
-																{item.source && <span>{item.source}</span>}
+															<div className="mt-1 flex flex-wrap items-center text-xs text-gray-500 dark:text-gray-400">
 																<span>{timeAgo(item.time, lang)}</span>
+																{item.source && (
+																	<>
+																		<span className="mx-1 text-gray-500">·</span>
+																		<span>{item.source}</span>
+																	</>
+																)}
 															</div>
 														</div>
 														<ArrowUpRight className="mt-0.5 size-4 shrink-0 text-gray-400 transition group-hover:text-gray-700 dark:group-hover:text-white" />
