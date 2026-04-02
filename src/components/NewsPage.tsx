@@ -14,6 +14,8 @@ import {
 	type TopicArchiveCard,
 	type TopicArchiveNewsItem,
 } from "./news-page-format";
+import { applyDialogScrollLock } from "./news-page-scroll-lock";
+import { dialogBackdropVariants, dialogLayerClassNames, dialogPanelVariants } from "./news-page-motion";
 
 const queryClient = new QueryClient({
 	defaultOptions: {
@@ -193,9 +195,9 @@ async function fetchTopicDetail(topicId: string): Promise<TopicDetailResponse> {
 		...payload,
 		months: Array.isArray(payload.months)
 			? payload.months.map((month) => ({
-				month: month.month,
-				items: Array.isArray(month.items) ? month.items.map(mapTopicNewsItem) : [],
-			}))
+					month: month.month,
+					items: Array.isArray(month.items) ? month.items.map(mapTopicNewsItem) : [],
+				}))
 			: [],
 	};
 }
@@ -207,7 +209,7 @@ function MonthTopicsSection({
 }: {
 	monthMeta: ArchiveMonthIndexEntry;
 	lang: "en" | "zh-TW";
-	onOpenTopic: (topicId: string) => void;
+	onOpenTopic: (topic: TopicArchiveCard) => void;
 }) {
 	const {
 		data: archiveMonth,
@@ -225,14 +227,10 @@ function MonthTopicsSection({
 	return (
 		<section className="space-y-4">
 			<div className="flex items-center justify-between gap-4">
-				<div>
-					<p className="text-xs font-semibold tracking-[0.24em] text-gray-400 uppercase dark:text-gray-500">
-						{formatNewsTopicsLabel(lang)}
-					</p>
-					<h2 className="mt-1 text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">
-						{formatArchiveMonthLabel(monthMeta.month, lang)}
-					</h2>
-				</div>
+				<h2 className="text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">
+					{formatArchiveMonthLabel(monthMeta.month, lang)}
+				</h2>
+
 				<p className="text-sm text-gray-500 dark:text-gray-400">
 					{lang === "en"
 						? `${monthMeta.topicCount} topics · ${monthMeta.newsCount} stories`
@@ -259,38 +257,31 @@ function MonthTopicsSection({
 			)}
 
 			{archiveMonth && archiveMonth.topics.length > 0 && (
-				<div className="grid gap-4">
+				<div className="space-y-4">
 					{archiveMonth.topics.map((topic) => (
-						<article
-							key={`${monthMeta.month}-${topic.id}`}
-							className="overflow-hidden rounded-3xl border border-black/5 bg-linear-to-br from-white to-slate-50 p-5 shadow-sm shadow-black/5 dark:border-white/10 dark:from-white/8 dark:to-white/[0.03]"
-						>
-							<div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-								<div className="min-w-0 flex-1">
-									<div className="flex items-start gap-3">
-										<div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-black/[0.04] text-2xl dark:bg-white/8">
-											{topic.emoji || "📰"}
-										</div>
-										<div className="min-w-0 flex-1">
-											<h3 className="text-lg leading-snug font-semibold text-gray-900 dark:text-white">{getTopicDisplayTitle(topic, lang)}</h3>
-											<p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{formatTopicMeta(topic, lang)}</p>
-											{getTopicDisplaySummary(topic, lang) && (
-												<p className="mt-3 max-w-2xl text-sm leading-6 text-gray-600 dark:text-gray-300">{getTopicDisplaySummary(topic, lang)}</p>
-											)}
-										</div>
-									</div>
+						<article key={`${monthMeta.month}-${topic.id}`} className="rounded-2xl border p-4">
+							<div className="relative flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+								<div className="pointer-events-none absolute right-0 text-4xl opacity-25 max-md:top-0 md:bottom-0 md:text-6xl">
+									{topic.emoji || "📰"}
+								</div>
+								<div className="flex min-w-0 flex-1 flex-col gap-1">
+									<h3 className="text-lg leading-snug font-semibold text-gray-900 dark:text-white">{getTopicDisplayTitle(topic, lang)}</h3>
+									<p className="text-sm text-gray-500 dark:text-gray-400">{formatTopicMeta(topic, lang)}</p>
+									{getTopicDisplaySummary(topic, lang) && (
+										<p className="max-w-2xl text-sm leading-6 text-gray-600 dark:text-gray-300">{getTopicDisplaySummary(topic, lang)}</p>
+									)}
 								</div>
 
 								<button
 									type="button"
-									onClick={() => onOpenTopic(topic.id)}
-									className="inline-flex h-11 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-black/10 px-4 text-sm font-medium transition hover:bg-black/[0.04] dark:border-white/10 dark:hover:bg-white/5"
+									onClick={() => onOpenTopic(topic)}
+									className="inline-flex h-11 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-black/10 px-4 text-sm font-medium backdrop-blur-sm transition hover:bg-black/[0.04] dark:border-white/10 dark:hover:bg-white/5"
 								>
 									{lang === "en" ? "View more" : "查看更多"}
 								</button>
 							</div>
 
-							<div className="mt-5 grid gap-2">
+							<div className="mt-4 grid gap-2">
 								{getTopicPreviewItems(topic).map((item) => {
 									const title = lang === "en" ? item.title_en || item.title : item.title;
 									return (
@@ -299,14 +290,18 @@ function MonthTopicsSection({
 											href={item.url}
 											target="_blank"
 											rel="noopener noreferrer"
-											className="group flex items-start gap-3 rounded-2xl border border-black/5 bg-white/70 px-4 py-3 transition hover:border-black/10 hover:bg-white dark:border-white/10 dark:bg-white/[0.03] dark:hover:bg-white/[0.06]"
+											className="group flex items-start gap-3 rounded-lg border border-black/5 bg-white/70 px-3 py-2 transition hover:border-black/10 hover:bg-white dark:border-white/10 dark:bg-white/[0.03] dark:hover:bg-white/[0.06]"
 										>
-											<div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-black/5 text-xs dark:bg-white/10">•</div>
 											<div className="min-w-0 flex-1">
 												<p className="text-sm leading-6 font-medium text-gray-900 dark:text-white">{title}</p>
-												<div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
-													{item.source && <span>{item.source}</span>}
+												<div className="mt-1 flex flex-wrap items-center text-xs text-gray-500 dark:text-gray-400">
 													<span>{timeAgo(item.time, lang)}</span>
+													{item.source && (
+														<>
+															<span className="mx-1 text-gray-500">·</span>
+															<span>{item.source}</span>
+														</>
+													)}
 												</div>
 											</div>
 											<ExternalLink className="mt-0.5 size-4 shrink-0 text-gray-400 transition group-hover:text-gray-700 dark:group-hover:text-white" />
@@ -325,6 +320,7 @@ function MonthTopicsSection({
 export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 	const [searchDraft, setSearchDraft] = useState("");
 	const [searchQuery, setSearchQuery] = useState("");
+	const [selectedTopicPreview, setSelectedTopicPreview] = useState<TopicArchiveCard | null>(null);
 	const [selectedTopicId, setSelectedTopicId] = useState<string | null>(null);
 	const [visibleMonthCount, setVisibleMonthCount] = useState(1);
 
@@ -435,21 +431,9 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 	}, [searchQuery]);
 
 	useEffect(() => {
-		const previousOverflow = document.body.style.overflow;
-		const previousPaddingRight = document.body.style.paddingRight;
-
 		if (selectedTopicId) {
-			const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
-			document.body.style.overflow = "hidden";
-			if (scrollbarWidth > 0) {
-				document.body.style.paddingRight = `${scrollbarWidth}px`;
-			}
+			return applyDialogScrollLock(document);
 		}
-
-		return () => {
-			document.body.style.overflow = previousOverflow;
-			document.body.style.paddingRight = previousPaddingRight;
-		};
 	}, [selectedTopicId]);
 
 	const handleSearchSubmit = (event: React.FormEvent) => {
@@ -462,12 +446,21 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 		setSearchQuery("");
 	};
 
+	const openTopicDialog = (topic: TopicArchiveCard) => {
+		setSelectedTopicPreview(topic);
+		setSelectedTopicId(topic.id);
+	};
+
+	const closeTopicDialog = () => {
+		setSelectedTopicId(null);
+	};
+
 	const archiveEmpty = !isMonthIndexLoading && !isMonthIndexError && (archiveMonthIndex?.length ?? 0) === 0;
 
 	return (
 		<div>
-			<section className="mb-8 rounded-2xl border border-black/5 bg-white/80 p-4 shadow-sm shadow-black/5 backdrop-blur-sm dark:border-white/10 dark:bg-white/5">
-				<form id="news-search-form-react" className="flex flex-col gap-3 md:flex-row" onSubmit={handleSearchSubmit}>
+			<section className="mb-8 rounded-xl border bg-white/80 p-4 backdrop-blur-sm dark:bg-white/5">
+				<form id="news-search-form-react" className="flex flex-col gap-2 md:flex-row" onSubmit={handleSearchSubmit}>
 					<label className="sr-only" htmlFor="q-react">
 						{lang === "en" ? "Search" : "搜尋"}
 					</label>
@@ -480,13 +473,13 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 							value={searchDraft}
 							onChange={(event) => setSearchDraft(event.target.value)}
 							placeholder={lang === "en" ? "Search news by keyword..." : "輸入關鍵字搜尋新聞..."}
-							className="h-12 w-full rounded-xl border border-black/10 bg-transparent pr-4 pl-10 outline-0 transition focus-visible:border-black/30 dark:border-white/10 dark:focus-visible:border-white/30"
+							className="h-12 w-full rounded-lg border border-black/10 bg-transparent pr-4 pl-10 outline-0 transition focus-visible:border-black/30 dark:border-white/10 dark:focus-visible:border-white/30"
 						/>
 					</div>
 					<div className="flex gap-2">
 						<button
 							type="submit"
-							className="inline-flex h-12 cursor-pointer items-center justify-center rounded-xl bg-black px-5 text-sm font-medium text-white transition hover:bg-black/85 dark:bg-white dark:text-black dark:hover:bg-white/85"
+							className="inline-flex h-12 cursor-pointer items-center justify-center rounded-lg bg-black px-5 text-sm font-medium text-white transition hover:bg-black/85 dark:bg-white dark:text-black dark:hover:bg-white/85"
 						>
 							{lang === "en" ? "Search" : "搜尋"}
 						</button>
@@ -501,15 +494,13 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 						)}
 					</div>
 				</form>
-				<p className="mt-3 text-sm text-gray-500 dark:text-gray-400">
-					{searchQuery
-						? lang === "en"
+				{searchQuery && (
+					<p className="mt-3 text-sm text-gray-500 dark:text-gray-400">
+						{lang === "en"
 							? `Showing search results for “${searchQuery}”. Clear to return to news topics.`
-							: `目前顯示「${searchQuery}」的搜尋結果；清除後可回到新聞主題。`
-						: lang === "en"
-							? "Browse one month at a time, then open a news topic to explore the full timeline."
-							: "依月份逐月瀏覽新聞主題，再透過「查看更多」探索同一主題的完整時間線。"}
-				</p>
+							: `目前顯示「${searchQuery}」的搜尋結果；清除後可回到新聞主題。`}
+					</p>
+				)}
 			</section>
 
 			{searchQuery ? (
@@ -578,7 +569,7 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 					)}
 
 					{visibleMonths.map((monthMeta) => (
-						<MonthTopicsSection key={monthMeta.month} monthMeta={monthMeta} lang={lang} onOpenTopic={setSelectedTopicId} />
+						<MonthTopicsSection key={monthMeta.month} monthMeta={monthMeta} lang={lang} onOpenTopic={openTopicDialog} />
 					))}
 
 					{visibleMonths.length > 0 && visibleMonths.length < (archiveMonthIndex?.length ?? 0) && (
@@ -598,44 +589,64 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 				</section>
 			)}
 
-			<AnimatePresence>
+			<AnimatePresence initial={false} onExitComplete={() => setSelectedTopicPreview(null)}>
 				{selectedTopicId && (
 					<motion.div
-						className="fixed inset-0 z-50 flex items-start justify-center bg-black/55 p-4 pt-14"
-						onClick={() => setSelectedTopicId(null)}
-						initial={{ opacity: 0 }}
-						animate={{ opacity: 1 }}
-						exit={{ opacity: 0 }}
+						className={dialogLayerClassNames.overlay}
+						onClick={closeTopicDialog}
+						variants={dialogBackdropVariants}
+						initial="closed"
+						animate="open"
+						exit="closed"
 					>
 						<motion.div
-							className="relative max-h-[85vh] w-full max-w-4xl overflow-hidden rounded-3xl border border-black/5 bg-white shadow-2xl shadow-black/15 dark:border-white/10 dark:bg-[#09090b]"
+							className={dialogLayerClassNames.panel}
 							onClick={(event) => event.stopPropagation()}
-							initial={{ opacity: 0, scale: 0.96, y: 18 }}
-							animate={{ opacity: 1, scale: 1, y: 0 }}
-							exit={{ opacity: 0, scale: 0.96, y: 18 }}
-							transition={{ duration: 0.22, ease: [0.2, 0.9, 0.2, 1] }}
+							variants={dialogPanelVariants}
+							initial="closed"
+							animate="open"
+							exit="closed"
 						>
 							<div className="border-b border-black/5 px-5 py-4 dark:border-white/10">
 								<div className="flex items-start justify-between gap-4">
 									<div className="min-w-0 flex-1">
 										{selectedTopic?.topic ? (
-											<>
-												<p className="text-xs font-semibold tracking-[0.24em] text-gray-400 uppercase dark:text-gray-500">
-													{lang === "en" ? "Topic Timeline" : "主題時間線"}
-												</p>
-												<h2 className="mt-2 text-2xl leading-tight font-semibold text-gray-900 dark:text-white">
-													<span className="mr-2">{selectedTopic.topic.emoji || "📰"}</span>
-													{lang === "en" ? selectedTopic.topic.titleEn || selectedTopic.topic.title : selectedTopic.topic.title}
-												</h2>
-												<p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-													{lang === "en"
-														? `${selectedTopic.totalNewsCount} news items across the same topic`
-														: `同一主題共 ${selectedTopic.totalNewsCount} 則新聞`}
-												</p>
-												{(lang === "en" ? selectedTopic.topic.summaryEn || selectedTopic.topic.summary : selectedTopic.topic.summary) && (
-													<p className="mt-3 max-w-2xl text-sm leading-6 text-gray-600 dark:text-gray-300">{lang === "en" ? selectedTopic.topic.summaryEn || selectedTopic.topic.summary : selectedTopic.topic.summary}</p>
-												)}
-											</>
+											<div className="flex items-start gap-3">
+												<div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-black/[0.04] text-2xl dark:bg-white/8">
+													{selectedTopic.topic.emoji || selectedTopicPreview?.emoji || "📰"}
+												</div>
+												<div className="min-w-0 flex-1">
+													<h2 className="text-2xl leading-tight font-semibold text-gray-900 dark:text-white">
+														{lang === "en" ? selectedTopic.topic.titleEn || selectedTopic.topic.title : selectedTopic.topic.title}
+													</h2>
+													<p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+														{lang === "en"
+															? `${selectedTopic.totalNewsCount} news items across the same topic`
+															: `同一主題共 ${selectedTopic.totalNewsCount} 則新聞`}
+													</p>
+													{(lang === "en" ? selectedTopic.topic.summaryEn || selectedTopic.topic.summary : selectedTopic.topic.summary) && (
+														<p className="mt-3 max-w-2xl text-sm leading-6 text-gray-600 dark:text-gray-300">
+															{lang === "en" ? selectedTopic.topic.summaryEn || selectedTopic.topic.summary : selectedTopic.topic.summary}
+														</p>
+													)}
+												</div>
+											</div>
+										) : selectedTopicPreview ? (
+											<div className="mt-3 flex items-start gap-3">
+												<div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-black/[0.04] text-2xl dark:bg-white/8">
+													{selectedTopicPreview.emoji || "📰"}
+												</div>
+												<div className="min-w-0 flex-1">
+													<h2 className="text-2xl leading-tight font-semibold text-gray-900 dark:text-white">
+														{getTopicDisplayTitle(selectedTopicPreview, lang)}
+													</h2>
+													{getTopicDisplaySummary(selectedTopicPreview, lang) && (
+														<p className="mt-3 max-w-2xl text-sm leading-6 text-gray-600 dark:text-gray-300">
+															{getTopicDisplaySummary(selectedTopicPreview, lang)}
+														</p>
+													)}
+												</div>
+											</div>
 										) : (
 											<h2 className="text-lg font-semibold text-gray-900 dark:text-white">
 												{lang === "en" ? "Loading topic..." : "主題載入中..."}
@@ -645,7 +656,7 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 
 									<button
 										type="button"
-										onClick={() => setSelectedTopicId(null)}
+										onClick={closeTopicDialog}
 										className="inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-black/10 transition hover:bg-black/[0.04] dark:border-white/10 dark:hover:bg-white/5"
 									>
 										<X className="size-4" />
