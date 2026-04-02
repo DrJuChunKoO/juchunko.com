@@ -138,66 +138,85 @@ export async function getIndexCards(lang: "en" | "zh-TW") {
 		return await response.json();
 	}
 
+	const mapBill = (entry: Record<string, unknown>) => {
+		const id = typeof entry["議案編號"] === "string" ? entry["議案編號"] : undefined;
+		if (!id) return null;
+		const title = (typeof entry["議案名稱"] === "string" && entry["議案名稱"]) || id;
+		const status = typeof entry["議案狀態"] === "string" ? entry["議案狀態"] : undefined;
+		const law = joinValues(entry["法律編號:str"]) || joinValues(entry["法律編號"]) || undefined;
+		const updatedAt =
+			(typeof entry["最新進度日期"] === "string" && entry["最新進度日期"]) ||
+			(typeof entry["資料抓取時間"] === "string" && entry["資料抓取時間"]) ||
+			undefined;
+		let url: string | undefined;
+		if (typeof entry["url"] === "string") {
+			url = entry["url"];
+		} else if (Array.isArray(entry["相關附件"])) {
+			const attachments = entry["相關附件"].map(asRecord).filter((r): r is Record<string, unknown> => !!r);
+			const attachmentRecord = attachments.find((r) => typeof r["網址"] === "string");
+			if (attachmentRecord) url = attachmentRecord["網址"] as string;
+		}
+		return { id, title, status, law, updatedAt, url };
+	};
+
+	const mapMeet = (entry: Record<string, unknown>) => {
+		const id = typeof entry["會議代碼"] === "string" ? entry["會議代碼"] : undefined;
+		if (!id) return null;
+		const name =
+			(typeof entry["標題"] === "string" && entry["標題"]) ||
+			(typeof entry["會議標題"] === "string" && entry["會議標題"]) ||
+			(typeof entry["name"] === "string" && entry["name"]) ||
+			id;
+		let date = pickFirstString(entry["日期"]);
+		const meetingRecords = Array.isArray(entry["會議資料"])
+			? entry["會議資料"].map(asRecord).filter((r): r is Record<string, unknown> => !!r)
+			: [];
+		if (!date && meetingRecords.length > 0) {
+			const firstRecord = meetingRecords[0];
+			date = pickFirstString(firstRecord["日期"]) || (typeof firstRecord["日期"] === "string" ? (firstRecord["日期"] as string) : null);
+		}
+		let url: string | undefined;
+		if (Array.isArray(entry["連結"])) {
+			const links = entry["連結"].map(asRecord).filter((r): r is Record<string, unknown> => !!r);
+			const meetingLink = links.find((link) => typeof link["連結"] === "string" && (!link["類型"] || link["類型"] === "User"));
+			if (meetingLink) url = meetingLink["連結"] as string;
+		}
+		if (meetingRecords.length > 0 && !url) {
+			const ppgLink = meetingRecords.find((r) => typeof r["ppg_url"] === "string");
+			if (ppgLink) url = ppgLink["ppg_url"] as string;
+		}
+		return { id, name, date, url };
+	};
+
 	try {
-		const [proposeRes, cosignRes, meetsRes] = await Promise.all([
+		const [proposeRes, cosignRes, meetsRes] = await Promise.allSettled([
 			fetchJSON(`/legislators/${LEGISLATOR_TERM}/${encodedName}/propose_bills?limit=3`),
 			fetchJSON(`/legislators/${LEGISLATOR_TERM}/${encodedName}/cosign_bills?limit=3`),
 			fetchJSON(`/legislators/${LEGISLATOR_TERM}/${encodedName}/meets?limit=3`),
 		]);
 
-		const mapBill = (entry: Record<string, unknown>) => {
-			const id = typeof entry["議案編號"] === "string" ? entry["議案編號"] : undefined;
-			if (!id) return null;
-			const title = (typeof entry["議案名稱"] === "string" && entry["議案名稱"]) || id;
-			const status = typeof entry["議案狀態"] === "string" ? entry["議案狀態"] : undefined;
-			const law = joinValues(entry["法律編號:str"]) || joinValues(entry["法律編號"]) || undefined;
-			const updatedAt =
-				(typeof entry["最新進度日期"] === "string" && entry["最新進度日期"]) ||
-				(typeof entry["資料抓取時間"] === "string" && entry["資料抓取時間"]) ||
-				undefined;
-			let url: string | undefined;
-			if (typeof entry["url"] === "string") {
-				url = entry["url"];
-			} else if (Array.isArray(entry["相關附件"])) {
-				const attachments = entry["相關附件"].map(asRecord).filter((r): r is Record<string, unknown> => !!r);
-				const attachmentRecord = attachments.find((r) => typeof r["網址"] === "string");
-				if (attachmentRecord) url = attachmentRecord["網址"] as string;
-			}
-			return { id, title, status, law, updatedAt, url };
-		};
+		if (proposeRes.status === "rejected") {
+			console.error("getIndexCards: failed to fetch proposed bills", proposeRes.reason);
+		}
+		if (cosignRes.status === "rejected") {
+			console.error("getIndexCards: failed to fetch cosigned bills", cosignRes.reason);
+		}
+		if (meetsRes.status === "rejected") {
+			console.error("getIndexCards: failed to fetch legislator meetings", meetsRes.reason);
+		}
 
-		const mapMeet = (entry: Record<string, unknown>) => {
-			const id = typeof entry["會議代碼"] === "string" ? entry["會議代碼"] : undefined;
-			if (!id) return null;
-			const name =
-				(typeof entry["標題"] === "string" && entry["標題"]) ||
-				(typeof entry["會議標題"] === "string" && entry["會議標題"]) ||
-				(typeof entry["name"] === "string" && entry["name"]) ||
-				id;
-			let date = pickFirstString(entry["日期"]);
-			const meetingRecords = Array.isArray(entry["會議資料"])
-				? entry["會議資料"].map(asRecord).filter((r): r is Record<string, unknown> => !!r)
+		const proposedBills =
+			proposeRes.status === "fulfilled"
+				? (proposeRes.value?.bills?.map((entry: Record<string, unknown>) => mapBill(entry)).filter(Boolean) ?? [])
 				: [];
-			if (!date && meetingRecords.length > 0) {
-				const firstRecord = meetingRecords[0];
-				date = pickFirstString(firstRecord["日期"]) || (typeof firstRecord["日期"] === "string" ? (firstRecord["日期"] as string) : null);
-			}
-			let url: string | undefined;
-			if (Array.isArray(entry["連結"])) {
-				const links = entry["連結"].map(asRecord).filter((r): r is Record<string, unknown> => !!r);
-				const meetingLink = links.find((link) => typeof link["連結"] === "string" && (!link["類型"] || link["類型"] === "User"));
-				if (meetingLink) url = meetingLink["連結"] as string;
-			}
-			if (meetingRecords.length > 0 && !url) {
-				const ppgLink = meetingRecords.find((r) => typeof r["ppg_url"] === "string");
-				if (ppgLink) url = ppgLink["ppg_url"] as string;
-			}
-			return { id, name, date, url };
-		};
-
-		const proposedBills = proposeRes?.bills?.map((entry: Record<string, unknown>) => mapBill(entry)).filter(Boolean) ?? [];
-		const cosignedBills = cosignRes?.bills?.map((entry: Record<string, unknown>) => mapBill(entry)).filter(Boolean) ?? [];
-		const meetList = meetsRes?.meets?.map((entry: Record<string, unknown>) => mapMeet(entry)).filter(Boolean) ?? [];
+		const cosignedBills =
+			cosignRes.status === "fulfilled"
+				? (cosignRes.value?.bills?.map((entry: Record<string, unknown>) => mapBill(entry)).filter(Boolean) ?? [])
+				: [];
+		const meetList =
+			meetsRes.status === "fulfilled"
+				? (meetsRes.value?.meets?.map((entry: Record<string, unknown>) => mapMeet(entry)).filter(Boolean) ?? [])
+				: [];
 
 		const activities = [
 			...proposedBills.map((bill: any) => ({
