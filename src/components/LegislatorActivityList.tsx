@@ -121,7 +121,7 @@ export default function LegislatorActivityList({ lang, labels }: Props) {
 		} catch (err: any) {
 			console.error("Fetch error:", err);
 			retryAttemptsRef.current++;
-			setError(lang === "en" ? "Failed to load activities" : "無法載入活動");
+			setError(labels.error);
 		} finally {
 			setLoading(false);
 		}
@@ -193,7 +193,7 @@ export default function LegislatorActivityList({ lang, labels }: Props) {
 			</section>
 
 			<div className="text-muted-foreground my-4 text-center text-sm">
-				{loading && (lang === "en" ? "Loading..." : "載入中...")}
+				{loading && labels.loading}
 				{error && <span className="text-red-500">{error}</span>}
 			</div>
 

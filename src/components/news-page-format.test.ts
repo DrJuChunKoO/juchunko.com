@@ -1,11 +1,17 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
+	createNewsPageRequestError,
 	formatArchiveMonthLabel,
+	formatArchiveMonthSummary,
 	formatNewsTopicsLabel,
+	formatSearchResultsHint,
 	getTopicDisplaySummary,
 	getTopicDisplayTitle,
+	getNewsPageErrorMessage,
 	formatTopicMeta,
+	formatTopicTotalNewsCount,
+	formatStoryCount,
 	getTopicPreviewItems,
 	getVisibleMonthKeys,
 	type TopicArchiveCard,
@@ -59,6 +65,44 @@ test("formatNewsTopicsLabel uses the new wording instead of archive", () => {
 test("formatTopicMeta returns localized monthly and total counts", () => {
 	assert.equal(formatTopicMeta(topic, "zh-TW"), "本月 3 篇・共 8 篇");
 	assert.equal(formatTopicMeta(topic, "en"), "3 this month - 8 total");
+});
+
+test("formatArchiveMonthSummary returns localized topic and story counts", () => {
+	assert.equal(formatArchiveMonthSummary(2, 5, "zh-TW"), "2 個主題・5 則新聞");
+	assert.equal(formatArchiveMonthSummary(2, 5, "en"), "2 topics · 5 stories");
+});
+
+test("formatSearchResultsHint inserts the active query into localized copy", () => {
+	assert.equal(
+		formatSearchResultsHint("AI", "zh-TW"),
+		'目前顯示「AI」的搜尋結果；清除後可回到新聞主題。',
+	);
+	assert.equal(
+		formatSearchResultsHint("AI", "en"),
+		'Showing search results for "AI". Clear to return to news topics.',
+	);
+});
+
+test("formatTopicTotalNewsCount localizes the selected topic total", () => {
+	assert.equal(formatTopicTotalNewsCount(12, "zh-TW"), "同一主題共 12 則新聞");
+	assert.equal(formatTopicTotalNewsCount(12, "en"), "12 news items across the same topic");
+});
+
+test("formatStoryCount localizes topic timeline month counts", () => {
+	assert.equal(formatStoryCount(3, "zh-TW"), "3 則新聞");
+	assert.equal(formatStoryCount(3, "en"), "3 stories");
+});
+
+test("getNewsPageErrorMessage prefers localized request errors over backend details", () => {
+	const error = createNewsPageRequestError("newsPage.search.error", "backend said something in English");
+
+	assert.equal(getNewsPageErrorMessage(error, "zh-TW", "newsPage.archive.error"), "載入新聞失敗");
+	assert.equal(getNewsPageErrorMessage(error, "en", "newsPage.archive.error"), "Failed to load news");
+});
+
+test("getNewsPageErrorMessage falls back to the requested localized key for unknown errors", () => {
+	assert.equal(getNewsPageErrorMessage(new Error("boom"), "zh-TW", "newsPage.archive.error"), "載入新聞主題失敗");
+	assert.equal(getNewsPageErrorMessage(new Error("boom"), "en", "newsPage.topic.timelineError"), "Failed to load topic timeline");
 });
 
 test("getTopicDisplayTitle uses English topic title when available", () => {

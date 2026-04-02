@@ -4,6 +4,7 @@ import { createOpenRouter, type OpenRouter } from "@openrouter/ai-sdk-provider";
 import { streamText, tool, smoothStream, convertToModelMessages, stepCountIs, UIMessage } from "ai";
 import { z } from "zod";
 import type { Env } from "../../types";
+import { buildTopicDetailToolResult, buildTopicListToolResult } from "./chat-news-tools";
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -24,6 +25,14 @@ app.post("/", async (c) => {
 
 	const { messages = [], filename = "/" }: { messages: UIMessage[]; filename: string } = body;
 
+	const fetchJson = async (url: string) => {
+		const response = await fetch(url);
+		if (!response.ok) {
+			throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+		}
+		return response.json();
+	};
+
 	// 系統提示詞
 	const systemPrompt = `你是國民黨立委葛如鈞（寶博士）網站的 AI 助手
   - 盡可能簡短、友善回答
@@ -35,6 +44,9 @@ app.post("/", async (c) => {
 	- 新聞來源有多個，會出現重複新聞，請自行總結後再和使用者說，並附上所有網址和來源名稱，像這樣 [自由時報](https://xxx) [中央社](https://xxx)
 	- 如果使用者想要搜尋新聞，請使用 'searchNews' 工具(範例: searchNews q=關鍵字)。
 	- 如果使用者想要列出最新新聞，請使用 'latestNews' 工具。
+	- 如果使用者想找「新聞主題」或某個議題有哪些相關新聞，請優先使用 'searchNewsTopics'。
+	- 如果使用者想看最近有哪些新聞主題，請使用 'latestNewsTopics'。
+	- 如果你已經找到某個新聞主題，想看該主題底下的完整新聞時間線，請使用 'viewNewsTopic'，不要只靠主題名稱自行猜測內容。
   - 葛如鈞=寶博士=Ju-Chun KO
 <viewPage>
 current page: https://juchunko.com${filename}
@@ -109,11 +121,7 @@ current page: https://juchunko.com${filename}
 						params.set("pageSize", String(pageSize));
 						params.set("q", q);
 
-						const res = await fetch(`https://aifferent.juchunko.com/api/news?${params.toString()}`);
-						if (!res.ok) {
-							throw new Error(`HTTP ${res.status}: ${res.statusText}`);
-						}
-						const payload = await res.json();
+						const payload = await fetchJson(`https://aifferent.juchunko.com/api/news?${params.toString()}`);
 						if (!payload || !payload.success) {
 							throw new Error(payload?.message || "Failed to fetch news");
 						}
@@ -156,18 +164,14 @@ current page: https://juchunko.com${filename}
 			latestNews: tool({
 				description: "葛如鈞最新新聞列表。Returns a readable summary of the latest news with urls and sources.",
 				inputSchema: z.object({}).strict(),
-				execute: async () => {
-					try {
+					execute: async () => {
+						try {
 						const count = 10;
 						const params = new URLSearchParams();
 						params.set("page", String(1));
 						params.set("pageSize", String(count));
 
-						const res = await fetch(`https://aifferent.juchunko.com/api/news?${params.toString()}`);
-						if (!res.ok) {
-							throw new Error(`HTTP ${res.status}: ${res.statusText}`);
-						}
-						const payload = await res.json();
+						const payload = await fetchJson(`https://aifferent.juchunko.com/api/news?${params.toString()}`);
 						if (!payload || !payload.success) {
 							throw new Error(payload?.message || "Failed to fetch news");
 						}
@@ -203,8 +207,86 @@ current page: https://juchunko.com${filename}
 					}
 				},
 			}),
+			searchNewsTopics: tool({
+				description: "Search news topics by keyword and return topic ids for follow-up detail lookup.",
+				inputSchema: z
+					.object({
+						q: z.string().min(1),
+						limit: z.number().int().positive().max(10).optional(),
+					})
+					.strict(),
+				execute: async ({ q, limit = 6 }) => {
+					try {
+						const params = new URLSearchParams();
+						params.set("q", q);
+						params.set("limit", String(limit));
+						const payload = await fetchJson(`https://aifferent.juchunko.com/api/topics/search?${params.toString()}`);
+						if (!payload || !payload.success) {
+							throw new Error(payload?.error || "Failed to search news topics");
+						}
+						return buildTopicListToolResult(Array.isArray(payload.topics) ? payload.topics : [], q);
+					} catch (error: any) {
+						console.error("searchNewsTopics error:", error);
+						return {
+							query: q,
+							error: `搜尋新聞主題失敗：${error.message || String(error)}`,
+							topics: [],
+							totalTopics: 0,
+						};
+					}
+				},
+			}),
+			latestNewsTopics: tool({
+				description: "List the latest news topics so the assistant can suggest current themes.",
+				inputSchema: z
+					.object({
+						limit: z.number().int().positive().max(10).optional(),
+					})
+					.strict(),
+				execute: async ({ limit = 5 }) => {
+					try {
+						const params = new URLSearchParams();
+						params.set("limit", String(limit));
+						const payload = await fetchJson(`https://aifferent.juchunko.com/api/topics/latest?${params.toString()}`);
+						if (!payload || !payload.success) {
+							throw new Error(payload?.error || "Failed to fetch latest news topics");
+						}
+						return buildTopicListToolResult(Array.isArray(payload.topics) ? payload.topics : []);
+					} catch (error: any) {
+						console.error("latestNewsTopics error:", error);
+						return {
+							error: `取得最新新聞主題失敗：${error.message || String(error)}`,
+							topics: [],
+							totalTopics: 0,
+						};
+					}
+				},
+			}),
+			viewNewsTopic: tool({
+				description: "Get one news topic timeline by topic id, including grouped stories and URLs.",
+				inputSchema: z
+					.object({
+						topicId: z.string().min(1),
+					})
+					.strict(),
+				execute: async ({ topicId }) => {
+					try {
+						const payload = await fetchJson(`https://aifferent.juchunko.com/api/topics/${encodeURIComponent(topicId)}`);
+						if (!payload || !payload.success) {
+							throw new Error(payload?.error || "Failed to fetch topic detail");
+						}
+						return buildTopicDetailToolResult(payload);
+					} catch (error: any) {
+						console.error("viewNewsTopic error:", error);
+						return {
+							topicId,
+							error: `取得新聞主題詳情失敗：${error.message || String(error)}`,
+						};
+					}
+				},
+			}),
 		},
-		stopWhen: stepCountIs(5),
+		stopWhen: stepCountIs(6),
 		experimental_transform: smoothStream({
 			chunking: /[\u4E00-\u9FFF]|\S+\s+/,
 		}),

@@ -146,7 +146,7 @@ export default function AIAssistantWindow({ isOpen, onClose, lang = "zh-TW" }: A
 		if (toolName === "searchNews") {
 			return {
 				icon: <Search className={iconClass} />,
-				text: ui[lang]["agent.assistant.tool.searchNews"].replace("{keyword}", args?.keyword || ""),
+				text: ui[lang]["agent.assistant.tool.searchNews"].replace("{keyword}", args?.q || ""),
 			};
 		}
 		if (toolName === "latestNews") {
@@ -159,6 +159,24 @@ export default function AIAssistantWindow({ isOpen, onClose, lang = "zh-TW" }: A
 			return {
 				icon: <Newspaper className={iconClass} />,
 				text: ui[lang]["agent.assistant.tool.getNewsByUrl"],
+			};
+		}
+		if (toolName === "searchNewsTopics") {
+			return {
+				icon: <Search className={iconClass} />,
+				text: ui[lang]["agent.assistant.tool.searchNewsTopics"].replace("{keyword}", args?.q || ""),
+			};
+		}
+		if (toolName === "latestNewsTopics") {
+			return {
+				icon: <Rss className={iconClass} />,
+				text: ui[lang]["agent.assistant.tool.latestNewsTopics"],
+			};
+		}
+		if (toolName === "viewNewsTopic") {
+			return {
+				icon: <Newspaper className={iconClass} />,
+				text: ui[lang]["agent.assistant.tool.viewNewsTopic"],
 			};
 		}
 		if (toolName === "semanticSiteSearch") {

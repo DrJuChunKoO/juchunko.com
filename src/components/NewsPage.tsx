@@ -2,11 +2,17 @@ import React, { useEffect, useState } from "react";
 import { QueryClient, useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { ArrowUpRight, ExternalLink, Loader2, Search, X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
+import { useTranslations } from "../i18n/utils";
 import { timeAgo } from "../lib/utils";
 import {
+	createNewsPageRequestError,
 	formatArchiveMonthLabel,
-	formatNewsTopicsLabel,
+	formatArchiveMonthSummary,
+	formatSearchResultsHint,
+	formatStoryCount,
 	formatTopicMeta,
+	formatTopicTotalNewsCount,
+	getNewsPageErrorMessage,
 	getTopicDisplaySummary,
 	getTopicDisplayTitle,
 	getTopicPreviewItems,
@@ -126,11 +132,11 @@ async function fetchNews({ pageParam = 1, query = "" }: { pageParam?: number; qu
 
 	const res = await fetch(`https://aifferent.juchunko.com/api/news?${params.toString()}`);
 	if (!res.ok) {
-		throw new Error("Server returned error");
+		throw createNewsPageRequestError("newsPage.search.error", `HTTP ${res.status}`);
 	}
 	const payload = await res.json();
 	if (!payload || !payload.success) {
-		throw new Error(payload?.message || payload?.error || "Failed to fetch");
+		throw createNewsPageRequestError("newsPage.search.error", payload?.message || payload?.error || "Failed to fetch");
 	}
 	return payload;
 }
@@ -142,12 +148,12 @@ async function fetchArchiveMonthIndex(): Promise<ArchiveMonthIndexEntry[]> {
 
 	const res = await fetch(`https://aifferent.juchunko.com/api/news/archive/months?${params.toString()}`);
 	if (!res.ok) {
-		throw new Error("Server returned error");
+		throw createNewsPageRequestError("newsPage.archive.error", `HTTP ${res.status}`);
 	}
 
 	const payload = (await res.json()) as ArchiveMonthIndexResponse;
 	if (!payload.success) {
-		throw new Error(payload.error || "Failed to load news topics");
+		throw createNewsPageRequestError("newsPage.archive.error", payload.error || "Failed to load news topics");
 	}
 
 	return Array.isArray(payload.months) ? payload.months : [];
@@ -161,12 +167,12 @@ async function fetchArchiveMonth(month: string): Promise<ArchiveMonth | null> {
 
 	const res = await fetch(`https://aifferent.juchunko.com/api/news/archive?${params.toString()}`);
 	if (!res.ok) {
-		throw new Error("Server returned error");
+		throw createNewsPageRequestError("newsPage.archive.error", `HTTP ${res.status}`);
 	}
 
 	const payload = (await res.json()) as ArchiveMonthResponse;
 	if (!payload.success) {
-		throw new Error(payload.error || "Failed to load month topics");
+		throw createNewsPageRequestError("newsPage.archive.error", payload.error || "Failed to load month topics");
 	}
 
 	const monthEntry = Array.isArray(payload.months) ? payload.months[0] : null;
@@ -183,12 +189,12 @@ async function fetchArchiveMonth(month: string): Promise<ArchiveMonth | null> {
 async function fetchTopicDetail(topicId: string): Promise<TopicDetailResponse> {
 	const res = await fetch(`https://aifferent.juchunko.com/api/topics/${encodeURIComponent(topicId)}`);
 	if (!res.ok) {
-		throw new Error("Server returned error");
+		throw createNewsPageRequestError("newsPage.topic.timelineError", `HTTP ${res.status}`);
 	}
 
 	const payload = (await res.json()) as TopicDetailResponse;
 	if (!payload.success) {
-		throw new Error(payload.error || "Failed to load topic");
+		throw createNewsPageRequestError("newsPage.topic.timelineError", payload.error || "Failed to load topic");
 	}
 
 	return {
@@ -211,6 +217,8 @@ function MonthTopicsSection({
 	lang: "en" | "zh-TW";
 	onOpenTopic: (topic: TopicArchiveCard) => void;
 }) {
+	const t = useTranslations(lang);
+
 	const {
 		data: archiveMonth,
 		isLoading,
@@ -232,27 +240,25 @@ function MonthTopicsSection({
 				</h2>
 
 				<p className="text-sm text-gray-500 dark:text-gray-400">
-					{lang === "en"
-						? `${monthMeta.topicCount} topics · ${monthMeta.newsCount} stories`
-						: `${monthMeta.topicCount} 個主題・${monthMeta.newsCount} 則新聞`}
+					{formatArchiveMonthSummary(monthMeta.topicCount, monthMeta.newsCount, lang)}
 				</p>
 			</div>
 
 			{isLoading && (
 				<div className="flex items-center justify-center rounded-2xl border border-dashed border-black/10 p-10 text-sm text-gray-500 dark:border-white/10 dark:text-gray-400">
-					{lang === "en" ? "Loading news topics..." : "新聞主題載入中..."}
+					{t("newsPage.archive.loading")}
 				</div>
 			)}
 
 			{isError && (
 				<div className="rounded-2xl border border-red-200 bg-red-50/80 p-4 text-sm text-red-600 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
-					{error?.message || (lang === "en" ? "Failed to load news topics" : "載入新聞主題失敗")}
+					{getNewsPageErrorMessage(error, lang, "newsPage.archive.error")}
 				</div>
 			)}
 
 			{archiveMonth && archiveMonth.topics.length === 0 && !isLoading && !isError && (
 				<div className="rounded-2xl border border-dashed border-black/10 p-8 text-center text-sm text-gray-500 dark:border-white/10 dark:text-gray-400">
-					{lang === "en" ? "No news topics in this month yet." : "這個月份目前還沒有新聞主題。"}
+					{t("newsPage.archive.monthEmpty")}
 				</div>
 			)}
 
@@ -277,7 +283,7 @@ function MonthTopicsSection({
 									onClick={() => onOpenTopic(topic)}
 									className="inline-flex h-11 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-black/10 px-4 text-sm font-medium backdrop-blur-sm transition hover:bg-black/[0.04] dark:border-white/10 dark:hover:bg-white/5"
 								>
-									{lang === "en" ? "View more" : "查看更多"}
+									{t("newsPage.topic.viewMore")}
 								</button>
 							</div>
 
@@ -318,6 +324,7 @@ function MonthTopicsSection({
 }
 
 export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
+	const t = useTranslations(lang);
 	const [searchDraft, setSearchDraft] = useState("");
 	const [searchQuery, setSearchQuery] = useState("");
 	const [selectedTopicPreview, setSelectedTopicPreview] = useState<TopicArchiveCard | null>(null);
@@ -341,6 +348,7 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 		data: selectedTopic,
 		isLoading: isTopicLoading,
 		isError: isTopicError,
+		error: topicError,
 	} = useQuery(
 		{
 			queryKey: ["topic-detail", selectedTopicId],
@@ -462,7 +470,7 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 			<section className="mb-8 rounded-xl border bg-white/80 p-4 backdrop-blur-sm dark:bg-white/5">
 				<form id="news-search-form-react" className="flex flex-col gap-2 md:flex-row" onSubmit={handleSearchSubmit}>
 					<label className="sr-only" htmlFor="q-react">
-						{lang === "en" ? "Search" : "搜尋"}
+						{t("newsPage.search.label")}
 					</label>
 					<div className="relative flex-1">
 						<Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-gray-400" />
@@ -472,7 +480,7 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 							type="search"
 							value={searchDraft}
 							onChange={(event) => setSearchDraft(event.target.value)}
-							placeholder={lang === "en" ? "Search news by keyword..." : "輸入關鍵字搜尋新聞..."}
+							placeholder={t("newsPage.search.placeholder")}
 							className="h-12 w-full rounded-lg border border-black/10 bg-transparent pr-4 pl-10 outline-0 transition focus-visible:border-black/30 dark:border-white/10 dark:focus-visible:border-white/30"
 						/>
 					</div>
@@ -481,7 +489,7 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 							type="submit"
 							className="inline-flex h-12 cursor-pointer items-center justify-center rounded-lg bg-black px-5 text-sm font-medium text-white transition hover:bg-black/85 dark:bg-white dark:text-black dark:hover:bg-white/85"
 						>
-							{lang === "en" ? "Search" : "搜尋"}
+							{t("newsPage.search.submit")}
 						</button>
 						{searchQuery && (
 							<button
@@ -489,18 +497,12 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 								onClick={clearSearch}
 								className="inline-flex h-12 cursor-pointer items-center justify-center rounded-xl border border-black/10 px-4 text-sm font-medium transition hover:bg-black/[0.03] dark:border-white/10 dark:hover:bg-white/5"
 							>
-								{lang === "en" ? "Clear" : "清除"}
+								{t("newsPage.search.clear")}
 							</button>
 						)}
 					</div>
 				</form>
-				{searchQuery && (
-					<p className="mt-3 text-sm text-gray-500 dark:text-gray-400">
-						{lang === "en"
-							? `Showing search results for “${searchQuery}”. Clear to return to news topics.`
-							: `目前顯示「${searchQuery}」的搜尋結果；清除後可回到新聞主題。`}
-					</p>
-				)}
+				{searchQuery && <p className="mt-3 text-sm text-gray-500 dark:text-gray-400">{formatSearchResultsHint(searchQuery, lang)}</p>}
 			</section>
 
 			{searchQuery ? (
@@ -529,20 +531,20 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 						);
 					})}
 
-					<div className="my-4 text-center text-sm text-gray-500 dark:text-gray-400">
-						{isSearchLoading && (lang === "en" ? "Loading search results..." : "搜尋結果載入中...")}
-						{isFetchingNextPage && (lang === "en" ? "Loading more..." : "載入更多中...")}
+					<div className="my-4 space-y-1 text-center text-sm text-gray-500 dark:text-gray-400">
+						{isSearchLoading && <p>{t("newsPage.search.loading")}</p>}
+						{isFetchingNextPage && <p>{t("newsPage.search.loadingMore")}</p>}
 					</div>
 
 					{isSearchError && (
 						<div className="my-4 text-center text-sm text-red-500">
-							{searchError?.message || (lang === "en" ? "Failed to load news" : "載入新聞失敗")}
+							{getNewsPageErrorMessage(searchError, lang, "newsPage.search.error")}
 						</div>
 					)}
 
 					{!isSearchLoading && !isSearchError && searchItems.length === 0 && (
 						<div className="rounded-2xl border border-dashed border-black/10 p-8 text-center text-sm text-gray-500 dark:border-white/10 dark:text-gray-400">
-							{lang === "en" ? "No news found for this keyword." : "找不到符合關鍵字的新聞。"}
+							{t("newsPage.search.empty")}
 						</div>
 					)}
 
@@ -552,19 +554,19 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 				<section className="space-y-10">
 					{isMonthIndexLoading && (
 						<div className="flex items-center justify-center rounded-2xl border border-dashed border-black/10 p-10 text-sm text-gray-500 dark:border-white/10 dark:text-gray-400">
-							{lang === "en" ? "Loading news topics..." : "新聞主題載入中..."}
+							{t("newsPage.archive.loading")}
 						</div>
 					)}
 
 					{isMonthIndexError && (
 						<div className="rounded-2xl border border-red-200 bg-red-50/80 p-4 text-sm text-red-600 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
-							{monthIndexError?.message || (lang === "en" ? "Failed to load news topics" : "載入新聞主題失敗")}
+							{getNewsPageErrorMessage(monthIndexError, lang, "newsPage.archive.error")}
 						</div>
 					)}
 
 					{archiveEmpty && (
 						<div className="rounded-2xl border border-dashed border-black/10 p-8 text-center text-sm text-gray-500 dark:border-white/10 dark:text-gray-400">
-							{lang === "en" ? "No news topics yet." : "目前尚無可瀏覽的新聞主題。"}
+							{t("newsPage.archive.empty")}
 						</div>
 					)}
 
@@ -574,17 +576,13 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 
 					{visibleMonths.length > 0 && visibleMonths.length < (archiveMonthIndex?.length ?? 0) && (
 						<>
-							<div className="text-center text-sm text-gray-500 dark:text-gray-400">
-								{lang === "en" ? "Scroll to load the next month..." : "往下捲動以載入下一個月份..."}
-							</div>
+							<div className="text-center text-sm text-gray-500 dark:text-gray-400">{t("newsPage.archive.loadNext")}</div>
 							<div id="news-months-sentinel" style={{ minHeight: 1 }} />
 						</>
 					)}
 
 					{visibleMonths.length > 0 && visibleMonths.length >= (archiveMonthIndex?.length ?? 0) && (
-						<div className="text-center text-sm text-gray-500 dark:text-gray-400">
-							{lang === "en" ? "All available months are loaded." : "已載入所有可用月份。"}
-						</div>
+						<div className="text-center text-sm text-gray-500 dark:text-gray-400">{t("newsPage.archive.allLoaded")}</div>
 					)}
 				</section>
 			)}
@@ -607,18 +605,16 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 							animate="open"
 							exit="closed"
 						>
-							<div className="border-b border-black/5 px-5 py-4 dark:border-white/10">
+							<div className="border-b p-4 dark:border-white/10">
 								<div className="flex gap-4">
 									<div className="flex min-w-0 flex-1 flex-col gap-1">
 										{selectedTopic?.topic ? (
 											<>
-												<h2 className="text-2xl leading-tight font-semibold text-gray-900 dark:text-white">
+												<h2 className="text-xl leading-tight font-semibold text-gray-900 dark:text-white">
 													{lang === "en" ? selectedTopic.topic.titleEn || selectedTopic.topic.title : selectedTopic.topic.title}
 												</h2>
 												<p className="text-sm text-gray-500 dark:text-gray-400">
-													{lang === "en"
-														? `${selectedTopic.totalNewsCount} news items across the same topic`
-														: `同一主題共 ${selectedTopic.totalNewsCount} 則新聞`}
+													{formatTopicTotalNewsCount(selectedTopic.totalNewsCount, lang)}
 												</p>
 												{(lang === "en" ? selectedTopic.topic.summaryEn || selectedTopic.topic.summary : selectedTopic.topic.summary) && (
 													<p className="max-w-2xl text-sm leading-6 text-gray-600 dark:text-gray-300">
@@ -628,7 +624,7 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 											</>
 										) : selectedTopicPreview ? (
 											<>
-												<h2 className="text-2xl leading-tight font-semibold text-gray-900 dark:text-white">
+												<h2 className="text-xl leading-tight font-semibold text-gray-900 dark:text-white">
 													{getTopicDisplayTitle(selectedTopicPreview, lang)}
 												</h2>
 												{getTopicDisplaySummary(selectedTopicPreview, lang) && (
@@ -638,9 +634,7 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 												)}
 											</>
 										) : (
-											<h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-												{lang === "en" ? "Loading topic..." : "主題載入中..."}
-											</h2>
+											<h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t("newsPage.topic.loading")}</h2>
 										)}
 									</div>
 
@@ -648,6 +642,7 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 										<button
 											type="button"
 											onClick={closeTopicDialog}
+											aria-label={t("newsPage.topic.close")}
 											className="inline-flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-black/10 text-sm font-medium backdrop-blur-sm transition hover:bg-black/[0.04] dark:border-white/10 dark:hover:bg-white/5"
 										>
 											<X className="size-4" />
@@ -659,7 +654,7 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 								</div>
 							</div>
 
-							<div className="max-h-[65vh] overflow-y-auto px-5 py-5">
+							<div className="max-h-[65vh] overflow-y-auto p-4">
 								{isTopicLoading && (
 									<div className="flex items-center justify-center py-12 text-gray-500 dark:text-gray-400">
 										<Loader2 className="size-5 animate-spin" />
@@ -668,17 +663,15 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 
 								{isTopicError && (
 									<div className="rounded-2xl border border-red-200 bg-red-50/80 p-4 text-sm text-red-600 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
-										{lang === "en" ? "Failed to load topic timeline" : "載入主題時間線失敗"}
+										{getNewsPageErrorMessage(topicError, lang, "newsPage.topic.timelineError")}
 									</div>
 								)}
 
 								{selectedTopic?.months?.map((month) => (
 									<section key={month.month} className="mb-8 last:mb-0">
-										<div className="mb-3 flex items-center justify-between gap-3">
+										<div className="mb-2 flex items-center justify-between gap-2">
 											<h3 className="text-lg font-semibold text-gray-900 dark:text-white">{formatArchiveMonthLabel(month.month, lang)}</h3>
-											<p className="text-xs text-gray-500 dark:text-gray-400">
-												{lang === "en" ? `${month.items.length} stories` : `${month.items.length} 則新聞`}
-											</p>
+											<p className="text-xs text-gray-500 dark:text-gray-400">{formatStoryCount(month.items.length, lang)}</p>
 										</div>
 
 										<div className="grid gap-2">
