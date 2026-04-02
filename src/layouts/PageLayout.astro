@@ -29,13 +29,13 @@ const pageImage = image || post?.data.image || "/favicon.png";
 
 	<div class="relative flex min-h-svh w-screen flex-col">
 		<div
-			class="pointer-events-none absolute inset-0 -z-10 hidden h-svh w-full bg-linear-to-b from-gray-50 via-transparent md:block dark:from-white/10"
+			class="from-muted/30 dark:from-background/10 pointer-events-none absolute inset-0 -z-10 hidden h-svh w-full bg-linear-to-b via-transparent md:block"
 		>
 		</div>
 		<Nav />
 		<div
 			class={cn(
-				"relative mx-auto w-full max-w-360 flex-1 rounded-t-2xl bg-white py-10 md:max-w-[90vw] md:py-16 dark:bg-white/5 max-md:dark:bg-transparent",
+				"relative mx-auto w-full max-w-360 flex-1 rounded-t-2xl bg-card pt-20 pb-10 md:max-w-[90vw] md:pt-20 md:pb-16 md:mt-24",
 				"pr-[max(env(safe-area-inset-right),1rem)] pl-[max(env(safe-area-inset-left),1rem)]",
 				"md:pr-[max(env(safe-area-inset-right),2rem)] md:pl-[max(env(safe-area-inset-left),2rem)]",
 			)}

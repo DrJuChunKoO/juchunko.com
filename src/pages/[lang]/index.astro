@@ -5,15 +5,30 @@ import HomeFeeds from "@/components/HomeFeeds.tsx";
 import Callout from "@/components/Callout.astro";
 import { getLangFromUrl, useTranslations } from "src/i18n/utils";
 import { getCollection } from "astro:content";
+import { ArrowRight, Atom, Bot, Mail, Newspaper, Satellite, ShieldCheck, Trophy, User } from "@lucide/astro";
+import { getFeaturedAchievementMeta, getHomepageCopy, selectFeaturedEntries } from "@/lib/homepage";
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
+const copy = getHomepageCopy(lang);
+
+const getPostSlug = (id: string) => id.replace(/^.+?\//, "").replace(/\.(md|mdx)$/, "");
+
+const homepageIcons = {
+	bio: User,
+	results: Trophy,
+	issues: ShieldCheck,
+	updates: Newspaper,
+	contact: Mail,
+	ai: Bot,
+	nuclear: Atom,
+	satellite: Satellite,
+} as const;
 
 export function getStaticPaths() {
 	return [{ params: { lang: "en" } }, { params: { lang: "zh-TW" } }];
 }
 
-// Fetch blog posts for current language and attach category entries to each post
 const acts = (await getCollection("act"))
 	.filter((post) => post.id.startsWith(lang + "/"))
 	.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
@@ -23,63 +38,155 @@ const manuals = (await getCollection("manual"))
 const fragments = (await getCollection("fragment"))
 	.filter((post) => post.id.startsWith(lang + "/"))
 	.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const featuredActs = selectFeaturedEntries(acts);
 ---
 
 <PageLayout description={t("home.description")}>
-	<div class="mb-6 flex flex-col items-center md:-mt-10 md:flex-row-reverse md:gap-6">
-		<div class="mx-auto w-full">
-			<h1 class="text-foreground my-2 text-2xl leading-[1.35em] font-bold md:text-4xl">{t("home.title")}</h1>
-			<p class="text-muted-foreground leading-[1.6em] md:text-xl">
-				{t("home.description")}
-			</p>
+	<div class="mb-6 flex flex-col gap-4 md:mb-8">
+		<div class="mx-auto w-full max-w-3xl">
+			<p class="text-muted-foreground text-xs font-semibold tracking-[0.35em] uppercase">{copy.hero.eyebrow}</p>
+			<h1 class="text-foreground my-2 text-2xl leading-[1.35em] font-bold md:text-4xl">{copy.hero.title}</h1>
+			<p class="text-muted-foreground leading-[1.7em] md:text-xl">{copy.hero.summary}</p>
+		</div>
+		<div class="flex flex-wrap gap-3">
+			<a
+				href={copy.hero.primaryCta.href}
+				class="bg-primary text-primary-foreground hover:bg-primary/90 active:bg-primary/80 group inline-flex w-max items-center justify-center gap-2 rounded-full px-6 py-3 tracking-tight transition-colors hover:outline-2 hover:outline-offset-2 hover:outline-primary/50"
+			>
+				{copy.hero.primaryCta.label}
+				<ArrowRight class="size-5 transition-transform group-hover:translate-x-1" />
+			</a>
+			<a
+				href={copy.hero.secondaryCta.href}
+				class="hover:outline-primary/50 group inline-flex w-max items-center justify-center gap-2 rounded-full border border-border bg-card px-6 py-3 tracking-tight transition-colors hover:bg-muted/50 hover:outline-2 hover:outline-offset-2"
+			>
+				{copy.hero.secondaryCta.label}
+				<ArrowRight class="size-5 transition-transform group-hover:translate-x-1" />
+			</a>
 		</div>
 	</div>
 
-	{
-		lang === "zh-TW" && (
-			<Callout
-				key="ai-basic-act-2025-07"
-				actionText="前往查看"
-				actionHref={`/${lang}/act/ai-basic-act`}
-				class="mb-4"
-				closable={false}
-			>
-				<div class="space-y-1">
-					<div class="text-base font-bold">AI 基本法</div>
-					<div class="text-muted-foreground text-xs">AI基本法於2025年12月23日三讀通過。</div>
+	{lang === "zh-TW" ? (
+		<Callout key="ai-basic-act-2025-07" actionText="前往查看" actionHref={`/${lang}/act/ai-basic-act`} class="mb-8" closable={false}>
+			<div class="space-y-1">
+				<div class="text-base font-bold">AI 基本法</div>
+				<div class="text-muted-foreground text-xs">AI 基本法於 2025 年 12 月 23 日三讀通過。</div>
+			</div>
+		</Callout>
+	) : (
+		<Callout key="ai-basic-act-2025-07" actionText="View details" actionHref={`/${lang}/act/ai-basic-act`} class="mb-8" closable={false}>
+			<div class="space-y-1">
+				<div class="text-base font-bold">AI Basic Act</div>
+				<div class="text-muted-foreground text-xs">The AI Basic Act was passed on the third reading on December 23, 2025.</div>
+			</div>
+		</Callout>
+	)}
+
+	<section id="quick-links" class="mb-12 space-y-6">
+		<div class="flex flex-wrap items-end justify-between gap-4">
+			<div>
+				<p class="text-muted-foreground text-xs font-semibold tracking-[0.35em] uppercase">{lang === "zh-TW" ? "快速入口" : "Quick links"}</p>
+				<h2 class="text-foreground mt-2 text-2xl font-bold md:text-3xl">{lang === "zh-TW" ? "一眼找到你要看的內容" : "Find the shortest path"}</h2>
+			</div>
+			<p class="text-muted-foreground max-w-2xl text-sm leading-6">
+				{lang === "zh-TW" ? "先看背景，再跳到成果、議題與最新動態。" : "Start with the background, then jump to achievements, issues, and updates."}
+			</p>
+		</div>
+		<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+			{copy.quickLinks.map((link) => {
+				const Icon = homepageIcons[link.icon];
+				return (
+					<a href={link.href} class="not-prose group flex items-start gap-2 rounded-lg border border-border bg-card p-4 transition hover:bg-muted/50">
+						<span class="text-muted-foreground flex size-10 shrink-0 items-center justify-center rounded-full bg-muted/60 dark:bg-white/10">
+							<Icon class="size-4" />
+						</span>
+						<div class="flex min-w-0 flex-col">
+							<div class="text-foreground leading-[1.7] font-medium underline decoration-dashed underline-offset-2 group-hover:decoration-solid">{link.title}</div>
+							<div class="text-muted-foreground text-sm">{link.description}</div>
+						</div>
+					</a>
+				);
+			})}
+		</div>
+	</section>
+
+	<section id="achievements" class="mb-12 space-y-6">
+		<div class="flex flex-wrap items-end justify-between gap-4">
+			<div>
+				<p class="text-muted-foreground text-xs font-semibold tracking-[0.35em] uppercase">{lang === "zh-TW" ? "先看這三件事" : "Start here"}</p>
+				<h2 class="text-foreground mt-2 text-2xl font-bold md:text-3xl">{copy.sectionTitles.achievements}</h2>
+			</div>
+			<p class="text-muted-foreground max-w-2xl text-sm leading-6">
+				{lang === "zh-TW" ? "這三個成果最能快速建立對他的理解。" : "These three results give the fastest understanding of his work."}
+			</p>
+		</div>
+		<div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
+			{featuredActs.map((post) => {
+				const meta = getFeaturedAchievementMeta(getPostSlug(post.id), lang);
+				const Icon = homepageIcons[meta.icon];
+				return (
+					<a href={`/${lang}/act/${getPostSlug(post.id)}`} class="not-prose group flex items-start gap-2 rounded-lg border border-border bg-card p-4 transition hover:bg-muted/50">
+						<span class="text-muted-foreground flex size-10 shrink-0 items-center justify-center rounded-full bg-muted/60 dark:bg-white/10">
+							<Icon class="size-4" />
+						</span>
+						<div class="flex min-w-0 flex-1 flex-col">
+							<div class="flex items-start justify-between gap-3">
+								<div class="text-foreground leading-[1.7] font-medium underline decoration-dashed underline-offset-2 group-hover:decoration-solid">{post.data.title}</div>
+								{post.data.status && <span class="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">{post.data.status}</span>}
+							</div>
+							<div class="text-muted-foreground text-sm">{post.data.description}</div>
+							<div class="mt-2 text-xs text-muted-foreground">{meta.label}</div>
+						</div>
+					</a>
+				);
+			})}
+		</div>
+	</section>
+
+	<section id="updates" class="mb-12 space-y-6">
+		<div class="flex flex-wrap items-end justify-between gap-4">
+			<div>
+				<p class="text-muted-foreground text-xs font-semibold tracking-[0.35em] uppercase">{lang === "zh-TW" ? "最新動態" : "Latest updates"}</p>
+				<h2 class="text-foreground mt-2 text-2xl font-bold md:text-3xl">{copy.sectionTitles.updates}</h2>
+			</div>
+			<p class="text-muted-foreground max-w-2xl text-sm leading-6">
+				{lang === "zh-TW" ? "新聞、立委活動、部落格與逐字稿，放在一起方便快速瀏覽。" : "News, legislator activity, blog posts, and transcripts live together for quick scanning."}
+			</p>
+		</div>
+		<HomeFeeds lang={lang} client:visible />
+	</section>
+
+	<section id="reading" class="space-y-10">
+		<div class="flex flex-wrap items-end justify-between gap-4">
+			<div>
+				<p class="text-muted-foreground text-xs font-semibold tracking-[0.35em] uppercase">{lang === "zh-TW" ? "延伸閱讀" : "Extended reading"}</p>
+				<h2 class="text-foreground mt-2 text-2xl font-bold md:text-3xl">{copy.sectionTitles.reading}</h2>
+			</div>
+			<p class="text-muted-foreground max-w-2xl text-sm leading-6">
+				{lang === "zh-TW" ? "如果你想再往下看，這裡還有思考、閱讀、論文、品味與聯繫資訊。" : "If you want to go deeper, this section keeps the manuals, reading notes, and contact info together."}
+			</p>
+		</div>
+
+		<div class="space-y-8">
+			<div class="space-y-4">
+				<div class="flex flex-wrap items-end justify-between gap-3">
+					<h3 class="text-foreground text-xl font-semibold">{copy.sectionTitles.manuals}</h3>
+					<p class="text-muted-foreground text-sm">{lang === "zh-TW" ? "從自我介紹、思考、閱讀與興趣開始。" : "Start with the bio, thinking, reading, and personal interests."}</p>
 				</div>
-			</Callout>
-		)
-	}
-	{
-		lang === "en" && (
-			<Callout
-				key="ai-basic-act-2025-07"
-				actionText="View Details"
-				actionHref={`/${lang}/act/ai-basic-act`}
-				class="mb-4"
-				closable={false}
-			>
-				<div class="space-y-1">
-					<div class="text-base font-bold">AI Basic Act</div>
-					<div class="text-muted-foreground text-xs">The AI Basic Act was passed on the third reading on December 23, 2025.</div>
+				<div class="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-3 md:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] md:gap-6">
+					{manuals.map((post) => <CardLink post={post} lang={lang} category="manual" />)}
 				</div>
-			</Callout>
-		)
-	}
-	<HomeFeeds lang={lang} client:visible />
-	<!-- 雜項 -->
-	<div class="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-3 md:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] md:gap-6">
-		{fragments.map((post) => <CardLink post={post} lang={lang} category="fragment" />)}
-	</div>
-	<!-- 法案行動 -->
-	<h1 class="text-foreground mt-12 mb-6 text-center text-2xl font-bold md:text-left">{t("cat.acts")}</h1>
-	<div class="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-3 md:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] md:gap-6">
-		{acts.map((post) => <CardLink post={post} lang={lang} category="act" />)}
-	</div>
-	<!-- 寶博使用說明書 -->
-	<h1 class="text-foreground mt-12 mb-6 text-center text-2xl font-bold md:text-left">{t("cat.manuals")}</h1>
-	<div class="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-3 md:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] md:gap-6">
-		{manuals.map((post) => <CardLink post={post} lang={lang} category="manual" />)}
-	</div>
+			</div>
+
+			<div class="space-y-4">
+				<div class="flex flex-wrap items-end justify-between gap-3">
+					<h3 class="text-foreground text-xl font-semibold">{copy.sectionTitles.fragments}</h3>
+					<p class="text-muted-foreground text-sm">{lang === "zh-TW" ? "快速找到字典、工具與聯繫方式。" : "Quickly find the dictionary, tools, and contact path."}</p>
+				</div>
+				<div class="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-3 md:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] md:gap-6">
+					{fragments.map((post) => <CardLink post={post} lang={lang} category="fragment" />)}
+				</div>
+			</div>
+		</div>
+	</section>
 </PageLayout>

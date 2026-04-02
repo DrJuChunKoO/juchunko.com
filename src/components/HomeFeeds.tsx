@@ -208,12 +208,14 @@ export default function HomeFeeds({ lang = "zh-TW" }: HomeFeedsProps) {
 											>
 												<div className={c.description ? "flex h-28 flex-col justify-between" : "flex h-18 flex-col justify-center gap-3"}>
 													<div className="flex items-center gap-2">
-														<span className="relative inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-50/50 text-base text-gray-500 drop-shadow-md dark:bg-white/5 dark:text-white/80">
+														<span className="bg-background/70 text-muted-foreground relative inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-base drop-shadow-md dark:bg-white/10 dark:text-white/80">
 															<Icon className="h-4 w-4" />
 														</span>
-														<p className="line-clamp-2 text-sm font-medium dark:text-white/80">{c.title || ""}</p>
+														<p className="text-foreground line-clamp-2 text-sm font-medium dark:text-white/80">{c.title || ""}</p>
 													</div>
-													{c.description && <p className="line-clamp-2 text-sm dark:text-white/50">{removeMarkdown(c.description)}</p>}
+													{c.description && (
+														<p className="text-muted-foreground line-clamp-2 text-sm dark:text-white/50">{removeMarkdown(c.description)}</p>
+													)}
 													<p className="text-muted-foreground text-xs">{c.date || ""}</p>
 												</div>
 											</motion.div>
@@ -223,10 +225,10 @@ export default function HomeFeeds({ lang = "zh-TW" }: HomeFeedsProps) {
 							</div>
 						</div>
 					)}
-					<div className="text-foreground relative z-10 flex w-full items-center justify-between gap-2 bg-black/5 p-4 py-3 backdrop-blur-sm md:p-6 md:py-4 dark:bg-white/5">
+					<div className="text-foreground bg-muted/40 relative z-10 flex w-full items-center justify-between gap-2 p-4 py-3 backdrop-blur-sm md:p-6 md:py-4 dark:bg-white/5">
 						<header>
 							<h2 className="line-clamp-1 font-semibold md:text-xl">{sec.title}</h2>
-							<p className="text-muted-foreground line-clamp-1 text-sm opacity-75 md:text-base">{sec.subtitle}</p>
+							<p className="text-muted-foreground line-clamp-1 text-sm md:text-base">{sec.subtitle}</p>
 						</header>
 						{sec.href && sec.href.startsWith("http") ? (
 							<ArrowUpRight className="h-6 w-6 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
