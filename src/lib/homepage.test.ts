@@ -20,6 +20,8 @@ test("getHomepageCopy exposes guided first-visit navigation", () => {
 	const copy = getHomepageCopy("zh-TW");
 
 	assert.equal(copy.hero.title, "科技立委葛如鈞．寶博士");
+	assert.equal(copy.hero.secondaryCta.label, "聯繫葛如鈞");
+	assert.equal(copy.sectionTitles.reading, "進一步閱讀");
 });
 test("getFeaturedAchievementMeta returns the icon for each highlighted issue", () => {
 	assert.deepEqual(getFeaturedAchievementMeta("ai-basic-act", "zh-TW"), {

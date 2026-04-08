@@ -89,7 +89,7 @@ export function getHomepageCopy(lang: SupportedLang): HomepageCopy {
 					href: `/${lang}/manual/introduction`,
 				},
 				secondaryCta: {
-					label: "聯繫寶博",
+					label: "聯繫葛如鈞",
 					href: `/${lang}/fragment/contact`,
 				},
 			},
@@ -97,7 +97,7 @@ export function getHomepageCopy(lang: SupportedLang): HomepageCopy {
 				achievements: "代表成果",
 				issues: "重點議題",
 				updates: "最新動態與更新",
-				reading: "延伸閱讀",
+				reading: "進一步閱讀",
 				manuals: "寶博士使用說明",
 				fragments: "補充資料",
 			},
