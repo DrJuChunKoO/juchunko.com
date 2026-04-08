@@ -124,7 +124,7 @@ export default function HomeFeeds({ lang = "zh-TW" }: HomeFeedsProps) {
 					} else if (config.key === "legislator") {
 						cards = (data.legislatorCards || []).slice().reverse();
 					} else if (config.key === "blog") {
-						cards = (data.blogCards || []).reverse();
+						cards = data.blogCards || [];
 					} else if (config.key === "transpal") {
 						cards = data.transpalCards || [];
 					}
