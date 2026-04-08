@@ -32,6 +32,9 @@ const socialLinks = [
 	{ href: "https://x.com/@dAAAb", label: "X", Icon: XBrandIcon },
 ] as const;
 
+const navIconButtonClassName =
+	"hover:outline-primary/50 text-muted-foreground hover:text-foreground rounded-full p-1 transition-opacity hover:opacity-80 hover:outline-2 hover:outline-offset-2";
+
 export function resolveNavLang(pathname: string, browserLanguage?: string, fallbackLang: SupportedLang = defaultLang) {
 	const [, pathLang] = pathname.split("/");
 	if (pathLang && pathLang in ui) {
@@ -161,7 +164,7 @@ export default function Nav({ lang }: NavProps) {
 					href={socialLinks[0].href}
 					target="_blank"
 					rel="noreferrer"
-					className="hover:outline-primary/50 text-muted-foreground hover:text-foreground hidden rounded-full p-1 transition-opacity hover:opacity-80 hover:outline-2 hover:outline-offset-2 md:inline-flex"
+					className={cn(navIconButtonClassName, "hidden md:inline-flex")}
 					title={socialLinks[0].label}
 					aria-label={socialLinks[0].label}
 				>
@@ -171,7 +174,7 @@ export default function Nav({ lang }: NavProps) {
 					type="button"
 					onClick={handleThemeToggle}
 					aria-label="Toggle dark mode"
-					className="hover:outline-primary/50 cursor-pointer rounded-full p-1 text-current hover:opacity-75 hover:outline-2 hover:outline-offset-2"
+					className={cn(navIconButtonClassName, "cursor-pointer")}
 				>
 					<Sun className="h-6 w-6 dark:hidden" />
 					<Moon className="hidden h-6 w-6 dark:block" />

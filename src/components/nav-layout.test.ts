@@ -21,6 +21,16 @@ test("react nav renders the translated links for the requested locale", () => {
 	assert.match(markup, /aria-controls="mobile-nav"/);
 });
 
+test("github and theme toggle buttons use the same foreground color treatment", () => {
+	const markup = renderToStaticMarkup(createElement(Nav, { lang: "en" }));
+
+	assert.match(
+		markup,
+		/href="https:\/\/github\.com\/DrJuChunKoO\/juchunko\.com"[^>]*class="[^"]*text-muted-foreground[^"]*hover:text-foreground/,
+	);
+	assert.match(markup, /aria-label="Toggle dark mode"[^>]*class="[^"]*text-muted-foreground[^"]*hover:text-foreground/);
+});
+
 test("mobile nav stays attached to the sticky header instead of using fixed positioning", () => {
 	const markup = renderToStaticMarkup(createElement(Nav, { lang: "en" }));
 
