@@ -1,23 +1,29 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+
+type SupportedLang = "en" | "zh-TW";
 
 const languages = {
 	en: "English",
 	"zh-TW": "中文",
 };
 
-export default function LanguageSelector() {
-	const [selectedLanguage, setSelectedLanguage] = useState("zh-TW");
+interface LanguageSelectorProps {
+	initialLang?: SupportedLang;
+}
+
+export default function LanguageSelector({ initialLang = "zh-TW" }: LanguageSelectorProps) {
+	const [selectedLanguage, setSelectedLanguage] = useState<SupportedLang>(initialLang);
 	useEffect(() => {
 		const pathname = window.location.pathname;
 		const langMatch = pathname.match(/^\/(en|zh-TW)/);
 		if (langMatch) {
-			setSelectedLanguage(langMatch[1]);
+			setSelectedLanguage(langMatch[1] as SupportedLang);
 		} else {
 			setSelectedLanguage("zh-TW");
 		}
-	}, []);
+	}, [initialLang]);
 
-	const handleLanguageChange = (lang: string) => {
+	const handleLanguageChange = (lang: SupportedLang) => {
 		if (lang === selectedLanguage) return;
 		const newPath = window.location.pathname.replace(/^(\/en|\/zh-TW)/, `/${lang}`);
 		window.history.pushState({}, "", newPath);
@@ -26,7 +32,7 @@ export default function LanguageSelector() {
 
 	return (
 		<div className="flex items-center gap-2 text-sm">
-			{Object.entries(languages).map(([lang, label], index) => (
+			{(Object.entries(languages) as [SupportedLang, string][]).map(([lang, label], index) => (
 				<span key={lang} className="flex items-center gap-2">
 					<button
 						type="button"

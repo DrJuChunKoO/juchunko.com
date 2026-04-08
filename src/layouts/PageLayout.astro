@@ -1,6 +1,6 @@
 ---
 import Layout from "./Layout.astro";
-import Nav from "../components/Nav.astro";
+import Nav from "../components/Nav";
 import Footer from "@/components/Footer.astro";
 import BaseHead from "@/components/BaseHead.astro";
 import { getLangFromUrl, useTranslations } from "../i18n/utils";
@@ -27,15 +27,11 @@ const pageImage = image || post?.data.image || "/favicon.png";
 <Layout>
 	<BaseHead title={pageTitle} description={pageDescription} image={pageImage} url={Astro.url.href} slot="head" />
 
-	<div class="relative flex min-h-svh w-screen flex-col">
-		<div
-			class="from-muted/30 dark:from-background/10 pointer-events-none absolute inset-0 -z-10 hidden h-svh w-full bg-linear-to-b via-transparent md:block"
-		>
-		</div>
-		<Nav />
+	<div class="flex min-h-svh w-screen flex-col">
+		<Nav lang={lang} client:load />
 		<div
 			class={cn(
-				"relative mx-auto w-full max-w-360 flex-1 rounded-t-2xl bg-card pt-20 pb-10 md:max-w-[90vw] md:pt-20 md:pb-16 md:mt-24",
+				"relative mx-auto w-full max-w-360 flex-1 rounded-t-2xl bg-card py-10 md:max-w-[90vw] md:py-16",
 				"pr-[max(env(safe-area-inset-right),1rem)] pl-[max(env(safe-area-inset-left),1rem)]",
 				"md:pr-[max(env(safe-area-inset-right),2rem)] md:pl-[max(env(safe-area-inset-left),2rem)]",
 			)}
@@ -45,43 +41,43 @@ const pageImage = image || post?.data.image || "/favicon.png";
 		{currentPath !== "/" && <Agent client:only="react" lang={lang} />}
 		<Footer />
 	</div>
+
+	<script is:inline>
+		// 將邏輯抽成函式，方便在載入與滾動時重用
+		function applyScrollClasses() {
+			const scrollTop = window.scrollY;
+			const windowHeight = window.innerHeight;
+
+			if (scrollTop > 0) {
+				document.body.classList.add("scrolled");
+			} else {
+				document.body.classList.remove("scrolled");
+			}
+
+			if (scrollTop >= windowHeight / 2) {
+				document.body.classList.add("scrolled-full");
+			} else {
+				document.body.classList.remove("scrolled-full");
+			}
+		}
+
+		// 在 DOM 內容就緒時立即執行一次，避免首次渲染樣式錯誤
+		function initScrollClassHandling() {
+			applyScrollClasses();
+			window.addEventListener("scroll", applyScrollClasses, { passive: true });
+		}
+
+		if (document.readyState === "loading") {
+			document.addEventListener("DOMContentLoaded", initScrollClassHandling, { once: true });
+		} else {
+			// 若腳本被延後載入或在 bfcache 恢復的情境下，立即執行一次
+			initScrollClassHandling();
+		}
+
+		// 處理瀏覽器前進/返回快取恢復（bfcache），確保樣式正確
+		window.addEventListener("pageshow", (e) => {
+			// 在 bfcache 恢復時 (persisted 為 true) 或一般顯示時都套用一次，確保狀態正確
+			applyScrollClasses();
+		});
+	</script>
 </Layout>
-
-<script is:inline>
-	// 將邏輯抽成函式，方便在載入與滾動時重用
-	function applyScrollClasses() {
-		const scrollTop = window.scrollY;
-		const windowHeight = window.innerHeight;
-
-		if (scrollTop > 0) {
-			document.body.classList.add("scrolled");
-		} else {
-			document.body.classList.remove("scrolled");
-		}
-
-		if (scrollTop >= windowHeight / 2) {
-			document.body.classList.add("scrolled-full");
-		} else {
-			document.body.classList.remove("scrolled-full");
-		}
-	}
-
-	// 在 DOM 內容就緒時立即執行一次，避免首次渲染樣式錯誤
-	function initScrollClassHandling() {
-		applyScrollClasses();
-		window.addEventListener("scroll", applyScrollClasses, { passive: true });
-	}
-
-	if (document.readyState === "loading") {
-		document.addEventListener("DOMContentLoaded", initScrollClassHandling, { once: true });
-	} else {
-		// 若腳本被延後載入或在 bfcache 恢復的情境下，立即執行一次
-		initScrollClassHandling();
-	}
-
-	// 處理瀏覽器前進/返回快取恢復（bfcache），確保樣式正確
-	window.addEventListener("pageshow", (e) => {
-		// 在 bfcache 恢復時 (persisted 為 true) 或一般顯示時都套用一次，確保狀態正確
-		applyScrollClasses();
-	});
-</script>
