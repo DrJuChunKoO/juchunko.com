@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { getFeaturedAchievementMeta, getHomepageCopy, selectFeaturedEntries } from "./homepage";
+import { getFeaturedAchievementSummary, getHomepageCopy, selectFeaturedEntries } from "./homepage";
 
 test("selectFeaturedEntries keeps the curated homepage order", () => {
 	const entries = [
@@ -23,15 +23,26 @@ test("getHomepageCopy exposes guided first-visit navigation", () => {
 	assert.equal(copy.hero.secondaryCta.label, "聯繫葛如鈞");
 	assert.equal(copy.sectionTitles.reading, "進一步閱讀");
 });
-test("getFeaturedAchievementMeta returns the icon for each highlighted issue", () => {
-	assert.deepEqual(getFeaturedAchievementMeta("ai-basic-act", "zh-TW"), {
-		icon: "ai",
-		label: "AI 治理",
-	});
-	assert.deepEqual(getFeaturedAchievementMeta("nuclear-reactor-facility-control-act", "en"), {
-		icon: "nuclear",
-		label: "Energy resilience",
-	});
+
+test("getFeaturedAchievementSummary returns why-it-matters summaries for featured acts", () => {
+	assert.equal(
+		getFeaturedAchievementSummary("zh-TW/ai-basic-act.mdx", "zh-TW"),
+		"為台灣建立 AI 發展與風險治理的共同規則，讓創新、監管與公共利益能在同一套法律框架下推進。",
+	);
+	assert.equal(
+		getFeaturedAchievementSummary("en/nuclear-reactor-facility-control-act.mdx", "en"),
+		"It reopens a legal path for extending stable low-carbon power, turning an energy dead end into a decision that can be reviewed on safety and evidence.",
+	);
+});
+
+test("homepage renders featured achievements with CardLink", () => {
+	const source = readFileSync(new URL("../pages/[lang]/index.astro", import.meta.url), "utf8");
+
+	assert.match(
+		source,
+		/featuredActs\.map\(\(post\) =>\s*\(\s*<CardLink post=\{post\} lang=\{lang\} category="act" showDescription description=\{getFeaturedAchievementSummary\(post\.id, lang\)\} \/>\s*\)\s*\)/s,
+	);
+	assert.match(readFileSync(new URL("../components/CardLink.astro", import.meta.url), "utf8"), /showDescription/);
 });
 
 test("homepage keeps the issues archive and scroll margin anchors", () => {

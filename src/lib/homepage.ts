@@ -1,7 +1,5 @@
 export type SupportedLang = "en" | "zh-TW";
 
-export type HomepageIconKey = "bio" | "results" | "issues" | "updates" | "contact" | "ai" | "nuclear" | "satellite";
-
 export interface HomepageHeroCopy {
 	eyebrow: string;
 	title: string;
@@ -14,18 +12,6 @@ export interface HomepageHeroCopy {
 		label: string;
 		href: string;
 	};
-}
-
-export interface HomepageQuickLink {
-	title: string;
-	description: string;
-	href: string;
-	icon: HomepageIconKey;
-}
-
-export interface HomepageAchievementMeta {
-	icon: HomepageIconKey;
-	label: string;
 }
 
 export interface HomepageCopy {
@@ -46,16 +32,19 @@ export const featuredHomepageActSlugs = [
 	"multi-satellite-regulatory-adaptation",
 ] as const;
 
-const featuredAchievementMeta: Record<SupportedLang, Record<string, HomepageAchievementMeta>> = {
+const featuredAchievementSummaries: Record<SupportedLang, Record<string, string>> = {
 	"zh-TW": {
-		"ai-basic-act": { icon: "ai", label: "AI 治理" },
-		"nuclear-reactor-facility-control-act": { icon: "nuclear", label: "能源韌性" },
-		"multi-satellite-regulatory-adaptation": { icon: "satellite", label: "通訊韌性" },
+		"ai-basic-act": "為台灣建立 AI 發展與風險治理的共同規則，讓創新、監管與公共利益能在同一套法律框架下推進。",
+		"nuclear-reactor-facility-control-act": "讓穩定低碳電力延役重新回到法治與安全審查軌道，避免能源選項在制度上被提前鎖死。",
+		"multi-satellite-regulatory-adaptation": "把通訊韌性從單一海纜提升為多軌備援架構，降低重大災害或衝突時台灣整體斷網的風險。",
 	},
 	en: {
-		"ai-basic-act": { icon: "ai", label: "AI governance" },
-		"nuclear-reactor-facility-control-act": { icon: "nuclear", label: "Energy resilience" },
-		"multi-satellite-regulatory-adaptation": { icon: "satellite", label: "Network resilience" },
+		"ai-basic-act":
+			"It sets a shared legal baseline for AI development and risk governance, so innovation, accountability, and public trust can move forward together.",
+		"nuclear-reactor-facility-control-act":
+			"It reopens a legal path for extending stable low-carbon power, turning an energy dead end into a decision that can be reviewed on safety and evidence.",
+		"multi-satellite-regulatory-adaptation":
+			"It upgrades communications resilience from a single-cable dependency to a layered backup network, reducing the risk of Taiwan going dark during disruption.",
 	},
 };
 
@@ -68,13 +57,8 @@ export function selectFeaturedEntries<T extends { id: string }>(entries: readonl
 	return order.map((slug) => entriesBySlug.get(slug)).filter((entry): entry is T => Boolean(entry));
 }
 
-export function getFeaturedAchievementMeta(slug: string, lang: SupportedLang): HomepageAchievementMeta {
-	return (
-		featuredAchievementMeta[lang][slug] ?? {
-			icon: "results",
-			label: slug,
-		}
-	);
+export function getFeaturedAchievementSummary(id: string, lang: SupportedLang) {
+	return featuredAchievementSummaries[lang][getContentSlug(id)];
 }
 
 export function getHomepageCopy(lang: SupportedLang): HomepageCopy {

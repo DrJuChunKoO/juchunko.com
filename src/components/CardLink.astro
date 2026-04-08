@@ -1,5 +1,6 @@
 ---
-const { post, lang, category } = Astro.props;
+const { post, lang, category, showDescription = false, description } = Astro.props;
+const cardDescription = description ?? post.data.description;
 ---
 
 <a
@@ -22,6 +23,7 @@ const { post, lang, category } = Astro.props;
 						})
 			}
 		</p>
+		{showDescription && cardDescription && <p class="text-muted-foreground mt-2 text-sm leading-relaxed">{cardDescription}</p>}
 	</div>
 	<div class="absolute right-0 bottom-0 hidden size-24 items-end justify-end pr-4 drop-shadow-lg drop-shadow-black/10 md:flex">
 		<div

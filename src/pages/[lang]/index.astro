@@ -2,28 +2,14 @@
 import PageLayout from "../../layouts/PageLayout.astro";
 import CardLink from "@/components/CardLink.astro";
 import HomeFeeds from "@/components/HomeFeeds.tsx";
-import Callout from "@/components/Callout.astro";
 import { getLangFromUrl, useTranslations } from "src/i18n/utils";
 import { getCollection } from "astro:content";
-import { ArrowRight, Atom, Bot, Mail, Newspaper, Satellite, ShieldCheck, Trophy, User } from "@lucide/astro";
-import { getFeaturedAchievementMeta, getHomepageCopy, selectFeaturedEntries } from "@/lib/homepage";
+import { ArrowRight } from "@lucide/astro";
+import { getFeaturedAchievementSummary, getHomepageCopy, selectFeaturedEntries } from "@/lib/homepage";
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 const copy = getHomepageCopy(lang);
-
-const getPostSlug = (id: string) => id.replace(/^.+?\//, "").replace(/\.(md|mdx)$/, "");
-
-const homepageIcons = {
-	bio: User,
-	results: Trophy,
-	issues: ShieldCheck,
-	updates: Newspaper,
-	contact: Mail,
-	ai: Bot,
-	nuclear: Atom,
-	satellite: Satellite,
-} as const;
 
 export function getStaticPaths() {
 	return [{ params: { lang: "en" } }, { params: { lang: "zh-TW" } }];
@@ -68,34 +54,11 @@ const featuredActs = selectFeaturedEntries(acts);
 
 	<section id="achievements" class="mb-12 scroll-mt-24 space-y-6 md:scroll-mt-28">
 		<h2 class="text-foreground mt-2 text-2xl font-bold md:text-3xl">{copy.sectionTitles.achievements}</h2>
-		<div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
+		<div class="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-3 md:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] md:gap-6">
 			{
-				featuredActs.map((post) => {
-					const meta = getFeaturedAchievementMeta(getPostSlug(post.id), lang);
-					const Icon = homepageIcons[meta.icon];
-					return (
-						<a
-							href={`/${lang}/act/${getPostSlug(post.id)}`}
-							class="not-prose group border-border bg-card hover:bg-muted/50 flex items-start gap-2 rounded-lg border p-4 transition"
-						>
-							<span class="text-muted-foreground bg-muted/60 flex size-10 shrink-0 items-center justify-center rounded-full dark:bg-white/10">
-								<Icon class="size-4" />
-							</span>
-							<div class="flex min-w-0 flex-1 flex-col">
-								<div class="flex items-start justify-between gap-3">
-									<div class="text-foreground leading-[1.7] font-medium underline decoration-dashed underline-offset-2 group-hover:decoration-solid">
-										{post.data.title}
-									</div>
-									{post.data.status && (
-										<span class="bg-muted text-muted-foreground rounded-full px-2 py-0.5 text-xs">{post.data.status}</span>
-									)}
-								</div>
-								<div class="text-muted-foreground text-sm">{post.data.description}</div>
-								<div class="text-muted-foreground mt-2 text-xs">{meta.label}</div>
-							</div>
-						</a>
-					);
-				})
+				featuredActs.map((post) => (
+					<CardLink post={post} lang={lang} category="act" showDescription description={getFeaturedAchievementSummary(post.id, lang)} />
+				))
 			}
 		</div>
 	</section>
