@@ -114,7 +114,7 @@ export default function Nav({ lang }: NavProps) {
 	const closeMenu = () => setIsMenuOpen(false);
 
 	return (
-		<div className="in-[.scrolled]:border-border bg-card/75 border-border/25 relative sticky inset-x-0 top-0 z-40 flex w-full flex-col border-b backdrop-blur-xl transition-colors print:hidden">
+		<div className="in-[.scrolled]:border-border bg-card/75 border-border/25 sticky inset-x-0 top-0 z-40 flex w-full flex-col border-b backdrop-blur-xl transition-colors print:hidden">
 			<nav
 				className={cn(
 					"mx-auto flex min-h-16 w-full max-w-360 items-center justify-end gap-2 text-sm md:max-w-[90vw]",
