@@ -37,12 +37,14 @@ test("getFeaturedAchievementSummary returns why-it-matters summaries for feature
 
 test("homepage renders featured achievements with CardLink", () => {
 	const source = readFileSync(new URL("../pages/[lang]/index.astro", import.meta.url), "utf8");
+	const cardLinkSource = readFileSync(new URL("../components/CardLink.astro", import.meta.url), "utf8");
 
 	assert.match(
 		source,
 		/featuredActs\.map\(\(post\) =>\s*\(\s*<CardLink post=\{post\} lang=\{lang\} category="act" showDescription description=\{getFeaturedAchievementSummary\(post\.id, lang\)\} \/>\s*\)\s*\)/s,
 	);
-	assert.match(readFileSync(new URL("../components/CardLink.astro", import.meta.url), "utf8"), /showDescription/);
+	assert.match(cardLinkSource, /showDescription/);
+	assert.match(cardLinkSource, /text-muted-foreground mt-2 text-xs leading-relaxed md:text-sm/);
 });
 
 test("homepage keeps the issues archive and scroll margin anchors", () => {
@@ -50,4 +52,11 @@ test("homepage keeps the issues archive and scroll margin anchors", () => {
 
 	assert.match(source, /id="issues"/);
 	assert.match(source, /id="reading" class="scroll-mt-24 space-y-10 md:scroll-mt-28"/);
+});
+
+test("homepage hero CTAs use a more compact mobile size", () => {
+	const source = readFileSync(new URL("../pages/[lang]/index.astro", import.meta.url), "utf8");
+
+	assert.match(source, /rounded-full px-4 py-2 text-sm .* md:px-6 md:py-3 md:text-base/);
+	assert.match(source, /ArrowRight class="size-4 .* md:size-5/);
 });

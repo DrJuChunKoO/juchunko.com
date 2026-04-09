@@ -37,17 +37,17 @@ const featuredActs = selectFeaturedEntries(acts);
 		<div class="flex flex-wrap gap-3">
 			<a
 				href={copy.hero.primaryCta.href}
-				class="bg-primary text-primary-foreground hover:bg-primary/90 active:bg-primary/80 group hover:outline-primary/50 inline-flex w-max items-center justify-center gap-2 rounded-full px-6 py-3 tracking-tight transition-colors hover:outline-2 hover:outline-offset-2"
+				class="bg-primary text-primary-foreground hover:bg-primary/90 active:bg-primary/80 group hover:outline-primary/50 inline-flex w-max items-center justify-center gap-1.5 rounded-full px-4 py-2 text-sm tracking-tight transition-colors hover:outline-2 hover:outline-offset-2 md:gap-2 md:px-6 md:py-3 md:text-base"
 			>
 				{copy.hero.primaryCta.label}
-				<ArrowRight class="size-5 transition-transform group-hover:translate-x-1" />
+				<ArrowRight class="size-4 transition-transform group-hover:translate-x-1 md:size-5" />
 			</a>
 			<a
 				href={copy.hero.secondaryCta.href}
-				class="hover:outline-primary/50 group border-border bg-card hover:bg-muted/50 inline-flex w-max items-center justify-center gap-2 rounded-full border px-6 py-3 tracking-tight transition-colors hover:outline-2 hover:outline-offset-2"
+				class="hover:outline-primary/50 group border-border bg-card hover:bg-muted/50 inline-flex w-max items-center justify-center gap-1.5 rounded-full border px-4 py-2 text-sm tracking-tight transition-colors hover:outline-2 hover:outline-offset-2 md:gap-2 md:px-6 md:py-3 md:text-base"
 			>
 				{copy.hero.secondaryCta.label}
-				<ArrowRight class="size-5 transition-transform group-hover:translate-x-1" />
+				<ArrowRight class="size-4 transition-transform group-hover:translate-x-1 md:size-5" />
 			</a>
 		</div>
 	</div>
