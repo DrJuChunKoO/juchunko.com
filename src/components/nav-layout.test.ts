@@ -48,3 +48,13 @@ test("page layout hydrates the react nav on load", () => {
 	assert.match(layoutSource, /import Nav from "\.\.\/components\/Nav";/);
 	assert.match(layoutSource, /<Nav lang={lang} client:load \/>/);
 });
+
+test("root layout bootstraps the stored theme in head before hydration", () => {
+	const layoutSource = readFileSync(new URL("../layouts/Layout.astro", import.meta.url), "utf8");
+
+	assert.match(layoutSource, /<head>[\s\S]*<script is:inline>/);
+	assert.match(layoutSource, /localStorage\.getItem\("theme"\)/);
+	assert.match(layoutSource, /matchMedia\("\(prefers-color-scheme: dark\)"\)/);
+	assert.match(layoutSource, /documentElement\.classList\.toggle\("dark", dark\)/);
+	assert.match(layoutSource, /closest\("\[data-theme-toggle\]"\)/);
+});

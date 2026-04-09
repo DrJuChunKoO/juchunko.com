@@ -57,17 +57,6 @@ function getNavCopy(lang: SupportedLang) {
 	};
 }
 
-function applyStoredTheme() {
-	try {
-		const stored = localStorage.getItem("theme");
-		const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-		const dark = stored === "dark" || (!stored && prefersDark);
-		document.documentElement.classList.toggle("dark", dark);
-	} catch {
-		// Ignore storage and matchMedia failures.
-	}
-}
-
 function SocialLink({ href, children, className, onClick }: SocialLinkProps) {
 	return (
 		<a
@@ -91,7 +80,6 @@ export default function Nav({ lang }: NavProps) {
 	const copy = getNavCopy(currentLang);
 
 	useEffect(() => {
-		applyStoredTheme();
 		setCurrentLang(resolveNavLang(window.location.pathname, window.navigator.language, lang));
 	}, [lang]);
 
@@ -118,17 +106,6 @@ export default function Nav({ lang }: NavProps) {
 			window.removeEventListener("keydown", handleKeyDown);
 		};
 	}, [isMenuOpen]);
-
-	const handleThemeToggle = () => {
-		const html = document.documentElement;
-		const isDark = html.classList.toggle("dark");
-
-		try {
-			localStorage.setItem("theme", isDark ? "dark" : "light");
-		} catch {
-			// Ignore storage failures.
-		}
-	};
 
 	const closeMenu = () => setIsMenuOpen(false);
 
@@ -170,12 +147,7 @@ export default function Nav({ lang }: NavProps) {
 				>
 					<GithubIcon className="size-6" />
 				</a>
-				<button
-					type="button"
-					onClick={handleThemeToggle}
-					aria-label="Toggle dark mode"
-					className={cn(navIconButtonClassName, "cursor-pointer")}
-				>
+				<button type="button" data-theme-toggle aria-label="Toggle dark mode" className={cn(navIconButtonClassName, "cursor-pointer")}>
 					<Sun className="h-6 w-6 dark:hidden" />
 					<Moon className="hidden h-6 w-6 dark:block" />
 				</button>

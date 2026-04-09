@@ -11,6 +11,43 @@ const currentPath = Astro.url.pathname;
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
+		<script is:inline>
+			const applyTheme = (doc = document) => {
+				let storedTheme = null;
+
+				try {
+					storedTheme = localStorage.getItem("theme");
+				} catch {
+					// Ignore storage failures and fall back to system preference.
+				}
+
+				const dark = storedTheme === "dark" || (storedTheme !== "light" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+				doc.documentElement.classList.toggle("dark", dark);
+				doc.documentElement.style.colorScheme = dark ? "dark" : "light";
+			};
+
+			applyTheme();
+
+			document.addEventListener("astro:before-swap", (event) => {
+				applyTheme(event.newDocument);
+			});
+
+			document.addEventListener("click", (event) => {
+				if (!(event.target instanceof Element) || !event.target.closest("[data-theme-toggle]")) {
+					return;
+				}
+
+				const html = document.documentElement;
+				const isDark = html.classList.toggle("dark");
+				html.style.colorScheme = isDark ? "dark" : "light";
+
+				try {
+					localStorage.setItem("theme", isDark ? "dark" : "light");
+				} catch {
+					// Ignore storage failures.
+				}
+			});
+		</script>
 		<link rel="icon" href="/favicon.png" />
 		<link rel="help" type="text/plain" href="/llms.txt" />
 		<slot name="head" />
