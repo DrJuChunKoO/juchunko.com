@@ -40,14 +40,20 @@ function LoadingDots() {
 export default function AIAssistantWindow({ isOpen, onClose, lang = "zh-TW" }: AIAssistantWindowProps) {
 	const messagesEndRef = useRef<HTMLDivElement>(null);
 	const inputRef = useRef<HTMLTextAreaElement>(null);
+	const windowRef = useRef<HTMLDivElement>(null);
 
 	// 以 y 控制與底部距離，避免覆蓋 footer
 	const y = useMotionValue(16);
 
 	useEffect(() => {
-		function handleScroll() {
+		if (!isOpen) return;
+
+		function syncWindowOffset() {
 			const footer = document.getElementById("footer");
-			if (!footer) return;
+			if (!footer) {
+				y.set(16);
+				return;
+			}
 			const rect = footer.getBoundingClientRect();
 			const windowHeight = window.innerHeight;
 			const top = rect.y - windowHeight;
@@ -55,10 +61,31 @@ export default function AIAssistantWindow({ isOpen, onClose, lang = "zh-TW" }: A
 
 			y.set(isBottom ? 16 - top : 16);
 		}
-		window.addEventListener("scroll", handleScroll);
-		handleScroll();
-		return () => window.removeEventListener("scroll", handleScroll);
-	}, []);
+
+		window.addEventListener("scroll", syncWindowOffset);
+		window.addEventListener("resize", syncWindowOffset);
+
+		const observer =
+			typeof ResizeObserver === "undefined" || !windowRef.current
+				? null
+				: new ResizeObserver(() => {
+						requestAnimationFrame(syncWindowOffset);
+					});
+
+		if (observer && windowRef.current) {
+			observer.observe(windowRef.current);
+		}
+
+		syncWindowOffset();
+
+		return () => {
+			window.removeEventListener("scroll", syncWindowOffset);
+			window.removeEventListener("resize", syncWindowOffset);
+			if (observer) {
+				observer.disconnect();
+			}
+		};
+	}, [isOpen, y]);
 
 	const [input, setInput] = useState("");
 
@@ -213,6 +240,7 @@ export default function AIAssistantWindow({ isOpen, onClose, lang = "zh-TW" }: A
 		<AnimatePresence>
 			{isOpen && (
 				<motion.div
+					ref={windowRef}
 					initial={{ opacity: 0, scale: 0.5, y: 16 }}
 					animate={{
 						opacity: 1,

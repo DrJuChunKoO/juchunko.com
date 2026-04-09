@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { motion, AnimatePresence, useMotionValue } from "motion/react";
 import { BookAudio, X } from "lucide-react";
 import TTSPlayer from "./TTSPlayer";
@@ -14,11 +14,17 @@ interface VoiceReaderWindowProps {
 
 export default function VoiceReaderWindow({ isOpen, onClose, lang = "zh-TW" }: VoiceReaderWindowProps) {
 	const y = useMotionValue(16);
+	const windowRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
-		function handleScroll() {
+		if (!isOpen) return;
+
+		function syncWindowOffset() {
 			const footer = document.getElementById("footer");
-			if (!footer) return;
+			if (!footer) {
+				y.set(16);
+				return;
+			}
 			const rect = footer.getBoundingClientRect();
 			const windowHeight = window.innerHeight;
 			const top = rect.y - windowHeight;
@@ -26,15 +32,37 @@ export default function VoiceReaderWindow({ isOpen, onClose, lang = "zh-TW" }: V
 
 			y.set(isBottom ? 16 - top : 16);
 		}
-		window.addEventListener("scroll", handleScroll);
-		handleScroll();
-		return () => window.removeEventListener("scroll", handleScroll);
-	}, []);
+
+		window.addEventListener("scroll", syncWindowOffset);
+		window.addEventListener("resize", syncWindowOffset);
+
+		const observer =
+			typeof ResizeObserver === "undefined" || !windowRef.current
+				? null
+				: new ResizeObserver(() => {
+						requestAnimationFrame(syncWindowOffset);
+					});
+
+		if (observer && windowRef.current) {
+			observer.observe(windowRef.current);
+		}
+
+		syncWindowOffset();
+
+		return () => {
+			window.removeEventListener("scroll", syncWindowOffset);
+			window.removeEventListener("resize", syncWindowOffset);
+			if (observer) {
+				observer.disconnect();
+			}
+		};
+	}, [isOpen, y]);
 
 	return (
 		<AnimatePresence>
 			{isOpen && (
 				<motion.div
+					ref={windowRef}
 					initial={{ opacity: 0, scale: 0.5, y: 16 }}
 					animate={{
 						opacity: 1,
