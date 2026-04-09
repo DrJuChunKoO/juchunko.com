@@ -33,13 +33,14 @@ test("github and theme toggle buttons use the same foreground color treatment", 
 
 test("mobile nav stays attached to the sticky header instead of using fixed positioning", () => {
 	const markup = renderToStaticMarkup(createElement(Nav, { lang: "en" }));
+	const navSource = readFileSync(new URL("./Nav.tsx", import.meta.url), "utf8");
 
-	assert.match(markup, /id="mobile-nav"/);
-	assert.doesNotMatch(markup, /nav-menu[^\"]*fixed/);
-	assert.match(markup, /nav-menu[^\"]*absolute/);
-	assert.match(markup, /nav-menu[^\"]*top-full/);
-	assert.match(markup, /nav-menu[^\"]*min-h-\[calc\(100svh-4rem\)\]/);
-	assert.match(markup, /nav-menu[^\"]*overflow-y-auto/);
+	assert.match(markup, /aria-controls="mobile-nav"/);
+	assert.doesNotMatch(markup, /id="mobile-nav"/);
+	assert.match(navSource, /\{isMenuOpen && \(/);
+	assert.match(navSource, /id="mobile-nav"/);
+	assert.doesNotMatch(navSource, /nav-menu[^\"]*fixed/);
+	assert.match(navSource, /nav-menu text-foreground inset-x-0 top-full z-50 overflow-y-auto/);
 });
 
 test("page layout hydrates the react nav on load", () => {
