@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import Nav, { resolveNavLang } from "./Nav";
@@ -34,13 +34,20 @@ test("github and theme toggle buttons use the same foreground color treatment", 
 test("mobile nav stays attached to the sticky header instead of using fixed positioning", () => {
 	const markup = renderToStaticMarkup(createElement(Nav, { lang: "en" }));
 	const navSource = readFileSync(new URL("./Nav.tsx", import.meta.url), "utf8");
+	const navMotionPath = new URL("./nav-motion.ts", import.meta.url);
 
 	assert.match(markup, /aria-controls="mobile-nav"/);
 	assert.doesNotMatch(markup, /id="mobile-nav"/);
-	assert.match(navSource, /\{isMenuOpen && \(/);
-	assert.match(navSource, /id="mobile-nav"/);
-	assert.doesNotMatch(navSource, /nav-menu[^\"]*fixed/);
-	assert.match(navSource, /nav-menu text-foreground inset-x-0 top-full z-50 overflow-y-auto/);
+	assert.match(navSource, /AnimatePresence/);
+	assert.match(navSource, /useReducedMotion/);
+	assert.match(navSource, /mobileNavMenuVariants/);
+	assert.match(navSource, /<AnimatePresence initial=\{false\}>/);
+	assert.equal(existsSync(navMotionPath), true);
+
+	const navMotionSource = readFileSync(navMotionPath, "utf8");
+	assert.doesNotMatch(navMotionSource, /mobileNavMenuClassName\s*=\s*"[^\"]*fixed/);
+	assert.match(navMotionSource, /mobileNavMenuClassName\s*=\s*"[^\"]*absolute inset-x-0 top-full z-50 overflow-y-auto/);
+	assert.match(navMotionSource, /createMobileNavMenuVariants\(reduced: boolean\)/);
 });
 
 test("page layout hydrates the react nav on load", () => {

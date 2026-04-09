@@ -1,8 +1,10 @@
 import { cn } from "@/lib/utils";
 import { defaultLang, languages, ui } from "@/i18n/ui";
 import { Menu, Moon, Sun, X } from "lucide-react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import React, { useEffect, useState, type ReactNode, type SVGProps } from "react";
 import LanguageSelector from "./LanguageSelector";
+import { createMobileNavMenuVariants } from "./nav-motion";
 
 type SupportedLang = keyof typeof languages;
 
@@ -75,6 +77,8 @@ function SocialLink({ href, children, className, onClick }: SocialLinkProps) {
 }
 
 export default function Nav({ lang }: NavProps) {
+	const prefersReducedMotion = Boolean(useReducedMotion());
+	const mobileNavMenuVariants = createMobileNavMenuVariants(prefersReducedMotion);
 	const [currentLang, setCurrentLang] = useState<SupportedLang>(lang);
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	const copy = getNavCopy(currentLang);
@@ -110,10 +114,10 @@ export default function Nav({ lang }: NavProps) {
 	const closeMenu = () => setIsMenuOpen(false);
 
 	return (
-		<div className="in-[.scrolled]:border-border bg-card/75 sticky inset-x-0 top-0 z-40 flex w-full flex-col border-b border-transparent backdrop-blur-xl transition-colors print:hidden">
+		<div className="in-[.scrolled]:border-border bg-card/75 border-border/25 relative sticky inset-x-0 top-0 z-40 flex w-full flex-col border-b backdrop-blur-xl transition-colors print:hidden">
 			<nav
 				className={cn(
-					"mx-auto flex min-h-16 w-full max-w-360 items-center justify-end gap-2 text-sm transition-all md:max-w-[90vw]",
+					"mx-auto flex min-h-16 w-full max-w-360 items-center justify-end gap-2 text-sm md:max-w-[90vw]",
 					"pr-[max(env(safe-area-inset-right),1rem)] pl-[max(env(safe-area-inset-left),1rem)]",
 					"md:pr-[max(env(safe-area-inset-right),2rem)] md:pl-[max(env(safe-area-inset-left),2rem)]",
 				)}
@@ -164,43 +168,48 @@ export default function Nav({ lang }: NavProps) {
 					<X className={cn("h-5 w-5", !isMenuOpen && "hidden")} />
 				</button>
 			</nav>
-			{isMenuOpen && (
-				<div
-					id="mobile-nav"
-					className={cn(
-						"nav-menu text-foreground inset-x-0 top-full z-50 overflow-y-auto px-8 pt-8 pb-12 backdrop-blur-xl transition-all duration-300 md:hidden",
-						"flex flex-1 flex-col gap-6",
-					)}
-					aria-hidden={!isMenuOpen}
-				>
-					<div className="flex flex-1 flex-col justify-center gap-6 text-2xl font-medium">
-						{externalLinks.map((link) => (
-							<a
-								key={`mobile-${link.href}`}
-								href={link.href}
-								target="_blank"
-								rel="noreferrer"
-								onClick={closeMenu}
-								className="hover:text-foreground text-muted-foreground transition-colors"
-							>
-								{link.copyKey === "nav.blog" ? copy.blog : copy.transcript}
-							</a>
-						))}
-					</div>
-					<div className="grid grid-cols-4 place-items-center gap-4">
-						{socialLinks.map(({ href, label, Icon }) => (
-							<SocialLink key={href} href={href} onClick={closeMenu} className="flex aspect-square w-12 items-center justify-center">
-								<Icon className="size-6" aria-hidden="true" />
-								<span className="sr-only">{label}</span>
-							</SocialLink>
-						))}
-					</div>
-					<div className="flex flex-col items-center gap-4">
-						<span className="bg-border h-px w-48" />
-						<LanguageSelector initialLang={currentLang} />
-					</div>
-				</div>
-			)}
+			<AnimatePresence initial={false}>
+				{isMenuOpen ? (
+					<motion.div
+						id="mobile-nav"
+						initial="closed"
+						animate="open"
+						exit="closed"
+						variants={mobileNavMenuVariants}
+						className="text-foreground z-50 origin-top overflow-y-hidden md:hidden"
+						aria-hidden={!isMenuOpen}
+					>
+						<div className="flex flex-col gap-6 px-8 pt-8 pb-12">
+							<div className="flex flex-1 flex-col justify-center gap-6 text-2xl font-medium">
+								{externalLinks.map((link) => (
+									<a
+										key={`mobile-${link.href}`}
+										href={link.href}
+										target="_blank"
+										rel="noreferrer"
+										onClick={closeMenu}
+										className="hover:text-foreground text-muted-foreground transition-colors"
+									>
+										{link.copyKey === "nav.blog" ? copy.blog : copy.transcript}
+									</a>
+								))}
+							</div>
+							<div className="grid grid-cols-4 place-items-center gap-4">
+								{socialLinks.map(({ href, label, Icon }) => (
+									<SocialLink key={href} href={href} onClick={closeMenu} className="flex aspect-square w-12 items-center justify-center">
+										<Icon className="size-6" aria-hidden="true" />
+										<span className="sr-only">{label}</span>
+									</SocialLink>
+								))}
+							</div>
+							<div className="flex flex-col items-center gap-4">
+								<span className="bg-border h-px w-48" />
+								<LanguageSelector initialLang={currentLang} />
+							</div>{" "}
+						</div>
+					</motion.div>
+				) : null}
+			</AnimatePresence>
 		</div>
 	);
 }
