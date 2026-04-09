@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { QueryClient, useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { ArrowUpRight, ExternalLink, Loader2, Search, X } from "lucide-react";
+import { ArrowUpRight, Loader2, Search, X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useTranslations } from "../i18n/utils";
 import { timeAgo } from "../lib/utils";
@@ -265,14 +265,10 @@ function MonthTopicsSection({
 			{archiveMonth && archiveMonth.topics.length > 0 && (
 				<div className="space-y-4">
 					{archiveMonth.topics.map((topic) => (
-						<article key={`${monthMeta.month}-${topic.id}`} className="rounded-2xl border p-4">
-							<div className="relative flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-								<div className="pointer-events-none absolute right-0 text-4xl opacity-25 max-md:top-0 md:bottom-0 md:text-6xl">
-									{topic.emoji || "📰"}
-								</div>
+						<article key={`${monthMeta.month}-${topic.id}`} className="overflow-hidden rounded-2xl border">
+							<div className="relative flex flex-col gap-4 p-4 md:flex-row md:items-start md:justify-between">
 								<div className="flex min-w-0 flex-1 flex-col gap-1">
 									<h3 className="text-lg leading-snug font-semibold text-gray-900 dark:text-white">{getTopicDisplayTitle(topic, lang)}</h3>
-									<p className="text-sm text-gray-500 dark:text-gray-400">{formatTopicMeta(topic, lang)}</p>
 									{getTopicDisplaySummary(topic, lang) && (
 										<p className="max-w-2xl text-sm leading-6 text-gray-600 dark:text-gray-300">{getTopicDisplaySummary(topic, lang)}</p>
 									)}
@@ -281,13 +277,13 @@ function MonthTopicsSection({
 								<button
 									type="button"
 									onClick={() => onOpenTopic(topic)}
-									className="inline-flex h-11 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-black/10 px-4 text-sm font-medium backdrop-blur-sm transition hover:bg-black/[0.04] dark:border-white/10 dark:hover:bg-white/5"
+									className="inline-flex h-11 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-black/10 px-4 text-sm font-medium backdrop-blur-sm transition hover:bg-black/4 dark:border-white/10 dark:hover:bg-white/5"
 								>
 									{t("newsPage.topic.viewMore")}
 								</button>
 							</div>
 
-							<div className="mt-4 grid gap-2">
+							<div className="grid gap-2 p-4 pt-0">
 								{getTopicPreviewItems(topic).map((item) => {
 									const title = lang === "en" ? item.title_en || item.title : item.title;
 									return (
@@ -296,7 +292,7 @@ function MonthTopicsSection({
 											href={item.url}
 											target="_blank"
 											rel="noopener noreferrer"
-											className="group flex items-start gap-3 rounded-lg border border-black/5 bg-white/70 px-3 py-2 transition hover:border-black/10 hover:bg-white dark:border-white/10 dark:bg-white/[0.03] dark:hover:bg-white/[0.06]"
+											className="group flex items-start gap-3 rounded-lg border border-black/5 bg-white/70 px-3 py-2 transition hover:border-black/10 hover:bg-white dark:border-white/10 dark:bg-white/3 dark:hover:bg-white/6"
 										>
 											<div className="min-w-0 flex-1">
 												<p className="text-sm leading-6 font-medium text-gray-900 dark:text-white">{title}</p>
@@ -310,10 +306,14 @@ function MonthTopicsSection({
 													)}
 												</div>
 											</div>
-											<ExternalLink className="mt-0.5 size-4 shrink-0 text-gray-400 transition group-hover:text-gray-700 dark:group-hover:text-white" />
+											<ArrowUpRight className="mt-0.5 size-4 shrink-0 text-gray-400 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-gray-700 dark:group-hover:text-white" />
 										</a>
 									);
 								})}
+							</div>
+							<div className="border-border relative flex items-center justify-between border-t">
+								<div className="px-4 py-1 text-sm text-gray-500 dark:text-gray-400">{formatTopicMeta(topic, lang)}</div>
+								<div className="to-border bg-linear-to-r from-transparent px-4 py-1 text-2xl">{topic.emoji || "📰"}</div>
 							</div>
 						</article>
 					))}
@@ -495,7 +495,7 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 							<button
 								type="button"
 								onClick={clearSearch}
-								className="inline-flex h-12 cursor-pointer items-center justify-center rounded-xl border border-black/10 px-4 text-sm font-medium transition hover:bg-black/[0.03] dark:border-white/10 dark:hover:bg-white/5"
+								className="inline-flex h-12 cursor-pointer items-center justify-center rounded-xl border border-black/10 px-4 text-sm font-medium transition hover:bg-black/3 dark:border-white/10 dark:hover:bg-white/5"
 							>
 								{t("newsPage.search.clear")}
 							</button>
@@ -525,7 +525,7 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 											<span>{timeAgo(item.time, lang)}</span>
 										</div>
 									</div>
-									<ArrowUpRight className="mt-0.5 size-4 shrink-0 text-gray-400 transition group-hover:text-gray-700 dark:group-hover:text-white" />
+									<ArrowUpRight className="mt-0.5 size-4 shrink-0 text-gray-400 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-gray-700 dark:group-hover:text-white" />
 								</div>
 							</a>
 						);
@@ -613,9 +613,6 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 												<h2 className="text-xl leading-tight font-semibold text-gray-900 dark:text-white">
 													{lang === "en" ? selectedTopic.topic.titleEn || selectedTopic.topic.title : selectedTopic.topic.title}
 												</h2>
-												<p className="text-sm text-gray-500 dark:text-gray-400">
-													{formatTopicTotalNewsCount(selectedTopic.totalNewsCount, lang)}
-												</p>
 												{(lang === "en" ? selectedTopic.topic.summaryEn || selectedTopic.topic.summary : selectedTopic.topic.summary) && (
 													<p className="max-w-2xl text-sm leading-6 text-gray-600 dark:text-gray-300">
 														{lang === "en" ? selectedTopic.topic.summaryEn || selectedTopic.topic.summary : selectedTopic.topic.summary}
@@ -643,13 +640,10 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 											type="button"
 											onClick={closeTopicDialog}
 											aria-label={t("newsPage.topic.close")}
-											className="inline-flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-black/10 text-sm font-medium backdrop-blur-sm transition hover:bg-black/[0.04] dark:border-white/10 dark:hover:bg-white/5"
+											className="inline-flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-black/10 text-sm font-medium backdrop-blur-sm transition hover:bg-black/4 dark:border-white/10 dark:hover:bg-white/5"
 										>
 											<X className="size-4" />
 										</button>
-										<div className="pointer-events-none text-4xl opacity-25">
-											{selectedTopic?.topic?.emoji || selectedTopicPreview?.emoji || "📰"}
-										</div>
 									</div>
 								</div>
 							</div>
@@ -683,7 +677,7 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 														href={item.url}
 														target="_blank"
 														rel="noopener noreferrer"
-														className="group flex items-start gap-3 rounded-lg border border-black/5 bg-white/70 px-3 py-2 transition hover:border-black/10 hover:bg-white dark:border-white/10 dark:bg-white/[0.03] dark:hover:bg-white/[0.06]"
+														className="group flex items-start gap-3 rounded-lg border border-black/5 bg-white/70 px-3 py-2 transition hover:border-black/10 hover:bg-white dark:border-white/10 dark:bg-white/3 dark:hover:bg-white/6"
 													>
 														<div className="min-w-0 flex-1">
 															<p className="text-sm leading-6 font-medium text-gray-900 dark:text-white">{title}</p>
@@ -697,13 +691,22 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 																)}
 															</div>
 														</div>
-														<ArrowUpRight className="mt-0.5 size-4 shrink-0 text-gray-400 transition group-hover:text-gray-700 dark:group-hover:text-white" />
+														<ArrowUpRight className="mt-0.5 size-4 shrink-0 text-gray-400 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-gray-700 dark:group-hover:text-white" />
 													</a>
 												);
 											})}
 										</div>
 									</section>
 								))}
+							</div>
+
+							<div className="border-border relative flex items-center justify-between border-t">
+								<div className="px-4 py-1 text-sm text-gray-500 dark:text-gray-400">
+									{selectedTopic && formatTopicTotalNewsCount(selectedTopic.totalNewsCount, lang)}
+								</div>
+								<div className="to-border bg-linear-to-r from-transparent px-4 py-1 text-2xl">
+									{selectedTopic?.topic?.emoji || selectedTopicPreview?.emoji || "📰"}
+								</div>
 							</div>
 						</motion.div>
 					</motion.div>
