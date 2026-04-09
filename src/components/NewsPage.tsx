@@ -99,6 +99,8 @@ type TopicDetailResponse = {
 const PAGE_SIZE = 20;
 const ARCHIVE_MONTHS = 240;
 
+type NewsPageLang = "en" | "zh-TW";
+
 function mapTopicNewsItem(item: any): TopicArchiveNewsItem {
 	return {
 		url: item.url,
@@ -208,13 +210,377 @@ async function fetchTopicDetail(topicId: string): Promise<TopicDetailResponse> {
 	};
 }
 
+function getLocalizedNewsTitle(item: { title?: string; title_en?: string | null }, lang: NewsPageLang) {
+	return lang === "en" ? item.title_en || item.title || "" : item.title || "";
+}
+
+function LoadingState({ children }: { children: React.ReactNode }) {
+	return (
+		<div className="flex items-center justify-center rounded-2xl border border-dashed border-black/10 p-10 text-sm text-gray-500 dark:border-white/10 dark:text-gray-400">
+			{children}
+		</div>
+	);
+}
+
+function EmptyState({ children }: { children: React.ReactNode }) {
+	return (
+		<div className="rounded-2xl border border-dashed border-black/10 p-8 text-center text-sm text-gray-500 dark:border-white/10 dark:text-gray-400">
+			{children}
+		</div>
+	);
+}
+
+function ErrorAlert({ children }: { children: React.ReactNode }) {
+	return (
+		<div className="rounded-2xl border border-red-200 bg-red-50/80 p-4 text-sm text-red-600 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
+			{children}
+		</div>
+	);
+}
+
+function TopicNewsLink({ item, lang }: { item: NewsItem | TopicArchiveNewsItem; lang: NewsPageLang }) {
+	return (
+		<a
+			href={item.url}
+			target="_blank"
+			rel="noopener noreferrer"
+			className="group flex items-start gap-3 rounded-lg border border-black/5 bg-white/70 px-3 py-2 transition hover:border-black/10 hover:bg-white dark:border-white/10 dark:bg-white/3 dark:hover:bg-white/6"
+		>
+			<div className="min-w-0 flex-1">
+				<p className="text-sm leading-6 font-medium text-gray-900 dark:text-white">{getLocalizedNewsTitle(item, lang)}</p>
+				<div className="mt-1 flex flex-wrap items-center text-xs text-gray-500 dark:text-gray-400">
+					<span>{timeAgo(item.time, lang)}</span>
+					{item.source && (
+						<>
+							<span className="mx-1 text-gray-500">·</span>
+							<span>{item.source}</span>
+						</>
+					)}
+				</div>
+			</div>
+			<ArrowUpRight className="mt-0.5 size-4 shrink-0 text-gray-400 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-gray-700 dark:group-hover:text-white" />
+		</a>
+	);
+}
+
+function TopicCard({
+	topic,
+	lang,
+	onOpenTopic,
+}: {
+	topic: TopicArchiveCard;
+	lang: NewsPageLang;
+	onOpenTopic: (topic: TopicArchiveCard) => void;
+}) {
+	const t = useTranslations(lang);
+
+	return (
+		<article className="overflow-hidden rounded-2xl border">
+			<div className="relative flex flex-col gap-4 p-4 md:flex-row md:items-start md:justify-between">
+				<div className="flex min-w-0 flex-1 flex-col gap-1">
+					<h3 className="text-lg leading-snug font-semibold text-gray-900 dark:text-white">{getTopicDisplayTitle(topic, lang)}</h3>
+					{getTopicDisplaySummary(topic, lang) && (
+						<p className="max-w-2xl text-sm leading-6 text-gray-600 dark:text-gray-300">{getTopicDisplaySummary(topic, lang)}</p>
+					)}
+				</div>
+
+				<button
+					type="button"
+					onClick={() => onOpenTopic(topic)}
+					className="inline-flex h-11 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-black/10 px-4 text-sm font-medium backdrop-blur-sm transition hover:bg-black/4 dark:border-white/10 dark:hover:bg-white/5"
+				>
+					{t("newsPage.topic.viewMore")}
+				</button>
+			</div>
+
+			<div className="grid gap-2 p-4 pt-0">
+				{getTopicPreviewItems(topic).map((item) => (
+					<TopicNewsLink key={item.url} item={item} lang={lang} />
+				))}
+			</div>
+			<div className="border-border relative flex items-center justify-between border-t">
+				<div className="px-4 py-1 text-sm text-gray-500 dark:text-gray-400">{formatTopicMeta(topic, lang)}</div>
+				<div className="to-border bg-linear-to-r from-transparent px-4 py-1 text-2xl">{topic.emoji || "📰"}</div>
+			</div>
+		</article>
+	);
+}
+
+function SearchForm({
+	lang,
+	searchDraft,
+	searchQuery,
+	onSearchDraftChange,
+	onSubmit,
+	onClear,
+}: {
+	lang: NewsPageLang;
+	searchDraft: string;
+	searchQuery: string;
+	onSearchDraftChange: (value: string) => void;
+	onSubmit: (event: React.FormEvent) => void;
+	onClear: () => void;
+}) {
+	const t = useTranslations(lang);
+
+	return (
+		<section className="mb-8 rounded-xl border bg-white/80 p-4 backdrop-blur-sm dark:bg-white/5">
+			<form id="news-search-form-react" className="flex flex-col gap-2 md:flex-row" onSubmit={onSubmit}>
+				<label className="sr-only" htmlFor="q-react">
+					{t("newsPage.search.label")}
+				</label>
+				<div className="relative flex-1">
+					<Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-gray-400" />
+					<input
+						id="q-react"
+						name="q"
+						type="search"
+						value={searchDraft}
+						onChange={(event) => onSearchDraftChange(event.target.value)}
+						placeholder={t("newsPage.search.placeholder")}
+						className="h-12 w-full rounded-lg border border-black/10 bg-transparent pr-4 pl-10 outline-0 transition focus-visible:border-black/30 dark:border-white/10 dark:focus-visible:border-white/30"
+					/>
+				</div>
+				<div className="flex gap-2">
+					<button
+						type="submit"
+						className="inline-flex h-12 cursor-pointer items-center justify-center rounded-lg bg-black px-5 text-sm font-medium text-white transition hover:bg-black/85 dark:bg-white dark:text-black dark:hover:bg-white/85"
+					>
+						{t("newsPage.search.submit")}
+					</button>
+					{searchQuery && (
+						<button
+							type="button"
+							onClick={onClear}
+							className="inline-flex h-12 cursor-pointer items-center justify-center rounded-xl border border-black/10 px-4 text-sm font-medium transition hover:bg-black/3 dark:border-white/10 dark:hover:bg-white/5"
+						>
+							{t("newsPage.search.clear")}
+						</button>
+					)}
+				</div>
+			</form>
+			{searchQuery && <p className="mt-3 text-sm text-gray-500 dark:text-gray-400">{formatSearchResultsHint(searchQuery, lang)}</p>}
+		</section>
+	);
+}
+
+function SearchResultsSection({
+	lang,
+	searchQuery,
+	searchItems,
+	isSearchLoading,
+	isFetchingNextPage,
+	isSearchError,
+	searchError,
+}: {
+	lang: NewsPageLang;
+	searchQuery: string;
+	searchItems: NewsItem[];
+	isSearchLoading: boolean;
+	isFetchingNextPage: boolean;
+	isSearchError: boolean;
+	searchError: unknown;
+}) {
+	const t = useTranslations(lang);
+
+	return (
+		<section className="grid gap-3">
+			{searchItems.map((item, index) => (
+				<TopicNewsLink key={`${item.url}-${index}`} item={item} lang={lang} />
+			))}
+
+			<div className="my-4 space-y-1 text-center text-sm text-gray-500 dark:text-gray-400">
+				{isSearchLoading && <p>{t("newsPage.search.loading")}</p>}
+				{isFetchingNextPage && <p>{t("newsPage.search.loadingMore")}</p>}
+			</div>
+
+			{isSearchError && (
+				<div className="my-4 text-center text-sm text-red-500">{getNewsPageErrorMessage(searchError, lang, "newsPage.search.error")}</div>
+			)}
+
+			{!isSearchLoading && !isSearchError && searchItems.length === 0 && <EmptyState>{t("newsPage.search.empty")}</EmptyState>}
+
+			{searchQuery && <div id="news-search-sentinel" style={{ minHeight: 1 }} />}
+		</section>
+	);
+}
+
+function ArchiveSection({
+	lang,
+	isMonthIndexLoading,
+	isMonthIndexError,
+	monthIndexError,
+	archiveEmpty,
+	visibleMonths,
+	totalMonths,
+	onOpenTopic,
+}: {
+	lang: NewsPageLang;
+	isMonthIndexLoading: boolean;
+	isMonthIndexError: boolean;
+	monthIndexError: unknown;
+	archiveEmpty: boolean;
+	visibleMonths: ArchiveMonthIndexEntry[];
+	totalMonths: number;
+	onOpenTopic: (topic: TopicArchiveCard) => void;
+}) {
+	const t = useTranslations(lang);
+
+	return (
+		<section className="space-y-10">
+			{isMonthIndexLoading && <LoadingState>{t("newsPage.archive.loading")}</LoadingState>}
+
+			{isMonthIndexError && <ErrorAlert>{getNewsPageErrorMessage(monthIndexError, lang, "newsPage.archive.error")}</ErrorAlert>}
+
+			{archiveEmpty && <EmptyState>{t("newsPage.archive.empty")}</EmptyState>}
+
+			{visibleMonths.map((monthMeta) => (
+				<MonthTopicsSection key={monthMeta.month} monthMeta={monthMeta} lang={lang} onOpenTopic={onOpenTopic} />
+			))}
+
+			{visibleMonths.length > 0 && visibleMonths.length < totalMonths && (
+				<>
+					<div className="text-center text-sm text-gray-500 dark:text-gray-400">{t("newsPage.archive.loadNext")}</div>
+					<div id="news-months-sentinel" style={{ minHeight: 1 }} />
+				</>
+			)}
+
+			{visibleMonths.length > 0 && visibleMonths.length >= totalMonths && (
+				<div className="text-center text-sm text-gray-500 dark:text-gray-400">{t("newsPage.archive.allLoaded")}</div>
+			)}
+		</section>
+	);
+}
+
+function TopicDialog({
+	lang,
+	selectedTopicId,
+	selectedTopicPreview,
+	selectedTopic,
+	isTopicLoading,
+	isTopicError,
+	topicError,
+	onClose,
+	onExitComplete,
+}: {
+	lang: NewsPageLang;
+	selectedTopicId: string | null;
+	selectedTopicPreview: TopicArchiveCard | null;
+	selectedTopic: TopicDetailResponse | undefined;
+	isTopicLoading: boolean;
+	isTopicError: boolean;
+	topicError: unknown;
+	onClose: () => void;
+	onExitComplete: () => void;
+}) {
+	const t = useTranslations(lang);
+	const topicTitle = selectedTopic?.topic
+		? lang === "en"
+			? selectedTopic.topic.titleEn || selectedTopic.topic.title
+			: selectedTopic.topic.title
+		: selectedTopicPreview
+			? getTopicDisplayTitle(selectedTopicPreview, lang)
+			: null;
+	const topicSummary = selectedTopic?.topic
+		? lang === "en"
+			? selectedTopic.topic.summaryEn || selectedTopic.topic.summary
+			: selectedTopic.topic.summary
+		: selectedTopicPreview
+			? getTopicDisplaySummary(selectedTopicPreview, lang)
+			: null;
+
+	return (
+		<AnimatePresence initial={false} onExitComplete={onExitComplete}>
+			{selectedTopicId && (
+				<motion.div
+					className={dialogLayerClassNames.overlay}
+					onClick={onClose}
+					variants={dialogBackdropVariants}
+					initial="closed"
+					animate="open"
+					exit="closed"
+				>
+					<motion.div
+						className={dialogLayerClassNames.panel}
+						onClick={(event) => event.stopPropagation()}
+						variants={dialogPanelVariants}
+						initial="closed"
+						animate="open"
+						exit="closed"
+					>
+						<div className="border-b p-4 dark:border-white/10">
+							<div className="flex gap-4">
+								<div className="flex min-w-0 flex-1 flex-col gap-1">
+									{topicTitle ? (
+										<>
+											<h2 className="text-xl leading-tight font-semibold text-gray-900 dark:text-white">{topicTitle}</h2>
+											{topicSummary && <p className="max-w-2xl text-sm leading-6 text-gray-600 dark:text-gray-300">{topicSummary}</p>}
+										</>
+									) : (
+										<h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t("newsPage.topic.loading")}</h2>
+									)}
+								</div>
+
+								<div className="flex flex-col items-end justify-between">
+									<button
+										type="button"
+										onClick={onClose}
+										aria-label={t("newsPage.topic.close")}
+										className="inline-flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-black/10 text-sm font-medium backdrop-blur-sm transition hover:bg-black/4 dark:border-white/10 dark:hover:bg-white/5"
+									>
+										<X className="size-4" />
+									</button>
+								</div>
+							</div>
+						</div>
+
+						<div className="max-h-[65vh] overflow-y-auto p-4">
+							{isTopicLoading && (
+								<div className="flex items-center justify-center py-12 text-gray-500 dark:text-gray-400">
+									<Loader2 className="size-5 animate-spin" />
+								</div>
+							)}
+
+							{isTopicError && <ErrorAlert>{getNewsPageErrorMessage(topicError, lang, "newsPage.topic.timelineError")}</ErrorAlert>}
+
+							{selectedTopic?.months?.map((month) => (
+								<section key={month.month} className="mb-8 last:mb-0">
+									<div className="mb-2 flex items-center justify-between gap-2">
+										<h3 className="text-lg font-semibold text-gray-900 dark:text-white">{formatArchiveMonthLabel(month.month, lang)}</h3>
+										<p className="text-xs text-gray-500 dark:text-gray-400">{formatStoryCount(month.items.length, lang)}</p>
+									</div>
+
+									<div className="grid gap-2">
+										{month.items.map((item) => (
+											<TopicNewsLink key={item.url} item={item} lang={lang} />
+										))}
+									</div>
+								</section>
+							))}
+						</div>
+
+						<div className="border-border relative flex items-center justify-between border-t">
+							<div className="px-4 py-1 text-sm text-gray-500 dark:text-gray-400">
+								{selectedTopic && formatTopicTotalNewsCount(selectedTopic.totalNewsCount, lang)}
+							</div>
+							<div className="to-border bg-linear-to-r from-transparent px-4 py-1 text-2xl">
+								{selectedTopic?.topic?.emoji || selectedTopicPreview?.emoji || "📰"}
+							</div>
+						</div>
+					</motion.div>
+				</motion.div>
+			)}
+		</AnimatePresence>
+	);
+}
+
 function MonthTopicsSection({
 	monthMeta,
 	lang,
 	onOpenTopic,
 }: {
 	monthMeta: ArchiveMonthIndexEntry;
-	lang: "en" | "zh-TW";
+	lang: NewsPageLang;
 	onOpenTopic: (topic: TopicArchiveCard) => void;
 }) {
 	const t = useTranslations(lang);
@@ -244,78 +610,18 @@ function MonthTopicsSection({
 				</p>
 			</div>
 
-			{isLoading && (
-				<div className="flex items-center justify-center rounded-2xl border border-dashed border-black/10 p-10 text-sm text-gray-500 dark:border-white/10 dark:text-gray-400">
-					{t("newsPage.archive.loading")}
-				</div>
-			)}
+			{isLoading && <LoadingState>{t("newsPage.archive.loading")}</LoadingState>}
 
-			{isError && (
-				<div className="rounded-2xl border border-red-200 bg-red-50/80 p-4 text-sm text-red-600 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
-					{getNewsPageErrorMessage(error, lang, "newsPage.archive.error")}
-				</div>
-			)}
+			{isError && <ErrorAlert>{getNewsPageErrorMessage(error, lang, "newsPage.archive.error")}</ErrorAlert>}
 
 			{archiveMonth && archiveMonth.topics.length === 0 && !isLoading && !isError && (
-				<div className="rounded-2xl border border-dashed border-black/10 p-8 text-center text-sm text-gray-500 dark:border-white/10 dark:text-gray-400">
-					{t("newsPage.archive.monthEmpty")}
-				</div>
+				<EmptyState>{t("newsPage.archive.monthEmpty")}</EmptyState>
 			)}
 
 			{archiveMonth && archiveMonth.topics.length > 0 && (
 				<div className="space-y-4">
 					{archiveMonth.topics.map((topic) => (
-						<article key={`${monthMeta.month}-${topic.id}`} className="overflow-hidden rounded-2xl border">
-							<div className="relative flex flex-col gap-4 p-4 md:flex-row md:items-start md:justify-between">
-								<div className="flex min-w-0 flex-1 flex-col gap-1">
-									<h3 className="text-lg leading-snug font-semibold text-gray-900 dark:text-white">{getTopicDisplayTitle(topic, lang)}</h3>
-									{getTopicDisplaySummary(topic, lang) && (
-										<p className="max-w-2xl text-sm leading-6 text-gray-600 dark:text-gray-300">{getTopicDisplaySummary(topic, lang)}</p>
-									)}
-								</div>
-
-								<button
-									type="button"
-									onClick={() => onOpenTopic(topic)}
-									className="inline-flex h-11 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-black/10 px-4 text-sm font-medium backdrop-blur-sm transition hover:bg-black/4 dark:border-white/10 dark:hover:bg-white/5"
-								>
-									{t("newsPage.topic.viewMore")}
-								</button>
-							</div>
-
-							<div className="grid gap-2 p-4 pt-0">
-								{getTopicPreviewItems(topic).map((item) => {
-									const title = lang === "en" ? item.title_en || item.title : item.title;
-									return (
-										<a
-											key={item.url}
-											href={item.url}
-											target="_blank"
-											rel="noopener noreferrer"
-											className="group flex items-start gap-3 rounded-lg border border-black/5 bg-white/70 px-3 py-2 transition hover:border-black/10 hover:bg-white dark:border-white/10 dark:bg-white/3 dark:hover:bg-white/6"
-										>
-											<div className="min-w-0 flex-1">
-												<p className="text-sm leading-6 font-medium text-gray-900 dark:text-white">{title}</p>
-												<div className="mt-1 flex flex-wrap items-center text-xs text-gray-500 dark:text-gray-400">
-													<span>{timeAgo(item.time, lang)}</span>
-													{item.source && (
-														<>
-															<span className="mx-1 text-gray-500">·</span>
-															<span>{item.source}</span>
-														</>
-													)}
-												</div>
-											</div>
-											<ArrowUpRight className="mt-0.5 size-4 shrink-0 text-gray-400 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-gray-700 dark:group-hover:text-white" />
-										</a>
-									);
-								})}
-							</div>
-							<div className="border-border relative flex items-center justify-between border-t">
-								<div className="px-4 py-1 text-sm text-gray-500 dark:text-gray-400">{formatTopicMeta(topic, lang)}</div>
-								<div className="to-border bg-linear-to-r from-transparent px-4 py-1 text-2xl">{topic.emoji || "📰"}</div>
-							</div>
-						</article>
+						<TopicCard key={`${monthMeta.month}-${topic.id}`} topic={topic} lang={lang} onOpenTopic={onOpenTopic} />
 					))}
 				</div>
 			)}
@@ -323,8 +629,7 @@ function MonthTopicsSection({
 	);
 }
 
-export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
-	const t = useTranslations(lang);
+export default function NewsPage({ lang }: { lang: NewsPageLang }) {
 	const [searchDraft, setSearchDraft] = useState("");
 	const [searchQuery, setSearchQuery] = useState("");
 	const [selectedTopicPreview, setSelectedTopicPreview] = useState<TopicArchiveCard | null>(null);
@@ -467,251 +772,49 @@ export default function NewsPage({ lang }: { lang: "en" | "zh-TW" }) {
 
 	return (
 		<div>
-			<section className="mb-8 rounded-xl border bg-white/80 p-4 backdrop-blur-sm dark:bg-white/5">
-				<form id="news-search-form-react" className="flex flex-col gap-2 md:flex-row" onSubmit={handleSearchSubmit}>
-					<label className="sr-only" htmlFor="q-react">
-						{t("newsPage.search.label")}
-					</label>
-					<div className="relative flex-1">
-						<Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-gray-400" />
-						<input
-							id="q-react"
-							name="q"
-							type="search"
-							value={searchDraft}
-							onChange={(event) => setSearchDraft(event.target.value)}
-							placeholder={t("newsPage.search.placeholder")}
-							className="h-12 w-full rounded-lg border border-black/10 bg-transparent pr-4 pl-10 outline-0 transition focus-visible:border-black/30 dark:border-white/10 dark:focus-visible:border-white/30"
-						/>
-					</div>
-					<div className="flex gap-2">
-						<button
-							type="submit"
-							className="inline-flex h-12 cursor-pointer items-center justify-center rounded-lg bg-black px-5 text-sm font-medium text-white transition hover:bg-black/85 dark:bg-white dark:text-black dark:hover:bg-white/85"
-						>
-							{t("newsPage.search.submit")}
-						</button>
-						{searchQuery && (
-							<button
-								type="button"
-								onClick={clearSearch}
-								className="inline-flex h-12 cursor-pointer items-center justify-center rounded-xl border border-black/10 px-4 text-sm font-medium transition hover:bg-black/3 dark:border-white/10 dark:hover:bg-white/5"
-							>
-								{t("newsPage.search.clear")}
-							</button>
-						)}
-					</div>
-				</form>
-				{searchQuery && <p className="mt-3 text-sm text-gray-500 dark:text-gray-400">{formatSearchResultsHint(searchQuery, lang)}</p>}
-			</section>
+			<SearchForm
+				lang={lang}
+				searchDraft={searchDraft}
+				searchQuery={searchQuery}
+				onSearchDraftChange={setSearchDraft}
+				onSubmit={handleSearchSubmit}
+				onClear={clearSearch}
+			/>
 
 			{searchQuery ? (
-				<section className="grid gap-3">
-					{searchItems.map((item, index) => {
-						const title = lang === "en" ? item.title_en || item.title || "" : item.title || "";
-						return (
-							<a
-								key={`${item.url}-${index}`}
-								href={item.url}
-								target="_blank"
-								rel="noopener noreferrer"
-								className="group rounded-2xl border border-black/5 bg-white/85 p-5 text-left shadow-sm shadow-black/5 transition hover:-translate-y-0.5 hover:border-black/10 hover:shadow-md dark:border-white/10 dark:bg-white/5 dark:hover:border-white/20"
-							>
-								<div className="flex items-start justify-between gap-4">
-									<div className="min-w-0 flex-1">
-										<h3 className="text-base leading-snug font-semibold text-gray-900 dark:text-white">{title}</h3>
-										<div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
-											{item.source && <span>{item.source}</span>}
-											<span>{timeAgo(item.time, lang)}</span>
-										</div>
-									</div>
-									<ArrowUpRight className="mt-0.5 size-4 shrink-0 text-gray-400 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-gray-700 dark:group-hover:text-white" />
-								</div>
-							</a>
-						);
-					})}
-
-					<div className="my-4 space-y-1 text-center text-sm text-gray-500 dark:text-gray-400">
-						{isSearchLoading && <p>{t("newsPage.search.loading")}</p>}
-						{isFetchingNextPage && <p>{t("newsPage.search.loadingMore")}</p>}
-					</div>
-
-					{isSearchError && (
-						<div className="my-4 text-center text-sm text-red-500">
-							{getNewsPageErrorMessage(searchError, lang, "newsPage.search.error")}
-						</div>
-					)}
-
-					{!isSearchLoading && !isSearchError && searchItems.length === 0 && (
-						<div className="rounded-2xl border border-dashed border-black/10 p-8 text-center text-sm text-gray-500 dark:border-white/10 dark:text-gray-400">
-							{t("newsPage.search.empty")}
-						</div>
-					)}
-
-					<div id="news-search-sentinel" style={{ minHeight: 1 }} />
-				</section>
+				<SearchResultsSection
+					lang={lang}
+					searchQuery={searchQuery}
+					searchItems={searchItems}
+					isSearchLoading={isSearchLoading}
+					isFetchingNextPage={isFetchingNextPage}
+					isSearchError={isSearchError}
+					searchError={searchError}
+				/>
 			) : (
-				<section className="space-y-10">
-					{isMonthIndexLoading && (
-						<div className="flex items-center justify-center rounded-2xl border border-dashed border-black/10 p-10 text-sm text-gray-500 dark:border-white/10 dark:text-gray-400">
-							{t("newsPage.archive.loading")}
-						</div>
-					)}
-
-					{isMonthIndexError && (
-						<div className="rounded-2xl border border-red-200 bg-red-50/80 p-4 text-sm text-red-600 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
-							{getNewsPageErrorMessage(monthIndexError, lang, "newsPage.archive.error")}
-						</div>
-					)}
-
-					{archiveEmpty && (
-						<div className="rounded-2xl border border-dashed border-black/10 p-8 text-center text-sm text-gray-500 dark:border-white/10 dark:text-gray-400">
-							{t("newsPage.archive.empty")}
-						</div>
-					)}
-
-					{visibleMonths.map((monthMeta) => (
-						<MonthTopicsSection key={monthMeta.month} monthMeta={monthMeta} lang={lang} onOpenTopic={openTopicDialog} />
-					))}
-
-					{visibleMonths.length > 0 && visibleMonths.length < (archiveMonthIndex?.length ?? 0) && (
-						<>
-							<div className="text-center text-sm text-gray-500 dark:text-gray-400">{t("newsPage.archive.loadNext")}</div>
-							<div id="news-months-sentinel" style={{ minHeight: 1 }} />
-						</>
-					)}
-
-					{visibleMonths.length > 0 && visibleMonths.length >= (archiveMonthIndex?.length ?? 0) && (
-						<div className="text-center text-sm text-gray-500 dark:text-gray-400">{t("newsPage.archive.allLoaded")}</div>
-					)}
-				</section>
+				<ArchiveSection
+					lang={lang}
+					isMonthIndexLoading={isMonthIndexLoading}
+					isMonthIndexError={isMonthIndexError}
+					monthIndexError={monthIndexError}
+					archiveEmpty={archiveEmpty}
+					visibleMonths={visibleMonths}
+					totalMonths={archiveMonthIndex?.length ?? 0}
+					onOpenTopic={openTopicDialog}
+				/>
 			)}
 
-			<AnimatePresence initial={false} onExitComplete={() => setSelectedTopicPreview(null)}>
-				{selectedTopicId && (
-					<motion.div
-						className={dialogLayerClassNames.overlay}
-						onClick={closeTopicDialog}
-						variants={dialogBackdropVariants}
-						initial="closed"
-						animate="open"
-						exit="closed"
-					>
-						<motion.div
-							className={dialogLayerClassNames.panel}
-							onClick={(event) => event.stopPropagation()}
-							variants={dialogPanelVariants}
-							initial="closed"
-							animate="open"
-							exit="closed"
-						>
-							<div className="border-b p-4 dark:border-white/10">
-								<div className="flex gap-4">
-									<div className="flex min-w-0 flex-1 flex-col gap-1">
-										{selectedTopic?.topic ? (
-											<>
-												<h2 className="text-xl leading-tight font-semibold text-gray-900 dark:text-white">
-													{lang === "en" ? selectedTopic.topic.titleEn || selectedTopic.topic.title : selectedTopic.topic.title}
-												</h2>
-												{(lang === "en" ? selectedTopic.topic.summaryEn || selectedTopic.topic.summary : selectedTopic.topic.summary) && (
-													<p className="max-w-2xl text-sm leading-6 text-gray-600 dark:text-gray-300">
-														{lang === "en" ? selectedTopic.topic.summaryEn || selectedTopic.topic.summary : selectedTopic.topic.summary}
-													</p>
-												)}
-											</>
-										) : selectedTopicPreview ? (
-											<>
-												<h2 className="text-xl leading-tight font-semibold text-gray-900 dark:text-white">
-													{getTopicDisplayTitle(selectedTopicPreview, lang)}
-												</h2>
-												{getTopicDisplaySummary(selectedTopicPreview, lang) && (
-													<p className="max-w-2xl text-sm leading-6 text-gray-600 dark:text-gray-300">
-														{getTopicDisplaySummary(selectedTopicPreview, lang)}
-													</p>
-												)}
-											</>
-										) : (
-											<h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t("newsPage.topic.loading")}</h2>
-										)}
-									</div>
-
-									<div className="flex flex-col items-end justify-between">
-										<button
-											type="button"
-											onClick={closeTopicDialog}
-											aria-label={t("newsPage.topic.close")}
-											className="inline-flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-black/10 text-sm font-medium backdrop-blur-sm transition hover:bg-black/4 dark:border-white/10 dark:hover:bg-white/5"
-										>
-											<X className="size-4" />
-										</button>
-									</div>
-								</div>
-							</div>
-
-							<div className="max-h-[65vh] overflow-y-auto p-4">
-								{isTopicLoading && (
-									<div className="flex items-center justify-center py-12 text-gray-500 dark:text-gray-400">
-										<Loader2 className="size-5 animate-spin" />
-									</div>
-								)}
-
-								{isTopicError && (
-									<div className="rounded-2xl border border-red-200 bg-red-50/80 p-4 text-sm text-red-600 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
-										{getNewsPageErrorMessage(topicError, lang, "newsPage.topic.timelineError")}
-									</div>
-								)}
-
-								{selectedTopic?.months?.map((month) => (
-									<section key={month.month} className="mb-8 last:mb-0">
-										<div className="mb-2 flex items-center justify-between gap-2">
-											<h3 className="text-lg font-semibold text-gray-900 dark:text-white">{formatArchiveMonthLabel(month.month, lang)}</h3>
-											<p className="text-xs text-gray-500 dark:text-gray-400">{formatStoryCount(month.items.length, lang)}</p>
-										</div>
-
-										<div className="grid gap-2">
-											{month.items.map((item) => {
-												const title = lang === "en" ? item.title_en || item.title : item.title;
-												return (
-													<a
-														key={item.url}
-														href={item.url}
-														target="_blank"
-														rel="noopener noreferrer"
-														className="group flex items-start gap-3 rounded-lg border border-black/5 bg-white/70 px-3 py-2 transition hover:border-black/10 hover:bg-white dark:border-white/10 dark:bg-white/3 dark:hover:bg-white/6"
-													>
-														<div className="min-w-0 flex-1">
-															<p className="text-sm leading-6 font-medium text-gray-900 dark:text-white">{title}</p>
-															<div className="mt-1 flex flex-wrap items-center text-xs text-gray-500 dark:text-gray-400">
-																<span>{timeAgo(item.time, lang)}</span>
-																{item.source && (
-																	<>
-																		<span className="mx-1 text-gray-500">·</span>
-																		<span>{item.source}</span>
-																	</>
-																)}
-															</div>
-														</div>
-														<ArrowUpRight className="mt-0.5 size-4 shrink-0 text-gray-400 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-gray-700 dark:group-hover:text-white" />
-													</a>
-												);
-											})}
-										</div>
-									</section>
-								))}
-							</div>
-
-							<div className="border-border relative flex items-center justify-between border-t">
-								<div className="px-4 py-1 text-sm text-gray-500 dark:text-gray-400">
-									{selectedTopic && formatTopicTotalNewsCount(selectedTopic.totalNewsCount, lang)}
-								</div>
-								<div className="to-border bg-linear-to-r from-transparent px-4 py-1 text-2xl">
-									{selectedTopic?.topic?.emoji || selectedTopicPreview?.emoji || "📰"}
-								</div>
-							</div>
-						</motion.div>
-					</motion.div>
-				)}
-			</AnimatePresence>
+			<TopicDialog
+				lang={lang}
+				selectedTopicId={selectedTopicId}
+				selectedTopicPreview={selectedTopicPreview}
+				selectedTopic={selectedTopic}
+				isTopicLoading={isTopicLoading}
+				isTopicError={isTopicError}
+				topicError={topicError}
+				onClose={closeTopicDialog}
+				onExitComplete={() => setSelectedTopicPreview(null)}
+			/>
 		</div>
 	);
 }
