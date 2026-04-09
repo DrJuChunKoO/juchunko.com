@@ -157,7 +157,6 @@ pnpm build
 ## Known Gotchas
 
 - The current repository does not have a clean `pnpm test` baseline.
-- `src/components/nav-layout.test.ts` is currently failing against rendered mobile-nav markup.
 - `src/lib/homepage.test.ts` is currently failing because `getFeaturedAchievementMeta()` no longer returns the label expected by the test.
 - `pnpm lint` is Prettier-only, so type and logic regressions can still pass lint.
 - Worker answers can drift from local content because `viewPage` reads GitHub `main`, not your uncommitted local files.
