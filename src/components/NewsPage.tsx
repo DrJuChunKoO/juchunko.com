@@ -324,13 +324,13 @@ function SearchForm({
 	const t = useTranslations(lang);
 
 	return (
-		<section className="mb-8 rounded-xl border bg-white/80 p-4 backdrop-blur-sm dark:bg-white/5">
-			<form id="news-search-form-react" className="flex flex-col gap-2 md:flex-row" onSubmit={onSubmit}>
+		<section className="mb-8">
+			<form id="news-search-form-react" onSubmit={onSubmit}>
 				<label className="sr-only" htmlFor="q-react">
 					{t("newsPage.search.label")}
 				</label>
-				<div className="relative flex-1">
-					<Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-gray-400" />
+				<div className="group relative flex items-center rounded-2xl border border-black/10 bg-white shadow-sm transition-all focus-within:border-black/25 focus-within:shadow-md dark:border-white/10 dark:bg-white/5 dark:focus-within:border-white/25">
+					<Search className="pointer-events-none absolute left-5 size-5 shrink-0 text-black/30 transition group-focus-within:text-black/60 dark:text-white/30 dark:group-focus-within:text-white/60" />
 					<input
 						id="q-react"
 						name="q"
@@ -338,28 +338,28 @@ function SearchForm({
 						value={searchDraft}
 						onChange={(event) => onSearchDraftChange(event.target.value)}
 						placeholder={t("newsPage.search.placeholder")}
-						className="h-12 w-full rounded-lg border border-black/10 bg-transparent pr-4 pl-10 outline-0 transition focus-visible:border-black/30 dark:border-white/10 dark:focus-visible:border-white/30"
+						className="h-14 min-w-0 flex-1 bg-transparent pr-4 pl-14 text-base outline-none placeholder:text-black/30 dark:placeholder:text-white/30"
 					/>
-				</div>
-				<div className="flex gap-2">
-					<button
-						type="submit"
-						className="inline-flex h-12 cursor-pointer items-center justify-center rounded-lg bg-black px-5 text-sm font-medium text-white transition hover:bg-black/85 dark:bg-white dark:text-black dark:hover:bg-white/85"
-					>
-						{t("newsPage.search.submit")}
-					</button>
-					{searchQuery && (
+					<div className="flex shrink-0 items-center gap-1 pr-2">
+						{searchQuery && (
+							<button
+								type="button"
+								onClick={onClear}
+								className="inline-flex h-9 cursor-pointer items-center justify-center rounded-xl px-3 text-sm font-medium text-black/40 transition hover:bg-black/5 hover:text-black/70 dark:text-white/40 dark:hover:bg-white/8 dark:hover:text-white/70"
+							>
+								{t("newsPage.search.clear")}
+							</button>
+						)}
 						<button
-							type="button"
-							onClick={onClear}
-							className="inline-flex h-12 cursor-pointer items-center justify-center rounded-xl border border-black/10 px-4 text-sm font-medium transition hover:bg-black/3 dark:border-white/10 dark:hover:bg-white/5"
+							type="submit"
+							className="inline-flex h-9 cursor-pointer items-center justify-center rounded-xl bg-black px-4 text-sm font-medium text-white transition hover:bg-black/80 dark:bg-white dark:text-black dark:hover:bg-white/85"
 						>
-							{t("newsPage.search.clear")}
+							{t("newsPage.search.submit")}
 						</button>
-					)}
+					</div>
 				</div>
 			</form>
-			{searchQuery && <p className="mt-3 text-sm text-gray-500 dark:text-gray-400">{formatSearchResultsHint(searchQuery, lang)}</p>}
+			{searchQuery && <p className="mt-3 px-1 text-sm text-black/40 dark:text-white/40">{formatSearchResultsHint(searchQuery, lang)}</p>}
 		</section>
 	);
 }
