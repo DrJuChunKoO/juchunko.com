@@ -345,14 +345,14 @@ function SearchForm({
 							<button
 								type="button"
 								onClick={onClear}
-								className="inline-flex h-9 cursor-pointer items-center justify-center rounded-xl px-3 text-sm font-medium text-black/40 transition hover:bg-black/5 hover:text-black/70 dark:text-white/40 dark:hover:bg-white/8 dark:hover:text-white/70"
+								className="inline-flex h-9 cursor-pointer items-center justify-center rounded-lg px-3 text-sm font-medium text-black/40 transition hover:bg-black/5 hover:text-black/70 dark:text-white/40 dark:hover:bg-white/8 dark:hover:text-white/70"
 							>
 								{t("newsPage.search.clear")}
 							</button>
 						)}
 						<button
 							type="submit"
-							className="inline-flex h-9 cursor-pointer items-center justify-center rounded-xl bg-black px-4 text-sm font-medium text-white transition hover:bg-black/80 dark:bg-white dark:text-black dark:hover:bg-white/85"
+							className="inline-flex h-9 cursor-pointer items-center justify-center rounded-lg bg-black px-4 text-sm font-medium text-white transition hover:bg-black/80 dark:bg-white dark:text-black dark:hover:bg-white/85"
 						>
 							{t("newsPage.search.submit")}
 						</button>
