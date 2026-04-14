@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { useConversation } from "@elevenlabs/react";
 import { X, Phone, PhoneOff } from "lucide-react";
 import { ui } from "src/i18n/ui";
+import GaussianSplatViewer from "./GaussianSplatViewer";
 
 type SupportedLang = "en" | "zh-TW";
 
@@ -114,12 +115,7 @@ export default function PhoneCallInterface({ isOpen, onClose, lang = "zh-TW" }: 
 								transition={{ duration: 2, repeat: Infinity }}
 								animate={conversation.status === "connected" ? { scale: [1, 1.05, 1] } : {}}
 							>
-								{/* @ts-ignore */}
-								<spline-viewer
-									className="absolute inset-0"
-									loading-anim-type="spinner-big-light"
-									url="https://prod.spline.design/XpiiBrX-wdVvPksO/scene.splinecode"
-								/>
+								<GaussianSplatViewer url="/scene.ply" className="absolute inset-0" />
 							</motion.div>
 						</motion.div>
 						{/* 聯絡人資訊 */}
