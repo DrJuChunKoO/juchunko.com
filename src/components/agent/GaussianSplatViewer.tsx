@@ -44,8 +44,9 @@ export default function GaussianSplatViewer({ url, className, style }: GaussianS
 		if (!container) return;
 
 		let disposed = false;
+		let cleanupFn: (() => void) | undefined;
 
-		const init = async () => {
+		const init = async (w: number, h: number) => {
 			const THREE = await import("three");
 			const { SplatMesh, SparkRenderer } = await import("@sparkjsdev/spark");
 
@@ -55,13 +56,12 @@ export default function GaussianSplatViewer({ url, className, style }: GaussianS
 			const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });
 			renderer.setClearColor(0x000000, 0);
 			renderer.setPixelRatio(window.devicePixelRatio);
-			renderer.setSize(container.clientWidth, container.clientHeight);
+			renderer.setSize(w, h);
 			container.appendChild(renderer.domElement);
 
 			// Scene + camera
 			const scene = new THREE.Scene();
-			const aspect = container.clientWidth / container.clientHeight;
-			const camera = new THREE.PerspectiveCamera(45, aspect, 0.1, 1000);
+			const camera = new THREE.PerspectiveCamera(45, w / h, 0.1, 1000);
 			camera.position.set(...BASE_POS);
 			camera.lookAt(...LOOK_AT);
 
@@ -126,24 +126,33 @@ export default function GaussianSplatViewer({ url, className, style }: GaussianS
 
 			// Cleanup
 			return () => {
-				disposed = true;
 				resizeObserver.disconnect();
 				renderer.setAnimationLoop(null);
 				renderer.dispose();
-				container.removeChild(renderer.domElement);
+				if (container.contains(renderer.domElement)) {
+					container.removeChild(renderer.domElement);
+				}
 			};
 		};
 
-		let cleanup: (() => void) | undefined;
-		init()
-			.then((fn) => {
-				cleanup = fn;
-			})
-			.catch((err) => console.error("GaussianSplatViewer:", err));
+		// Wait until container has real dimensions before initialising
+		const ro = new ResizeObserver((entries) => {
+			const { width, height } = entries[0].contentRect;
+			if (width > 0 && height > 0 && !cleanupFn) {
+				ro.disconnect();
+				init(width, height)
+					.then((fn) => {
+						cleanupFn = fn;
+					})
+					.catch((err) => console.error("GaussianSplatViewer:", err));
+			}
+		});
+		ro.observe(container);
 
 		return () => {
 			disposed = true;
-			cleanup?.();
+			ro.disconnect();
+			cleanupFn?.();
 		};
 	}, [url]);
 
