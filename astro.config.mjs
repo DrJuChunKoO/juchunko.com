@@ -88,6 +88,7 @@ export default defineConfig({
 		},
 		optimizeDeps: {
 			exclude: ["@resvg/resvg-js", "jsdom"],
+			include: ["@sparkjsdev/spark", "three"],
 		},
 		ssr: {
 			external: ["@resvg/resvg-js", "jsdom"],
