@@ -73,14 +73,8 @@ test("formatArchiveMonthSummary returns localized topic and story counts", () =>
 });
 
 test("formatSearchResultsHint inserts the active query into localized copy", () => {
-	assert.equal(
-		formatSearchResultsHint("AI", "zh-TW"),
-		'目前顯示「AI」的搜尋結果；清除後可回到新聞主題。',
-	);
-	assert.equal(
-		formatSearchResultsHint("AI", "en"),
-		'Showing search results for "AI". Clear to return to news topics.',
-	);
+	assert.equal(formatSearchResultsHint("AI", "zh-TW"), "目前顯示「AI」的搜尋結果；清除後可回到新聞主題。");
+	assert.equal(formatSearchResultsHint("AI", "en"), 'Showing search results for "AI". Clear to return to news topics.');
 });
 
 test("formatTopicTotalNewsCount localizes the selected topic total", () => {

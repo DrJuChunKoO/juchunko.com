@@ -11,9 +11,7 @@ export const GET: APIRoute = async () => {
 	const manuals = await getCollection("manual");
 	const fragments = await getCollection("fragment");
 
-	const filteredActs = acts
-		.filter((post) => post.id.startsWith(lang + "/"))
-		.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+	const filteredActs = acts.filter((post) => post.id.startsWith(lang + "/")).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 	const filteredManuals = manuals
 		.filter((post) => post.id.startsWith(lang + "/"))
 		.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());

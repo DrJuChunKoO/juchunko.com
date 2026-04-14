@@ -1,9 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import {
-	buildTopicDetailToolResult,
-	buildTopicListToolResult,
-} from "./chat-news-tools";
+import { buildTopicDetailToolResult, buildTopicListToolResult } from "./chat-news-tools";
 
 test("buildTopicListToolResult keeps ids and bilingual titles for tool chaining", () => {
 	const result = buildTopicListToolResult(
@@ -27,7 +24,7 @@ test("buildTopicListToolResult keeps ids and bilingual titles for tool chaining"
 	assert.equal(result.topics[0]?.id, "topic-1");
 	assert.equal(result.topics[0]?.titleEn, "NCC Personnel Appointments");
 	assert.equal(result.topics[0]?.newsCount, 6);
-	});
+});
 
 test("buildTopicDetailToolResult keeps topic timeline months and story urls", () => {
 	const result = buildTopicDetailToolResult({
@@ -63,4 +60,4 @@ test("buildTopicDetailToolResult keeps topic timeline months and story urls", ()
 	assert.equal(result.months[0]?.month, "2026-03");
 	assert.equal(result.months[0]?.items[0]?.url, "https://example.com/1");
 	assert.equal(result.totalNewsCount, 2);
-	});
+});

@@ -164,8 +164,8 @@ current page: https://juchunko.com${filename}
 			latestNews: tool({
 				description: "葛如鈞最新新聞列表。Returns a readable summary of the latest news with urls and sources.",
 				inputSchema: z.object({}).strict(),
-					execute: async () => {
-						try {
+				execute: async () => {
+					try {
 						const count = 10;
 						const params = new URLSearchParams();
 						params.set("page", String(1));

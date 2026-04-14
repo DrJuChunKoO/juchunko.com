@@ -2,10 +2,7 @@ import { useTranslations } from "../i18n/utils";
 
 type SupportedLang = "en" | "zh-TW";
 
-type NewsPageMessageKey =
-	| "newsPage.search.error"
-	| "newsPage.archive.error"
-	| "newsPage.topic.timelineError";
+type NewsPageMessageKey = "newsPage.search.error" | "newsPage.archive.error" | "newsPage.topic.timelineError";
 
 export type TopicArchiveNewsItem = {
 	url: string;
