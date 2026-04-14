@@ -111,7 +111,7 @@ export default function PhoneCallInterface({ isOpen, onClose, lang = "zh-TW" }: 
 							className="mb-8"
 						>
 							<motion.div
-								className="relative mx-auto my-5 aspect-square w-full overflow-hidden rounded-lg md:w-[350px]"
+								className="relative mx-auto my-5 aspect-square w-[300px] overflow-hidden rounded-lg md:w-[350px]"
 								transition={{ duration: 2, repeat: Infinity }}
 								animate={conversation.status === "connected" ? { scale: [1, 1.05, 1] } : {}}
 							>
