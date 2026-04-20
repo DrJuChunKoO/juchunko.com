@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { ArrowUpRight, BookText, Signature, User } from "lucide-react";
+import { Loader } from "./Loader";
 import { timeAgo } from "../lib/utils";
 
 type ActivityItem = {
@@ -192,8 +193,8 @@ export default function LegislatorActivityList({ lang, labels }: Props) {
 				})}
 			</section>
 
-			<div className="text-muted-foreground my-4 text-center text-sm">
-				{loading && labels.loading}
+			<div className="text-muted-foreground my-4 flex items-center justify-center text-sm">
+				{loading && <Loader />}
 				{error && <span className="text-red-500">{error}</span>}
 			</div>
 
