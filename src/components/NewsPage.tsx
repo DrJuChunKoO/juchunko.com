@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { QueryClient, useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { ArrowUpRight, Loader2, Search, X } from "lucide-react";
+import { ArrowUpRight, Search, X } from "lucide-react";
+import { Loader } from "./Loader";
 import { AnimatePresence, motion } from "motion/react";
 import { useTranslations } from "../i18n/utils";
 import { timeAgo } from "../lib/utils";
@@ -214,10 +215,10 @@ function getLocalizedNewsTitle(item: { title?: string; title_en?: string | null 
 	return lang === "en" ? item.title_en || item.title || "" : item.title || "";
 }
 
-function LoadingState({ children }: { children: React.ReactNode }) {
+function LoadingState() {
 	return (
 		<div className="flex items-center justify-center rounded-2xl border border-dashed border-black/10 p-10 text-sm text-gray-500 dark:border-white/10 dark:text-gray-400">
-			{children}
+			<Loader />
 		</div>
 	);
 }
@@ -389,9 +390,8 @@ function SearchResultsSection({
 				<TopicNewsLink key={`${item.url}-${index}`} item={item} lang={lang} />
 			))}
 
-			<div className="my-4 space-y-1 text-center text-sm text-gray-500 dark:text-gray-400">
-				{isSearchLoading && <p>{t("newsPage.search.loading")}</p>}
-				{isFetchingNextPage && <p>{t("newsPage.search.loadingMore")}</p>}
+			<div className="my-4 flex items-center justify-center text-sm text-gray-500 dark:text-gray-400">
+				{(isSearchLoading || isFetchingNextPage) && <Loader />}
 			</div>
 
 			{isSearchError && (
@@ -428,7 +428,7 @@ function ArchiveSection({
 
 	return (
 		<section className="space-y-10">
-			{isMonthIndexLoading && <LoadingState>{t("newsPage.archive.loading")}</LoadingState>}
+			{isMonthIndexLoading && <LoadingState />}
 
 			{isMonthIndexError && <ErrorAlert>{getNewsPageErrorMessage(monthIndexError, lang, "newsPage.archive.error")}</ErrorAlert>}
 
@@ -517,7 +517,9 @@ function TopicDialog({
 											{topicSummary && <p className="max-w-2xl text-sm leading-6 text-gray-600 dark:text-gray-300">{topicSummary}</p>}
 										</>
 									) : (
-										<h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t("newsPage.topic.loading")}</h2>
+										<div className="flex items-center py-1">
+											<Loader />
+										</div>
 									)}
 								</div>
 
@@ -535,11 +537,11 @@ function TopicDialog({
 						</div>
 
 						<div className="max-h-[65vh] overflow-y-auto p-4">
-							{isTopicLoading && (
-								<div className="flex items-center justify-center py-12 text-gray-500 dark:text-gray-400">
-									<Loader2 className="size-5 animate-spin" />
-								</div>
-							)}
+						{isTopicLoading && (
+							<div className="flex items-center justify-center py-12">
+								<Loader />
+							</div>
+						)}
 
 							{isTopicError && <ErrorAlert>{getNewsPageErrorMessage(topicError, lang, "newsPage.topic.timelineError")}</ErrorAlert>}
 
@@ -610,7 +612,7 @@ function MonthTopicsSection({
 				</p>
 			</div>
 
-			{isLoading && <LoadingState>{t("newsPage.archive.loading")}</LoadingState>}
+			{isLoading && <LoadingState />}
 
 			{isError && <ErrorAlert>{getNewsPageErrorMessage(error, lang, "newsPage.archive.error")}</ErrorAlert>}
 
