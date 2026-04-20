@@ -1,8 +1,9 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { QueryClient, useQuery } from "@tanstack/react-query";
 import { motion } from "motion/react";
-import { BookAudio, Play, Pause, Rewind, FastForward, Loader2, StepForward, StepBack } from "lucide-react";
+import { BookAudio, Play, Pause, Rewind, FastForward, StepForward, StepBack } from "lucide-react";
 import ElevenLabsAudioNative from "./ElevenLabsAudioNative";
+import { Loader } from "src/components/Loader";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "src/components/ui/select";
 import { ui } from "src/i18n/ui";
 
@@ -518,8 +519,7 @@ export default function TTSPlayer({ isOpen, lang = "zh-TW" }: TTSPlayerProps) {
 		<div className="bg-card/50 flex flex-col p-4">
 			{mode === "loading" && (
 				<div className="flex min-h-[160px] flex-col items-center justify-center">
-					<Loader2 className="text-muted-foreground h-6 w-6 animate-spin" />
-					<p className="text-muted-foreground mt-2 text-center text-xs">{ui[lang]["agent.voiceReader.loading"]}</p>
+					<Loader size={24} />
 				</div>
 			)}
 
