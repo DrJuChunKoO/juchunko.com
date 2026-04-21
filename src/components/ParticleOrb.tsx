@@ -41,8 +41,10 @@ void main() {
   float combined = f1 * 0.6 + f2 * 0.4;
   float blink  = smoothstep(0.18, 0.38, combined);
 
+  // Map v_seed to a gray in [#222, #DDD] = [0.133, 0.867]
+  float gray = 0.133 + v_seed * 0.734;
   float alpha = v_alpha * blink * (0.05 + combined * 0.70) * edge;
-  gl_FragColor = vec4(0.0, 0.0, 0.0, alpha);
+  gl_FragColor = vec4(gray, gray, gray, alpha);
 }
 `;
 
