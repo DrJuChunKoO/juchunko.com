@@ -245,7 +245,7 @@ function TopicNewsLink({ item, lang }: { item: NewsItem | TopicArchiveNewsItem; 
 			href={item.url}
 			target="_blank"
 			rel="noopener noreferrer"
-			className="group flex items-start gap-3 rounded-lg border border-black/5 bg-white/70 px-3 py-2 transition hover:border-black/10 hover:bg-white dark:border-white/10 dark:bg-white/3 dark:hover:bg-white/6"
+			className="group hover:outline-primary/50 flex items-start gap-3 rounded-lg border border-black/5 bg-white/70 px-3 py-2 transition hover:border-black/10 hover:bg-white hover:outline-2 hover:outline-offset-2 dark:border-white/10 dark:bg-white/3 dark:hover:bg-white/6"
 		>
 			<div className="min-w-0 flex-1">
 				<p className="text-sm leading-6 font-medium text-gray-900 dark:text-white">{getLocalizedNewsTitle(item, lang)}</p>
@@ -288,7 +288,7 @@ function TopicCard({
 				<button
 					type="button"
 					onClick={() => onOpenTopic(topic)}
-					className="inline-flex h-11 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-black/10 px-4 text-sm font-medium backdrop-blur-sm transition hover:bg-black/4 dark:border-white/10 dark:hover:bg-white/5"
+					className="hover:outline-primary/50 inline-flex h-11 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-black/10 px-4 text-sm font-medium backdrop-blur-sm transition hover:bg-black/4 hover:outline-2 hover:outline-offset-2 dark:border-white/10 dark:hover:bg-white/5"
 				>
 					{t("newsPage.topic.viewMore")}
 				</button>
@@ -330,7 +330,7 @@ function SearchForm({
 				<label className="sr-only" htmlFor="q-react">
 					{t("newsPage.search.label")}
 				</label>
-				<div className="group relative flex items-center rounded-2xl border border-black/10 bg-white shadow-sm transition-all focus-within:border-black/25 focus-within:shadow-md dark:border-white/10 dark:bg-white/5 dark:focus-within:border-white/25">
+				<div className="group focus-within:outline-primary/50 relative flex items-center rounded-2xl border border-black/15 bg-white outline outline-2 outline-transparent transition-all focus-within:border-black/30 focus-within:outline-offset-2 dark:border-white/15 dark:bg-white/5 dark:focus-within:border-white/30">
 					<Search className="pointer-events-none absolute left-5 size-5 shrink-0 text-black/30 transition group-focus-within:text-black/60 dark:text-white/30 dark:group-focus-within:text-white/60" />
 					<input
 						id="q-react"
@@ -346,14 +346,14 @@ function SearchForm({
 							<button
 								type="button"
 								onClick={onClear}
-								className="inline-flex h-9 cursor-pointer items-center justify-center rounded-lg px-3 text-sm font-medium text-black/40 transition hover:bg-black/5 hover:text-black/70 dark:text-white/40 dark:hover:bg-white/8 dark:hover:text-white/70"
+								className="hover:outline-primary/50 inline-flex h-9 cursor-pointer items-center justify-center rounded-lg px-3 text-sm font-medium text-black/40 transition hover:bg-black/5 hover:text-black/70 hover:outline-2 hover:outline-offset-2 dark:text-white/40 dark:hover:bg-white/8 dark:hover:text-white/70"
 							>
 								{t("newsPage.search.clear")}
 							</button>
 						)}
 						<button
 							type="submit"
-							className="inline-flex h-9 cursor-pointer items-center justify-center rounded-lg bg-black px-4 text-sm font-medium text-white transition hover:bg-black/80 dark:bg-white dark:text-black dark:hover:bg-white/85"
+							className="hover:outline-primary/50 inline-flex h-10 cursor-pointer items-center justify-center rounded-lg bg-black px-4 text-sm font-medium text-white transition hover:bg-black/80 hover:outline-2 hover:outline-offset-2 dark:bg-white dark:text-black dark:hover:bg-white/85"
 						>
 							{t("newsPage.search.submit")}
 						</button>
@@ -528,7 +528,7 @@ function TopicDialog({
 										type="button"
 										onClick={onClose}
 										aria-label={t("newsPage.topic.close")}
-										className="inline-flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-black/10 text-sm font-medium backdrop-blur-sm transition hover:bg-black/4 dark:border-white/10 dark:hover:bg-white/5"
+										className="hover:outline-primary/50 inline-flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-black/10 text-sm font-medium backdrop-blur-sm transition hover:bg-black/4 hover:outline-2 hover:outline-offset-2 dark:border-white/10 dark:hover:bg-white/5"
 									>
 										<X className="size-4" />
 									</button>
@@ -537,11 +537,11 @@ function TopicDialog({
 						</div>
 
 						<div className="max-h-[65vh] overflow-y-auto p-4">
-						{isTopicLoading && (
-							<div className="flex items-center justify-center py-12">
-								<Loader />
-							</div>
-						)}
+							{isTopicLoading && (
+								<div className="flex items-center justify-center py-12">
+									<Loader />
+								</div>
+							)}
 
 							{isTopicError && <ErrorAlert>{getNewsPageErrorMessage(topicError, lang, "newsPage.topic.timelineError")}</ErrorAlert>}
 
