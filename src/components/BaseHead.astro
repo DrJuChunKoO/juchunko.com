@@ -13,6 +13,12 @@ const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 
 const { title = t("site.title"), description = t("home.description"), image = "/favicon.png", url = Astro.url.href } = Astro.props;
+
+const BASE_URL = "https://juchunko.com";
+const pathWithoutLocale = Astro.url.pathname.replace(/^\/(en|zh-TW)/, "") || "/";
+const hreflangZhTW = `${BASE_URL}/zh-TW${pathWithoutLocale}`;
+const hreflangEn = `${BASE_URL}/en${pathWithoutLocale}`;
+const ogLocale = lang === "zh-TW" ? "zh_TW" : "en_US";
 ---
 
 <title>{title}</title>
@@ -20,12 +26,21 @@ const { title = t("site.title"), description = t("home.description"), image = "/
 <link rel="canonical" href={url} />
 <meta name="keywords" content="立法委員, 科技立委, 葛如鈞, 寶博士, 人工智慧, 法案, 政治" />
 
+<!-- hreflang -->
+<link rel="alternate" hreflang="zh-TW" href={hreflangZhTW} />
+<link rel="alternate" hreflang="en" href={hreflangEn} />
+<link rel="alternate" hreflang="x-default" href={`${BASE_URL}/`} />
+
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content="website" />
 <meta property="og:url" content={url} />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
 <meta property="og:image" content={getImagePath({ url: Astro.url, site: Astro.site })} />
+<meta property="og:image:alt" content={title} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:locale" content={ogLocale} />
 <meta property="og:site_name" content={t("site.title")} />
 
 <!-- Twitter -->
@@ -34,3 +49,5 @@ const { title = t("site.title"), description = t("home.description"), image = "/
 <meta property="twitter:title" content={title} />
 <meta property="twitter:description" content={description} />
 <meta property="twitter:image" content={getImagePath({ url: Astro.url, site: Astro.site })} />
+<meta name="twitter:site" content="@dAAAb" />
+<meta name="twitter:creator" content="@dAAAb" />
