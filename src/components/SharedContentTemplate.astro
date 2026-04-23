@@ -67,7 +67,7 @@ const articleSchema = post.data.date
 		>{post.data.emoji}</span
 	>
 	<article class="prose prose-slate dark:prose-invert mx-auto max-w-3xl" id="content">
-		{categoryKey && <h4 class="font-medium tracking-tight text-gray-500 opacity-75 dark:text-gray-400">{t(`cat.${categoryKey}`)}</h4>}
+		{categoryKey && <p class="font-medium tracking-tight text-gray-500 opacity-75 dark:text-gray-400">{t(`cat.${categoryKey}`)}</p>}
 		<Content />
 	</article>
 
