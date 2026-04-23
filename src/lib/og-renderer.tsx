@@ -6,7 +6,9 @@ import path from "path";
 const logoPath = path.join(process.cwd(), "public", "favicon.png");
 const logoBase64 = `data:image/png;base64,${fs.readFileSync(logoPath).toString("base64")}`;
 
-export async function customRenderer({ title, description }: RenderFunctionInput): Promise<React.ReactNode> {
+export async function customRenderer({ title, description, pathname }: RenderFunctionInput): Promise<React.ReactNode> {
+	const isEnglish = pathname.startsWith("/en/");
+	const siteName = isEnglish ? "Ju Chun Ko" : "科技立委葛如鈞．寶博士";
 	return (
 		<div
 			style={{
@@ -44,7 +46,7 @@ export async function customRenderer({ title, description }: RenderFunctionInput
 							letterSpacing: "0.05em",
 						}}
 					>
-						科技立委葛如鈞．寶博士
+						{siteName}
 					</span>
 				</div>
 

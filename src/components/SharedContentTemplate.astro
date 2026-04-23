@@ -60,7 +60,7 @@ const articleSchema = post.data.date
 	: null;
 ---
 
-<PageLayout post={post} description={description}>
+<PageLayout post={post} description={description} type="article" publishedTime={post.data.date ? post.data.date.toISOString() : undefined}>
 	{articleSchema && <script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />}
 	<span
 		class="absolute top-0 right-8 hidden h-24 w-16 items-end justify-center rounded-b-xl bg-gradient-to-b from-gray-100 to-gray-200 p-3 text-4xl transition-all md:flex dark:from-white/10 dark:to-white/5"
