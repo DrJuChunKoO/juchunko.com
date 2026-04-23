@@ -7,18 +7,59 @@ export interface Props {
 	description?: string;
 	image?: string;
 	url?: string;
+	type?: "website" | "article";
+	publishedTime?: string; // ISO date string
 }
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 
-const { title = t("site.title"), description = t("home.description"), image = "/favicon.png", url = Astro.url.href } = Astro.props;
+const {
+	title = t("site.title"),
+	description = t("home.description"),
+	image = "/favicon.png",
+	url = Astro.url.href,
+	type,
+	publishedTime,
+} = Astro.props;
 
 const BASE_URL = "https://juchunko.com";
 const pathWithoutLocale = Astro.url.pathname.replace(/^\/(en|zh-TW)/, "") || "/";
 const hreflangZhTW = `${BASE_URL}/zh-TW${pathWithoutLocale}`;
 const hreflangEn = `${BASE_URL}/en${pathWithoutLocale}`;
 const ogLocale = lang === "zh-TW" ? "zh_TW" : "en_US";
+
+const personSchema = {
+	"@context": "https://schema.org",
+	"@type": "Person",
+	name: "葛如鈞",
+	alternateName: ["寶博士", "Ju-Chun Ko", "JC Ko"],
+	url: "https://juchunko.com/zh-TW/",
+	image: "https://juchunko.com/favicon.png",
+	jobTitle: "立法委員",
+	worksFor: {
+		"@type": "GovernmentOrganization",
+		name: "中華民國立法院",
+		url: "https://www.ly.gov.tw/",
+	},
+	sameAs: [
+		"https://twitter.com/dAAAb",
+		"https://www.facebook.com/JuChunKo",
+		"https://www.ly.gov.tw/Pages/Detail.aspx?nodeid=4489&pid=206873",
+	],
+};
+
+const websiteSchema = {
+	"@context": "https://schema.org",
+	"@type": "WebSite",
+	name: "科技立委葛如鈞．寶博士",
+	url: "https://juchunko.com/",
+	inLanguage: ["zh-TW", "en"],
+	about: {
+		"@type": "Person",
+		name: "葛如鈞",
+	},
+};
 ---
 
 <title>{title}</title>
@@ -51,3 +92,7 @@ const ogLocale = lang === "zh-TW" ? "zh_TW" : "en_US";
 <meta property="twitter:image" content={getImagePath({ url: Astro.url, site: Astro.site })} />
 <meta name="twitter:site" content="@dAAAb" />
 <meta name="twitter:creator" content="@dAAAb" />
+
+<!-- JSON-LD structured data -->
+<script type="application/ld+json" set:html={JSON.stringify(personSchema)} />
+<script type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />

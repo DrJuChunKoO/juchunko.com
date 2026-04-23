@@ -38,9 +38,30 @@ const categoryForCard: string = currentCollection;
 
 import { stripMarkdown } from "@/lib/utils";
 const description = post.data.description || stripMarkdown(post.body).slice(0, 150) + (post.body.length > 150 ? "..." : "");
+
+const articleSchema = post.data.date
+	? {
+			"@context": "https://schema.org",
+			"@type": "Article",
+			headline: post.data.title,
+			description: description,
+			datePublished: post.data.date.toISOString(),
+			author: {
+				"@type": "Person",
+				name: "葛如鈞",
+			},
+			publisher: {
+				"@type": "Organization",
+				name: "科技立委葛如鈞．寶博士",
+				url: "https://juchunko.com/",
+			},
+			url: Astro.url.href,
+		}
+	: null;
 ---
 
 <PageLayout post={post} description={description}>
+	{articleSchema && <script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />}
 	<span
 		class="absolute top-0 right-8 hidden h-24 w-16 items-end justify-center rounded-b-xl bg-gradient-to-b from-gray-100 to-gray-200 p-3 text-4xl transition-all md:flex dark:from-white/10 dark:to-white/5"
 		>{post.data.emoji}</span
