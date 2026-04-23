@@ -19,7 +19,15 @@ export default defineConfig({
 	site: "https://juchunko.com",
 	integrations: [
 		react(),
-		sitemap(),
+		sitemap({
+			i18n: {
+				defaultLocale: "zh-TW",
+				locales: {
+					"zh-TW": "zh-TW",
+					en: "en",
+				},
+			},
+		}),
 		partytown({
 			config: {
 				forward: ["dataLayer.push"],
