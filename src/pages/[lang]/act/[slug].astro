@@ -1,14 +1,14 @@
 ---
 import { type CollectionEntry, getCollection } from "astro:content";
 import SharedContentTemplate from "@/components/SharedContentTemplate.astro";
+import { getRouteLangFromContentId, getSlugFromContentId } from "@/lib/content";
 export async function getStaticPaths() {
 	const acts = await getCollection("act");
 	return acts
 		.map((act) => {
-			const slugWithLang = act.id.replace(/\.(md|mdx)$/, "");
-			const [lang, ...slugParts] = slugWithLang.split("/");
-			const slug = slugParts.at(-1);
-			if (!slug) return;
+			const lang = getRouteLangFromContentId(act.id);
+			const slug = getSlugFromContentId(act.id);
+			if (!lang || !slug) return;
 
 			return {
 				params: { lang, slug },

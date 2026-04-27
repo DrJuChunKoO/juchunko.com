@@ -1,6 +1,7 @@
 import type { APIRoute } from "astro";
 import { getCollection } from "astro:content";
 import { ui, defaultLang } from "../i18n/ui";
+import { contentIdMatchesLang, getSlugFromContentId } from "../lib/content";
 
 export const GET: APIRoute = async () => {
 	const siteUrl = "https://juchunko.com";
@@ -11,38 +12,34 @@ export const GET: APIRoute = async () => {
 	const manuals = await getCollection("manual");
 	const fragments = await getCollection("fragment");
 
-	const filteredActs = acts.filter((post) => post.id.startsWith(lang + "/")).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+	const filteredActs = acts
+		.filter((post) => contentIdMatchesLang(post.id, lang))
+		.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 	const filteredManuals = manuals
-		.filter((post) => post.id.startsWith(lang + "/"))
+		.filter((post) => contentIdMatchesLang(post.id, lang))
 		.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 	const filteredFragments = fragments
-		.filter((post) => post.id.startsWith(lang + "/"))
+		.filter((post) => contentIdMatchesLang(post.id, lang))
 		.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
-
-	const getSlug = (id: string) =>
-		id
-			.replace(/\.(md|mdx)$/, "")
-			.split("/")
-			.pop();
 
 	let content = `# ${t["site.title"]}\n\n`;
 	content += `> ${t["home.description"]}\n\n`;
 
 	content += `## ${t["cat.acts"]}\n\n`;
 	for (const post of filteredActs) {
-		const slug = getSlug(post.id);
+		const slug = getSlugFromContentId(post.id);
 		content += `- [${post.data.title}](${siteUrl}/${lang}/act/${slug}.md): ${post.data.description || ""}\n`;
 	}
 
 	content += `\n## ${t["cat.manuals"]}\n\n`;
 	for (const post of filteredManuals) {
-		const slug = getSlug(post.id);
+		const slug = getSlugFromContentId(post.id);
 		content += `- [${post.data.title}](${siteUrl}/${lang}/manual/${slug}.md): ${post.data.description || ""}\n`;
 	}
 
 	content += `\n## 其他資訊\n\n`;
 	for (const post of filteredFragments) {
-		const slug = getSlug(post.id);
+		const slug = getSlugFromContentId(post.id);
 		content += `- [${post.data.title}](${siteUrl}/${lang}/fragment/${slug}.md): ${post.data.description || ""}\n`;
 	}
 

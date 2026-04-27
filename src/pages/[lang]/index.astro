@@ -6,6 +6,7 @@ import { getLangFromUrl, useTranslations } from "src/i18n/utils";
 import { getCollection } from "astro:content";
 import { ArrowRight } from "@lucide/astro";
 import { getFeaturedAchievementSummary, getHomepageCopy, selectFeaturedEntries } from "@/lib/homepage";
+import { contentIdMatchesLang } from "@/lib/content";
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
@@ -16,13 +17,13 @@ export function getStaticPaths() {
 }
 
 const acts = (await getCollection("act"))
-	.filter((post) => post.id.startsWith(lang + "/"))
+	.filter((post) => contentIdMatchesLang(post.id, lang))
 	.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 const manuals = (await getCollection("manual"))
-	.filter((post) => post.id.startsWith(lang + "/"))
+	.filter((post) => contentIdMatchesLang(post.id, lang))
 	.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 const fragments = (await getCollection("fragment"))
-	.filter((post) => post.id.startsWith(lang + "/"))
+	.filter((post) => contentIdMatchesLang(post.id, lang))
 	.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 const featuredActs = selectFeaturedEntries(acts);
 ---

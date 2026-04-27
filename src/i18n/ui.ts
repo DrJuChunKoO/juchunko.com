@@ -3,6 +3,8 @@ export const languages = {
 	"zh-TW": "中文",
 };
 
+export type Lang = keyof typeof languages;
+
 export const defaultLang = "zh-TW";
 
 export const ui = {

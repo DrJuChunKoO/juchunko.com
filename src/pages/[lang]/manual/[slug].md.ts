@@ -1,18 +1,21 @@
 import type { APIRoute } from "astro";
 import { getCollection } from "astro:content";
+import { getRouteLangFromContentId, getSlugFromContentId } from "../../../lib/content";
 import { stripMarkdown } from "../../../lib/utils";
 
 export async function getStaticPaths() {
 	const manuals = await getCollection("manual");
-	return manuals.map((manual) => {
-		const slugWithLang = manual.id.replace(/\.(md|mdx)$/, "");
-		const [lang, ...slugParts] = slugWithLang.split("/");
-		const slug = slugParts.at(-1);
-		return {
-			params: { lang, slug },
-			props: manual,
-		};
-	});
+	return manuals
+		.map((manual) => {
+			const lang = getRouteLangFromContentId(manual.id);
+			const slug = getSlugFromContentId(manual.id);
+			if (!lang || !slug) return;
+			return {
+				params: { lang, slug },
+				props: manual,
+			};
+		})
+		.filter(Boolean);
 }
 
 export const GET: APIRoute = async ({ props }) => {

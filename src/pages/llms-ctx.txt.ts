@@ -1,6 +1,7 @@
 import type { APIRoute } from "astro";
 import { getCollection } from "astro:content";
 import { ui, defaultLang } from "../i18n/ui";
+import { contentIdMatchesLang } from "../lib/content";
 import { stripMarkdown } from "../lib/utils";
 
 export const GET: APIRoute = async () => {
@@ -11,12 +12,14 @@ export const GET: APIRoute = async () => {
 	const manuals = await getCollection("manual");
 	const fragments = await getCollection("fragment");
 
-	const filteredActs = acts.filter((post) => post.id.startsWith(lang + "/")).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+	const filteredActs = acts
+		.filter((post) => contentIdMatchesLang(post.id, lang))
+		.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 	const filteredManuals = manuals
-		.filter((post) => post.id.startsWith(lang + "/"))
+		.filter((post) => contentIdMatchesLang(post.id, lang))
 		.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 	const filteredFragments = fragments
-		.filter((post) => post.id.startsWith(lang + "/"))
+		.filter((post) => contentIdMatchesLang(post.id, lang))
 		.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
 	let content = `# ${t["site.title"]} - Full Context\n\n`;

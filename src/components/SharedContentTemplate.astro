@@ -4,6 +4,7 @@ import PageLayout from "@/layouts/PageLayout.astro";
 import { render } from "astro:content";
 import { getLangFromUrl, useTranslations } from "src/i18n/utils";
 import CardLink from "@/components/CardLink.astro";
+import { contentIdMatchesLang } from "@/lib/content";
 
 export type CategoryKey = "acts" | "manuals";
 
@@ -20,7 +21,7 @@ const { Content } = await render(post);
 // 決定目前文章所屬 collection 與對應列表
 const currentCollection = post.collection; // "fragment" | "manual" | "act"
 const allInCollection = (await getCollection(currentCollection))
-	.filter((p) => p.id.startsWith(lang + "/"))
+	.filter((p) => contentIdMatchesLang(p.id, lang))
 	.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
 // 找到目前文章索引
