@@ -1,6 +1,7 @@
 ---
-const { post, lang, category, showDescription = false, description } = Astro.props;
+const { post, lang, category, showDescription = false, description, headingLevel = 2 } = Astro.props;
 const cardDescription = description ?? post.data.description;
+const Heading = `h${headingLevel}`;
 ---
 
 <a
@@ -11,7 +12,7 @@ const cardDescription = description ?? post.data.description;
 		{post.data.emoji}
 	</div>
 	<div class="p-2 md:p-0">
-		<h2 class="text-sm font-semibold md:text-lg">{post.data.title}</h2>
+		<Heading class="text-sm font-semibold md:text-lg">{post.data.title}</Heading>
 		<p class="text-muted-foreground text-xs tracking-tight md:text-sm">
 			{
 				post.data.status
