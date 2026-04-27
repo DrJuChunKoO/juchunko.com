@@ -23,6 +23,13 @@ test("getHomepageCopy exposes guided first-visit navigation", () => {
 	assert.equal(copy.sectionTitles.reading, "進一步閱讀");
 });
 
+test("getHomepageCopy exposes a homepage SEO title that is not a section heading", () => {
+	const copy = getHomepageCopy("zh-TW") as ReturnType<typeof getHomepageCopy> & { seo?: { title?: string } };
+
+	assert.equal(copy.seo?.title, "科技立委葛如鈞．寶博士｜先進國會・共識未來");
+	assert.notEqual(copy.seo?.title, copy.sectionTitles.achievements);
+});
+
 test("getFeaturedAchievementSummary returns why-it-matters summaries for featured acts", () => {
 	assert.equal(
 		getFeaturedAchievementSummary("zh-TW/ai-basic-act.mdx", "zh-TW"),

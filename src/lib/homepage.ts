@@ -15,6 +15,9 @@ export interface HomepageHeroCopy {
 }
 
 export interface HomepageCopy {
+	seo: {
+		title: string;
+	};
 	hero: HomepageHeroCopy;
 	sectionTitles: {
 		achievements: string;
@@ -64,6 +67,9 @@ export function getFeaturedAchievementSummary(id: string, lang: SupportedLang) {
 export function getHomepageCopy(lang: SupportedLang): HomepageCopy {
 	if (lang === "zh-TW") {
 		return {
+			seo: {
+				title: "科技立委葛如鈞．寶博士｜先進國會・共識未來",
+			},
 			hero: {
 				eyebrow: "立法委員 / 科技政策 / AI・資安・通訊韌性",
 				title: "科技立委葛如鈞．寶博士",
@@ -89,6 +95,9 @@ export function getHomepageCopy(lang: SupportedLang): HomepageCopy {
 	}
 
 	return {
+		seo: {
+			title: "Ju Chun Ko | Emerging Congress, Converging Consensus",
+		},
 		hero: {
 			eyebrow: "Legislator / Tech policy / AI, cybersecurity, and network resilience",
 			title: "Ju Chun Ko",

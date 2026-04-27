@@ -27,7 +27,7 @@ const fragments = (await getCollection("fragment"))
 const featuredActs = selectFeaturedEntries(acts);
 ---
 
-<PageLayout description={t("home.description")}>
+<PageLayout title={copy.seo.title} description={t("home.description")}>
 	<div class="mb-6 flex flex-col gap-4 md:mb-8">
 		<div class="w-full max-w-3xl">
 			<p class="text-muted-foreground text-xs font-semibold uppercase">{copy.hero.eyebrow}</p>
@@ -57,7 +57,14 @@ const featuredActs = selectFeaturedEntries(acts);
 		<div class="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-3 md:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] md:gap-6">
 			{
 				featuredActs.map((post) => (
-					<CardLink post={post} lang={lang} category="act" showDescription description={getFeaturedAchievementSummary(post.id, lang)} />
+					<CardLink
+						post={post}
+						lang={lang}
+						category="act"
+						showDescription
+						description={getFeaturedAchievementSummary(post.id, lang)}
+						headingLevel={3}
+					/>
 				))
 			}
 		</div>
@@ -66,7 +73,7 @@ const featuredActs = selectFeaturedEntries(acts);
 	<section id="issues" class="mb-12 scroll-mt-24 space-y-6 md:scroll-mt-28">
 		<h2 class="text-foreground mt-2 text-2xl font-bold md:text-3xl">{copy.sectionTitles.issues}</h2>
 		<div class="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-3 md:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] md:gap-6">
-			{acts.map((post) => <CardLink post={post} lang={lang} category="act" />)}
+			{acts.map((post) => <CardLink post={post} lang={lang} category="act" headingLevel={3} />)}
 		</div>
 	</section>
 
@@ -82,14 +89,14 @@ const featuredActs = selectFeaturedEntries(acts);
 			<div class="space-y-4">
 				<h3 class="text-foreground text-xl font-semibold">{copy.sectionTitles.manuals}</h3>
 				<div class="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-3 md:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] md:gap-6">
-					{manuals.map((post) => <CardLink post={post} lang={lang} category="manual" />)}
+					{manuals.map((post) => <CardLink post={post} lang={lang} category="manual" headingLevel={4} />)}
 				</div>
 			</div>
 
 			<div class="space-y-4">
 				<h3 class="text-foreground text-xl font-semibold">{copy.sectionTitles.fragments}</h3>
 				<div class="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-3 md:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] md:gap-6">
-					{fragments.map((post) => <CardLink post={post} lang={lang} category="fragment" />)}
+					{fragments.map((post) => <CardLink post={post} lang={lang} category="fragment" headingLevel={4} />)}
 				</div>
 			</div>
 		</div>
