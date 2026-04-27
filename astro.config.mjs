@@ -85,13 +85,9 @@ export default defineConfig({
 		],
 		build: {
 			assetsInlineLimit: 0,
+			chunkSizeWarningLimit: 5000,
 			rollupOptions: {
 				external: ["@resvg/resvg-js", "jsdom"],
-				output: {
-					manualChunks: {
-						react: ["react", "react-dom"],
-					},
-				},
 			},
 		},
 		optimizeDeps: {
