@@ -80,7 +80,7 @@ const featuredActs = selectFeaturedEntries(acts);
 	<section id="updates" class="mb-12 scroll-mt-24 space-y-6 md:scroll-mt-28">
 		<h2 class="text-foreground mt-2 text-2xl font-bold md:text-3xl">{copy.sectionTitles.updates}</h2>
 
-		<HomeFeeds lang={lang} client:visible />
+		<HomeFeeds lang={lang} headingLevel={3} client:visible />
 	</section>
 
 	<section id="reading" class="scroll-mt-24 space-y-10 md:scroll-mt-28">

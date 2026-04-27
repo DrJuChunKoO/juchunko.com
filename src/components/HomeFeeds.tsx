@@ -4,9 +4,11 @@ import { motion, AnimatePresence } from "motion/react";
 import { ui } from "src/i18n/ui";
 
 type SupportedLang = "en" | "zh-TW";
+type HomeFeedHeadingLevel = 2 | 3 | 4 | 5 | 6;
 
 interface HomeFeedsProps {
 	lang?: SupportedLang;
+	headingLevel?: HomeFeedHeadingLevel;
 }
 
 interface CardData {
@@ -54,7 +56,12 @@ function getIconComponent(icon?: string) {
 	return (icon && iconMap[icon]) || Sparkles;
 }
 
-export default function HomeFeeds({ lang = "zh-TW" }: HomeFeedsProps) {
+export function getHomeFeedHeadingTag(headingLevel: HomeFeedHeadingLevel) {
+	return `h${headingLevel}` as const;
+}
+
+export default function HomeFeeds({ lang = "zh-TW", headingLevel = 2 }: HomeFeedsProps) {
+	const SectionHeading = getHomeFeedHeadingTag(headingLevel);
 	const titles = {
 		legislator: ui[lang]["home.legislatorActivity.title"],
 		news: ui[lang]["home.news.title"],
@@ -227,7 +234,7 @@ export default function HomeFeeds({ lang = "zh-TW" }: HomeFeedsProps) {
 					)}
 					<div className="text-foreground bg-muted/40 relative z-10 flex w-full items-center justify-between gap-2 p-4 py-3 backdrop-blur-sm md:p-6 md:py-4 dark:bg-white/5">
 						<header>
-							<h2 className="line-clamp-1 font-semibold md:text-xl">{sec.title}</h2>
+							<SectionHeading className="line-clamp-1 font-semibold md:text-xl">{sec.title}</SectionHeading>
 							<p className="text-muted-foreground line-clamp-1 text-sm md:text-base">{sec.subtitle}</p>
 						</header>
 						{sec.href && sec.href.startsWith("http") ? (
