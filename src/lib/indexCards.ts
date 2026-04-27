@@ -10,6 +10,12 @@ type CardItem = {
 	icon?: string;
 };
 
+function getFeedItemTimestamp(item: { pubDate?: string }) {
+	if (!item.pubDate) return Number.NEGATIVE_INFINITY;
+	const timestamp = Date.parse(item.pubDate);
+	return Number.isNaN(timestamp) ? Number.NEGATIVE_INFINITY : timestamp;
+}
+
 export async function getIndexCards(lang: "en" | "zh-TW") {
 	const result: {
 		newsCards: CardItem[];
@@ -58,7 +64,10 @@ export async function getIndexCards(lang: "en" | "zh-TW") {
 			const isChinesePost = link.includes("/zh/") || (!link.includes("/en/") && !link.includes("/zh/"));
 			return (lang === "en" && isEnglishPost) || (lang === "zh-TW" && isChinesePost);
 		});
-		const blogItems = filtered.slice(0, 3);
+		const blogItems = filtered
+			.slice()
+			.sort((a, b) => getFeedItemTimestamp(b) - getFeedItemTimestamp(a))
+			.slice(0, 3);
 		result.blogCards = blogItems.map((it) => ({
 			title: it.title,
 			description: it.description,
