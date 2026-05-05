@@ -9,6 +9,8 @@ export interface Props {
 	url?: string;
 	type?: "website" | "article";
 	publishedTime?: string; // ISO date string
+	articleSection?: string;
+	articleTags?: string[];
 }
 
 const lang = getLangFromUrl(Astro.url);
@@ -21,6 +23,8 @@ const {
 	url = Astro.url.href,
 	type,
 	publishedTime,
+	articleSection,
+	articleTags,
 } = Astro.props;
 
 const BASE_URL = "https://juchunko.com";
@@ -29,6 +33,12 @@ const hreflangZhTW = `${BASE_URL}/zh-TW${pathWithoutLocale}`;
 const hreflangEn = `${BASE_URL}/en${pathWithoutLocale}`;
 const ogLocale = lang === "zh-TW" ? "zh_TW" : "en_US";
 
+// locale-aware keywords
+const keywords =
+	lang === "zh-TW"
+		? "立法委員, 科技立委, 葛如鈞, 寶博士, 人工智慧, AI 基本法, 法案, 核能, 區塊鏈, 自動駕駛, 臺灣"
+		: "legislator, technology policy, Ju-Chun Ko, AI Basic Act, Taiwan, artificial intelligence, blockchain, nuclear energy, autonomous vehicles, digital policy";
+
 const personSchema = {
 	"@context": "https://schema.org",
 	"@type": "Person",
@@ -36,13 +46,22 @@ const personSchema = {
 	alternateName: ["寶博士", "Ju-Chun Ko", "JC Ko"],
 	url: "https://juchunko.com/zh-TW/",
 	image: "https://juchunko.com/favicon.png",
-	jobTitle: "立法委員",
+	jobTitle: lang === "zh-TW" ? "立法委員" : "Legislator at-large",
+	description:
+		lang === "zh-TW"
+			? "中華民國第十一屆全國不分區立法委員，專注科技政策、人工智慧法規、區塊鏈與數位民主。"
+			: "At-large legislator in Taiwan's 11th Legislative Yuan, focused on AI policy, blockchain governance, and digital democracy.",
 	worksFor: {
 		"@type": "GovernmentOrganization",
-		name: "中華民國立法院",
+		name: lang === "zh-TW" ? "中華民國立法院" : "Legislative Yuan, Republic of China (Taiwan)",
 		url: "https://www.ly.gov.tw/",
 	},
+	knowsAbout:
+		lang === "zh-TW"
+			? ["人工智慧", "區塊鏈", "數位民主", "核能政策", "資安", "自動駕駛", "衛星通訊"]
+			: ["Artificial Intelligence", "Blockchain", "Digital Democracy", "Nuclear Policy", "Cybersecurity", "Autonomous Vehicles"],
 	sameAs: [
+		"https://x.com/dAAAb",
 		"https://twitter.com/dAAAb",
 		"https://www.facebook.com/JuChunKo",
 		"https://www.ly.gov.tw/Pages/Detail.aspx?nodeid=4489&pid=206873",
@@ -52,12 +71,21 @@ const personSchema = {
 const websiteSchema = {
 	"@context": "https://schema.org",
 	"@type": "WebSite",
-	name: "科技立委葛如鈞．寶博士",
+	name: lang === "zh-TW" ? "科技立委葛如鈞．寶博士" : "Ju Chun Ko — Taiwan Technology Legislator",
 	url: "https://juchunko.com/",
 	inLanguage: ["zh-TW", "en"],
 	about: {
 		"@type": "Person",
 		name: "葛如鈞",
+		alternateName: "Ju-Chun Ko",
+	},
+	potentialAction: {
+		"@type": "SearchAction",
+		target: {
+			"@type": "EntryPoint",
+			urlTemplate: `${BASE_URL}/${lang}/news?q={search_term_string}`,
+		},
+		"query-input": "required name=search_term_string",
 	},
 };
 ---
@@ -65,7 +93,7 @@ const websiteSchema = {
 <title>{title}</title>
 <meta name="description" content={description} />
 <link rel="canonical" href={url} />
-<meta name="keywords" content="立法委員, 科技立委, 葛如鈞, 寶博士, 人工智慧, 法案, 政治" />
+<meta name="keywords" content={keywords} />
 
 <!-- hreflang -->
 <link rel="alternate" hreflang="zh-TW" href={hreflangZhTW} />
@@ -85,6 +113,8 @@ const websiteSchema = {
 <meta property="og:site_name" content={t("site.title")} />
 {type === "article" && publishedTime && <meta property="article:published_time" content={publishedTime} />}
 {type === "article" && <meta property="article:author" content="葛如鈞" />}
+{type === "article" && articleSection && <meta property="article:section" content={articleSection} />}
+{type === "article" && articleTags && articleTags.map((tag) => <meta property="article:tag" content={tag} />)}
 
 <!-- Twitter -->
 <meta property="twitter:card" content="summary_large_image" />

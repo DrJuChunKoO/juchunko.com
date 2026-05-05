@@ -18,9 +18,11 @@ export interface Props {
 	image?: string;
 	type?: "website" | "article";
 	publishedTime?: string; // ISO date string
+	articleSection?: string;
+	articleTags?: string[];
 }
 const currentPath = Astro.url.pathname;
-const { post, title, description, image, type, publishedTime } = Astro.props;
+const { post, title, description, image, type, publishedTime, articleSection, articleTags } = Astro.props;
 const pageTitle = title || post?.data.title || t("site.title");
 const pageDescription = description || post?.data.description || t("home.description");
 const pageImage = image || post?.data.image || "/favicon.png";
@@ -34,6 +36,8 @@ const pageImage = image || post?.data.image || "/favicon.png";
 		url={Astro.url.href}
 		type={type}
 		publishedTime={publishedTime}
+		articleSection={articleSection}
+		articleTags={articleTags}
 		slot="head"
 	/>
 
