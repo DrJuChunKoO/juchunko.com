@@ -40,6 +40,21 @@ const categoryForCard: string = currentCollection;
 import { stripMarkdown } from "@/lib/utils";
 const description = post.data.description || stripMarkdown(post.body).slice(0, 150) + (post.body.length > 150 ? "..." : "");
 
+// Derive articleSection label for OG metadata
+const collectionSectionMap: Record<string, string> = {
+	act: lang === "zh-TW" ? "法案行動" : "Legislative Acts",
+	manual: lang === "zh-TW" ? "寶博士使用說明" : "JC User Manual",
+	fragment: lang === "zh-TW" ? "補充資料" : "Reference",
+};
+const articleSection = collectionSectionMap[currentCollection] ?? currentCollection;
+
+// Build article tags from status (act only) for GEO signals
+const articleTags: string[] = [];
+if (post.collection === "act" && "status" in post.data && post.data.status) {
+	articleTags.push(post.data.status);
+}
+
+// Article schema
 const articleSchema = post.data.date
 	? {
 			"@context": "https://schema.org",
@@ -47,22 +62,77 @@ const articleSchema = post.data.date
 			headline: post.data.title,
 			description: description,
 			datePublished: post.data.date.toISOString(),
+			dateModified: post.data.date.toISOString(),
+			inLanguage: lang,
+			mainEntityOfPage: {
+				"@type": "WebPage",
+				"@id": Astro.url.href,
+			},
+			image: post.data.image
+				? { "@type": "ImageObject", url: post.data.image }
+				: { "@type": "ImageObject", url: "https://juchunko.com/favicon.png", width: 512, height: 512 },
 			author: {
 				"@type": "Person",
 				name: "葛如鈞",
+				alternateName: "Ju-Chun Ko",
+				url: "https://juchunko.com/zh-TW/",
 			},
 			publisher: {
-				"@type": "Organization",
-				name: "科技立委葛如鈞．寶博士",
-				url: "https://juchunko.com/",
+				"@type": "Person",
+				name: "葛如鈞",
+				alternateName: "Ju-Chun Ko",
+				url: "https://juchunko.com/zh-TW/",
 			},
 			url: Astro.url.href,
+			articleSection: articleSection,
 		}
 	: null;
+
+// GEO: LegalDocument schema for act collection
+const legalDocSchema =
+	post.collection === "act" && post.data.date
+		? {
+				"@context": "https://schema.org",
+				"@type": "GovernmentPermit",
+				name: post.data.title,
+				description: description,
+				url: Astro.url.href,
+				datePublished: post.data.date.toISOString(),
+				inLanguage: lang,
+				issuedBy: {
+					"@type": "GovernmentOrganization",
+					name: lang === "zh-TW" ? "中華民國立法院" : "Legislative Yuan, Republic of China (Taiwan)",
+					url: "https://www.ly.gov.tw/",
+				},
+				legislationIdentifier: `juchunko-act-${post.id.replace(/^.*\//, "")}`,
+				...("status" in post.data && post.data.status ? { legislationLegalValue: post.data.status } : {}),
+			}
+		: null;
+
+// GEO: DefinedTermSet schema for the "keyword" fragment (dictionary page)
+const postSlug = post.id.replace(/^.*\//, "");
+const definedTermSetSchema =
+	post.collection === "fragment" && postSlug === "keyword"
+		? {
+				"@context": "https://schema.org",
+				"@type": "DefinedTermSet",
+				name: post.data.title,
+				description: description,
+				url: Astro.url.href,
+				inLanguage: lang,
+				author: {
+					"@type": "Person",
+					name: "葛如鈞",
+					alternateName: "Ju-Chun Ko",
+				},
+			}
+		: null;
 ---
 
-<PageLayout post={post} description={description} type="article" publishedTime={post.data.date ? post.data.date.toISOString() : undefined}>
+<PageLayout post={post} description={description} type="article" publishedTime={post.data.date ? post.data.date.toISOString() : undefined} articleSection={articleSection} articleTags={articleTags.length > 0 ? articleTags : undefined}>
 	{articleSchema && <script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />}
+	{legalDocSchema && <script type="application/ld+json" set:html={JSON.stringify(legalDocSchema)} />}
+	{definedTermSetSchema && <script type="application/ld+json" set:html={JSON.stringify(definedTermSetSchema)} />}
 	<span
 		class="absolute top-0 right-8 hidden h-24 w-16 items-end justify-center rounded-b-xl bg-gradient-to-b from-gray-100 to-gray-200 p-3 text-4xl transition-all md:flex dark:from-white/10 dark:to-white/5"
 		>{post.data.emoji}</span
