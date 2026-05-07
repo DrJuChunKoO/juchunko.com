@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { Hono } from "hono";
-import { createOpenRouter, type OpenRouter } from "@openrouter/ai-sdk-provider";
+import { createOpenRouter, type OpenRouterProvider } from "@openrouter/ai-sdk-provider";
 import { streamText, tool, smoothStream, convertToModelMessages, stepCountIs, UIMessage } from "ai";
 import { z } from "zod";
 import type { Env } from "../../types";
@@ -10,7 +10,7 @@ const app = new Hono<{ Bindings: Env }>();
 
 app.post("/", async (c) => {
 	// 初始化 OpenRouter provider
-	const openrouter: OpenRouter = createOpenRouter({
+	const openrouter: OpenRouterProvider = createOpenRouter({
 		apiKey: c.env.OPENROUTER_API_KEY,
 		baseURL: "https://gateway.ai.cloudflare.com/v1/3f1f83a939b2fc99ca45fd8987962514/juchunko-com/openrouter",
 	});

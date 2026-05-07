@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { useConversation } from "@elevenlabs/react";
+import { useConversation, ConversationProvider } from "@elevenlabs/react";
 import { X, Phone, PhoneOff } from "lucide-react";
 import { ui } from "src/i18n/ui";
 import GaussianSplatViewer from "./GaussianSplatViewer";
@@ -13,7 +13,7 @@ interface PhoneCallInterfaceProps {
 	lang?: SupportedLang;
 }
 
-export default function PhoneCallInterface({ isOpen, onClose, lang = "zh-TW" }: PhoneCallInterfaceProps) {
+function PhoneCallInterfaceInner({ isOpen, onClose, lang = "zh-TW" }: PhoneCallInterfaceProps) {
 	const conversation = useConversation();
 	const [callDuration, setCallDuration] = useState(0);
 	// const [isMuted, setIsMuted] = useState(false);
@@ -73,8 +73,6 @@ export default function PhoneCallInterface({ isOpen, onClose, lang = "zh-TW" }: 
 				return ui[lang]["agent.phone.status.connecting"];
 			case "connected":
 				return conversation.isSpeaking ? ui[lang]["agent.phone.status.speaking"] : ui[lang]["agent.phone.status.connected"];
-			case "disconnecting":
-				return ui[lang]["agent.phone.status.disconnecting"];
 			default:
 				return ui[lang]["agent.phone.status.ready"];
 		}
@@ -192,5 +190,13 @@ export default function PhoneCallInterface({ isOpen, onClose, lang = "zh-TW" }: 
 				</motion.div>
 			)}
 		</AnimatePresence>
+	);
+}
+
+export default function PhoneCallInterface(props: PhoneCallInterfaceProps) {
+	return (
+		<ConversationProvider>
+			<PhoneCallInterfaceInner {...props} />
+		</ConversationProvider>
 	);
 }
