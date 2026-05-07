@@ -37,7 +37,7 @@ export async function customRenderer({ title, description, pathname }: RenderFun
 			>
 				{/* Header: Logo & Site Name */}
 				<div style={{ display: "flex", alignItems: "center", marginBottom: "24px" }}>
-					<img src={logoBase64} width="32" height="32" style={{ borderRadius: "4px", marginRight: "16px" }} />
+					<img src={logoBase64} width={32} height={32} style={{ borderRadius: "4px", marginRight: "16px" }} />
 					<span
 						style={{
 							fontSize: "24px",
