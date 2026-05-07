@@ -68,7 +68,7 @@ export function getHomepageCopy(lang: SupportedLang): HomepageCopy {
 	if (lang === "zh-TW") {
 		return {
 			seo: {
-				title: "科技立委葛如鈞．寶博士｜先進國會・共識未來",
+				title: "科技立委葛如鈞．寶博士｜官方網站",
 			},
 			hero: {
 				eyebrow: "立法委員 / 科技政策 / AI・資安・通訊韌性",
@@ -96,7 +96,7 @@ export function getHomepageCopy(lang: SupportedLang): HomepageCopy {
 
 	return {
 		seo: {
-			title: "Ju Chun Ko | Emerging Congress, Converging Consensus",
+			title: "Ju Chun Ko | Taiwan Technology Legislator — Official Website",
 		},
 		hero: {
 			eyebrow: "Legislator / Tech policy / AI, cybersecurity, and network resilience",

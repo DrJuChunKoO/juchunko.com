@@ -23,7 +23,7 @@ export interface Props {
 }
 const currentPath = Astro.url.pathname;
 const { post, title, description, image, type, publishedTime, articleSection, articleTags } = Astro.props;
-const pageTitle = title || post?.data.title || t("site.title");
+const pageTitle = title || (post?.data.title ? `${post.data.title} | ${t("site.title")}` : t("site.title"));
 const pageDescription = description || post?.data.description || t("home.description");
 const pageImage = image || post?.data.image || "/favicon.png";
 ---
