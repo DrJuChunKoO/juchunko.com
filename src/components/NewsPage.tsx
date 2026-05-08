@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { QueryClient, useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { ArrowUpRight, Search, X } from "lucide-react";
 import { Loader } from "./Loader";
@@ -601,7 +601,7 @@ function MonthTopicsSection({
 	);
 
 	return (
-		<section className="space-y-4">
+		<section id={`month-${monthMeta.month}`} className="space-y-4">
 			<div className="flex items-center justify-between gap-4">
 				<h2 className="text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">
 					{formatArchiveMonthLabel(monthMeta.month, lang)}
@@ -637,6 +637,11 @@ export default function NewsPage({ lang }: { lang: NewsPageLang }) {
 	const [selectedTopicPreview, setSelectedTopicPreview] = useState<TopicArchiveCard | null>(null);
 	const [selectedTopicId, setSelectedTopicId] = useState<string | null>(null);
 	const [visibleMonthCount, setVisibleMonthCount] = useState(1);
+
+	// Map topic id → month string, populated as months load
+	const topicMonthMapRef = useRef<Map<string, string>>(new Map());
+	// Track whether initial URL ?topic has been handled
+	const initialTopicHandledRef = useRef(false);
 
 	const {
 		data: archiveMonthIndex,
@@ -751,6 +756,106 @@ export default function NewsPage({ lang }: { lang: NewsPageLang }) {
 		}
 	}, [selectedTopicId]);
 
+	// Build/update topic→month map as archive month data loads
+	useEffect(() => {
+		if (!archiveMonthIndex) return;
+		// We rely on MonthTopicsSection to populate the map when it renders,
+		// but for the initial URL topic lookup we need the month index only to
+		// figure out which month to expand; the actual preview data comes later.
+	}, [archiveMonthIndex]);
+
+	// popstate: sync state when user navigates back/forward
+	useEffect(() => {
+		const onPopState = () => {
+			const params = new URLSearchParams(window.location.search);
+			const topicId = params.get("topic");
+			if (topicId) {
+				setSelectedTopicId(topicId);
+			} else {
+				setSelectedTopicId(null);
+				setSelectedTopicPreview(null);
+			}
+		};
+		window.addEventListener("popstate", onPopState);
+		return () => window.removeEventListener("popstate", onPopState);
+	}, []);
+
+	// Initial URL topic: once archiveMonthIndex is loaded, handle ?topic in URL
+	useEffect(() => {
+		if (initialTopicHandledRef.current) return;
+		if (!archiveMonthIndex || archiveMonthIndex.length === 0) return;
+
+		const params = new URLSearchParams(window.location.search);
+		const topicId = params.get("topic");
+		if (!topicId) {
+			initialTopicHandledRef.current = true;
+			return;
+		}
+
+		initialTopicHandledRef.current = true;
+
+		// Find which month contains this topic from the cached query data
+		// We need to expand months until we find it; start by revealing all months
+		// progressively until the topic's month section is in the DOM.
+		const allMonthKeys = archiveMonthIndex.map((m) => m.month);
+
+		// Try to find the month from already-loaded query cache
+		const findMonthForTopic = (): string | null => {
+			for (const monthKey of allMonthKeys) {
+				const cached = queryClient.getQueryData<ArchiveMonth | null>(["news-archive-month", monthKey]);
+				if (cached?.topics.some((t) => t.id === topicId)) {
+					return monthKey;
+				}
+			}
+			return null;
+		};
+
+		const scrollAndOpen = (monthKey: string) => {
+			// Ensure the month is visible
+			const monthIndex = allMonthKeys.indexOf(monthKey);
+			if (monthIndex >= 0) {
+				setVisibleMonthCount((c) => Math.max(c, monthIndex + 1));
+			}
+
+			// Wait for the section to render, then scroll and open dialog
+			const tryScrollAndOpen = (attempts = 0) => {
+				const section = document.getElementById(`month-${monthKey}`);
+				if (section) {
+					section.scrollIntoView({ behavior: "smooth", block: "start" });
+					// Find the topic preview from cache and open dialog
+					const cached = queryClient.getQueryData<ArchiveMonth | null>(["news-archive-month", monthKey]);
+					const topicPreview = cached?.topics.find((t) => t.id === topicId) ?? null;
+					setSelectedTopicPreview(topicPreview);
+					setSelectedTopicId(topicId);
+				} else if (attempts < 20) {
+					setTimeout(() => tryScrollAndOpen(attempts + 1), 100);
+				}
+			};
+			tryScrollAndOpen();
+		};
+
+		// Check if we already know the month
+		const knownMonth = findMonthForTopic();
+		if (knownMonth) {
+			scrollAndOpen(knownMonth);
+			return;
+		}
+
+		// Otherwise open dialog immediately (data will load via useQuery),
+		// and try to find the month as months fetch in the background
+		setSelectedTopicId(topicId);
+
+		const findAndScrollWhenReady = (attempts = 0) => {
+			const month = findMonthForTopic();
+			if (month) {
+				scrollAndOpen(month);
+			} else if (attempts < 30) {
+				setTimeout(() => findAndScrollWhenReady(attempts + 1), 200);
+			}
+		};
+		findAndScrollWhenReady();
+	}, [archiveMonthIndex]);
+
 	const handleSearchSubmit = (event: React.FormEvent) => {
 		event.preventDefault();
 		setSearchQuery(searchDraft.trim());
@@ -761,14 +866,20 @@ export default function NewsPage({ lang }: { lang: NewsPageLang }) {
 		setSearchQuery("");
 	};
 
-	const openTopicDialog = (topic: TopicArchiveCard) => {
+	const openTopicDialog = useCallback((topic: TopicArchiveCard) => {
 		setSelectedTopicPreview(topic);
 		setSelectedTopicId(topic.id);
-	};
+		const url = new URL(window.location.href);
+		url.searchParams.set("topic", topic.id);
+		window.history.pushState({ topicId: topic.id }, "", url.toString());
+	}, []);
 
-	const closeTopicDialog = () => {
+	const closeTopicDialog = useCallback(() => {
 		setSelectedTopicId(null);
-	};
+		const url = new URL(window.location.href);
+		url.searchParams.delete("topic");
+		window.history.pushState({}, "", url.toString());
+	}, []);
 
 	const archiveEmpty = !isMonthIndexLoading && !isMonthIndexError && (archiveMonthIndex?.length ?? 0) === 0;
 
