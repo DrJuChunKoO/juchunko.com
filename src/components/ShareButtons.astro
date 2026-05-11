@@ -1,0 +1,101 @@
+---
+import { type Lang } from "@/i18n/ui";
+import { useTranslations } from "@/i18n/utils";
+import TablerBrandFacebook from "@/components/icon/TablerBrandFacebook.astro";
+import TablerBrandX from "@/components/icon/TablerBrandX.astro";
+import TablerBrandLine from "@/components/icon/TablerBrandLine.astro";
+import TablerBrandThreads from "@/components/icon/TablerBrandThreads.astro";
+import TablerLink from "@/components/icon/TablerLink.astro";
+
+interface Props {
+	title: string;
+	url: string;
+	lang: Lang;
+}
+
+const { title, url, lang } = Astro.props;
+const t = useTranslations(lang);
+const encodedUrl = encodeURIComponent(url);
+const encodedTitle = encodeURIComponent(title);
+
+const shareLinks = [
+	{
+		href: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
+		label: "Facebook",
+		Icon: TablerBrandFacebook,
+	},
+	{
+		href: `https://x.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`,
+		label: "X",
+		Icon: TablerBrandX,
+	},
+	{
+		href: `https://social-plugins.line.me/lineit/share?url=${encodedUrl}`,
+		label: "LINE",
+		Icon: TablerBrandLine,
+	},
+	{
+		href: `https://www.threads.net/intent/post?text=${encodedTitle}%0A${encodedUrl}`,
+		label: "Threads",
+		Icon: TablerBrandThreads,
+	},
+] as const;
+---
+
+<div class="mx-auto mt-16 max-w-3xl border-t-2 border-black/5 pt-6 dark:border-white/5">
+	<p class="mb-3 text-sm font-semibold tracking-tight text-gray-500 dark:text-gray-400">{t("post.share")}</p>
+	<div class="grid grid-cols-3 gap-3 md:flex md:flex-wrap">
+		{
+			shareLinks.map(({ href, label, Icon }) => (
+				<a
+					href={href}
+					target="_blank"
+					rel="noopener noreferrer"
+					aria-label={label}
+					class="inline-flex md:w-20 flex-col items-center gap-1.5 rounded-xl bg-secondary px-2 py-3 text-secondary-foreground transition-all hover:scale-105 hover:bg-accent hover:text-accent-foreground hover:shadow-sm"
+				>
+					<Icon class="size-6" />
+					<span class="text-xs font-medium">{label}</span>
+				</a>
+			))
+		}
+		<button
+			type="button"
+			id="copy-link-btn"
+			data-copied-text={t("post.share.copied")}
+			class="inline-flex md:w-20 cursor-pointer flex-col items-center gap-1.5 rounded-xl bg-secondary px-2 py-3 text-secondary-foreground transition-all hover:scale-105 hover:bg-accent hover:text-accent-foreground hover:shadow-sm"
+		>
+			<span id="copy-link-icon">
+				<TablerLink class="size-6" />
+			</span>
+			<span id="copy-link-label" class="text-xs font-medium">{t("post.share.copy")}</span>
+		</button>
+	</div>
+</div>
+
+<script>
+	const btn = document.getElementById("copy-link-btn");
+	const label = document.getElementById("copy-link-label");
+	const icon = document.getElementById("copy-link-icon");
+	const originalText = label?.textContent ?? "";
+	const copiedText = btn?.dataset.copiedText ?? "Copied";
+	const checkSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" class="size-6"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m5 12l5 5l10-10"/></svg>';
+	let originalSvg = icon?.innerHTML ?? "";
+	let timeout: ReturnType<typeof setTimeout> | null = null;
+
+	btn?.addEventListener("click", async () => {
+		try {
+			await navigator.clipboard.writeText(window.location.href);
+			originalSvg = icon?.innerHTML ?? originalSvg;
+			if (icon) icon.innerHTML = checkSvg;
+			if (label) label.textContent = copiedText;
+			if (timeout) clearTimeout(timeout);
+			timeout = setTimeout(() => {
+				if (icon) icon.innerHTML = originalSvg;
+				if (label) label.textContent = originalText;
+			}, 1500);
+		} catch {
+			// Clipboard API not available, do nothing
+		}
+	});
+</script>

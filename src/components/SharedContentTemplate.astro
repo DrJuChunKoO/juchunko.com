@@ -4,6 +4,7 @@ import PageLayout from "@/layouts/PageLayout.astro";
 import { render } from "astro:content";
 import { getLangFromUrl, useTranslations } from "src/i18n/utils";
 import CardLink from "@/components/CardLink.astro";
+import ShareButtons from "@/components/ShareButtons.astro";
 import { contentIdMatchesLang } from "@/lib/content";
 
 export type CategoryKey = "acts" | "manuals";
@@ -129,7 +130,14 @@ const definedTermSetSchema =
 		: null;
 ---
 
-<PageLayout post={post} description={description} type="article" publishedTime={post.data.date ? post.data.date.toISOString() : undefined} articleSection={articleSection} articleTags={articleTags.length > 0 ? articleTags : undefined}>
+<PageLayout
+	post={post}
+	description={description}
+	type="article"
+	publishedTime={post.data.date ? post.data.date.toISOString() : undefined}
+	articleSection={articleSection}
+	articleTags={articleTags.length > 0 ? articleTags : undefined}
+>
 	{articleSchema && <script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />}
 	{legalDocSchema && <script type="application/ld+json" set:html={JSON.stringify(legalDocSchema)} />}
 	{definedTermSetSchema && <script type="application/ld+json" set:html={JSON.stringify(definedTermSetSchema)} />}
@@ -141,6 +149,8 @@ const definedTermSetSchema =
 		{categoryKey && <p class="font-medium tracking-tight text-gray-500 opacity-75 dark:text-gray-400">{t(`cat.${categoryKey}`)}</p>}
 		<Content />
 	</article>
+
+	<ShareButtons title={post.data.title} url={Astro.url.href} lang={lang} />
 
 	{
 		(prevPost || nextPost) && (
