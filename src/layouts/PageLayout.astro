@@ -7,6 +7,7 @@ import { getLangFromUrl, useTranslations } from "../i18n/utils";
 import type { CollectionEntry } from "astro:content";
 import Agent from "@/components/agent/Agent";
 import { cn } from "@/lib/utils";
+import { getPageTitles } from "@/lib/page-title";
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
@@ -23,14 +24,15 @@ export interface Props {
 }
 const currentPath = Astro.url.pathname;
 const { post, title, description, image, type, publishedTime, articleSection, articleTags } = Astro.props;
-const pageTitle = title || (post?.data.title ? `${post.data.title} | ${t("site.title")}` : t("site.title"));
+const { documentTitle, socialTitle } = getPageTitles({ title, postTitle: post?.data.title, siteTitle: t("site.title") });
 const pageDescription = description || post?.data.description || t("home.description");
 const pageImage = image || post?.data.image || "/favicon.png";
 ---
 
 <Layout>
 	<BaseHead
-		title={pageTitle}
+		title={documentTitle}
+		socialTitle={socialTitle}
 		description={pageDescription}
 		image={pageImage}
 		url={Astro.url.href}
