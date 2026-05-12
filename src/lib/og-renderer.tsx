@@ -18,31 +18,31 @@ export async function customRenderer({ title, description, pathname }: RenderFun
 				fontFamily: "'TikTok Sans', 'Noto Sans TC', sans-serif",
 				alignItems: "center",
 				justifyContent: "center",
-				backgroundColor: "#F3F4F6", // gray-100
-				backgroundImage: "linear-gradient(to bottom right, #E0F2FE,  #F0F9FF)", // sky-100 to sky-50
+				backgroundColor: "#F3F4F6",
+				backgroundImage: "linear-gradient(135deg, #E0F2FE 0%, #F8FBFF 62%, #EFF6FF 100%)",
 			}}
 		>
 			<div
 				style={{
 					display: "flex",
 					flexDirection: "column",
-					width: "90%",
-					height: "80%",
+					width: "86%",
+					height: "76%",
 					backgroundColor: "white",
-					borderRadius: "24px",
-					boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)", // shadow-xl
-					padding: "40px 60px",
+					borderRadius: "26px",
+					boxShadow: "0 24px 48px -20px rgba(15, 23, 42, 0.22)",
+					padding: "52px 66px 42px",
 					position: "relative",
 				}}
 			>
 				{/* Header: Logo & Site Name */}
-				<div style={{ display: "flex", alignItems: "center", marginBottom: "24px" }}>
-					<img src={logoBase64} width={32} height={32} style={{ borderRadius: "4px", marginRight: "16px" }} />
+				<div style={{ display: "flex", alignItems: "center", marginBottom: "30px" }}>
+					<img src={logoBase64} width={32} height={32} style={{ borderRadius: "6px", marginRight: "16px" }} />
 					<span
 						style={{
-							fontSize: "24px",
+							fontSize: "23px",
 							fontWeight: 700,
-							color: "#6B7280", // gray-500
+							color: "#6B7280",
 							letterSpacing: "0.05em",
 						}}
 					>
@@ -54,10 +54,10 @@ export async function customRenderer({ title, description, pathname }: RenderFun
 				<div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center" }}>
 					<h1
 						style={{
-							fontSize: "64px",
+							fontSize: "58px",
 							fontWeight: 700,
-							color: "#111827", // gray-900
-							marginBottom: "16px",
+							color: "#111827",
+							marginBottom: "18px",
 							lineHeight: 1.1,
 							letterSpacing: "-0.025em",
 						}}
@@ -68,8 +68,8 @@ export async function customRenderer({ title, description, pathname }: RenderFun
 					{description && (
 						<p
 							style={{
-								fontSize: "36px",
-								color: "#4B5563", // gray-600
+								fontSize: "32px",
+								color: "#4B5563",
 								lineHeight: 1.5,
 								lineClamp: 3,
 								display: "block",
@@ -84,9 +84,9 @@ export async function customRenderer({ title, description, pathname }: RenderFun
 				<div style={{ display: "flex", justifyContent: "center", alignItems: "center", marginTop: "24px" }}>
 					<span
 						style={{
-							fontSize: "24px",
+							fontSize: "22px",
 							fontWeight: 600,
-							color: "#3B82F6", // blue-500
+							color: "#3B82F6",
 							textTransform: "uppercase",
 							letterSpacing: "0.1em",
 						}}
