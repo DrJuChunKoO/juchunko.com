@@ -7,6 +7,7 @@ emoji: "🏛️"
 
 import Cards from "@/components/Cards.astro";
 import Card from "@/components/Card.astro";
+import NewsTopicEmbed from "@/components/NewsTopicEmbed.astro";
 import { BookOpenText, BotMessageSquare, Scale } from "lucide-react";
 
 # 國會改革事實專區
@@ -32,6 +33,8 @@ import { BookOpenText, BotMessageSquare, Scale } from "lucide-react";
 		<Scale strokeWidth={1} slot="icon" />
 	</Card>
 </Cards>
+
+<NewsTopicEmbed topicId="43415510-1fc4-4aee-bb48-4f762571d222" lang="zh-TW" limit={5} heading="相關新聞" />
 
 ## Q&A
 

@@ -8,6 +8,7 @@ status: "Amendment passed first reading; general inquiry called for Executive Yu
 
 import Cards from "@/components/Cards.astro";
 import Card from "@/components/Card.astro";
+import NewsTopicEmbed from "@/components/NewsTopicEmbed.astro";
 import { Signal, AlertOctagon, Rocket, FileText } from "lucide-react";
 import { YouTube } from "@astro-community/astro-embed-youtube";
 
@@ -95,6 +96,8 @@ import { YouTube } from "@astro-community/astro-embed-youtube";
 		backup, but a structural upgrade to communications and operational efficiency.
 	</Card>
 </Cards>
+
+<NewsTopicEmbed topicId="d2bc6e45-d344-4e7b-a258-d0addf2807ec" lang="en" limit={5} heading="Related News" />
 
 ## Timeline
 

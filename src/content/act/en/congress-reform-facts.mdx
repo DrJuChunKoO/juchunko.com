@@ -7,6 +7,7 @@ emoji: "🏛️"
 
 import Cards from "@/components/Cards.astro";
 import Card from "@/components/Card.astro";
+import NewsTopicEmbed from "@/components/NewsTopicEmbed.astro";
 import { BookOpenText, BotMessageSquare, Scale } from "lucide-react";
 
 # Congress Reform Facts
@@ -29,6 +30,8 @@ import { BookOpenText, BotMessageSquare, Scale } from "lucide-react";
 		<Scale slot="icon" />
 	</Card>
 </Cards>
+
+<NewsTopicEmbed topicId="43415510-1fc4-4aee-bb48-4f762571d222" lang="en" limit={5} heading="Related News" />
 
 ## Q&A
 

@@ -8,6 +8,7 @@ status: "修正草案一讀付委，總質詢要求行政院支持開放國外�
 
 import Cards from "@/components/Cards.astro";
 import Card from "@/components/Card.astro";
+import NewsTopicEmbed from "@/components/NewsTopicEmbed.astro";
 import { Signal, AlertOctagon, Rocket, FileText } from "lucide-react";
 import { YouTube } from "@astro-community/astro-embed-youtube";
 
@@ -85,6 +86,8 @@ import { YouTube } from "@astro-community/astro-embed-youtube";
 		**急迫應用**：航空業者已加速導入 Starlink 等低軌衛星服務，證明衛星連線不只是備援，而是通訊體驗與營運效率的結構性升級。
 	</Card>
 </Cards>
+
+<NewsTopicEmbed topicId="d2bc6e45-d344-4e7b-a258-d0addf2807ec" lang="zh-TW" limit={5} heading="相關新聞" />
 
 ## 推動時間軸 (Timeline)
 
