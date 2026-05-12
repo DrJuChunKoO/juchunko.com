@@ -1,0 +1,11 @@
+---
+import NewsTopicEmbedClient from "./NewsTopicEmbedClient";
+
+const { topicId, lang = "zh-TW", limit = 5, heading, showSummary = true } = Astro.props;
+
+if (!topicId) {
+	throw new Error("NewsTopicEmbed requires a topicId prop.");
+}
+---
+
+<NewsTopicEmbedClient topicId={topicId} lang={lang} limit={limit} heading={heading} showSummary={showSummary} client:load />
