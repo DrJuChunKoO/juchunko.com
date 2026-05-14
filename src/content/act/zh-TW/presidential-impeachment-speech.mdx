@@ -8,6 +8,7 @@ status: "全院委員會審查發言"
 
 import Cards from "@/components/Cards.astro";
 import Card from "@/components/Card.astro";
+import NewsTopicEmbed from "@/components/NewsTopicEmbed.astro";
 import Timeline from "@/components/Timeline.astro";
 import TimelineItem from "@/components/TimelineItem.astro";
 import { FileText, Scale, Satellite, Bot, Car, Zap } from "lucide-react";
@@ -55,6 +56,8 @@ import { YouTube } from "@astro-community/astro-embed-youtube";
 		**相關議題**：發言中批評能源政策意識形態化，主張能源選項應回到國安、產業與健康。
 	</Card>
 </Cards>
+
+<NewsTopicEmbed topicId="ff958649-8b4a-468e-b32d-e2bee1ef21a4" lang="zh-TW" limit={5} heading="相關新聞" />
 
 <div className="mt-2">
 	<YouTube id="oiY2cHatSoE" title="對賴清德總統提出彈劾案全院委員會發言" />

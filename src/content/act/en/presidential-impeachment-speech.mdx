@@ -8,6 +8,7 @@ status: "Speech before the Committee of the Whole"
 
 import Cards from "@/components/Cards.astro";
 import Card from "@/components/Card.astro";
+import NewsTopicEmbed from "@/components/NewsTopicEmbed.astro";
 import Timeline from "@/components/Timeline.astro";
 import TimelineItem from "@/components/TimelineItem.astro";
 import { FileText, Scale, Satellite, Bot, Car, Zap } from "lucide-react";
@@ -57,6 +58,8 @@ Legislator Ju-Chun Ko spoke before the Legislative Yuan's Committee of the Whole
 		needs.
 	</Card>
 </Cards>
+
+<NewsTopicEmbed topicId="ff958649-8b4a-468e-b32d-e2bee1ef21a4" lang="en" limit={5} heading="Related News" />
 
 <div className="mt-2">
 	<YouTube id="oiY2cHatSoE" title="Committee of the Whole speech on the proposed presidential impeachment" />
