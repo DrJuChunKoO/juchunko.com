@@ -10,6 +10,8 @@ status: "Executive Yuan promised a one-month review; MOTC has started R157 and R
 import Cards from "@/components/Cards.astro";
 import Card from "@/components/Card.astro";
 import NewsTopicEmbed from "@/components/NewsTopicEmbed.astro";
+import Timeline from "@/components/Timeline.astro";
+import TimelineItem from "@/components/TimelineItem.astro";
 import { BadgeCheck, FileCheck, MapPin, Scale, Zap } from "lucide-react";
 import { YouTube } from "@astro-community/astro-embed-youtube";
 
@@ -57,77 +59,56 @@ import { YouTube } from "@astro-community/astro-embed-youtube";
 
 ## Timeline
 
-### 2026
+<Timeline>
+	<TimelineItem date="2026.05.12" title="[Press Release] Ko uses a brick phone to criticize outdated rules and calls for AI vouchers and autonomous-driving deregulation">
+		Legislator JU CHUN KO's office issued a press release stating that the AI cabinet cannot remain a slogan. From autonomous driving regulation and data governance to AI access and low-earth-orbit satellite services, the Executive Yuan should provide concrete progress so people in Taiwan can actually use and benefit from technology.
+	</TimelineItem>
+	<TimelineItem date="2026.05.12" title="[General Inquiry] Demand to accelerate autonomous driving regulation">
+		Legislator JU CHUN KO compared Taiwan's outdated vehicle regulations to forcing everyone to use a 1980s brick phone instead of a modern smartphone. He pointed out that UNECE R79, adopted internationally in 1988, only became fully mandatory for all vehicle types in Taiwan in 2025. If Taiwan keeps moving at this pace on R171 and R157, people in Taiwan will use advanced transportation technologies 7 to 10 years later than other countries.
 
-- **2026.05.12**
-  **[Press Release] Ko uses a brick phone to criticize outdated rules and calls for AI vouchers and autonomous-driving deregulation**
-  Legislator JU CHUN KO's office issued a press release stating that the AI cabinet cannot remain a slogan. From autonomous driving regulation and data governance to AI access and low-earth-orbit satellite services, the Executive Yuan should provide concrete progress so people in Taiwan can actually use and benefit from technology.
+    	<YouTube id="Ajx6DIClNT4" title="General Inquiry: Accelerating autonomous driving regulation" />
 
-- **2026.05.12**
-  **[General Inquiry] Demand to accelerate autonomous driving regulation**
-  Legislator JU CHUN KO compared Taiwan's outdated vehicle regulations to forcing everyone to use a 1980s brick phone instead of a modern smartphone. He pointed out that UNECE R79, adopted internationally in 1988, only became fully mandatory for all vehicle types in Taiwan in 2025. If Taiwan keeps moving at this pace on R171 and R157, people in Taiwan will use advanced transportation technologies 7 to 10 years later than other countries.
+    	![Legislator JU CHUN KO holds a brick phone during a Legislative Yuan general inquiry to call for autonomous driving regulatory reform](/image/20260512-Brickphone.jpeg)
+    </TimelineItem>
+    <TimelineItem date="2026.05.12" title="[Executive Yuan Response] One-month review promised">
+    	Premier Cho Jung-tai responded that the Executive Yuan takes the proposal seriously and will ask the Ministry of Transportation and Communications to organize all concrete information currently held by the government, coordinate with Legislator Ko's office, and provide study results within one month on RDW recognition and an FMVSS dual-track system.
+    </TimelineItem>
+    <TimelineItem date="2026.05.11" title="[MOTC Written Reply] R157 and R171 draft work has started">
+    	MOTC stated that VSCC completed draft discussions for the latest UN R157 00 series revision (R157 00-S6) on March 17, 2026, and expects stakeholder communication before the end of May. Drafting for R157 01 and later revisions has also begun. UN R171 technical discussions were convened on March 17, with another meeting expected in mid-May to discuss draft revisions and new-vehicle implementation timing.
+    </TimelineItem>
+    <TimelineItem date="2025.11.25" title="[General Inquiry] Call to allow FSD public-road testing">
+    	Legislator JU CHUN KO stated during a Legislative Yuan policy inquiry that global autonomous driving technology has matured and Taiwan should not remain bound by outdated 2018 rules. He urged the Executive Yuan to create an inter-ministerial platform and study allowing Full Self-Driving (FSD) public-road testing so people in Taiwan do not become "third-class citizens in transportation technology."
 
-  <YouTube id="Ajx6DIClNT4" title="General Inquiry: Accelerating autonomous driving regulation" />
+    	<YouTube id="40H6xqQZOBs" params="start=538" title="General Inquiry Video" />
+    </TimelineItem>
+    <TimelineItem date="2025.11.12" title="[International Progress] FSD entered Korea">
+    	Korea adopted FMVSS recognition when the Korea-U.S. FTA took effect in 2012 and officially allowed FSD to enter Korea on November 12, 2025. This demonstrates a practical path for Taiwan: self-certification and post-market oversight can replace slow article-by-article translation and pre-market review.
+    </TimelineItem>
+    <TimelineItem date="2025.10" title="[Facility Launch] Changhua ARTC Smart Vehicle Autonomous Driving Test Site">
+    	Built with a NT$1 billion investment from the Ministry of Economic Affairs, the site supports all-weather and full-speed testing and can simulate extreme conditions such as dense fog and heavy rain, providing an international-grade verification environment for Taiwan's autonomous driving industry.
+    </TimelineItem>
+    <TimelineItem date="2025.01.01" title="[Taiwan Progress] UN R79 03 series became mandatory for all vehicle types">
+    	MOTC says Taiwan began harmonizing UNECE R79 in 2006, but R79 03 only became mandatory for all new vehicles in 2025. The latest R79 04 series is scheduled for new vehicle types in 2028 and existing vehicle types in 2030.
+    </TimelineItem>
+    <TimelineItem date="2024.09" title="[International Regulation] UN R171 Part I adopted">
+    	UN R171 governs Driver Control Assistance Systems (DCAS) for Level 2 driver assistance. Legislator Ko warned that if Taiwan keeps its current pace, full implementation may lag other countries by more than seven years, while R171 Parts II and III still lack a clear review schedule.
+    </TimelineItem>
+    <TimelineItem date="2024.05.27" title="[Committee Review] Transportation technology regulatory stagnation">
+    	During committee review of the AI Basic Act, Legislator Ko raised serious concerns about the slow progress of amendments to the Unmanned Vehicle Technology Innovation Experimentation Act.
 
-  ![Legislator JU CHUN KO holds a brick phone during a Legislative Yuan general inquiry to call for autonomous driving regulatory reform](/image/20260512-Brickphone.jpeg)
+    	<YouTube id="6QaE1Skf4SU" title="Education and Culture Committee AI Basic Act Review Video" />
+    </TimelineItem>
+    <TimelineItem date="2021" title="[International Regulation] UN R157 on Automated Lane Keeping Systems announced">
+    	UN R157 governs Automated Lane Keeping Systems (ALKS) for Level 3 automated driving. Legislator Ko noted that if Taiwan only reaches full mandatory implementation in 2031, it would again be roughly a decade behind.
+    </TimelineItem>
+    <TimelineItem date="2019.02.25" title="[Facility Launch] Tainan Shalun Taiwan CAR Lab">
+    	Taiwan's first closed autonomous vehicle testing site opened, providing basic scenarios such as tunnels and pedestrian crossings.
+    </TimelineItem>
+    <TimelineItem date="2018.12.19" title="[Legislation] Unmanned Vehicle Technology Innovation Experimentation Act promulgated">
+    	The law established Taiwan's autonomous vehicle sandbox mechanism, but development has remained largely confined to experimental frameworks rather than public-road deployment and broader use.
+    </TimelineItem>
 
-- **2026.05.12**
-  **[Executive Yuan Response] One-month review promised**
-  Premier Cho Jung-tai responded that the Executive Yuan takes the proposal seriously and will ask the Ministry of Transportation and Communications to organize all concrete information currently held by the government, coordinate with Legislator Ko's office, and provide study results within one month on RDW recognition and an FMVSS dual-track system.
-
-- **2026.05.11**
-  **[MOTC Written Reply] R157 and R171 draft work has started**
-  MOTC stated that VSCC completed draft discussions for the latest UN R157 00 series revision (R157 00-S6) on March 17, 2026, and expects stakeholder communication before the end of May. Drafting for R157 01 and later revisions has also begun. UN R171 technical discussions were convened on March 17, with another meeting expected in mid-May to discuss draft revisions and new-vehicle implementation timing.
-
-### 2025
-
-- **2025.11.25**
-  **[General Inquiry] Call to allow FSD public-road testing**
-  Legislator JU CHUN KO stated during a Legislative Yuan policy inquiry that global autonomous driving technology has matured and Taiwan should not remain bound by outdated 2018 rules. He urged the Executive Yuan to create an inter-ministerial platform and study allowing Full Self-Driving (FSD) public-road testing so people in Taiwan do not become "third-class citizens in transportation technology."
-
-  <YouTube id="40H6xqQZOBs" params="start=538" title="General Inquiry Video" />
-
-- **2025.11.12**
-  **[International Progress] FSD entered Korea**
-  Korea adopted FMVSS recognition when the Korea-U.S. FTA took effect in 2012 and officially allowed FSD to enter Korea on November 12, 2025. This demonstrates a practical path for Taiwan: self-certification and post-market oversight can replace slow article-by-article translation and pre-market review.
-
-- **2025.10**
-  **[Facility Launch] Changhua ARTC Smart Vehicle Autonomous Driving Test Site**
-  Built with a NT$1 billion investment from the Ministry of Economic Affairs, the site supports all-weather and full-speed testing and can simulate extreme conditions such as dense fog and heavy rain, providing an international-grade verification environment for Taiwan's autonomous driving industry.
-
-- **2025.01.01**
-  **[Taiwan Progress] UN R79 03 series became mandatory for all vehicle types**
-  MOTC says Taiwan began harmonizing UNECE R79 in 2006, but R79 03 only became mandatory for all new vehicles in 2025. The latest R79 04 series is scheduled for new vehicle types in 2028 and existing vehicle types in 2030.
-
-### 2024
-
-- **2024.09**
-  **[International Regulation] UN R171 Part I adopted**
-  UN R171 governs Driver Control Assistance Systems (DCAS) for Level 2 driver assistance. Legislator Ko warned that if Taiwan keeps its current pace, full implementation may lag other countries by more than seven years, while R171 Parts II and III still lack a clear review schedule.
-
-- **2024.05.27**
-  **[Committee Review] Transportation technology regulatory stagnation**
-  During committee review of the AI Basic Act, Legislator Ko raised serious concerns about the slow progress of amendments to the Unmanned Vehicle Technology Innovation Experimentation Act.
-
-  <YouTube id="6QaE1Skf4SU" title="Education and Culture Committee AI Basic Act Review Video" />
-
-### 2021
-
-- **2021**
-  **[International Regulation] UN R157 on Automated Lane Keeping Systems announced**
-  UN R157 governs Automated Lane Keeping Systems (ALKS) for Level 3 automated driving. Legislator Ko noted that if Taiwan only reaches full mandatory implementation in 2031, it would again be roughly a decade behind.
-
-### 2019
-
-- **2019.02.25**
-  **[Facility Launch] Tainan Shalun Taiwan CAR Lab**
-  Taiwan's first closed autonomous vehicle testing site opened, providing basic scenarios such as tunnels and pedestrian crossings.
-
-### 2018
-
-- **2018.12.19**
-  **[Legislation] Unmanned Vehicle Technology Innovation Experimentation Act promulgated**
-  The law established Taiwan's autonomous vehicle sandbox mechanism, but development has remained largely confined to experimental frameworks rather than public-road deployment and broader use.
+</Timeline>
 
 ## Brick-Phone Regulation Is Holding Taiwan Back
 

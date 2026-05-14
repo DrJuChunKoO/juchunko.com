@@ -9,6 +9,8 @@ status: "Passed Third Reading on 2025/5/13"
 import Cards from "@/components/Cards.astro";
 import Card from "@/components/Card.astro";
 import NewsTopicEmbed from "@/components/NewsTopicEmbed.astro";
+import Timeline from "@/components/Timeline.astro";
+import TimelineItem from "@/components/TimelineItem.astro";
 import { Files, Scale } from "lucide-react";
 
 # Nuclear Act Reform Section
@@ -63,34 +65,85 @@ In short, this amendment merely addresses deficiencies in the old law, which com
 
 ## Timeline
 
-| Date       | Proposer/Party                  | Event Description                                                                                                                        |
-| ---------- | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| 2012/05/18 | Taiwan Solidarity Union         | Draft amendment to the Nuclear Reactor Facilities Control Act, first reading passed, sent to committee                                   |
-| 2012/09/18 | Chen Chieh-ju                   | Draft amendment to the Act, first reading passed, sent to committee                                                                      |
-| 2012/09/18 | Cheng Li-chun                   | Draft amendment to the Act, first reading passed, sent to committee                                                                      |
-| 2016/03/18 | Yao Wen-chih                    | Draft amendment to the Act, first reading passed, sent to committee                                                                      |
-| 2016/11/04 | Lu Sun-ling                     | Draft amendment to the Act, first reading passed, sent to committee                                                                      |
-| 2023/04/28 | Wu Yi-ting                      | Draft amendment to the Act, first reading passed, sent to committee                                                                      |
-| 2024/02/20 | Wang Hung-wei                   | Draft amendment to the Act, first reading passed, sent to committee                                                                      |
-| 2024/03/01 | Chiu Chen-chun                  | Draft amendment to the Act, first reading passed, sent to committee                                                                      |
-| 2024/03/15 | Su Ching-chuan                  | Draft amendment to the Act, first reading passed, sent to committee                                                                      |
-| 2024/05/03 | Weng Hsiao-ling                 | Draft amendment to the Act, first reading passed, sent to committee                                                                      |
-| 2024/07/10 | Ko Chih-en (Convener)           | First committee review                                                                                                                   |
-| 2024/07/12 | Taiwan People's Party           | Draft amendment to the Act, first reading passed, sent to committee                                                                      |
-| 2024/10/04 | Hsu Hsin-ying                   | Draft amendment to the Act, first reading passed, sent to committee                                                                      |
-| 2025/03/07 | Ko Ju-chun                      | Draft amendment to the Act, first reading passed, sent to committee                                                                      |
-| 2025/03/14 | Hsu Yu-chen                     | Draft amendment to the Act, first reading passed, sent to committee                                                                      |
-| 2025/03/14 | Yang Chiung-ying                | Draft amendment to the Act, first reading passed, sent to committee                                                                      |
-| 2025/03/19 | Ko Ju-chun (Convener)           | Public hearing on the Partial Amendments to the Nuclear Reactor Facilities Control Act                                                   |
-| 2025/03/31 | Ko Ju-chun (Convener)           | Second committee review                                                                                                                  |
-| 2025/04/18 | Lin Ssu-ming                    | Draft amendment to the Act, sent directly to second reading                                                                              |
-| 2025/04/25 | Huang Chien-hao                 | Draft amendment to the Act, sent directly to second reading                                                                              |
-| 2025/04/25 | Wang Yu-min                     | Draft amendment to the Act, sent directly to second reading                                                                              |
-| 2025/04/25 | Hsu Chiao-hsin                  | Draft amendment to the Act, sent directly to second reading                                                                              |
-| 2025/05/09 | Chang Chia-chun                 | Draft amendment to the Act, sent directly to second reading                                                                              |
-| 2025/05/09 | President of Legislative Yuan   | Convened party negotiations (fifth case), but due to repeated procedural statements by the DPP, substantive negotiations did not proceed |
-| 2025/05/12 | Education and Culture Committee | Party negotiations reached no consensus, bill left for the full legislative session                                                      |
-| 2025/05/13 | -                               | Third reading passed                                                                                                                     |
+<Timeline>
+	<TimelineItem date="2012/05/18" title="Taiwan Solidarity Union">
+		Draft amendment to the Nuclear Reactor Facilities Control Act, first reading passed, sent to committee.
+	</TimelineItem>
+	<TimelineItem date="2012/09/18" title="Chen Chieh-ju">
+		Draft amendment to the Act, first reading passed, sent to committee.
+	</TimelineItem>
+	<TimelineItem date="2012/09/18" title="Cheng Li-chun">
+		Draft amendment to the Act, first reading passed, sent to committee.
+	</TimelineItem>
+	<TimelineItem date="2016/03/18" title="Yao Wen-chih">
+		Draft amendment to the Act, first reading passed, sent to committee.
+	</TimelineItem>
+	<TimelineItem date="2016/11/04" title="Lu Sun-ling">
+		Draft amendment to the Act, first reading passed, sent to committee.
+	</TimelineItem>
+	<TimelineItem date="2023/04/28" title="Wu Yi-ting">
+		Draft amendment to the Act, first reading passed, sent to committee.
+	</TimelineItem>
+	<TimelineItem date="2024/02/20" title="Wang Hung-wei">
+		Draft amendment to the Act, first reading passed, sent to committee.
+	</TimelineItem>
+	<TimelineItem date="2024/03/01" title="Chiu Chen-chun">
+		Draft amendment to the Act, first reading passed, sent to committee.
+	</TimelineItem>
+	<TimelineItem date="2024/03/15" title="Su Ching-chuan">
+		Draft amendment to the Act, first reading passed, sent to committee.
+	</TimelineItem>
+	<TimelineItem date="2024/05/03" title="Weng Hsiao-ling">
+		Draft amendment to the Act, first reading passed, sent to committee.
+	</TimelineItem>
+	<TimelineItem date="2024/07/10" title="Ko Chih-en (Convener)">
+		First committee review.
+	</TimelineItem>
+	<TimelineItem date="2024/07/12" title="Taiwan People's Party">
+		Draft amendment to the Act, first reading passed, sent to committee.
+	</TimelineItem>
+	<TimelineItem date="2024/10/04" title="Hsu Hsin-ying">
+		Draft amendment to the Act, first reading passed, sent to committee.
+	</TimelineItem>
+	<TimelineItem date="2025/03/07" title="Ko Ju-chun">
+		Draft amendment to the Act, first reading passed, sent to committee.
+	</TimelineItem>
+	<TimelineItem date="2025/03/14" title="Hsu Yu-chen">
+		Draft amendment to the Act, first reading passed, sent to committee.
+	</TimelineItem>
+	<TimelineItem date="2025/03/14" title="Yang Chiung-ying">
+		Draft amendment to the Act, first reading passed, sent to committee.
+	</TimelineItem>
+	<TimelineItem date="2025/03/19" title="Ko Ju-chun (Convener)">
+		Public hearing on the Partial Amendments to the Nuclear Reactor Facilities Control Act.
+	</TimelineItem>
+	<TimelineItem date="2025/03/31" title="Ko Ju-chun (Convener)">
+		Second committee review.
+	</TimelineItem>
+	<TimelineItem date="2025/04/18" title="Lin Ssu-ming">
+		Draft amendment to the Act, sent directly to second reading.
+	</TimelineItem>
+	<TimelineItem date="2025/04/25" title="Huang Chien-hao">
+		Draft amendment to the Act, sent directly to second reading.
+	</TimelineItem>
+	<TimelineItem date="2025/04/25" title="Wang Yu-min">
+		Draft amendment to the Act, sent directly to second reading.
+	</TimelineItem>
+	<TimelineItem date="2025/04/25" title="Hsu Chiao-hsin">
+		Draft amendment to the Act, sent directly to second reading.
+	</TimelineItem>
+	<TimelineItem date="2025/05/09" title="Chang Chia-chun">
+		Draft amendment to the Act, sent directly to second reading.
+	</TimelineItem>
+	<TimelineItem date="2025/05/09" title="President of Legislative Yuan">
+		Convened party negotiations (fifth case), but due to repeated procedural statements by the DPP, substantive negotiations did not
+		proceed.
+	</TimelineItem>
+	<TimelineItem date="2025/05/12" title="Education and Culture Committee">
+		Party negotiations reached no consensus, bill left for the full legislative session.
+	</TimelineItem>
+	<TimelineItem date="2025/05/13" title="Third reading passed" />
+</Timeline>
 
 ## Public Hearing Summary
 

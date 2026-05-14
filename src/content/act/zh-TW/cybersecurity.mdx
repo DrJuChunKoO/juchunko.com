@@ -9,6 +9,8 @@ status: "修法研議與預算爭取中"
 import Cards from "@/components/Cards.astro";
 import Card from "@/components/Card.astro";
 import NewsTopicEmbed from "@/components/NewsTopicEmbed.astro";
+import Timeline from "@/components/Timeline.astro";
+import TimelineItem from "@/components/TimelineItem.astro";
 import { UserX, FileWarning, History } from "lucide-react";
 import { YouTube } from "@astro-community/astro-embed-youtube";
 
@@ -45,37 +47,31 @@ import { YouTube } from "@astro-community/astro-embed-youtube";
 
 ## 推動時間軸 (Timeline)
 
-### 2025
+<Timeline>
+	<TimelineItem date="2025.11.25" title="【總質詢】資安預算與數位人權">
+		葛如鈞委員於立法院施政總質詢指出，中小企業資安預算嚴重不足，且政府打詐措施恐侵害數位人權。要求行政院補足資安預算，並建立單一申訴窗口。
 
-- **2025.11.25**
-  **【總質詢】資安預算與數位人權**
-  葛如鈞委員於立法院施政總質詢指出，中小企業資安預算嚴重不足，且政府打詐措施恐侵害數位人權。要求行政院補足資安預算，並建立單一申訴窗口。
+    	<YouTube id="40H6xqQZOBs" params="start=718" title="總質詢影片" />
+    </TimelineItem>
+    <TimelineItem date="2025.11" title="【供應鏈攻擊】數位行銷公司遭駭">
+    	台灣數位行銷公司遭中國駭客組織 APT24 長期入侵，波及超過 1,000 個客戶網域，顯示供應鏈資安防護極其脆弱。
+    </TimelineItem>
+    <TimelineItem date="2025.06" title="【信任危機】Chrome 停止信任中華電信憑證">
+    	Google 宣布 Chrome 瀏覽器不再信任中華電信新簽發的商用憑證，重創國家級電信業者的資安信譽，波及政府機關與金融機構。
+    </TimelineItem>
+    <TimelineItem date="2025.03" title="【醫療資安】CrazyHunter 勒索軟體肆虐">
+    	專門鎖定台灣的勒索軟體攻擊馬偕醫院等多家醫學中心，衛福部定調為「系統性攻擊」，病人個資與醫療運作面臨重大威脅。
+    </TimelineItem>
+    <TimelineItem date="2024.03.19" title="【總質詢】AI 詐騙深偽影片質詢">
+    	葛如鈞委員於立法院播放兩段 AI 生成影片，請行政院長陳建仁辨別真偽，結果院長也無法分辨。藉此凸顯「眼見不一定為憑」的 AI 詐騙危機，要求政府拿出具體對策。
 
-  <YouTube id="40H6xqQZOBs" params="start=718" title="總質詢影片" />
+    	<YouTube id="bkoErhCsCrQ" title="AI 質詢影片" />
+    </TimelineItem>
+    <TimelineItem date="2024 全年" title="【警訊】亞太區網攻之冠">
+    	Check Point Research 報告指出，台灣是亞太地區遭受網路攻擊最頻繁的國家，平均每週遭受近 4,000 次攻擊。
+    </TimelineItem>
 
-- **2025.11**
-  **【供應鏈攻擊】數位行銷公司遭駭**
-  台灣數位行銷公司遭中國駭客組織 APT24 長期入侵，波及超過 1,000 個客戶網域，顯示供應鏈資安防護極其脆弱。
-
-- **2025.06**
-  **【信任危機】Chrome 停止信任中華電信憑證**
-  Google 宣布 Chrome 瀏覽器不再信任中華電信新簽發的商用憑證，重創國家級電信業者的資安信譽，波及政府機關與金融機構。
-
-- **2025.03**
-  **【醫療資安】CrazyHunter 勒索軟體肆虐**
-  專門鎖定台灣的勒索軟體攻擊馬偕醫院等多家醫學中心，衛福部定調為「系統性攻擊」，病人個資與醫療運作面臨重大威脅。
-
-### 2024
-
-- **2024.03.19**
-  **【總質詢】AI 詐騙深偽影片質詢**
-  葛如鈞委員於立法院播放兩段 AI 生成影片，請行政院長陳建仁辨別真偽，結果院長也無法分辨。藉此凸顯「眼見不一定為憑」的 AI 詐騙危機，要求政府拿出具體對策。
-
-  <YouTube id="bkoErhCsCrQ" title="AI 質詢影片" />
-
-- **2024 全年**
-  **【警訊】亞太區網攻之冠**
-  Check Point Research 報告指出，台灣是亞太地區遭受網路攻擊最頻繁的國家，平均每週遭受近 4,000 次攻擊。
+</Timeline>
 
 ## 網路空間的無聲戰爭
 

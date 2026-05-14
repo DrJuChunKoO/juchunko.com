@@ -9,6 +9,8 @@ status: "Libraries with AI approved by the Ministry of Education; Executive Yuan
 import Cards from "@/components/Cards.astro";
 import Card from "@/components/Card.astro";
 import NewsTopicEmbed from "@/components/NewsTopicEmbed.astro";
+import Timeline from "@/components/Timeline.astro";
+import TimelineItem from "@/components/TimelineItem.astro";
 import { Coins, GraduationCap } from "lucide-react";
 
 # AI Equity and AI Voucher Initiative
@@ -41,27 +43,33 @@ import { Coins, GraduationCap } from "lucide-react";
 
 ## Timeline
 
-### 2026
-
-- **2026.05.12**
-  **[General Inquiry] Request Executive Yuan review of AI vouchers**
-  Legislator JU CHUN KO stated that the functional gap between free and paid AI tools is growing. Without public intervention, AI will deepen education, income, and urban-rural divides. He asked the Executive Yuan to convene the Ministry of Education, Ministry of Digital Affairs, National Science and Technology Council, and other agencies to study an "AI voucher," "digital voucher," or similar program modeled on Taiwan's culture voucher.
-
-- **2026.05.12**
-  **[Executive Yuan Response] Two-month review of integrated payment options**
-  Premier Cho Jung-tai responded that the Executive Yuan will review integrated payment options within two months. This moves AI equity from a single-ministry policy into an inter-ministerial coordination issue.
-
-- **2026.05.07**
-  **[Media Summary] First pilot details for Libraries with AI released**
-  Media reports stated that the Ministry of Education's Libraries with AI program is expected to begin in Q4 2026 at three national libraries: the National Central Library, National Library of Public Information, and National Taiwan Library. Each library will initially provide five dedicated computers preinstalled with mainstream paid AI tools such as ChatGPT, Claude, and Gemini for library-card holders.
-
-- **2026.04.30**
-  **[Policy Progress] Ministry of Education approved Libraries with AI**
-  After Legislator Ko's continued advocacy, the Ministry of Education approved Libraries with AI, with paid AI access expected to begin in affiliated national libraries in Q4 2026 as the first step toward AI equity.
-
-- **2026.04.01**
-  **[Education Committee Inquiry] Proposal for Libraries with AI**
-  In the Education and Culture Committee, Ko asked the Ministry of Education to deploy AI resources in affiliated libraries first, turning public libraries into frontline infrastructure for digital equity and technology access. Minister Cheng Ying-yao called the proposal "professional and well-intentioned" and committed to further study and a written assessment within one month.
+<Timeline>
+	<TimelineItem date="2026.05.12" title="[General Inquiry] Request Executive Yuan review of AI vouchers">
+		Legislator JU CHUN KO stated that the functional gap between free and paid AI tools is growing. Without public intervention, AI will
+		deepen education, income, and urban-rural divides. He asked the Executive Yuan to convene the Ministry of Education, Ministry of Digital
+		Affairs, National Science and Technology Council, and other agencies to study an "AI voucher," "digital voucher," or similar program
+		modeled on Taiwan's culture voucher.
+	</TimelineItem>
+	<TimelineItem date="2026.05.12" title="[Executive Yuan Response] Two-month review of integrated payment options">
+		Premier Cho Jung-tai responded that the Executive Yuan will review integrated payment options within two months. This moves AI equity
+		from a single-ministry policy into an inter-ministerial coordination issue.
+	</TimelineItem>
+	<TimelineItem date="2026.05.07" title="[Media Summary] First pilot details for Libraries with AI released">
+		Media reports stated that the Ministry of Education's Libraries with AI program is expected to begin in Q4 2026 at three national
+		libraries: the National Central Library, National Library of Public Information, and National Taiwan Library. Each library will
+		initially provide five dedicated computers preinstalled with mainstream paid AI tools such as ChatGPT, Claude, and Gemini for
+		library-card holders.
+	</TimelineItem>
+	<TimelineItem date="2026.04.30" title="[Policy Progress] Ministry of Education approved Libraries with AI">
+		After Legislator Ko's continued advocacy, the Ministry of Education approved Libraries with AI, with paid AI access expected to begin in
+		affiliated national libraries in Q4 2026 as the first step toward AI equity.
+	</TimelineItem>
+	<TimelineItem date="2026.04.01" title="[Education Committee Inquiry] Proposal for Libraries with AI">
+		In the Education and Culture Committee, Ko asked the Ministry of Education to deploy AI resources in affiliated libraries first, turning
+		public libraries into frontline infrastructure for digital equity and technology access. Minister Cheng Ying-yao called the proposal
+		"professional and well-intentioned" and committed to further study and a written assessment within one month.
+	</TimelineItem>
+</Timeline>
 
 ## Why AI Equity Is a Public Policy Issue
 

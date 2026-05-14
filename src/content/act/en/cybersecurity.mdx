@@ -9,6 +9,8 @@ status: "Legislative Deliberation and Budget Advocacy"
 import Cards from "@/components/Cards.astro";
 import Card from "@/components/Card.astro";
 import NewsTopicEmbed from "@/components/NewsTopicEmbed.astro";
+import Timeline from "@/components/Timeline.astro";
+import TimelineItem from "@/components/TimelineItem.astro";
 import { UserX, FileWarning, History } from "lucide-react";
 import { YouTube } from "@astro-community/astro-embed-youtube";
 
@@ -47,37 +49,31 @@ import { YouTube } from "@astro-community/astro-embed-youtube";
 
 ## Timeline
 
-### 2025
+<Timeline>
+	<TimelineItem date="2025.11.25" title="[General Inquiry] Cybersecurity Budget and Digital Human Rights">
+		Legislator JU CHUN KO pointed out during the Legislative Yuan's general policy inquiry that SME cybersecurity budgets are severely insufficient, and government anti-fraud measures may infringe on digital human rights. He demanded the Executive Yuan increase cybersecurity budgets and establish a single complaint window.
 
-- **2025.11.25**
-  **[General Inquiry] Cybersecurity Budget and Digital Human Rights**
-  Legislator JU CHUN KO pointed out during the Legislative Yuan's general policy inquiry that SME cybersecurity budgets are severely insufficient, and government anti-fraud measures may infringe on digital human rights. He demanded the Executive Yuan increase cybersecurity budgets and establish a single complaint window.
+    	<YouTube id="40H6xqQZOBs" params="start=718" title="General Inquiry Video" />
+    </TimelineItem>
+    <TimelineItem date="2025.11" title="[Supply Chain Attack] Digital Marketing Company Hacked">
+    	Taiwanese digital marketing companies were compromised long-term by Chinese hacking group APT24, affecting over 1,000 customer domains, exposing the extreme vulnerability of supply chain cybersecurity defenses.
+    </TimelineItem>
+    <TimelineItem date="2025.06" title="[Trust Crisis] Chrome Stops Trusting Chunghwa Telecom Certificates">
+    	Google announced that Chrome browser would no longer trust newly-issued commercial certificates from Chunghwa Telecom, severely damaging the national telecom operator's cybersecurity credibility and affecting government agencies and financial institutions.
+    </TimelineItem>
+    <TimelineItem date="2025.03" title="[Healthcare Security] CrazyHunter Ransomware Rampage">
+    	Ransomware specifically targeting Taiwan attacked MacKay Memorial Hospital and other medical centers. The Ministry of Health and Welfare characterized it as a "systematic attack," posing major threats to patient privacy and medical operations.
+    </TimelineItem>
+    <TimelineItem date="2024.03.19" title="[General Inquiry] AI Fraud Deepfake Video Inquiry">
+    	Legislator JU CHUN KO played two AI-generated videos in the Legislative Yuan and asked Premier Chen Chien-jen to identify which was real. The Premier could not distinguish them. This highlighted the AI fraud crisis of "seeing is no longer believing" and demanded concrete government countermeasures.
 
-  <YouTube id="40H6xqQZOBs" params="start=718" title="General Inquiry Video" />
+    	<YouTube id="bkoErhCsCrQ" title="AI Inquiry Video" />
+    </TimelineItem>
+    <TimelineItem date="2024 Full Year" title="[Warning] Asia-Pacific Cyberattack Leader">
+    	Check Point Research reported that Taiwan is the most frequently attacked country in the Asia-Pacific region, suffering an average of nearly 4,000 attacks per week.
+    </TimelineItem>
 
-- **2025.11**
-  **[Supply Chain Attack] Digital Marketing Company Hacked**
-  Taiwanese digital marketing companies were compromised long-term by Chinese hacking group APT24, affecting over 1,000 customer domains, exposing the extreme vulnerability of supply chain cybersecurity defenses.
-
-- **2025.06**
-  **[Trust Crisis] Chrome Stops Trusting Chunghwa Telecom Certificates**
-  Google announced that Chrome browser would no longer trust newly-issued commercial certificates from Chunghwa Telecom, severely damaging the national telecom operator's cybersecurity credibility and affecting government agencies and financial institutions.
-
-- **2025.03**
-  **[Healthcare Security] CrazyHunter Ransomware Rampage**
-  Ransomware specifically targeting Taiwan attacked MacKay Memorial Hospital and other medical centers. The Ministry of Health and Welfare characterized it as a "systematic attack," posing major threats to patient privacy and medical operations.
-
-### 2024
-
-- **2024.03.19**
-  **[General Inquiry] AI Fraud Deepfake Video Inquiry**
-  Legislator JU CHUN KO played two AI-generated videos in the Legislative Yuan and asked Premier Chen Chien-jen to identify which was real. The Premier could not distinguish them. This highlighted the AI fraud crisis of "seeing is no longer believing" and demanded concrete government countermeasures.
-
-  <YouTube id="bkoErhCsCrQ" title="AI Inquiry Video" />
-
-- **2024 Full Year**
-  **[Warning] Asia-Pacific Cyberattack Leader**
-  Check Point Research reported that Taiwan is the most frequently attacked country in the Asia-Pacific region, suffering an average of nearly 4,000 attacks per week.
+</Timeline>
 
 ## Key Issues & Q&A
 
