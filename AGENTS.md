@@ -15,6 +15,7 @@ This file consolidates the useful project rules from `.github/copilot-instructio
 - Use `.agents/skills/juchunko-article-editor/SKILL.md` when creating, editing, translating, localizing, or structurally improving MDX content under `src/content/{act,manual,fragment}`.
 - The article editor skill contains the project terminology dictionary, bilingual article rules, existing content map, reusable MDX component guidance, and topic gaps to consider before writing new pages.
 - When a task is primarily article/content work, read the skill before editing content and follow its bilingual `zh-TW`/`en` slug parity, frontmatter, component, and validation rules.
+- Chinese and English article versions must be content-equivalent; do not add sections, claims, resources, timeline items, or calls to action to only one language unless explicitly requested.
 
 ## Repository Snapshot
 

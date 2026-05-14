@@ -46,13 +46,15 @@ For `en`:
 
 Use clear public-policy English. Prefer concise paragraphs, active voice, and explain Taiwan-specific institutions on first mention.
 
+Both versions must be content-equivalent. Do not add facts, sections, caveats, examples, links, resources, timeline items, media, or calls to action to only one language unless the user explicitly requests an asymmetric page.
+
 Both versions must align on:
 
-Title meaning, date, status, facts, timeline sequence, resource links, image paths, YouTube IDs, and calls to action.
+Title meaning, date, status, headings, paragraph intent, claims, examples, facts, numbers, names, timeline sequence, resource links, image paths, YouTube IDs, and calls to action.
 
 Both versions may differ on:
 
-Idioms, sentence order, explanatory context for international readers, and institution expansions.
+Idioms, grammar, word choice, institution expansions, and short context needed to make the same fact understandable to that language's audience. These differences must not change the substantive content.
 
 ## Required Terminology Dictionary
 
@@ -256,4 +258,5 @@ All imported components are used, and unused imports are removed.
 `NewsTopicEmbed` uses the correct `lang` value for the file.
 Internal links are locale-prefixed: `/zh-TW/...` and `/en/...`.
 The English page is localized, not machine-literal.
+The Chinese and English pages are content-equivalent, with no one-sided sections, claims, resources, or timeline items.
 Potential topic gaps are considered before adding duplicate coverage.
