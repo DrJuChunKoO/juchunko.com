@@ -9,6 +9,13 @@ This file consolidates the useful project rules from `.github/copilot-instructio
 - No Cursor rules were found in `.cursorrules` or `.cursor/rules/`.
 - Use `pnpm` for package-manager commands in this repository.
 
+## Project Skills
+
+- Project-local agent skills live under `.agents/skills/<name>/SKILL.md`.
+- Use `.agents/skills/juchunko-article-editor/SKILL.md` when creating, editing, translating, localizing, or structurally improving MDX content under `src/content/{act,manual,fragment}`.
+- The article editor skill contains the project terminology dictionary, bilingual article rules, existing content map, reusable MDX component guidance, and topic gaps to consider before writing new pages.
+- When a task is primarily article/content work, read the skill before editing content and follow its bilingual `zh-TW`/`en` slug parity, frontmatter, component, and validation rules.
+
 ## Repository Snapshot
 
 - Stack: Astro 5, React 19 islands, TypeScript, Tailwind CSS 4, Hono, Cloudflare Workers.
