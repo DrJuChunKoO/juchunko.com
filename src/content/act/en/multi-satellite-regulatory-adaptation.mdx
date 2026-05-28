@@ -19,49 +19,24 @@ import { YouTube } from "@astro-community/astro-embed-youtube";
 
 Multi-satellite regulatory adaptation aims to open Taiwan's sky and build a diverse communications network of submarine cables, microwave links, and satellites. The goal is not to open the door for only one provider, but to give Taiwan more resilience options for disaster response, rural access, aviation, maritime communication, and national security.
 
-<div className="not-prose mb-6 rounded-lg border border-black/5 bg-gray-50 p-4 md:p-6 dark:border-white/10 dark:bg-white/5">
-	<div className="flex items-start gap-4">
-		<div className="rounded-lg border border-black/5 bg-white p-3 text-gray-900 dark:border-white/10 dark:bg-white/10 dark:text-white">
-			<Rocket className="h-6 w-6" />
-		</div>
-		<div className="flex-1">
-			<h3 className="mb-2 text-lg font-bold text-gray-900 dark:text-white">
-				Latest Progress: Amendment Passed First Reading; Executive Yuan Support Requested
-			</h3>
-			<div className="mb-4 leading-relaxed text-gray-600 dark:text-gray-300">
-				{
-					"Legislator Ju-Chun Ko proposed an amendment to Article 36 of the Telecommunications Management Act to let regulators approve foreign LEO satellite communication providers case by case when national security and public-interest concerns are addressed. The draft has passed first reading, and Ko has called on the Executive Yuan to support it."
-				}
-			</div>
-			<div className="flex flex-wrap gap-3">
-				<a
-					href="https://ipfs.juchunko.com/ipfs/bafybeifeioryvdxsgvg3tlgxqa42bq7osp5txsvgihwdzwainmc7dcs2ya/LCEWA01_110415_00040.pdf"
-					target="_blank"
-					className="group hover:outline-primary/50 flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-sm font-medium text-gray-700 no-underline transition-colors hover:bg-gray-100 hover:outline-2 hover:outline-offset-2 dark:bg-white/10 dark:text-gray-200 dark:hover:bg-white/15"
-				>
-					<FileText className="h-4 w-4" />
-					<span>Download Draft (PDF)</span>
-				</a>
-				<a
-					href="https://ipfs.juchunko.com/ipfs/bafybeifeioryvdxsgvg3tlgxqa42bq7osp5txsvgihwdzwainmc7dcs2ya/LCEWA01_110415_00040.doc"
-					target="_blank"
-					className="group hover:outline-primary/50 flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-sm font-medium text-gray-700 no-underline transition-colors hover:bg-gray-100 hover:outline-2 hover:outline-offset-2 dark:bg-white/10 dark:text-gray-200 dark:hover:bg-white/15"
-				>
-					<FileText className="h-4 w-4" />
-					<span>Download Draft (DOC)</span>
-				</a>
-				<a
-					href="https://ppg.ly.gov.tw/ppg/bills/202110181020000/details"
-					target="_blank"
-					className="group hover:outline-primary/50 ml-auto flex items-center gap-2 rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white no-underline transition-colors hover:bg-black hover:outline-2 hover:outline-offset-2 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100"
-				>
-					<Rocket className="h-4 w-4" />
-					<span>View Bill Details</span>
-				</a>
-			</div>
-		</div>
-	</div>
-</div>
+## Latest Legislative Progress
+
+Legislator Ju-Chun Ko proposed an amendment to Article 36 of the Telecommunications Management Act to let regulators approve foreign LEO satellite communication providers case by case when national security and public-interest concerns are addressed. The draft has passed first reading, and Ko has called on the Executive Yuan to support it.
+
+<Cards>
+	<Card title="Download Draft (PDF)" href="https://ipfs.juchunko.com/ipfs/bafybeifeioryvdxsgvg3tlgxqa42bq7osp5txsvgihwdzwainmc7dcs2ya/LCEWA01_110415_00040.pdf" target="_blank">
+		<FileText slot="icon" />
+		**PDF**: Gazette version of the Article 36 amendment draft.
+	</Card>
+	<Card title="Download Draft (DOC)" href="https://ipfs.juchunko.com/ipfs/bafybeifeioryvdxsgvg3tlgxqa42bq7osp5txsvgihwdzwainmc7dcs2ya/LCEWA01_110415_00040.doc" target="_blank">
+		<FileText slot="icon" />
+		**DOC**: Editable version of the Article 36 amendment draft.
+	</Card>
+	<Card title="View Bill Details" href="https://ppg.ly.gov.tw/ppg/bills/202110181020000/details" target="_blank">
+		<Rocket slot="icon" />
+		**Legislative Yuan bill**: View first-reading referral and bill information.
+	</Card>
+</Cards>
 
 <ActProgress
 	label="Current progress"

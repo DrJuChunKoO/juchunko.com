@@ -19,47 +19,24 @@ import { YouTube } from "@astro-community/astro-embed-youtube";
 
 多元衛星法規調適的目標，是打開臺灣的天空，建立「海纜 + 微波 + 衛星」的多元異質通訊網路。這不是只為單一業者開門，而是讓臺灣在災防、偏鄉、航空、海事與國安場景中有更多通訊韌性選項。
 
-<div className="not-prose mb-6 rounded-lg border border-black/5 bg-gray-50 p-4 md:p-6 dark:border-white/10 dark:bg-white/5">
-	<div className="flex items-start gap-4">
-		<div className="rounded-lg border border-black/5 bg-white p-3 text-gray-900 dark:border-white/10 dark:bg-white/10 dark:text-white">
-			<Rocket className="h-6 w-6" />
-		</div>
-		<div className="flex-1">
-			<h3 className="mb-2 text-lg font-bold text-gray-900 dark:text-white">最新立法進度：修正草案一讀付委，總質詢要求行政院支持</h3>
-			<div className="mb-4 leading-relaxed text-gray-600 dark:text-gray-300">
-				{
-					"葛如鈞委員提案修正《電信管理法》第 36 條，授權主管機關在兼顧國家安全與公共利益下，專案核准外國低軌衛星通訊服務商來臺營運，草案已正式送出一讀，並於總質詢要求行政院支持。"
-				}
-			</div>
-			<div className="flex flex-wrap gap-3">
-				<a
-					href="https://ipfs.juchunko.com/ipfs/bafybeifeioryvdxsgvg3tlgxqa42bq7osp5txsvgihwdzwainmc7dcs2ya/LCEWA01_110415_00040.pdf"
-					target="_blank"
-					className="group hover:outline-primary/50 flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-sm font-medium text-gray-700 no-underline transition-colors hover:bg-gray-100 hover:outline-2 hover:outline-offset-2 dark:bg-white/10 dark:text-gray-200 dark:hover:bg-white/15"
-				>
-					<FileText className="h-4 w-4" />
-					<span>下載修正草案 (PDF)</span>
-				</a>
-				<a
-					href="https://ipfs.juchunko.com/ipfs/bafybeifeioryvdxsgvg3tlgxqa42bq7osp5txsvgihwdzwainmc7dcs2ya/LCEWA01_110415_00040.doc"
-					target="_blank"
-					className="group hover:outline-primary/50 flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-sm font-medium text-gray-700 no-underline transition-colors hover:bg-gray-100 hover:outline-2 hover:outline-offset-2 dark:bg-white/10 dark:text-gray-200 dark:hover:bg-white/15"
-				>
-					<FileText className="h-4 w-4" />
-					<span>下載修正草案 (DOC)</span>
-				</a>
-				<a
-					href="https://ppg.ly.gov.tw/ppg/bills/202110181020000/details"
-					target="_blank"
-					className="group hover:outline-primary/50 ml-auto flex items-center gap-2 rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white no-underline transition-colors hover:bg-black hover:outline-2 hover:outline-offset-2 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100"
-				>
-					<Rocket className="h-4 w-4" />
-					<span>查看議案內容</span>
-				</a>
-			</div>
-		</div>
-	</div>
-</div>
+## 最新立法進度
+
+葛如鈞委員提案修正《電信管理法》第 36 條，授權主管機關在兼顧國家安全與公共利益下，專案核准外國低軌衛星通訊服務商來臺營運，草案已正式送出一讀，並於總質詢要求行政院支持。
+
+<Cards>
+	<Card title="下載修正草案（PDF）" href="https://ipfs.juchunko.com/ipfs/bafybeifeioryvdxsgvg3tlgxqa42bq7osp5txsvgihwdzwainmc7dcs2ya/LCEWA01_110415_00040.pdf" target="_blank">
+		<FileText slot="icon" />
+		**PDF**：電信管理法第 36 條修正草案公報版本。
+	</Card>
+	<Card title="下載修正草案（DOC）" href="https://ipfs.juchunko.com/ipfs/bafybeifeioryvdxsgvg3tlgxqa42bq7osp5txsvgihwdzwainmc7dcs2ya/LCEWA01_110415_00040.doc" target="_blank">
+		<FileText slot="icon" />
+		**DOC**：電信管理法第 36 條修正草案可編輯版本。
+	</Card>
+	<Card title="查看議案內容" href="https://ppg.ly.gov.tw/ppg/bills/202110181020000/details" target="_blank">
+		<Rocket slot="icon" />
+		**立法院議案**：查看修正草案一讀付委與議案資訊。
+	</Card>
+</Cards>
 
 <ActProgress label="目前進度" value={60} status="修正草案一讀付委，總質詢要求行政院支持專案核准機制。" />
 
