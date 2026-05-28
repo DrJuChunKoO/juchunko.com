@@ -6,6 +6,7 @@ import PhoneCallInterface from "./PhoneCallInterface";
 import AIAssistantWindow from "./AIAssistantWindow";
 import VoiceReaderWindow from "./VoiceReaderWindow";
 import { ui } from "src/i18n/ui";
+import { OPEN_AI_ASSISTANT_EVENT } from "./events";
 
 type SupportedLang = "en" | "zh-TW";
 
@@ -116,6 +117,11 @@ export default function Agent({ lang = "zh-TW" }: AgentProps = {}) {
 		setAiAssistantOpen(true);
 		setOpen(false); // 關閉手機選單
 	};
+
+	useEffect(() => {
+		window.addEventListener(OPEN_AI_ASSISTANT_EVENT, handleAIAssistant);
+		return () => window.removeEventListener(OPEN_AI_ASSISTANT_EVENT, handleAIAssistant);
+	});
 
 	const handleVoiceReader = () => {
 		// 關閉 AI 助手窗口，只允許一個小窗口同時開啟
