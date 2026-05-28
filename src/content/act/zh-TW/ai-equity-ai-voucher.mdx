@@ -8,6 +8,7 @@ status: "館館有 AI 已獲教育部核定，AI 幣由行政院承諾兩個月�
 
 import Cards from "@/components/Cards.astro";
 import Card from "@/components/Card.astro";
+import ActProgress from "@/components/ActProgress.astro";
 import NewsTopicEmbed from "@/components/NewsTopicEmbed.astro";
 import Timeline from "@/components/Timeline.astro";
 import TimelineItem from "@/components/TimelineItem.astro";
@@ -17,16 +18,7 @@ import { Coins, GraduationCap } from "lucide-react";
 
 讓付費版 AI 不再只屬於有資源者。這項倡議從圖書館公共近用、校園集體授權到 AI 幣補助，要求政府把 AI 視為教育、平權與公共近用政策，而不只是產業政策。
 
-<div className="not-prose my-6 rounded-lg border border-black/5 bg-gray-50 p-4 dark:border-white/10 dark:bg-white/5">
-	<div className="mb-2 flex items-center justify-between gap-3 text-sm font-medium text-gray-900 dark:text-white">
-		<span>目前進度</span>
-		<span className="text-gray-500 dark:text-gray-400">55%</span>
-	</div>
-	<div className="mb-2 h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700">
-		<div className="h-2 rounded-full bg-gray-900 dark:bg-white" style={{ width: "55%" }}></div>
-	</div>
-	<p className="m-0 text-sm leading-6 text-gray-500 dark:text-gray-400">館館有 AI 已獲教育部核定，AI 幣由行政院承諾兩個月內研議。</p>
-</div>
+<ActProgress label="目前進度" value={55} status="館館有 AI 已獲教育部核定，AI 幣由行政院承諾兩個月內研議。" />
 
 ## 為什麼 AI 平權是公共政策問題
 

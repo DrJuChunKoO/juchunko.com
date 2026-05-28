@@ -8,6 +8,7 @@ status: "修正草案一讀付委，總質詢要求行政院支持開放國外�
 
 import Cards from "@/components/Cards.astro";
 import Card from "@/components/Card.astro";
+import ActProgress from "@/components/ActProgress.astro";
 import NewsTopicEmbed from "@/components/NewsTopicEmbed.astro";
 import Timeline from "@/components/Timeline.astro";
 import TimelineItem from "@/components/TimelineItem.astro";
@@ -15,6 +16,8 @@ import { Signal, AlertOctagon, Rocket, FileText } from "lucide-react";
 import { YouTube } from "@astro-community/astro-embed-youtube";
 
 # 多元衛星法規調適
+
+多元衛星法規調適的目標，是打開臺灣的天空，建立「海纜 + 微波 + 衛星」的多元異質通訊網路。這不是只為單一業者開門，而是讓臺灣在災防、偏鄉、航空、海事與國安場景中有更多通訊韌性選項。
 
 <div className="not-prose mb-6 rounded-lg border border-black/5 bg-gray-50 p-4 md:p-6 dark:border-white/10 dark:bg-white/5">
 	<div className="flex items-start gap-4">
@@ -58,77 +61,7 @@ import { YouTube } from "@astro-community/astro-embed-youtube";
 	</div>
 </div>
 
-<div className="not-prose mb-8">
-	<div className="mb-2 flex items-center gap-2 text-xl font-bold text-gray-900 dark:text-white">多元衛星：打開臺灣的天空，打造通訊韌性的數位護盾</div>
-
-    <div className="mb-2 h-4 w-full rounded-full bg-gray-200 dark:bg-gray-700">
-        	<div className="h-4 rounded-full bg-gray-900 dark:bg-white" style={{ width: "60%" }}></div>
-    </div>
-    <p className="text-sm text-gray-500">目前進度：修正草案一讀付委，總質詢要求行政院支持專案核准機制 (60%)</p>
-
-</div>
-
-## 核心資源區 (Resource Hub)
-
-<Cards>
-	<Card title="電信管理法第 36 條" href="https://ppg.ly.gov.tw/ppg/bills/202110181020000/details" target="_blank">
-		<AlertOctagon slot="icon" />
-		**法規瓶頸**：外資持股限制（49%）與董事長國籍限制，阻礙國際低軌衛星業者落地臺灣；修法方向是建立兼顧國安與公共利益的專案核准機制。
-	</Card>
-	<Card title="日本 Starlink 直連手機" href="https://news.kddi.com/kddi/corporate/newsrelease/2024/04/10/7428.html" target="_blank">
-		<Signal slot="icon" />
-		**成功案例**：日本 KDDI 於 2024 年率先啟用，實現「只要看得到天空，就能收到訊號」。
-	</Card>
-	<Card title="台灣低軌衛星計畫" href="#" target="_blank">
-		<Rocket slot="icon" />
-		**國產進度**：國科會規劃 2027 年發射首顆自製低軌通訊衛星，但緩不濟急。
-	</Card>
-	<Card title="航空與全球低軌衛星需求" href="https://www.united.com/" target="_blank">
-		<Signal slot="icon" />
-		**急迫應用**：航空業者已加速導入 Starlink 等低軌衛星服務，證明衛星連線不只是備援，而是通訊體驗與營運效率的結構性升級。
-	</Card>
-</Cards>
-
-<NewsTopicEmbed topicId="d2bc6e45-d344-4e7b-a258-d0addf2807ec" lang="zh-TW" limit={5} heading="相關新聞" />
-
-## 推動時間軸 (Timeline)
-
-<Timeline>
-	<TimelineItem date="2026.05.12" title="【交通組總質詢】要求行政院支持《電信管理法》第 36 條修法">
-		葛如鈞委員指出，開放低軌衛星營運是臺灣通訊韌性與國家安全的必要工程，並要求行政院支持《電信管理法》第 36 條修法，在考量外國衛星通訊服務商對國家安全及公共利益無不利影響的前提下，授權主管機關得專案核准其向我國提供衛星通訊服務。
-	</TimelineItem>
-	<TimelineItem date="2026.05.12" title="【政策主張】打開臺灣的天空，讓多家衛星服務平等競爭">
-		葛委員強調，修法不是只為單一業者開門，而是讓世界上所有衛星通訊營運商都有平等機會服務臺灣。臺灣的衛星服務越多元，災防、偏鄉、航空、海事與國安通訊韌性就越有保障。
-	</TimelineItem>
-	<TimelineItem date="2026.05.12" title="【產業訊號】Starlink 仍有意願來臺提供服務">
-		針對「臺灣衛星商業市場較小，業者沒有意願來臺」的說法，葛委員於質詢中指出，這更像談判技巧；其辦公室也接獲產業轉達，Starlink 其實相當有意願來臺提供服務，並願意與各國政府溝通。
-	</TimelineItem>
-	<TimelineItem date="2026.05.12" title="【航空應用】低軌衛星已成結構性升級">
-		航空業者也表示修法具有急迫性與必要性。United Airlines 2026 年全年預計每天加裝超過 1 架 Starlink 飛機，事實證明速度快 7 倍、油耗影響降低 85%，這不是漸進式改良，而是通訊服務的結構性顛覆。
-	</TimelineItem>
-	<TimelineItem date="2025.12" title="【法案進度】電信法 36 條修正一讀付委">
-		葛如鈞委員提出之《電信管理法》第 36 條修正草案，主張放寬外資持股與國籍限制，正式經立法院院會一讀通過，交付交通委員會審查。
-
-    	[議案內容](https://ppg.ly.gov.tw/ppg/bills/202110181020000/details) | [公報下載](https://ipfs.juchunko.com/ipfs/bafybeifeioryvdxsgvg3tlgxqa42bq7osp5txsvgihwdzwainmc7dcs2ya/LCEWA01_110415_00040.pdf)
-    </TimelineItem>
-    <TimelineItem date="2025.11.25" title="【總質詢】要求打破通訊孤島">
-    	葛如鈞委員於交通組總質詢指出，臺灣 9 成網路依賴海纜，風險極高。要求行政院檢討《電信管理法》第 36 條，或比照日本模式採「專案許可」開放外國衛星服務。
-
-    	<YouTube id="40H6xqQZOBs" title="衛星通訊韌性質詢" />
-    </TimelineItem>
-    <TimelineItem date="2025.10" title="【質詢】低軌衛星通訊韌性">
-    	葛如鈞委員質詢數發部與 NCC，指出臺灣目前僅依賴 ST2 同步衛星 (新加坡主導) 作為備援，且 OneWeb 覆蓋量能不足，國家通訊韌性存在巨大缺口。
-
-    	<YouTube id="IzWs4YvcYKE" title="衛星通訊韌性質詢" />
-    </TimelineItem>
-    <TimelineItem date="2025.04" title="【國際動態】日本 KDDI 啟用 Starlink 直連">
-    	日本正式啟用 Starlink 直連手機服務，解決山區與離島通訊死角，為臺灣提供了極佳的借鏡。
-    </TimelineItem>
-    <TimelineItem date="2027 (預計)" title="【未來展望】台灣首顆自製低軌衛星">
-    	國科會預計發射第一顆臺灣自製的低軌通訊衛星 (B5G 計畫)，邁出國產太空通訊第一步。
-    </TimelineItem>
-
-</Timeline>
+<ActProgress label="目前進度" value={60} status="修正草案一讀付委，總質詢要求行政院支持專案核准機制。" />
 
 ## 衛星通訊的新時代
 
@@ -252,3 +185,65 @@ import { YouTube } from "@astro-community/astro-embed-youtube";
 天空是開放的，我們的法規不該自我封閉。
 
 支持葛如鈞委員的修法倡議，為台灣的通訊網路加裝一條來自太空的救生索，讓台灣永遠保持連線，永不孤島。
+
+## 核心資源區 (Resource Hub)
+
+<Cards>
+	<Card title="電信管理法第 36 條" href="https://ppg.ly.gov.tw/ppg/bills/202110181020000/details" target="_blank">
+		<AlertOctagon slot="icon" />
+		**法規瓶頸**：外資持股限制（49%）與董事長國籍限制，阻礙國際低軌衛星業者落地臺灣；修法方向是建立兼顧國安與公共利益的專案核准機制。
+	</Card>
+	<Card title="日本 Starlink 直連手機" href="https://news.kddi.com/kddi/corporate/newsrelease/2024/04/10/7428.html" target="_blank">
+		<Signal slot="icon" />
+		**成功案例**：日本 KDDI 於 2024 年率先啟用，實現「只要看得到天空，就能收到訊號」。
+	</Card>
+	<Card title="台灣低軌衛星計畫" href="#" target="_blank">
+		<Rocket slot="icon" />
+		**國產進度**：國科會規劃 2027 年發射首顆自製低軌通訊衛星，但緩不濟急。
+	</Card>
+	<Card title="航空與全球低軌衛星需求" href="https://www.united.com/" target="_blank">
+		<Signal slot="icon" />
+		**急迫應用**：航空業者已加速導入 Starlink 等低軌衛星服務，證明衛星連線不只是備援，而是通訊體驗與營運效率的結構性升級。
+	</Card>
+</Cards>
+
+<NewsTopicEmbed topicId="d2bc6e45-d344-4e7b-a258-d0addf2807ec" lang="zh-TW" limit={5} heading="相關新聞" />
+
+## 推動時間軸 (Timeline)
+
+<Timeline>
+	<TimelineItem date="2026.05.12" title="【交通組總質詢】要求行政院支持《電信管理法》第 36 條修法">
+		葛如鈞委員指出，開放低軌衛星營運是臺灣通訊韌性與國家安全的必要工程，並要求行政院支持《電信管理法》第 36 條修法，在考量外國衛星通訊服務商對國家安全及公共利益無不利影響的前提下，授權主管機關得專案核准其向我國提供衛星通訊服務。
+	</TimelineItem>
+	<TimelineItem date="2026.05.12" title="【政策主張】打開臺灣的天空，讓多家衛星服務平等競爭">
+		葛委員強調，修法不是只為單一業者開門，而是讓世界上所有衛星通訊營運商都有平等機會服務臺灣。臺灣的衛星服務越多元，災防、偏鄉、航空、海事與國安通訊韌性就越有保障。
+	</TimelineItem>
+	<TimelineItem date="2026.05.12" title="【產業訊號】Starlink 仍有意願來臺提供服務">
+		針對「臺灣衛星商業市場較小，業者沒有意願來臺」的說法，葛委員於質詢中指出，這更像談判技巧；其辦公室也接獲產業轉達，Starlink 其實相當有意願來臺提供服務，並願意與各國政府溝通。
+	</TimelineItem>
+	<TimelineItem date="2026.05.12" title="【航空應用】低軌衛星已成結構性升級">
+		航空業者也表示修法具有急迫性與必要性。United Airlines 2026 年全年預計每天加裝超過 1 架 Starlink 飛機，事實證明速度快 7 倍、油耗影響降低 85%，這不是漸進式改良，而是通訊服務的結構性顛覆。
+	</TimelineItem>
+	<TimelineItem date="2025.12" title="【法案進度】電信法 36 條修正一讀付委">
+		葛如鈞委員提出之《電信管理法》第 36 條修正草案，主張放寬外資持股與國籍限制，正式經立法院院會一讀通過，交付交通委員會審查。
+
+    	[議案內容](https://ppg.ly.gov.tw/ppg/bills/202110181020000/details) | [公報下載](https://ipfs.juchunko.com/ipfs/bafybeifeioryvdxsgvg3tlgxqa42bq7osp5txsvgihwdzwainmc7dcs2ya/LCEWA01_110415_00040.pdf)
+    </TimelineItem>
+    <TimelineItem date="2025.11.25" title="【總質詢】要求打破通訊孤島">
+    	葛如鈞委員於交通組總質詢指出，臺灣 9 成網路依賴海纜，風險極高。要求行政院檢討《電信管理法》第 36 條，或比照日本模式採「專案許可」開放外國衛星服務。
+
+    	<YouTube id="40H6xqQZOBs" title="衛星通訊韌性質詢" />
+    </TimelineItem>
+    <TimelineItem date="2025.10" title="【質詢】低軌衛星通訊韌性">
+    	葛如鈞委員質詢數發部與 NCC，指出臺灣目前僅依賴 ST2 同步衛星 (新加坡主導) 作為備援，且 OneWeb 覆蓋量能不足，國家通訊韌性存在巨大缺口。
+
+    	<YouTube id="IzWs4YvcYKE" title="衛星通訊韌性質詢" />
+    </TimelineItem>
+    <TimelineItem date="2025.04" title="【國際動態】日本 KDDI 啟用 Starlink 直連">
+    	日本正式啟用 Starlink 直連手機服務，解決山區與離島通訊死角，為臺灣提供了極佳的借鏡。
+    </TimelineItem>
+    <TimelineItem date="2027 (預計)" title="【未來展望】台灣首顆自製低軌衛星">
+    	國科會預計發射第一顆臺灣自製的低軌通訊衛星 (B5G 計畫)，邁出國產太空通訊第一步。
+    </TimelineItem>
+
+</Timeline>

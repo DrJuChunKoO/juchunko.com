@@ -9,6 +9,7 @@ status: "行政院承諾一個月內盤點研議，交通部已啟動 R157、R17
 
 import Cards from "@/components/Cards.astro";
 import Card from "@/components/Card.astro";
+import ActProgress from "@/components/ActProgress.astro";
 import NewsTopicEmbed from "@/components/NewsTopicEmbed.astro";
 import Timeline from "@/components/Timeline.astro";
 import TimelineItem from "@/components/TimelineItem.astro";
@@ -17,95 +18,9 @@ import { YouTube } from "@astro-community/astro-embed-youtube";
 
 # 自動駕駛落地倡議
 
-<div className="not-prose mb-8">
-	<div className="mb-2 flex items-center gap-2 text-xl font-bold text-gray-900 dark:text-white">自駕科技守護民眾生命安全，拒絕像「黑金剛」一樣原始的車輛法規</div>
+自駕科技可以守護民眾生命安全，但臺灣不能再用像「黑金剛」一樣原始的車輛法規，阻擋民眾使用最新交通科技。葛如鈞委員要求政府採認國際認證，並研議導入 FMVSS 自我認證雙軌制。
 
-    <div className="mb-2 h-4 w-full rounded-full bg-gray-200 dark:bg-gray-700">
-    	<div className="h-4 rounded-full bg-gray-900 dark:bg-white" style={{ width: "65%" }}></div>
-    </div>
-    <p className="text-sm text-gray-500">目前進度：行政院承諾一個月內盤點研議，交通部已啟動 R157、R171 調和與草案討論 (65%)</p>
-
-</div>
-
-## 核心資源區 (Resource Hub)
-
-<Cards>
-	<Card title="荷蘭 RDW 採認路徑" href="https://www.rdw.nl/" target="_blank">
-		<BadgeCheck slot="icon" />
-		**國際認證**：荷蘭交通管理局 RDW 已批准 Tesla FSD Supervised 可於高速公路使用；臺灣 VSCC 與 RDW 合作超過十年，具備採認基礎。
-	</Card>
-	<Card title="美國 FMVSS 自我認證制度" href="https://www.nhtsa.gov/laws-regulations/fmvss" target="_blank">
-		<FileCheck slot="icon" />
-		**制度解方**：參考韓國模式，採用 FMVSS 自我認證與上市後抽測，讓車輛科技不必卡在漫長翻譯與審查流程。
-	</Card>
-	<Card title="英國：2024 自動駕駛車輛法" href="https://www.legislation.gov.uk/ukpga/2024/10/enacted" target="_blank">
-		<Scale slot="icon" />
-		**責任典範**：明確界定責任歸屬，當車輛處於自駕模式時，由車廠或營運商承擔責任。
-	</Card>
-	<Card title="Tesla 安全報告" href="https://www.tesla.com/VehicleSafetyReport" target="_blank">
-		<Zap slot="icon" />
-		**安全數據**：自動輔助駕駛的核心價值，是用 AI 降低疲勞、分心與人為疏失造成的道路風險。
-	</Card>
-	<Card title="臺灣自駕測試場域地圖" href="https://www.artc.org.tw/" target="_blank">
-		<MapPin slot="icon" />
-		**測試基地**：包含臺南沙崙「臺灣智駕測試實驗室」及彰化 ARTC「智慧車電自駕車場域」。
-	</Card>
-</Cards>
-
-<NewsTopicEmbed topicId="61317b76-2009-4ac7-96a6-78d3ab1d5eb2" lang="zh-TW" limit={3} heading="相關新聞" />
-
-## 推動時間軸 (Timeline)
-
-<Timeline>
-	<TimelineItem date="2026.05.12" title="【新聞稿】葛如鈞拿「黑金剛」諷舊法規跟不上時代，要求政府發 AI 幣、鬆綁自駕科技">
-		葛如鈞委員辦公室發布新聞稿指出，AI 內閣不能停留在口號，從自動駕駛法規、資料治理、AI 平權到低軌衛星開放，行政院都應提出具體進度，讓臺灣人民真正用得到科技、受益於科技。
-	</TimelineItem>
-	<TimelineItem date="2026.05.12" title="【交通組總質詢】要求自動駕駛法規加速落地">
-		葛如鈞委員以「黑金剛」手機比喻落後車輛法規，指出 1988 年通過的 UNECE R79 到 2025 年才在臺灣全面強制施行；R171、R157 等更先進法規若仍照現行節奏導入，將讓臺灣民眾比其他國家晚 7 到 10 年使用先進交通科技。
-
-    	<YouTube id="Ajx6DIClNT4" title="交通組總質詢：自動駕駛法規加速落地" />
-
-    	![葛如鈞委員於立法院總質詢拿出黑金剛手機，要求政府鬆綁自動駕駛科技法規](/image/20260512-Brickphone.jpeg)
-    </TimelineItem>
-    <TimelineItem date="2026.05.12" title="【行政院回應】承諾一個月內盤點研議">
-    	行政院長卓榮泰於總質詢中回應，行政院非常重視委員意見，將要求交通部整理目前政府手上所有具體資料，與葛如鈞辦公室對接，並於一個月內針對 RDW 認證採認及 FMVSS 雙軌制提出研議結果。
-    </TimelineItem>
-    <TimelineItem date="2026.05.11" title="【交通部書面回覆】R157、R171 已啟動草案與利害關係人討論">
-    	交通部回覆指出，車安中心已於 2026 年 3 月 17 日完成 UN R157 00 系列最新修訂版草案討論，預計 5 月底前邀集利害關係人溝通；R157 01 系列後續修訂已展開草案研擬。UN R171 也已於 3 月 17 日召會討論技術內容，預計 5 月中旬前再召會研商修正草案與新車實施期程。
-    </TimelineItem>
-    <TimelineItem date="2025.11.25" title="【總質詢】要求開放 FSD 一般道路測試">
-    	葛如鈞委員於立法院施政總質詢指出，全球自駕技術已臻成熟，臺灣不應固守 2018 年的舊法規。要求行政院成立跨部會平台，研議開放 FSD（Full Self-Driving）進行一般道路測試，別讓臺灣人淪為「交通科技三等公民」。
-
-    	<YouTube id="40H6xqQZOBs" params="start=538" title="總質詢影片" />
-    </TimelineItem>
-    <TimelineItem date="2025.11.12" title="【國際進展】韓國正式讓 FSD 登陸">
-    	韓國早在 2012 年韓美 FTA 生效時採認 FMVSS，並於 2025 年 11 月 12 日正式讓 FSD 登陸韓國。這證明臺灣可參考「韓國模式」，以自我認證與上市後監理，取代冗長的逐條翻譯與事前審查。
-    </TimelineItem>
-    <TimelineItem date="2025.10" title="【場域啟用】彰化 ARTC 智慧車電自駕車場域">
-    	經濟部投入 10 億元建置，具備全天候、全速域測試能力，可模擬濃霧、豪雨等極端氣候，為臺灣自駕產業提供國際級驗證環境。
-    </TimelineItem>
-    <TimelineItem date="2025.01.01" title="【臺灣進度】UN R79 03 系列各型式車輛全面強制施行">
-    	交通部表示，臺灣自 2008 年起陸續調和 UNECE R79，但 R79 03 系列直到 2025 年才對各型式車輛新車全面強制施行；最新 R79 04 系列則預計 2028 年適用新型式、2030 年適用既有型式車輛新車。
-    </TimelineItem>
-    <TimelineItem date="2024.09" title="【國際法規】UN R171 第一部分通過">
-    	UN R171 規範 Level 2 駕駛人控制輔助系統（DCAS）。葛委員指出，若臺灣仍依現行節奏導入，全面強制施行恐落後其他國家 7 年以上；R171 第二、第三部分更尚未看見明確審查期程。
-    </TimelineItem>
-    <TimelineItem date="2024.05.27" title="【委員會審查】交通科技法規停滯">
-    	於委員會審查「AI 基本法」時，針對無人載具科技創新實驗條例修法進度緩慢提出嚴正關切。
-
-    	<YouTube id="6QaE1Skf4SU" title="教文委員會審查 AI 基本法影片" />
-    </TimelineItem>
-    <TimelineItem date="2021" title="【國際法規】UN R157 自動車道維持系統公告">
-    	UN R157 規範 Level 3 自動駕駛等級的自動車道維持系統（ALKS）。葛委員指出，若臺灣最快仍要到 2031 年才全面強制施行，等同再度落後國際約 10 年。
-    </TimelineItem>
-    <TimelineItem date="2019.02.25" title="【場域啟用】臺南沙崙臺灣智駕測試實驗室">
-    	臺灣首座封閉式自駕車測試場域啟用，提供隧道、行人穿越等基礎情境測試。
-    </TimelineItem>
-    <TimelineItem date="2018.12.19" title="【立法】無人載具科技創新實驗條例公布">
-    	臺灣自駕車發展的起點，確立了沙盒實驗機制，但也讓後續發展長期停留在實驗框架，難以真正進入一般道路與大規模應用。
-    </TimelineItem>
-
-</Timeline>
+<ActProgress label="目前進度" value={65} status="行政院承諾一個月內盤點研議，交通部已啟動 R157、R171 調和與草案討論。" />
 
 ## 黑金剛式法規，正在阻擋臺灣交通科技
 
@@ -199,3 +114,83 @@ Tesla 2024 安全報告也顯示，搭載 FSD（Full Self-Driving）全自動輔
 5. 公開說明讓臺灣民眾與國際同步使用先進交通科技的期程。
 
 自動駕駛不是科幻，而是正在全球發生的現實。臺灣不應因為法規惰性，讓民眾成為交通科技二等公民。支持葛如鈞委員的倡議，讓科技為臺灣交通安全與產業未來，導航出一條更安全、更有競爭力的道路。
+
+## 核心資源區 (Resource Hub)
+
+<Cards>
+	<Card title="荷蘭 RDW 採認路徑" href="https://www.rdw.nl/" target="_blank">
+		<BadgeCheck slot="icon" />
+		**國際認證**：荷蘭交通管理局 RDW 已批准 Tesla FSD Supervised 可於高速公路使用；臺灣 VSCC 與 RDW 合作超過十年，具備採認基礎。
+	</Card>
+	<Card title="美國 FMVSS 自我認證制度" href="https://www.nhtsa.gov/laws-regulations/fmvss" target="_blank">
+		<FileCheck slot="icon" />
+		**制度解方**：參考韓國模式，採用 FMVSS 自我認證與上市後抽測，讓車輛科技不必卡在漫長翻譯與審查流程。
+	</Card>
+	<Card title="英國：2024 自動駕駛車輛法" href="https://www.legislation.gov.uk/ukpga/2024/10/enacted" target="_blank">
+		<Scale slot="icon" />
+		**責任典範**：明確界定責任歸屬，當車輛處於自駕模式時，由車廠或營運商承擔責任。
+	</Card>
+	<Card title="Tesla 安全報告" href="https://www.tesla.com/VehicleSafetyReport" target="_blank">
+		<Zap slot="icon" />
+		**安全數據**：自動輔助駕駛的核心價值，是用 AI 降低疲勞、分心與人為疏失造成的道路風險。
+	</Card>
+	<Card title="臺灣自駕測試場域地圖" href="https://www.artc.org.tw/" target="_blank">
+		<MapPin slot="icon" />
+		**測試基地**：包含臺南沙崙「臺灣智駕測試實驗室」及彰化 ARTC「智慧車電自駕車場域」。
+	</Card>
+</Cards>
+
+<NewsTopicEmbed topicId="61317b76-2009-4ac7-96a6-78d3ab1d5eb2" lang="zh-TW" limit={3} heading="相關新聞" />
+
+## 推動時間軸 (Timeline)
+
+<Timeline>
+	<TimelineItem date="2026.05.12" title="【新聞稿】葛如鈞拿「黑金剛」諷舊法規跟不上時代，要求政府發 AI 幣、鬆綁自駕科技">
+		葛如鈞委員辦公室發布新聞稿指出，AI 內閣不能停留在口號，從自動駕駛法規、資料治理、AI 平權到低軌衛星開放，行政院都應提出具體進度，讓臺灣人民真正用得到科技、受益於科技。
+	</TimelineItem>
+	<TimelineItem date="2026.05.12" title="【交通組總質詢】要求自動駕駛法規加速落地">
+		葛如鈞委員以「黑金剛」手機比喻落後車輛法規，指出 1988 年通過的 UNECE R79 到 2025 年才在臺灣全面強制施行；R171、R157 等更先進法規若仍照現行節奏導入，將讓臺灣民眾比其他國家晚 7 到 10 年使用先進交通科技。
+
+    	<YouTube id="Ajx6DIClNT4" title="交通組總質詢：自動駕駛法規加速落地" />
+
+    	![葛如鈞委員於立法院總質詢拿出黑金剛手機，要求政府鬆綁自動駕駛科技法規](/image/20260512-Brickphone.jpeg)
+    </TimelineItem>
+    <TimelineItem date="2026.05.12" title="【行政院回應】承諾一個月內盤點研議">
+    	行政院長卓榮泰於總質詢中回應，行政院非常重視委員意見，將要求交通部整理目前政府手上所有具體資料，與葛如鈞辦公室對接，並於一個月內針對 RDW 認證採認及 FMVSS 雙軌制提出研議結果。
+    </TimelineItem>
+    <TimelineItem date="2026.05.11" title="【交通部書面回覆】R157、R171 已啟動草案與利害關係人討論">
+    	交通部回覆指出，車安中心已於 2026 年 3 月 17 日完成 UN R157 00 系列最新修訂版草案討論，預計 5 月底前邀集利害關係人溝通；R157 01 系列後續修訂已展開草案研擬。UN R171 也已於 3 月 17 日召會討論技術內容，預計 5 月中旬前再召會研商修正草案與新車實施期程。
+    </TimelineItem>
+    <TimelineItem date="2025.11.25" title="【總質詢】要求開放 FSD 一般道路測試">
+    	葛如鈞委員於立法院施政總質詢指出，全球自駕技術已臻成熟，臺灣不應固守 2018 年的舊法規。要求行政院成立跨部會平台，研議開放 FSD（Full Self-Driving）進行一般道路測試，別讓臺灣人淪為「交通科技三等公民」。
+
+    	<YouTube id="40H6xqQZOBs" params="start=538" title="總質詢影片" />
+    </TimelineItem>
+    <TimelineItem date="2025.11.12" title="【國際進展】韓國正式讓 FSD 登陸">
+    	韓國早在 2012 年韓美 FTA 生效時採認 FMVSS，並於 2025 年 11 月 12 日正式讓 FSD 登陸韓國。這證明臺灣可參考「韓國模式」，以自我認證與上市後監理，取代冗長的逐條翻譯與事前審查。
+    </TimelineItem>
+    <TimelineItem date="2025.10" title="【場域啟用】彰化 ARTC 智慧車電自駕車場域">
+    	經濟部投入 10 億元建置，具備全天候、全速域測試能力，可模擬濃霧、豪雨等極端氣候，為臺灣自駕產業提供國際級驗證環境。
+    </TimelineItem>
+    <TimelineItem date="2025.01.01" title="【臺灣進度】UN R79 03 系列各型式車輛全面強制施行">
+    	交通部表示，臺灣自 2008 年起陸續調和 UNECE R79，但 R79 03 系列直到 2025 年才對各型式車輛新車全面強制施行；最新 R79 04 系列則預計 2028 年適用新型式、2030 年適用既有型式車輛新車。
+    </TimelineItem>
+    <TimelineItem date="2024.09" title="【國際法規】UN R171 第一部分通過">
+    	UN R171 規範 Level 2 駕駛人控制輔助系統（DCAS）。葛委員指出，若臺灣仍依現行節奏導入，全面強制施行恐落後其他國家 7 年以上；R171 第二、第三部分更尚未看見明確審查期程。
+    </TimelineItem>
+    <TimelineItem date="2024.05.27" title="【委員會審查】交通科技法規停滯">
+    	於委員會審查「AI 基本法」時，針對無人載具科技創新實驗條例修法進度緩慢提出嚴正關切。
+
+    	<YouTube id="6QaE1Skf4SU" title="教文委員會審查 AI 基本法影片" />
+    </TimelineItem>
+    <TimelineItem date="2021" title="【國際法規】UN R157 自動車道維持系統公告">
+    	UN R157 規範 Level 3 自動駕駛等級的自動車道維持系統（ALKS）。葛委員指出，若臺灣最快仍要到 2031 年才全面強制施行，等同再度落後國際約 10 年。
+    </TimelineItem>
+    <TimelineItem date="2019.02.25" title="【場域啟用】臺南沙崙臺灣智駕測試實驗室">
+    	臺灣首座封閉式自駕車測試場域啟用，提供隧道、行人穿越等基礎情境測試。
+    </TimelineItem>
+    <TimelineItem date="2018.12.19" title="【立法】無人載具科技創新實驗條例公布">
+    	臺灣自駕車發展的起點，確立了沙盒實驗機制，但也讓後續發展長期停留在實驗框架，難以真正進入一般道路與大規模應用。
+    </TimelineItem>
+
+</Timeline>

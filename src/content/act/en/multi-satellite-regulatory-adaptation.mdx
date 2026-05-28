@@ -8,6 +8,7 @@ status: "Amendment passed first reading; general inquiry called for Executive Yu
 
 import Cards from "@/components/Cards.astro";
 import Card from "@/components/Card.astro";
+import ActProgress from "@/components/ActProgress.astro";
 import NewsTopicEmbed from "@/components/NewsTopicEmbed.astro";
 import Timeline from "@/components/Timeline.astro";
 import TimelineItem from "@/components/TimelineItem.astro";
@@ -15,6 +16,8 @@ import { Signal, AlertOctagon, Rocket, FileText } from "lucide-react";
 import { YouTube } from "@astro-community/astro-embed-youtube";
 
 # Multi-Satellite Regulatory Adaptation
+
+Multi-satellite regulatory adaptation aims to open Taiwan's sky and build a diverse communications network of submarine cables, microwave links, and satellites. The goal is not to open the door for only one provider, but to give Taiwan more resilience options for disaster response, rural access, aviation, maritime communication, and national security.
 
 <div className="not-prose mb-6 rounded-lg border border-black/5 bg-gray-50 p-4 md:p-6 dark:border-white/10 dark:bg-white/5">
 	<div className="flex items-start gap-4">
@@ -27,7 +30,7 @@ import { YouTube } from "@astro-community/astro-embed-youtube";
 			</h3>
 			<div className="mb-4 leading-relaxed text-gray-600 dark:text-gray-300">
 				{
-					"Legislator JU CHUN KO proposed an amendment to Article 36 of the Telecommunications Management Act to let regulators approve foreign LEO satellite communication providers case by case when national security and public-interest concerns are addressed. The draft has passed first reading, and Ko has called on the Executive Yuan to support it."
+					"Legislator Ju-Chun Ko proposed an amendment to Article 36 of the Telecommunications Management Act to let regulators approve foreign LEO satellite communication providers case by case when national security and public-interest concerns are addressed. The draft has passed first reading, and Ko has called on the Executive Yuan to support it."
 				}
 			</div>
 			<div className="flex flex-wrap gap-3">
@@ -60,92 +63,18 @@ import { YouTube } from "@astro-community/astro-embed-youtube";
 	</div>
 </div>
 
-<div className="not-prose mb-8">
-	<div className="mb-2 flex items-center gap-2 text-xl font-bold text-gray-900 dark:text-white">Multi-Satellite: Opening Taiwan's Sky and Building a Digital Shield for Resilience</div>
-
-    <div className="mb-2 h-4 w-full rounded-full bg-gray-200 dark:bg-gray-700">
-        	<div className="h-4 rounded-full bg-gray-900 dark:bg-white" style={{ width: "60%" }}></div>
-    </div>
-    <p className="text-sm text-gray-500">Current progress: amendment passed first reading; general inquiry requested Executive Yuan support for a project-approval mechanism (60%)</p>
-
-</div>
-
-## Resource Hub
-
-<Cards>
-	<Card
-		title="Telecommunications Management Act Article 36"
-		href="https://ppg.ly.gov.tw/ppg/bills/202110181020000/details"
-		target="_blank"
-	>
-		<AlertOctagon slot="icon" />
-		**Regulatory bottleneck**: Foreign ownership limits (49%) and chairman nationality restrictions hinder international LEO satellite
-		operators from entering Taiwan; the reform direction is a case-by-case approval mechanism that protects national security and the public
-		interest.
-	</Card>
-	<Card title="Japan Starlink Direct-to-Phone" href="https://news.kddi.com/kddi/corporate/newsrelease/2024/04/10/7428.html" target="_blank">
-		<Signal slot="icon" />
-		**Success Story**: Japan's KDDI launched service in 2024, achieving "signal wherever you can see the sky."
-	</Card>
-	<Card title="Taiwan LEO Satellite Program" href="#" target="_blank">
-		<Rocket slot="icon" />
-		**Domestic Progress**: NSTC plans to launch Taiwan's first domestically-made LEO communication satellite in 2027, but it's too slow for
-		urgent needs.
-	</Card>
-	<Card title="Aviation and Global LEO Demand" href="https://www.united.com/" target="_blank">
-		<Signal slot="icon" />
-		**Urgent use case**: Airlines are accelerating Starlink and other LEO satellite services, showing satellite connectivity is not just
-		backup, but a structural upgrade to communications and operational efficiency.
-	</Card>
-</Cards>
-
-<NewsTopicEmbed topicId="d2bc6e45-d344-4e7b-a258-d0addf2807ec" lang="en" limit={5} heading="Related News" />
-
-## Timeline
-
-<Timeline>
-	<TimelineItem date="2026.05.12" title="[General Inquiry] Request Executive Yuan support for Article 36 amendment">
-		Legislator JU CHUN KO stated that opening LEO satellite operations is essential to Taiwan's communications resilience and national security. He asked the Executive Yuan to support the Article 36 amendment, allowing regulators to approve foreign satellite communication providers case by case when they pose no adverse impact on national security or other public interests.
-	</TimelineItem>
-	<TimelineItem date="2026.05.12" title="[Policy Position] Open Taiwan's sky and let multiple satellite services compete fairly">
-		Ko emphasized that the reform is not about opening the door for only one company. It should give all global satellite communication operators a fair opportunity to serve Taiwan. The more diverse Taiwan's satellite services are, the stronger its disaster response, rural access, aviation, maritime, and national-security communications resilience will be.
-	</TimelineItem>
-	<TimelineItem date="2026.05.12" title="[Industry Signal] Starlink still has interest in serving Taiwan">
-		Responding to claims that Taiwan's commercial satellite market is too small and that operators lack interest, Ko said this sounds more like a negotiation tactic. His office has also received industry messages indicating that Starlink is in fact interested in serving Taiwan and willing to communicate with governments around the world.
-	</TimelineItem>
-	<TimelineItem date="2026.05.12" title="[Aviation Use Case] LEO satellite connectivity is a structural upgrade">
-		Airlines have also indicated that regulatory reform is urgent and necessary. United Airlines expects to install Starlink on more than one aircraft per day throughout 2026, with evidence of speeds seven times faster and fuel-impact reductions of 85%. This is not incremental improvement; it is a structural shift in communications service.
-	</TimelineItem>
-	<TimelineItem date="2025.12" title="[Legislative Progress] Amendment Passed First Reading">
-		The amendment to Article 36 of the Telecommunications Management Act proposed by Legislator JU CHUN KO, advocating for the relaxation of foreign ownership and nationality restrictions, has officially passed the first reading in the Legislative Yuan and has been referred to the Transportation Committee for review.
-
-    	[Bill Details](https://ppg.ly.gov.tw/ppg/bills/202110181020000/details) | [Gazette Download](https://ipfs.juchunko.com/ipfs/bafybeifeioryvdxsgvg3tlgxqa42bq7osp5txsvgihwdzwainmc7dcs2ya/LCEWA01_110415_00040.pdf)
-    </TimelineItem>
-    <TimelineItem date="2025.11.25" title="[General Inquiry] Call to Break Communication Isolation">
-    	Legislator JU CHUN KO pointed out during the Transportation Committee's general inquiry that 90% of Taiwan's internet relies on submarine cables—an extremely high risk. He urged the Executive Yuan to review Article 36 of the Telecommunications Management Act or adopt a "project permit" approach similar to Japan to allow foreign satellite services.
-
-    	<YouTube id="40H6xqQZOBs" title="Satellite Communication Resilience Inquiry" />
-    </TimelineItem>
-    <TimelineItem date="2025.10" title="[Inquiry] LEO Satellite Communication Resilience">
-    	Legislator JU CHUN KO questioned the Ministry of Digital Affairs (MODA) and NCC, pointing out that Taiwan currently relies solely on the ST2 geostationary satellite (Singapore-dominated) for backup, and OneWeb's coverage capacity is insufficient, revealing a huge gap in national communication resilience.
-
-    	<YouTube id="IzWs4YvcYKE" title="Satellite Communication Resilience Inquiry" />
-    </TimelineItem>
-    <TimelineItem date="2025.04" title="[International Development] Japan KDDI Launches Starlink Direct Connection">
-    	Japan officially activated Starlink direct-to-phone service, solving communication dead zones in mountainous areas and remote islands, providing an excellent reference for Taiwan.
-    </TimelineItem>
-    <TimelineItem date="2027 (Projected)" title="[Future Outlook] Taiwan's First Domestically-Made LEO Satellite">
-    	NSTC plans to launch Taiwan's first domestically-made LEO communication satellite (B5G program), taking the first step in domestic space communications.
-    </TimelineItem>
-
-</Timeline>
+<ActProgress
+	label="Current progress"
+	value={60}
+	status="Amendment passed first reading; general inquiry requested Executive Yuan support for a project-approval mechanism."
+/>
 
 ## Key Issues & Q&A
 
 ### Q1: Will allowing foreign satellites (like Starlink) create national security concerns?
 
 **A: Communication blackout is the greatest national security crisis.**
-Some worry that foreign satellite companies may be controlled by other governments. However, Legislator JU CHUN KO argues that the real national security crisis is "Taiwan being completely cut off from the internet during war or disaster." By allowing "diverse" satellites (not just one provider but multiple coexisting ones) and requiring ground data to pass through Taiwan's gateways, we can ensure communication resilience while maintaining information security.
+Some worry that foreign satellite companies may be controlled by other governments. However, Legislator Ju-Chun Ko argues that the real national security crisis is "Taiwan being completely cut off from the internet during war or disaster." By allowing "diverse" satellites (not just one provider but multiple coexisting ones) and requiring ground data to pass through Taiwan's gateways, we can ensure communication resilience while maintaining information security.
 
 ### Q2: Why can't we rely solely on our own satellites?
 
@@ -159,9 +88,9 @@ Beyond national security, LEO satellites can solve Taiwan's long-standing poor s
 
 ---
 
-## Legislator JU CHUN KO's Reform Proposals
+## Legislator Ju-Chun Ko's Reform Proposals
 
-Faced with a major national communications gap, Legislator JU CHUN KO has advocated pragmatic regulatory adjustments to improve Taiwan's communication resilience.
+Faced with a major national communications gap, Legislator Ju-Chun Ko has advocated pragmatic regulatory adjustments to improve Taiwan's communication resilience.
 
 ### Option 1: Amend Article 36 of the Telecommunications Management Act
 
@@ -187,7 +116,7 @@ Ko emphasized that Taiwan does not need only one LEO satellite service. It needs
 
 ### Build a Hybrid 'Cable + Microwave + Satellite' Network
 
-True resilience comes from diversity. JU CHUN KO advocates a layered design:
+True resilience comes from diversity. Legislator Ju-Chun Ko advocates a layered design:
 
 - **Normal times**: Submarine cables as the primary backbone for cost-efficiency and high bandwidth
 - **Cable outages**: Activate microwave links (e.g., between outer islands and the main island)
@@ -220,3 +149,69 @@ Resilient, multi-layered connectivity ensures that Taiwan’s command chain, fin
 ---
 
 > **Call to Action**: The sky is open; regulations should not be self-restricted. Support legislative amendments to allow diverse satellites and make Taiwan's communication network unbreakable and more resilient!
+
+## Resource Hub
+
+<Cards>
+	<Card title="Telecommunications Management Act Article 36" href="https://ppg.ly.gov.tw/ppg/bills/202110181020000/details" target="_blank">
+		<AlertOctagon slot="icon" />
+		**Regulatory bottleneck**: Foreign ownership limits (49%) and chairman nationality restrictions hinder international LEO satellite
+		operators from entering Taiwan; the reform direction is a case-by-case approval mechanism that protects national security and the public
+		interest.
+	</Card>
+	<Card title="Japan Starlink Direct-to-Phone" href="https://news.kddi.com/kddi/corporate/newsrelease/2024/04/10/7428.html" target="_blank">
+		<Signal slot="icon" />
+		**Success Story**: Japan's KDDI launched service in 2024, achieving "signal wherever you can see the sky."
+	</Card>
+	<Card title="Taiwan LEO Satellite Program" href="#" target="_blank">
+		<Rocket slot="icon" />
+		**Domestic Progress**: NSTC plans to launch Taiwan's first domestically-made LEO communication satellite in 2027, but it's too slow for
+		urgent needs.
+	</Card>
+	<Card title="Aviation and Global LEO Demand" href="https://www.united.com/" target="_blank">
+		<Signal slot="icon" />
+		**Urgent use case**: Airlines are accelerating Starlink and other LEO satellite services, showing satellite connectivity is not just
+		backup, but a structural upgrade to communications and operational efficiency.
+	</Card>
+</Cards>
+
+<NewsTopicEmbed topicId="d2bc6e45-d344-4e7b-a258-d0addf2807ec" lang="en" limit={5} heading="Related News" />
+
+## Timeline
+
+<Timeline>
+	<TimelineItem date="2026.05.12" title="[General Inquiry] Request Executive Yuan support for Article 36 amendment">
+		Legislator Ju-Chun Ko stated that opening LEO satellite operations is essential to Taiwan's communications resilience and national security. He asked the Executive Yuan to support the Article 36 amendment, allowing regulators to approve foreign satellite communication providers case by case when they pose no adverse impact on national security or other public interests.
+	</TimelineItem>
+	<TimelineItem date="2026.05.12" title="[Policy Position] Open Taiwan's sky and let multiple satellite services compete fairly">
+		Ko emphasized that the reform is not about opening the door for only one company. It should give all global satellite communication operators a fair opportunity to serve Taiwan. The more diverse Taiwan's satellite services are, the stronger its disaster response, rural access, aviation, maritime, and national-security communications resilience will be.
+	</TimelineItem>
+	<TimelineItem date="2026.05.12" title="[Industry Signal] Starlink still has interest in serving Taiwan">
+		Responding to claims that Taiwan's commercial satellite market is too small and that operators lack interest, Ko said this sounds more like a negotiation tactic. His office has also received industry messages indicating that Starlink is in fact interested in serving Taiwan and willing to communicate with governments around the world.
+	</TimelineItem>
+	<TimelineItem date="2026.05.12" title="[Aviation Use Case] LEO satellite connectivity is a structural upgrade">
+		Airlines have also indicated that regulatory reform is urgent and necessary. United Airlines expects to install Starlink on more than one aircraft per day throughout 2026, with evidence of speeds seven times faster and fuel-impact reductions of 85%. This is not incremental improvement; it is a structural shift in communications service.
+	</TimelineItem>
+	<TimelineItem date="2025.12" title="[Legislative Progress] Amendment Passed First Reading">
+		The amendment to Article 36 of the Telecommunications Management Act proposed by Legislator Ju-Chun Ko, advocating for the relaxation of foreign ownership and nationality restrictions, has officially passed the first reading in the Legislative Yuan and has been referred to the Transportation Committee for review.
+
+    	[Bill Details](https://ppg.ly.gov.tw/ppg/bills/202110181020000/details) | [Gazette Download](https://ipfs.juchunko.com/ipfs/bafybeifeioryvdxsgvg3tlgxqa42bq7osp5txsvgihwdzwainmc7dcs2ya/LCEWA01_110415_00040.pdf)
+    </TimelineItem>
+    <TimelineItem date="2025.11.25" title="[General Inquiry] Call to Break Communication Isolation">
+    	Legislator Ju-Chun Ko pointed out during the Transportation Committee's general inquiry that 90% of Taiwan's internet relies on submarine cables—an extremely high risk. He urged the Executive Yuan to review Article 36 of the Telecommunications Management Act or adopt a "project permit" approach similar to Japan to allow foreign satellite services.
+
+    	<YouTube id="40H6xqQZOBs" title="Satellite Communication Resilience Inquiry" />
+    </TimelineItem>
+    <TimelineItem date="2025.10" title="[Inquiry] LEO Satellite Communication Resilience">
+    	Legislator Ju-Chun Ko questioned the Ministry of Digital Affairs (MODA) and NCC, pointing out that Taiwan currently relies solely on the ST2 geostationary satellite (Singapore-dominated) for backup, and OneWeb's coverage capacity is insufficient, revealing a huge gap in national communication resilience.
+
+    	<YouTube id="IzWs4YvcYKE" title="Satellite Communication Resilience Inquiry" />
+    </TimelineItem>
+    <TimelineItem date="2025.04" title="[International Development] Japan KDDI Launches Starlink Direct Connection">
+    	Japan officially activated Starlink direct-to-phone service, solving communication dead zones in mountainous areas and remote islands, providing an excellent reference for Taiwan.
+    </TimelineItem>
+    <TimelineItem date="2027 (Projected)" title="[Future Outlook] Taiwan's First Domestically-Made LEO Satellite">
+    	NSTC plans to launch Taiwan's first domestically-made LEO communication satellite (B5G program), taking the first step in domestic space communications.
+    </TimelineItem>
+
+</Timeline>

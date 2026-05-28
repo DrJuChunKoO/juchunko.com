@@ -8,6 +8,7 @@ status: "修法研議與預算爭取中"
 
 import Cards from "@/components/Cards.astro";
 import Card from "@/components/Card.astro";
+import ActProgress from "@/components/ActProgress.astro";
 import NewsTopicEmbed from "@/components/NewsTopicEmbed.astro";
 import Timeline from "@/components/Timeline.astro";
 import TimelineItem from "@/components/TimelineItem.astro";
@@ -16,62 +17,9 @@ import { YouTube } from "@astro-community/astro-embed-youtube";
 
 # 資安修法與議題關注
 
-<div className="not-prose mb-8">
-	<div className="mb-2 flex items-center gap-2 text-xl font-bold text-gray-900 dark:text-white">資安修法：打造數位韌性的堅實護盾</div>
+資安修法不只是技術議題，而是數位韌性、供應鏈安全與數位人權的共同防線。葛如鈞委員主張，政府應補足中小企業資安預算，並避免打詐措施誤傷人民的數位權利。
 
-    <div className="mb-2 h-4 w-full rounded-full bg-gray-200 dark:bg-gray-700">
-    	<div className="h-4 rounded-full bg-gray-900 dark:bg-white" style={{ width: "45%" }}></div>
-    </div>
-    <p className="text-sm text-gray-500">目前進度：修法研議與預算爭取中 (45%)</p>
-
-</div>
-
-## 核心資源區 (Resource Hub)
-
-<Cards>
-	<Card title="委員四大訴求" href="#" target="_blank">
-		<UserX slot="icon" />
-		**捍衛數位人權**：建立單一窗口、定期公布數據、檢討演算法、禁用真實帳號訓練 AI。
-	</Card>
-	<Card title="2024-2025 資安事件簿" href="#" target="_blank">
-		<History slot="icon" />
-		**危機解密**：彙整近年台灣重大資安事件，揭示供應鏈攻擊與勒索軟體威脅的嚴重性。
-	</Card>
-	<Card title="資安預算分析" href="#" target="_blank">
-		<FileWarning slot="icon" />
-		**資源短缺**：中小企業資安聯防預算每家僅 59 元，連一個便當都買不起。
-	</Card>
-</Cards>
-
-<NewsTopicEmbed topicId="bad2d5e5-13f3-42f8-bc22-f5720a67d0d1" lang="zh-TW" limit={5} heading="相關新聞" />
-
-## 推動時間軸 (Timeline)
-
-<Timeline>
-	<TimelineItem date="2025.11.25" title="【總質詢】資安預算與數位人權">
-		葛如鈞委員於立法院施政總質詢指出，中小企業資安預算嚴重不足，且政府打詐措施恐侵害數位人權。要求行政院補足資安預算，並建立單一申訴窗口。
-
-    	<YouTube id="40H6xqQZOBs" params="start=718" title="總質詢影片" />
-    </TimelineItem>
-    <TimelineItem date="2025.11" title="【供應鏈攻擊】數位行銷公司遭駭">
-    	台灣數位行銷公司遭中國駭客組織 APT24 長期入侵，波及超過 1,000 個客戶網域，顯示供應鏈資安防護極其脆弱。
-    </TimelineItem>
-    <TimelineItem date="2025.06" title="【信任危機】Chrome 停止信任中華電信憑證">
-    	Google 宣布 Chrome 瀏覽器不再信任中華電信新簽發的商用憑證，重創國家級電信業者的資安信譽，波及政府機關與金融機構。
-    </TimelineItem>
-    <TimelineItem date="2025.03" title="【醫療資安】CrazyHunter 勒索軟體肆虐">
-    	專門鎖定台灣的勒索軟體攻擊馬偕醫院等多家醫學中心，衛福部定調為「系統性攻擊」，病人個資與醫療運作面臨重大威脅。
-    </TimelineItem>
-    <TimelineItem date="2024.03.19" title="【總質詢】AI 詐騙深偽影片質詢">
-    	葛如鈞委員於立法院播放兩段 AI 生成影片，請行政院長陳建仁辨別真偽，結果院長也無法分辨。藉此凸顯「眼見不一定為憑」的 AI 詐騙危機，要求政府拿出具體對策。
-
-    	<YouTube id="bkoErhCsCrQ" title="AI 質詢影片" />
-    </TimelineItem>
-    <TimelineItem date="2024 全年" title="【警訊】亞太區網攻之冠">
-    	Check Point Research 報告指出，台灣是亞太地區遭受網路攻擊最頻繁的國家，平均每週遭受近 4,000 次攻擊。
-    </TimelineItem>
-
-</Timeline>
+<ActProgress label="目前進度" value={45} status="修法研議與預算爭取中。" />
 
 ## 網路空間的無聲戰爭
 
@@ -191,3 +139,50 @@ Google 宣布 Chrome 瀏覽器不再信任中華電信新簽發的數位憑證�
 資安即國安，數位人權不容妥協。
 
 支持葛如鈞委員的修法倡議，為台灣穿上最強的數位防彈衣，在網路空間的無聲戰爭中，守護我們的自由與安全。！
+
+## 核心資源區 (Resource Hub)
+
+<Cards>
+	<Card title="委員四大訴求" href="#" target="_blank">
+		<UserX slot="icon" />
+		**捍衛數位人權**：建立單一窗口、定期公布數據、檢討演算法、禁用真實帳號訓練 AI。
+	</Card>
+	<Card title="2024-2025 資安事件簿" href="#" target="_blank">
+		<History slot="icon" />
+		**危機解密**：彙整近年台灣重大資安事件，揭示供應鏈攻擊與勒索軟體威脅的嚴重性。
+	</Card>
+	<Card title="資安預算分析" href="#" target="_blank">
+		<FileWarning slot="icon" />
+		**資源短缺**：中小企業資安聯防預算每家僅 59 元，連一個便當都買不起。
+	</Card>
+</Cards>
+
+<NewsTopicEmbed topicId="bad2d5e5-13f3-42f8-bc22-f5720a67d0d1" lang="zh-TW" limit={5} heading="相關新聞" />
+
+## 推動時間軸 (Timeline)
+
+<Timeline>
+	<TimelineItem date="2025.11.25" title="【總質詢】資安預算與數位人權">
+		葛如鈞委員於立法院施政總質詢指出，中小企業資安預算嚴重不足，且政府打詐措施恐侵害數位人權。要求行政院補足資安預算，並建立單一申訴窗口。
+
+    	<YouTube id="40H6xqQZOBs" params="start=718" title="總質詢影片" />
+    </TimelineItem>
+    <TimelineItem date="2025.11" title="【供應鏈攻擊】數位行銷公司遭駭">
+    	台灣數位行銷公司遭中國駭客組織 APT24 長期入侵，波及超過 1,000 個客戶網域，顯示供應鏈資安防護極其脆弱。
+    </TimelineItem>
+    <TimelineItem date="2025.06" title="【信任危機】Chrome 停止信任中華電信憑證">
+    	Google 宣布 Chrome 瀏覽器不再信任中華電信新簽發的商用憑證，重創國家級電信業者的資安信譽，波及政府機關與金融機構。
+    </TimelineItem>
+    <TimelineItem date="2025.03" title="【醫療資安】CrazyHunter 勒索軟體肆虐">
+    	專門鎖定台灣的勒索軟體攻擊馬偕醫院等多家醫學中心，衛福部定調為「系統性攻擊」，病人個資與醫療運作面臨重大威脅。
+    </TimelineItem>
+    <TimelineItem date="2024.03.19" title="【總質詢】AI 詐騙深偽影片質詢">
+    	葛如鈞委員於立法院播放兩段 AI 生成影片，請行政院長陳建仁辨別真偽，結果院長也無法分辨。藉此凸顯「眼見不一定為憑」的 AI 詐騙危機，要求政府拿出具體對策。
+
+    	<YouTube id="bkoErhCsCrQ" title="AI 質詢影片" />
+    </TimelineItem>
+    <TimelineItem date="2024 全年" title="【警訊】亞太區網攻之冠">
+    	Check Point Research 報告指出，台灣是亞太地區遭受網路攻擊最頻繁的國家，平均每週遭受近 4,000 次攻擊。
+    </TimelineItem>
+
+</Timeline>
