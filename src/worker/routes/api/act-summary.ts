@@ -27,7 +27,7 @@ Use only the MDX content below. Do not add facts that are not supported by the p
 
 Summary language: English
 Summary sections:
-- Current Problem
+- Problem
 - What We Proposed
 - How This Affects Me
 
@@ -51,7 +51,7 @@ ${mdx}
 
 摘要語言：繁體中文
 摘要欄位：
-- 目前的問題
+- 問題
 - 我們提出的做法
 - 對我有什麼影響
 

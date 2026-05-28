@@ -11,9 +11,10 @@ test("buildActSummaryPrompt asks for the fixed issue summary sections", () => {
 	});
 
 	assert.match(prompt, /議題摘要/);
-	assert.match(prompt, /目前的問題/);
+	assert.match(prompt, /問題/);
 	assert.match(prompt, /我們提出的做法/);
 	assert.match(prompt, /對我有什麼影響/);
+	assert.doesNotMatch(prompt, /目前的問題/);
 	assert.match(prompt, /結構化輸出 schema/);
 });
 
@@ -25,9 +26,10 @@ test("buildActSummaryPrompt uses a separate English prompt for English summaries
 	});
 
 	assert.match(prompt, /Issue Summary/);
-	assert.match(prompt, /Current Problem/);
+	assert.match(prompt, /Problem/);
 	assert.match(prompt, /What We Proposed/);
 	assert.match(prompt, /How This Affects Me/);
+	assert.doesNotMatch(prompt, /Current Problem/);
 	assert.doesNotMatch(prompt, /你正在/);
 	assert.doesNotMatch(prompt, /議題摘要/);
 	assert.doesNotMatch(prompt, /目前的問題/);
