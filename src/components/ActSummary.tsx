@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { FilePenLine, Lightbulb, TriangleAlert } from "lucide-react";
+import { BotMessageSquare, FilePenLine, Lightbulb, TriangleAlert } from "lucide-react";
 import { motion, useReducedMotion, type Variants } from "motion/react";
 
 import type { Lang } from "src/i18n/ui";
+import { openAIAssistant } from "./agent/events";
 import { getActSummaryLabels, isActSummaryData, shouldShowActSummary, type ActSummaryData, type ContentCollection } from "./act-summary";
 
 interface ActSummaryProps {
@@ -84,8 +85,16 @@ export default function ActSummary({ collection, lang, slug }: ActSummaryProps) 
 			variants={prefersReducedMotion ? undefined : sectionVariants}
 		>
 			<div className="flex flex-col gap-3">
-				<div className="shrink-0 md:w-28">
+				<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 					<h2 className="mt-1 mb-0 text-lg leading-tight font-semibold tracking-tight text-gray-950 dark:text-white">{labels.heading}</h2>
+					<button
+						type="button"
+						className="hover:outline-primary/50 inline-flex w-fit items-center gap-2 rounded-full bg-white px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 hover:outline-2 hover:outline-offset-2 dark:bg-white/10 dark:text-gray-200 dark:hover:bg-white/15"
+						onClick={openAIAssistant}
+					>
+						<BotMessageSquare className="size-4" aria-hidden="true" strokeWidth={1.8} />
+						{labels.discussWithAI}
+					</button>
 				</div>
 				<div className="grid min-w-0 flex-1 divide-y divide-black/5 rounded-md bg-white md:grid-cols-3 md:divide-x md:divide-y-0 dark:divide-white/10 dark:bg-white/5">
 					{fields.map(({ key, label, Icon }) => (
