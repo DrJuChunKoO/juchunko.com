@@ -3,6 +3,7 @@ import { type CollectionEntry, getCollection } from "astro:content";
 import PageLayout from "@/layouts/PageLayout.astro";
 import { render } from "astro:content";
 import { getLangFromUrl, useTranslations } from "src/i18n/utils";
+import ActSummary from "@/components/ActSummary";
 import CardLink from "@/components/CardLink.astro";
 import ShareButtons from "@/components/ShareButtons.astro";
 import { contentIdMatchesLang, getSlugFromContentId } from "@/lib/content";
@@ -38,21 +39,6 @@ const prevPost = index >= 0 && index + 1 < allInCollection.length ? allInCollect
  */
 const categoryForCard: string = currentCollection;
 const postSlug = getSlugFromContentId(post.id);
-const shouldShowActSummary = currentCollection === "act" && postSlug;
-const actSummaryLabels =
-	lang === "zh-TW"
-		? {
-				heading: "議題摘要",
-				problem: "目前的問題",
-				changes: "我們提出的做法",
-				impact: "對我有什麼影響",
-			}
-		: {
-				heading: "Issue Summary",
-				problem: "Current Problem",
-				changes: "What We Proposed",
-				impact: "How This Affects Me",
-			};
 
 import { stripMarkdown } from "@/lib/utils";
 const description = post.data.description || stripMarkdown(post.body).slice(0, 150) + (post.body.length > 150 ? "..." : "");
@@ -162,35 +148,7 @@ const definedTermSetSchema =
 	>
 	<article class="prose prose-slate dark:prose-invert mx-auto max-w-3xl" id="content">
 		{categoryKey && <p class="font-medium tracking-tight text-gray-500 opacity-75 dark:text-gray-400">{t(`cat.${categoryKey}`)}</p>}
-		{
-			shouldShowActSummary && (
-				<section
-					id="act-summary"
-					class="not-prose my-8 rounded-lg border border-black/5 bg-gray-50 p-2 dark:border-white/10 dark:bg-white/5"
-					data-lang={lang}
-					data-slug={postSlug}
-					hidden
-				>
-					<div class="p-2">
-						<h2 class="m-0 text-lg font-semibold tracking-tight text-gray-950 dark:text-white">{actSummaryLabels.heading}</h2>
-					</div>
-					<div class="grid gap-1 divide-dashed divide-black/5 rounded-md border border-dashed border-black/5 bg-white max-md:divide-y md:grid-cols-3 md:divide-x dark:divide-white/10 dark:border-white/10 dark:bg-white/5">
-						<div class="p-2">
-							<h3 class="m-0 text-sm font-semibold text-gray-950 dark:text-white">{actSummaryLabels.problem}</h3>
-							<p class="mt-1 text-sm leading-6 text-gray-600 dark:text-gray-300" data-summary-field="problem" />
-						</div>
-						<div class="p-2">
-							<h3 class="m-0 text-sm font-semibold text-gray-950 dark:text-white">{actSummaryLabels.changes}</h3>
-							<p class="mt-1 text-sm leading-6 text-gray-600 dark:text-gray-300" data-summary-field="changes" />
-						</div>
-						<div class="p-2">
-							<h3 class="m-0 text-sm font-semibold text-gray-950 dark:text-white">{actSummaryLabels.impact}</h3>
-							<p class="mt-1 text-sm leading-6 text-gray-600 dark:text-gray-300" data-summary-field="impact" />
-						</div>
-					</div>
-				</section>
-			)
-		}
+		<ActSummary collection={currentCollection} lang={lang} slug={postSlug} client:load />
 		<Content />
 	</article>
 
@@ -208,46 +166,6 @@ const definedTermSetSchema =
 		)
 	}
 </PageLayout>
-
-<script>
-	const summarySection = document.querySelector<HTMLElement>("#act-summary");
-
-	if (summarySection) {
-		const content = document.querySelector("#content");
-		const firstHeading = content?.querySelector("h1");
-		if (firstHeading) firstHeading.insertAdjacentElement("afterend", summarySection);
-
-		const lang = summarySection.dataset.lang;
-		const slug = summarySection.dataset.slug;
-
-		const removeSummary = () => summarySection.remove();
-
-		if (!lang || !slug) {
-			removeSummary();
-		} else {
-			fetch(`/api/act-summary?lang=${encodeURIComponent(lang)}&slug=${encodeURIComponent(slug)}`)
-				.then((response) => {
-					if (!response.ok) throw new Error(`HTTP ${response.status}`);
-					return response.json();
-				})
-				.then((payload) => {
-					const summary = payload?.summary;
-					if (!payload?.success || !summary?.problem || !summary?.changes || !summary?.impact) {
-						removeSummary();
-						return;
-					}
-
-					for (const field of ["problem", "changes", "impact"] as const) {
-						const element = summarySection.querySelector(`[data-summary-field="${field}"]`);
-						if (element) element.textContent = summary[field];
-					}
-
-					summarySection.hidden = false;
-				})
-				.catch(removeSummary);
-		}
-	}
-</script>
 
 <style is:global>
 	#content table {
