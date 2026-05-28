@@ -1,6 +1,6 @@
 ---
 name: juchunko-article-editor
-description: Create and edit bilingual MDX articles for juchunko.com. Use when adding, updating, translating, localizing, fact-checking, or structurally improving content under src/content/{act,manual,fragment}; when preserving Dr. Ju-Chun Ko terminology, bilingual zh-TW/en slug parity, article frontmatter, and existing Astro MDX components such as NewsTopicEmbed, Timeline, TimelineItem, Cards, Card, YouTube, and policy resource blocks.
+description: Create and edit bilingual MDX articles for juchunko.com. Use when adding, updating, translating, localizing, fact-checking, or structurally improving content under src/content/{act,manual,fragment}; when preserving Dr. Ju-Chun Ko terminology, bilingual zh-TW/en slug parity, article frontmatter, and existing Astro MDX components such as ActProgress, NewsTopicEmbed, Timeline, TimelineItem, Cards, Card, YouTube, and policy resource blocks.
 ---
 
 # Ju-Chun Ko Article Editor
@@ -175,6 +175,7 @@ status: "..."
 
 import Cards from "@/components/Cards.astro";
 import Card from "@/components/Card.astro";
+import ActProgress from "@/components/ActProgress.astro";
 import NewsTopicEmbed from "@/components/NewsTopicEmbed.astro";
 import Timeline from "@/components/Timeline.astro";
 import TimelineItem from "@/components/TimelineItem.astro";
@@ -184,6 +185,12 @@ import { YouTube } from "@astro-community/astro-embed-youtube";
 # Title
 
 Short lead paragraph that states the policy problem, Ko's position, and current status.
+
+<ActProgress label="目前進度" value={60} status="Short current-status sentence." />
+
+## Why It Matters
+
+Policy context, international comparison, Taiwan-specific bottleneck, Ko's proposals, safeguards, next steps.
 
 ## 核心資源區 / Resource Hub
 
@@ -203,15 +210,12 @@ Short lead paragraph that states the policy problem, Ko's position, and current 
 		Event summary.
 	</TimelineItem>
 </Timeline>
-
-## Why It Matters
-
-Policy context, international comparison, Taiwan-specific bottleneck, Ko's proposals, safeguards, next steps.
 ```
 
 Use a shorter Q&A structure for fact-checking pages like congress reform or nuclear Q&A.
 Use a manifesto/media structure for Plurality-style pages.
 Use a biography/manual structure for personal pages.
+Keep the reading flow article-first: lead/status, then main explanation or Q&A, then resources, news, timeline, and appendices. Resource Hub, news embeds, and timelines are supporting blocks; avoid placing them before readers understand the issue unless the page is primarily a resource index.
 
 ## Component Rules
 
@@ -220,6 +224,10 @@ Use `NewsTopicEmbed` only with a real `topicId`. Do not invent topic IDs. If no 
 Use `Timeline` and `TimelineItem` for legislative progress, public hearings, inquiries, government replies, media reports, and international milestones. Keep timeline dates chronological when the existing page does so; otherwise follow the page's current order.
 
 Use `Cards` and `Card` for source hubs, bill downloads, official documents, related pages, media links, and primary resources. Keep card copy compact.
+
+Use `ActProgress` for compact progress or latest-status bars in `act` MDX pages instead of hand-coded progress `div`s. Import it with `import ActProgress from "@/components/ActProgress.astro"`. Props are `label`, `value` from 0 to 100, and `status`. Examples: `<ActProgress label="目前進度" value={55} status="館館有 AI 已獲教育部核定，AI 幣由行政院承諾兩個月內研議。" />` and `<ActProgress label="Current progress" value={55} status="Libraries with AI has been approved by the Ministry of Education; AI vouchers are under Executive Yuan review within two months." />`.
+
+`ActSummary` is injected by `SharedContentTemplate.astro` for `act` pages and calls `/api/act-summary`; authors do not need to import it in MDX. Its three labels are `問題 / Problem`, `我們提出的做法 / What We Proposed`, and `對我有什麼影響 / How This Affects Me`. Do not use `目前的問題` or `Current Problem` in generated summary UI or prompts, because passed legislation may describe a past problem.
 
 Use `YouTube` for real videos only. Include `params="start=..."` when deep-linking to a segment.
 
