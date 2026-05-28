@@ -5,7 +5,7 @@ import { render } from "astro:content";
 import { getLangFromUrl, useTranslations } from "src/i18n/utils";
 import CardLink from "@/components/CardLink.astro";
 import ShareButtons from "@/components/ShareButtons.astro";
-import { contentIdMatchesLang } from "@/lib/content";
+import { contentIdMatchesLang, getSlugFromContentId } from "@/lib/content";
 
 export type CategoryKey = "acts" | "manuals";
 
@@ -37,6 +37,22 @@ const prevPost = index >= 0 && index + 1 < allInCollection.length ? allInCollect
  * 直接使用目前 collection 名稱，避免寫死映射，方便未來擴充新分類
  */
 const categoryForCard: string = currentCollection;
+const postSlug = getSlugFromContentId(post.id);
+const shouldShowActSummary = currentCollection === "act" && postSlug;
+const actSummaryLabels =
+	lang === "zh-TW"
+		? {
+				heading: "議題摘要",
+				problem: "目前的問題",
+				changes: "我們做了哪些更動",
+				impact: "對我有什麼影響",
+			}
+		: {
+				heading: "Issue Summary",
+				problem: "Current Problem",
+				changes: "What We Changed",
+				impact: "How This Affects Me",
+			};
 
 import { stripMarkdown } from "@/lib/utils";
 const description = post.data.description || stripMarkdown(post.body).slice(0, 150) + (post.body.length > 150 ? "..." : "");
@@ -111,9 +127,8 @@ const legalDocSchema =
 		: null;
 
 // GEO: DefinedTermSet schema for the "keyword" fragment (dictionary page)
-const postSlug = post.id.replace(/^.*\//, "");
 const definedTermSetSchema =
-	post.collection === "fragment" && postSlug === "keyword"
+	post.collection === "fragment" && post.id.replace(/^.*\//, "") === "keyword"
 		? {
 				"@context": "https://schema.org",
 				"@type": "DefinedTermSet",
@@ -147,6 +162,35 @@ const definedTermSetSchema =
 	>
 	<article class="prose prose-slate dark:prose-invert mx-auto max-w-3xl" id="content">
 		{categoryKey && <p class="font-medium tracking-tight text-gray-500 opacity-75 dark:text-gray-400">{t(`cat.${categoryKey}`)}</p>}
+		{
+			shouldShowActSummary && (
+				<section
+					id="act-summary"
+					class="not-prose my-8 rounded-lg border border-black/5 bg-gray-50 p-4 md:p-6 dark:border-white/10 dark:bg-white/5"
+					data-lang={lang}
+					data-slug={postSlug}
+					hidden
+				>
+					<div class="mb-4 flex items-center justify-between gap-3 border-b border-black/5 pb-3 dark:border-white/10">
+						<h2 class="m-0 text-lg font-semibold tracking-tight text-gray-950 dark:text-white">{actSummaryLabels.heading}</h2>
+					</div>
+					<div class="grid gap-3 md:grid-cols-3">
+						<div class="rounded-lg border border-black/5 bg-white p-4 dark:border-white/10 dark:bg-white/5">
+							<h3 class="m-0 text-sm font-semibold text-gray-950 dark:text-white">{actSummaryLabels.problem}</h3>
+							<p class="mt-2 text-sm leading-6 text-gray-600 dark:text-gray-300" data-summary-field="problem" />
+						</div>
+						<div class="rounded-lg border border-black/5 bg-white p-4 dark:border-white/10 dark:bg-white/5">
+							<h3 class="m-0 text-sm font-semibold text-gray-950 dark:text-white">{actSummaryLabels.changes}</h3>
+							<p class="mt-2 text-sm leading-6 text-gray-600 dark:text-gray-300" data-summary-field="changes" />
+						</div>
+						<div class="rounded-lg border border-black/5 bg-white p-4 dark:border-white/10 dark:bg-white/5">
+							<h3 class="m-0 text-sm font-semibold text-gray-950 dark:text-white">{actSummaryLabels.impact}</h3>
+							<p class="mt-2 text-sm leading-6 text-gray-600 dark:text-gray-300" data-summary-field="impact" />
+						</div>
+					</div>
+				</section>
+			)
+		}
 		<Content />
 	</article>
 
@@ -164,6 +208,46 @@ const definedTermSetSchema =
 		)
 	}
 </PageLayout>
+
+<script>
+	const summarySection = document.querySelector<HTMLElement>("#act-summary");
+
+	if (summarySection) {
+		const content = document.querySelector("#content");
+		const firstHeading = content?.querySelector("h1");
+		if (firstHeading) firstHeading.insertAdjacentElement("afterend", summarySection);
+
+		const lang = summarySection.dataset.lang;
+		const slug = summarySection.dataset.slug;
+
+		const removeSummary = () => summarySection.remove();
+
+		if (!lang || !slug) {
+			removeSummary();
+		} else {
+			fetch(`/api/act-summary?lang=${encodeURIComponent(lang)}&slug=${encodeURIComponent(slug)}`)
+				.then((response) => {
+					if (!response.ok) throw new Error(`HTTP ${response.status}`);
+					return response.json();
+				})
+				.then((payload) => {
+					const summary = payload?.summary;
+					if (!payload?.success || !summary?.problem || !summary?.changes || !summary?.impact) {
+						removeSummary();
+						return;
+					}
+
+					for (const field of ["problem", "changes", "impact"] as const) {
+						const element = summarySection.querySelector(`[data-summary-field="${field}"]`);
+						if (element) element.textContent = summary[field];
+					}
+
+					summarySection.hidden = false;
+				})
+				.catch(removeSummary);
+		}
+	}
+</script>
 
 <style is:global>
 	#content table {
