@@ -166,26 +166,26 @@ const definedTermSetSchema =
 			shouldShowActSummary && (
 				<section
 					id="act-summary"
-					class="not-prose my-8 rounded-lg border border-black/5 bg-gray-50 p-4 md:p-6 dark:border-white/10 dark:bg-white/5"
+					class="not-prose my-8 rounded-lg border border-black/5 bg-gray-50 p-2 dark:border-white/10 dark:bg-white/5"
 					data-lang={lang}
 					data-slug={postSlug}
 					hidden
 				>
-					<div class="mb-4 flex items-center justify-between gap-3 border-b border-black/5 pb-3 dark:border-white/10">
+					<div class="p-2">
 						<h2 class="m-0 text-lg font-semibold tracking-tight text-gray-950 dark:text-white">{actSummaryLabels.heading}</h2>
 					</div>
-					<div class="grid gap-3 md:grid-cols-3">
-						<div class="rounded-lg border border-black/5 bg-white p-4 dark:border-white/10 dark:bg-white/5">
+					<div class="grid gap-1 divide-dashed divide-black/5 rounded-md border border-dashed border-black/5 bg-white max-md:divide-y md:grid-cols-3 md:divide-x dark:divide-white/10 dark:border-white/10 dark:bg-white/5">
+						<div class="p-2">
 							<h3 class="m-0 text-sm font-semibold text-gray-950 dark:text-white">{actSummaryLabels.problem}</h3>
-							<p class="mt-2 text-sm leading-6 text-gray-600 dark:text-gray-300" data-summary-field="problem" />
+							<p class="mt-1 text-sm leading-6 text-gray-600 dark:text-gray-300" data-summary-field="problem" />
 						</div>
-						<div class="rounded-lg border border-black/5 bg-white p-4 dark:border-white/10 dark:bg-white/5">
+						<div class="p-2">
 							<h3 class="m-0 text-sm font-semibold text-gray-950 dark:text-white">{actSummaryLabels.changes}</h3>
-							<p class="mt-2 text-sm leading-6 text-gray-600 dark:text-gray-300" data-summary-field="changes" />
+							<p class="mt-1 text-sm leading-6 text-gray-600 dark:text-gray-300" data-summary-field="changes" />
 						</div>
-						<div class="rounded-lg border border-black/5 bg-white p-4 dark:border-white/10 dark:bg-white/5">
+						<div class="p-2">
 							<h3 class="m-0 text-sm font-semibold text-gray-950 dark:text-white">{actSummaryLabels.impact}</h3>
-							<p class="mt-2 text-sm leading-6 text-gray-600 dark:text-gray-300" data-summary-field="impact" />
+							<p class="mt-1 text-sm leading-6 text-gray-600 dark:text-gray-300" data-summary-field="impact" />
 						</div>
 					</div>
 				</section>
