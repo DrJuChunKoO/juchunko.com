@@ -28,13 +28,13 @@ Use only the MDX content below. Do not add facts that are not supported by the p
 Summary language: English
 Summary sections:
 - Current Problem
-- What We Changed
+- What We Proposed
 - How This Affects Me
 
 Rules:
 - Write 1 to 2 sentences for each field.
 - Use clear, concrete language for general readers. Avoid slogans and vague praise.
-- "What We Changed" may include bills, amendments, advocacy, inquiries, negotiations, oversight, or completed policy actions.
+- "What We Proposed" may include bills, amendments, advocacy, inquiries, negotiations, oversight, or completed policy actions.
 - Return the result through the provided structured output schema.
 
 Page title: ${title}
@@ -52,13 +52,13 @@ ${mdx}
 摘要語言：繁體中文
 摘要欄位：
 - 目前的問題
-- 我們做了哪些更動
+- 我們提出的做法
 - 對我有什麼影響
 
 限制：
 - 每個欄位 1 到 2 句。
 - 語氣清楚、具體，避免空泛口號。
-- 「我們做了哪些更動」可以涵蓋提案、修法、倡議、質詢、協商、監督或已完成的政策行動。
+- 「我們提出的做法」可以涵蓋提案、修法、倡議、質詢、協商、監督或已完成的政策行動。
 - 請透過提供的結構化輸出 schema 回傳結果。
 
 頁面標題：${title}
