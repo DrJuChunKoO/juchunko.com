@@ -30,6 +30,7 @@ export interface HomepageCopy {
 }
 
 export const featuredHomepageActSlugs = [
+	"virtual-asset-service-act",
 	"ai-basic-act",
 	"nuclear-reactor-facility-control-act",
 	"multi-satellite-regulatory-adaptation",
@@ -37,11 +38,14 @@ export const featuredHomepageActSlugs = [
 
 const featuredAchievementSummaries: Record<SupportedLang, Record<string, string>> = {
 	"zh-TW": {
+		"virtual-asset-service-act": "讓虛擬資產從洗錢防制登記走向專法監理，兼顧投資人保護、產業創新、穩定幣與跨境監理。",
 		"ai-basic-act": "為台灣建立 AI 發展與風險治理的共同規則，讓創新、監管與公共利益能在同一套法律框架下推進。",
 		"nuclear-reactor-facility-control-act": "讓穩定低碳電力延役重新回到法治與安全審查軌道，避免能源選項在制度上被提前鎖死。",
 		"multi-satellite-regulatory-adaptation": "把通訊韌性從單一海纜提升為多軌備援架構，降低重大災害或衝突時台灣整體斷網的風險。",
 	},
 	en: {
+		"virtual-asset-service-act":
+			"It moves virtual asset regulation from AML registration to a dedicated act, balancing investor protection, innovation, stablecoins, and cross-border supervision.",
 		"ai-basic-act":
 			"It sets a shared legal baseline for AI development and risk governance, so innovation, accountability, and public trust can move forward together.",
 		"nuclear-reactor-facility-control-act":
