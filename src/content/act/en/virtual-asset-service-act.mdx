@@ -1,0 +1,167 @@
+---
+title: "Virtual Asset Service Act"
+description: "A resource page on Legislator Ju-Chun Ko's work on Taiwan's Virtual Asset Service Act, including draft texts, Finance Committee review materials, attached resolutions, the deliberation video, and the policy timeline."
+date: 2026-06-03
+emoji: "🪙"
+status: "Passed committee review in the Finance Committee on 2026/06/03; pending further plenary action"
+---
+
+import Cards from "@/components/Cards.astro";
+import Card from "@/components/Card.astro";
+import ActProgress from "@/components/ActProgress.astro";
+import NewsTopicEmbed from "@/components/NewsTopicEmbed.astro";
+import Timeline from "@/components/Timeline.astro";
+import TimelineItem from "@/components/TimelineItem.astro";
+import { FileText, Gavel, Scale, ShieldCheck, Users, Video } from "lucide-react";
+import { YouTube } from "@astro-community/astro-embed-youtube";
+
+# Virtual Asset Service Act
+
+The Virtual Asset Service Act marks Taiwan's move from an anti-money-laundering registration regime toward a dedicated legal framework for virtual asset services. Legislator Ju-Chun Ko introduced a member draft on March 20, 2026, arguing for an enforceable framework that balances investor protection, financial order, industry innovation, and international alignment. The Finance Committee completed committee review on June 3, 2026, and the bill now awaits further plenary action.
+
+<ActProgress
+	label="Current Progress"
+	value={70}
+	status="Committee review is complete; the bill still awaits plenary scheduling, consultation, or second and third reading procedures."
+/>
+
+## Resource Hub
+
+<Cards>
+	<Card title="Ko Draft by 20 Legislators" href="/file/vasp/ko-vasp-draft.pdf" target="_blank">
+		<FileText slot="icon" />
+		**Draft text**: Issued on 2026/03/20, including the general explanation, article-by-article notes, and full draft articles.
+	</Card>
+	<Card
+		title="Executive Yuan Draft"
+		href="https://ppg.ly.gov.tw/ppg/download/agenda1/02/pdf/11/05/07/LCEWA01_110507_00034.pdf"
+		target="_blank"
+	>
+		<FileText slot="icon" />
+		**Executive version**: Issued on 2026/04/15 after passage at the Executive Yuan's 3996th meeting and submitted to the Legislative Yuan.
+	</Card>
+	<Card title="Finance Committee Meeting Notice" href="/file/vasp/finance-committee-notice-1150603.pdf" target="_blank">
+		<Gavel slot="icon" />
+		**Agenda material**: 16th full committee meeting of the Finance Committee, held as a two-day meeting on June 1 and June 3.
+	</Card>
+	<Card title="June 3 Agency Attendance List" href="/file/vasp/attendees-1150603.docx" target="_blank">
+		<Users slot="icon" />
+		**Attendance**: FSC, Central Bank, Ministry of Finance, Ministry of Justice, Judicial Yuan, Directorate-General of Personnel
+		Administration, and Criminal Investigation Bureau.
+	</Card>
+	<Card title="Committee-Approved Draft" href="/file/vasp/committee-approved-draft-1150603.docx" target="_blank">
+		<Scale slot="icon" />
+		**Committee version**: Finance Committee review draft with general explanation and article-by-article notes, passed on 2026/06/03.
+	</Card>
+	<Card title="15 Attached Resolution Drafts" href="/file/vasp/attached-resolutions-original.pdf" target="_blank">
+		<ShieldCheck slot="icon" />
+		**Attached resolutions**: Working originals covering business opening, overseas platforms, customer protection, fintech funding,
+		derivatives, FATF, staffing, and transition issues.
+	</Card>
+	<Card title="June 3 Deliberation Video" href="https://www.youtube.com/watch?v=cAio-gujRYg" target="_blank">
+		<Video slot="icon" />
+		**Legislative Yuan stream**: Finance Committee deliberation video for the 16th full committee meeting.
+	</Card>
+</Cards>
+
+## Deliberation Video
+
+<YouTube id="cAio-gujRYg" title="Finance Committee deliberation on the Virtual Asset Service Act, 2026/06/03" />
+
+<NewsTopicEmbed topicId="07e3aa0d-2a57-422f-a7f4-5ba199c0c87e" lang="en" limit={5} heading="Related News" />
+
+## Review Focus: Supervisory Capacity, Proportionality, and Transition
+
+Legislator Ko's draft did not merely call for virtual asset businesses to be brought under regulation. It pushed the framework in three practical directions: the competent authority must have sufficient dedicated capacity; regulatory duties should be proportionate to business risk; and users, victims, and existing workers need clear protection during the transition to a licensing regime.
+
+Cross-reading Ko's draft, the Finance Committee-approved version, attached resolutions, and deliberation materials shows several concrete changes in the review process:
+
+1. **Supervisory capacity became a legislative issue**: Ko's Article 2 proposed dedicated FSC units and staff for the act. Although the committee version did not keep the same wording in the article, attached resolutions call for continued review of staffing adequacy and support from the Directorate-General of Personnel Administration where needed, making implementation capacity a formal issue.
+2. **The discussion moved from one-size-fits-all thresholds to risk-based supervision**: Ko argued that operating bonds and prudential financial requirements should vary by service category and business scope, so lower-risk businesses are not shut out by excessive thresholds while higher-risk businesses receive stronger safeguards. The committee version keeps the architecture for the competent authority to set business and financial management rules and repeatedly reflects differentiated management by business type.
+3. **Existing market activity was built into the transition design**: Ko emphasized that moving from AML registration to licensing should not create a legal vacuum. The committee version's Article 55 gives existing registered VASPs and qualified financial institutions 12 months to apply, 21 months to obtain a license, and a possible 3-month extension when necessary.
+4. **Customer protection and anti-fraud controls were balanced by proportionality**: Ko warned that suspending deposits, withdrawals, or transfers should not become indefinite, especially for innocent users caught by abnormal-flow controls. That concern is also reflected in attached resolutions calling for clearer procedures, customer protection, and supervisory rules.
+5. **Token listing moved away from bottlenecked prior approval**: For exchange listings, Ko argued that platforms should follow standards set by the competent authority and remain responsible for review, while filing or reporting mechanisms should reduce single-point bottlenecks. The committee version's Article 25 requires platforms to set listing review standards and procedures and file listed assets with the competent authority.
+6. **Stablecoin rules were designed with transition flexibility**: Ko was concerned that internationally circulating stablecoins such as USDT and USDC could be abruptly cut off once the act takes effect. The committee version's Article 35 preserves regulatory flexibility with the phrase "unless otherwise provided by the competent authority" and requires the FSC to consult the Central Bank in setting rules.
+7. **Illegal manipulation was separated from reasonable market management**: The committee version's Article 42 keeps an exception for measures taken by VASPs under competent-authority rules to maintain price balance in the trading market. This avoids treating liquidity maintenance or slippage reduction as the same as market manipulation.
+8. **Victim recovery adopted an in-kind virtual asset logic**: Ko argued that when the injured property is virtual assets, the state should not presume conversion into cash. The committee version's Article 47 explanation states that when criminal proceeds to be returned or confiscated are virtual assets, the relevant laws should in principle return or confiscate them as virtual assets.
+
+Overall, Ko's contribution was to move the debate beyond whether Taiwan should legislate. The review instead had to confront how to prevent over-regulation, under-regulation, and implementation failure at the same time. The bill therefore now addresses supervisory capacity, international standards, industry transition, consumer protection, platform responsibility, stablecoin continuity, and victim recovery in more operational terms.
+
+## Committee Version Highlights
+
+The committee-approved version organizes the act into 7 chapters and 56 articles. Key designs include:
+
+1. **Competent authority and international cooperation**: The FSC is the competent authority and may cooperate with foreign governments, institutions, and international organizations on information exchange, technical cooperation, and assistance with investigations.
+2. **VASP categories and licensing**: The act defines exchange providers, trading platform providers, transfer providers, custody providers, underwriting providers, lending providers, and other VASPs; unlicensed operation is prohibited.
+3. **Customer asset protection**: Customer assets must be segregated from proprietary assets; customer fiat balances must be entrusted or fully guaranteed by a bank; custodians must maintain reconciliation measures and engage accountants to issue reports.
+4. **Disclosure and listing review**: Exchange and underwriting providers must verify virtual asset white papers; trading platforms must establish listing and delisting standards and procedures and file assets with the competent authority.
+5. **Industry association and training**: VASPs must join an industry association, which is responsible for self-regulation, public education, and personnel training.
+6. **Stablecoin chapter**: Stablecoin issuance requires permission and Central Bank consultation; reserve assets must be fully maintained, held by domestic financial institutions, separated from proprietary property, and subject to redemption, disclosure, and reporting rules.
+7. **Market order and penalties**: The act prohibits false statements, fraud, concealment, and manipulation; it also creates criminal liability, administrative penalties, corporate responsibility, and transition rules.
+
+## June 3 Attendance
+
+The Finance Committee's 16th full committee meeting was held in Red House Room 202. The June 3 attendance list included FSC Chair Peng Jin-long and officials from the FSC's Financial Market Development and Innovation Department, Legal Affairs Department, Banking Bureau, Securities and Futures Bureau, and Examination Bureau, as well as the Central Bank, Ministry of Finance, Ministry of Justice, Judicial Yuan, Directorate-General of Personnel Administration, and the Criminal Investigation Bureau. This shows the bill was no longer only a financial supervisory issue; it also involved foreign exchange, taxation, judicial process, criminal investigation, staffing, and administrative implementation.
+
+## Attached Resolution Themes
+
+The working set of 15 attached resolutions reflects committee concerns about implementation after the act takes effect. Major themes include:
+
+1. Opening derivative virtual asset product services within a defined period so market services are not unduly restricted.
+2. Reviewing overseas platform restrictions and domestic user protection with reference to Japan, Korea, and neighboring jurisdictions.
+3. Strengthening review of overseas VASPs, requirements for local companies or branches, and customer-rights safeguards.
+4. Requiring VASPs to implement `know your customer`, risk disclosure, truthful advertising, and anti-fraud duties.
+5. Consulting industry, associations, and experts before issuing delegated regulations.
+6. Studying a fintech innovation development fund, virtual asset derivative product management, FATF and international supervisory trends, supervisory staffing, personnel qualification transitions, stablecoin issues, and restitution principles.
+
+## Timeline
+
+<Timeline>
+ 	<TimelineItem date="2024.03.04" title="Finance Committee inquiry: virtual currency ETFs and investor access">
+ 		Legislator Ko questioned the FSC in the Finance Committee, arguing that a blanket ban on sub-brokerage purchases of virtual currency ETFs was not the best approach and that supervision should protect investors while preserving reasonable investment choice.
+
+ 		<YouTube id="BVERMgTwQ14" title="Finance Committee inquiry on virtual currency ETFs" />
+ 	</TimelineItem>
+ 	<TimelineItem date="2025.06.12" title="Finance Committee inquiry: Bitcoin and virtual asset regulation">
+ 		Ko pressed the government to take Bitcoin and virtual asset regulatory trends seriously, bringing Taiwan's readiness for global digital asset competition into Finance Committee oversight.
+
+ 		<YouTube id="acoui4pr1j8" title="Finance Committee inquiry on Bitcoin and virtual asset regulation" />
+ 	</TimelineItem>
+ 	<TimelineItem date="2025.11.11" title="General inquiry: auditing Taiwan's Bitcoin holdings">
+ 		During a fiscal general inquiry, Ko asked the Executive Yuan and Ministry of Justice to audit judicially seized or government-held Bitcoin, extending virtual asset policy from exchange regulation to public asset management.
+
+ 		<YouTube id="y4R5vjC65Hs" title="Fiscal general inquiry on Taiwan's Bitcoin holdings" />
+ 	</TimelineItem>
+ 	<TimelineItem date="2026.03.20" title="Ko and 19 co-sponsors introduced the Virtual Asset Service Act draft">
+ 		Ko's draft covered the competent authority, VASP classifications, licensing, customer asset protection, stablecoins, market order, criminal liability, and transition arrangements.
+ 	</TimelineItem>
+ 	<TimelineItem date="2026.03.25" title="Judiciary Committee: stablecoins, cross-border payments, and FSC capacity">
+ 		Ko highlighted global stablecoin payment scale, cross-border payment development, and supervisory staffing, stressing that the act must provide not only duties but also execution capacity.
+
+ 		<YouTube id="QPQxRTQ2ty8" title="Judiciary Committee inquiry on stablecoins and FSC staffing" />
+ 	</TimelineItem>
+ 	<TimelineItem date="2026.03.30" title="Finance Committee: the Central Bank, stablecoins, and strategic reserves">
+ 		Ko questioned the Central Bank, linking stablecoins, strategic reserves, and virtual asset financial infrastructure in a single policy frame.
+
+ 		<YouTube id="ljT3IPyJkzk" title="Finance Committee inquiry on the Central Bank and stablecoins" />
+ 	</TimelineItem>
+ 	<TimelineItem date="2026.04.28" title="Plenary speech: upgrading virtual asset policy">
+ 		Ko connected Bitcoin ETFs, VASPs, RWA, and next-generation financial services, arguing that the government must build rules for emerging financial products and services.
+
+ 		<YouTube id="3L5Spqd4oN4" title="Plenary speech on upgrading virtual asset policy" />
+ 	</TimelineItem>
+ 	<TimelineItem date="2026.05.07" title="Finance Committee: digital asset competition and pre-review policy groundwork">
+ 		Ko continued the discussion on Bitcoin ETFs, stablecoins, RWA, and Taiwan's institutional readiness, laying policy groundwork before committee review of the dedicated act.
+
+ 		<YouTube id="SAM6NlHsDc0" title="Finance Committee inquiry on global digital asset competition" />
+ 	</TimelineItem>
+ 	<TimelineItem date="2026.06.03" title="Finance Committee completed review">
+ 		The Finance Committee's 16th full committee meeting continued review of the Executive Yuan, Taiwan People's Party caucus, Ko, and other member drafts, producing the committee-reviewed version of the Virtual Asset Service Act.
+
+ 		<YouTube id="cAio-gujRYg" title="Finance Committee review of the Virtual Asset Service Act" />
+ 	</TimelineItem>
+</Timeline>
+
+## Next Step
+
+After committee review, the Virtual Asset Service Act still must proceed through the Legislative Yuan's plenary process. The next task is to track second reading, third reading, caucus consultation, and whether the attached resolutions and committee consensus are preserved, while monitoring whether the FSC, Central Bank, and related agencies complete the delegated regulations and implementation plans.
