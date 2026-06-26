@@ -163,6 +163,24 @@ export default function AIAssistantWindow({ isOpen, onClose, lang = "zh-TW" }: A
 		setInput(e.target.value);
 	};
 
+	const formatKeywordToolText = (template: string, keyword?: unknown) => {
+		const normalizedKeyword = typeof keyword === "string" ? keyword.trim() : "";
+		if (normalizedKeyword) return template.replace("{keyword}", normalizedKeyword);
+
+		return template
+			.replace(/「\{keyword\}」/g, "")
+			.replace(/"\{keyword\}"/g, "")
+			.replace(/\{keyword\}/g, "")
+			.replace(/\s+for\s*$/i, "")
+			.replace(/\s+/g, " ")
+			.trim();
+	};
+
+	const getToolArgs = (part: unknown) => {
+		const toolPart = part as { args?: unknown; input?: unknown };
+		return toolPart.input ?? toolPart.args;
+	};
+
 	const getToolUI = (toolName: string, args?: any, iconClass: string = "size-4") => {
 		if (toolName === "viewPage") {
 			return {
@@ -173,7 +191,7 @@ export default function AIAssistantWindow({ isOpen, onClose, lang = "zh-TW" }: A
 		if (toolName === "searchNews") {
 			return {
 				icon: <Search className={iconClass} />,
-				text: ui[lang]["agent.assistant.tool.searchNews"].replace("{keyword}", args?.q || ""),
+				text: formatKeywordToolText(ui[lang]["agent.assistant.tool.searchNews"], args?.q),
 			};
 		}
 		if (toolName === "latestNews") {
@@ -191,7 +209,7 @@ export default function AIAssistantWindow({ isOpen, onClose, lang = "zh-TW" }: A
 		if (toolName === "searchNewsTopics") {
 			return {
 				icon: <Search className={iconClass} />,
-				text: ui[lang]["agent.assistant.tool.searchNewsTopics"].replace("{keyword}", args?.q || ""),
+				text: formatKeywordToolText(ui[lang]["agent.assistant.tool.searchNewsTopics"], args?.q),
 			};
 		}
 		if (toolName === "latestNewsTopics") {
@@ -209,7 +227,7 @@ export default function AIAssistantWindow({ isOpen, onClose, lang = "zh-TW" }: A
 		if (toolName === "semanticSiteSearch") {
 			return {
 				icon: <Search className={iconClass} />,
-				text: ui[lang]["agent.assistant.tool.semanticSiteSearch"].replace("{keyword}", args?.keyword || ""),
+				text: formatKeywordToolText(ui[lang]["agent.assistant.tool.semanticSiteSearch"], args?.keyword),
 			};
 		}
 		if (toolName === "readArticle") {
@@ -232,7 +250,7 @@ export default function AIAssistantWindow({ isOpen, onClose, lang = "zh-TW" }: A
 			const lastPart = lastMessage.parts[lastMessage.parts.length - 1];
 			if (lastPart?.type?.startsWith("tool-")) {
 				const toolName = lastPart.type.replace("tool-", "");
-				return getToolUI(toolName, (lastPart as any).args, "size-4");
+				return getToolUI(toolName, getToolArgs(lastPart), "size-4");
 			}
 		}
 
