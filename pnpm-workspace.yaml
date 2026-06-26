@@ -5,3 +5,13 @@ allowBuilds:
   canvas: true
   esbuild: true
   sharp: true
+
+minimumReleaseAgeExclude:
+  - "@ai-sdk/gateway@4.0.0"
+  - "@ai-sdk/mcp@2.0.0"
+  - "@ai-sdk/openai@4.0.0"
+  - "@ai-sdk/provider-utils@5.0.0"
+  - "@ai-sdk/provider@4.0.0"
+  - "@ai-sdk/react@4.0.0"
+  - ai@7.0.0
+  - "@ai-sdk/openai-compatible@3.0.0"

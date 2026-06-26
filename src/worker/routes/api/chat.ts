@@ -1,7 +1,16 @@
 // @ts-nocheck
 import { Hono } from "hono";
-import { createOpenRouter, type OpenRouterProvider } from "@openrouter/ai-sdk-provider";
-import { streamText, tool, smoothStream, convertToModelMessages, stepCountIs, UIMessage } from "ai";
+import { createOpenAICompatible, type OpenAICompatibleProvider } from "@ai-sdk/openai-compatible";
+import {
+	streamText,
+	tool,
+	smoothStream,
+	convertToModelMessages,
+	isStepCount,
+	UIMessage,
+	createUIMessageStreamResponse,
+	toUIMessageStream,
+} from "ai";
 import { z } from "zod";
 import type { Env } from "../../types";
 import { buildTopicDetailToolResult, buildTopicListToolResult } from "./chat-news-tools";
@@ -11,9 +20,11 @@ const app = new Hono<{ Bindings: Env }>();
 
 app.post("/", async (c) => {
 	// 初始化 OpenRouter provider
-	const openrouter: OpenRouterProvider = createOpenRouter({
+	const openrouter: OpenAICompatibleProvider = createOpenAICompatible({
+		name: "openrouter",
 		apiKey: c.env.OPENROUTER_API_KEY,
 		baseURL: "https://gateway.ai.cloudflare.com/v1/3f1f83a939b2fc99ca45fd8987962514/juchunko-com/openrouter",
+		includeUsage: true,
 	});
 
 	// 解析請求 body
@@ -35,8 +46,7 @@ app.post("/", async (c) => {
 	};
 
 	const fetchAssetJson = async (pathname: string) => {
-		const url = new URL(pathname, c.req.url);
-		const response = await c.env.ASSETS.fetch(new Request(url, { method: "GET" }));
+		const response = await c.env.ASSETS.fetch(new URL(pathname, "https://assets.local"));
 		if (!response.ok) {
 			throw new Error(`ASSETS ${pathname} HTTP ${response.status}: ${response.statusText}`);
 		}
@@ -67,8 +77,8 @@ current page: https://juchunko.com${filename}
 
 	// 執行 LLM
 	const result = streamText({
-		model: openrouter.chat("@preset/website-chatbot"),
-		system: systemPrompt,
+		model: openrouter.chatModel("@preset/website-chatbot"),
+		instructions: systemPrompt,
 		messages: await convertToModelMessages(messages),
 		tools: {
 			// 讀取目前頁面
@@ -346,13 +356,15 @@ current page: https://juchunko.com${filename}
 				},
 			}),
 		},
-		stopWhen: stepCountIs(6),
+		stopWhen: isStepCount(6),
 		experimental_transform: smoothStream({
 			chunking: /[\u4E00-\u9FFF]|\S+\s+/,
 		}),
 	});
 
-	return result.toUIMessageStreamResponse();
+	return createUIMessageStreamResponse({
+		stream: toUIMessageStream({ stream: result.stream }),
+	});
 });
 
 export default app;

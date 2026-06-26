@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { createOpenRouter, type OpenRouterProvider } from "@openrouter/ai-sdk-provider";
+import { createOpenAICompatible, type OpenAICompatibleProvider } from "@ai-sdk/openai-compatible";
 import { generateText, Output } from "ai";
 import { z } from "zod";
 import type { Env } from "../../types";
@@ -84,9 +84,9 @@ async function fetchActMdx(lang: "zh-TW" | "en", slug: string) {
 	return { body, sourcePath, title: getTitleFromMdx(body) };
 }
 
-async function generateActSummary(openrouter: OpenRouterProvider, lang: "zh-TW" | "en", title: string, body: string) {
+async function generateActSummary(openrouter: OpenAICompatibleProvider, lang: "zh-TW" | "en", title: string, body: string) {
 	const result = await generateText({
-		model: openrouter.chat("@preset/website-chatbot"),
+		model: openrouter.chatModel("@preset/website-chatbot"),
 		output: Output.object({
 			name: "ActSummary",
 			description: "A three-part public-facing issue summary for a legislative issue page.",
@@ -110,9 +110,11 @@ app.get("/", async (c) => {
 
 	try {
 		const { body, sourcePath, title } = await fetchActMdx(langResult.data, slugResult.data);
-		const openrouter = createOpenRouter({
+		const openrouter = createOpenAICompatible({
+			name: "openrouter",
 			apiKey: c.env.OPENROUTER_API_KEY,
 			baseURL: "https://gateway.ai.cloudflare.com/v1/3f1f83a939b2fc99ca45fd8987962514/juchunko-com/openrouter",
+			includeUsage: true,
 		});
 		const summary = await generateActSummary(openrouter, langResult.data, title, body);
 
