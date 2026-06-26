@@ -34,6 +34,15 @@ app.post("/", async (c) => {
 		return response.json();
 	};
 
+	const fetchAssetJson = async (pathname: string) => {
+		const url = new URL(pathname, c.req.url);
+		const response = await c.env.ASSETS.fetch(new Request(url, { method: "GET" }));
+		if (!response.ok) {
+			throw new Error(`ASSETS ${pathname} HTTP ${response.status}: ${response.statusText}`);
+		}
+		return response.json();
+	};
+
 	// 系統提示詞
 	const systemPrompt = `你是國民黨立委葛如鈞（寶博士）網站的 AI 助手
   - 盡可能簡短、友善回答
@@ -117,7 +126,7 @@ current page: https://juchunko.com${filename}
 					.strict(),
 				execute: async ({ keyword, lang, limit = 8 }) => {
 					try {
-						const payload = await fetchJson("https://juchunko.com/search-index.json");
+						const payload = await fetchAssetJson("/search-index.json");
 						const docs = Array.isArray(payload?.docs) ? payload.docs : [];
 						return buildSiteSearchToolResult(docs, keyword, lang ?? inferLangFromFilename(filename), limit);
 					} catch (error: any) {
