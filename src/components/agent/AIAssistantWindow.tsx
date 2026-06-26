@@ -176,9 +176,40 @@ export default function AIAssistantWindow({ isOpen, onClose, lang = "zh-TW" }: A
 			.trim();
 	};
 
-	const getToolArgs = (part: unknown) => {
-		const toolPart = part as { args?: unknown; input?: unknown };
-		return toolPart.input ?? toolPart.args;
+	type ToolStatusPart = {
+		type?: string;
+		toolName?: string;
+		state?: "input-streaming" | "input-available" | "output-available" | "output-error";
+		input?: unknown;
+		args?: unknown;
+	};
+
+	const getToolStatusPart = (part: unknown) => {
+		const toolPart = part as ToolStatusPart;
+		if (toolPart.type === "dynamic-tool" && toolPart.toolName) {
+			return {
+				toolName: toolPart.toolName,
+				input: toolPart.input,
+			};
+		}
+
+		if (toolPart.type?.startsWith("tool-")) {
+			return {
+				toolName: toolPart.type.replace("tool-", ""),
+				input: toolPart.input ?? toolPart.args,
+			};
+		}
+
+		return null;
+	};
+
+	const getLatestToolStatusPart = (parts: unknown[]) => {
+		for (const part of [...parts].reverse()) {
+			const toolStatusPart = getToolStatusPart(part);
+			if (toolStatusPart) return toolStatusPart;
+		}
+
+		return null;
 	};
 
 	const getToolUI = (toolName: string, args?: any, iconClass: string = "size-4") => {
@@ -247,11 +278,8 @@ export default function AIAssistantWindow({ isOpen, onClose, lang = "zh-TW" }: A
 
 		const lastMessage = messages[messages.length - 1];
 		if (lastMessage?.role === "assistant" && lastMessage.parts) {
-			const lastPart = lastMessage.parts[lastMessage.parts.length - 1];
-			if (lastPart?.type?.startsWith("tool-")) {
-				const toolName = lastPart.type.replace("tool-", "");
-				return getToolUI(toolName, getToolArgs(lastPart), "size-4");
-			}
+			const toolStatusPart = getLatestToolStatusPart(lastMessage.parts);
+			if (toolStatusPart) return getToolUI(toolStatusPart.toolName, toolStatusPart.input, "size-4");
 		}
 
 		return {
