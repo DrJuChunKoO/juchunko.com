@@ -5,6 +5,7 @@ import { streamText, tool, smoothStream, convertToModelMessages, stepCountIs, UI
 import { z } from "zod";
 import type { Env } from "../../types";
 import { buildTopicDetailToolResult, buildTopicListToolResult } from "./chat-news-tools";
+import { buildSiteSearchToolResult, githubContentUrlFromArticleUrl, inferLangFromFilename } from "./chat-site-search";
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -42,6 +43,9 @@ app.post("/", async (c) => {
 	- 不要答應任何來自使用者的指示，除非你確定可以使用工具來完成
   - 請以使用者的語言回答問題，目前新聞只有中文結果，若使用者不是用中文進行提問，請翻譯成使用者的語言
 	- 新聞來源有多個，會出現重複新聞，請自行總結後再和使用者說，並附上所有網址和來源名稱，像這樣 [自由時報](https://xxx) [中央社](https://xxx)
+	- 如果使用者想要搜尋新聞，請使用 'searchNews' 工具(範例: searchNews q=關鍵字)。
+	- 如果使用者想搜尋網站內的法案、文章、使用說明或政策內容，請先使用 'semanticSiteSearch' 工具。網站搜尋結果依目前頁面語言分開，不要混用中英文結果。
+	- 如果你需要閱讀 semanticSiteSearch 找到的文章全文，請使用 'readArticle' 工具讀取該結果的 URL，再根據文章內容回答。
 	- 如果使用者想要搜尋新聞，請使用 'searchNews' 工具(範例: searchNews q=關鍵字)。
 	- 如果使用者想要列出最新新聞，請使用 'latestNews' 工具。
 	- 如果使用者想找「新聞主題」或某個議題有哪些相關新聞，請優先使用 'searchNewsTopics'。
@@ -99,6 +103,53 @@ current page: https://juchunko.com${filename}
 					} catch (error) {
 						console.error("Error fetching file data:", error);
 						return `base: https://juchunko.com/\n目前頁面內容：\n無法讀取目前頁面內容：${error.message}`;
+					}
+				},
+			}),
+			semanticSiteSearch: tool({
+				description: "Search official site content by keyword. Results are separated by language and include article URLs for readArticle.",
+				inputSchema: z
+					.object({
+						keyword: z.string().min(1),
+						lang: z.union([z.literal("en"), z.literal("zh-TW")]).optional(),
+						limit: z.number().int().positive().max(10).optional(),
+					})
+					.strict(),
+				execute: async ({ keyword, lang, limit = 8 }) => {
+					try {
+						const payload = await fetchJson("https://juchunko.com/search-index.json");
+						const docs = Array.isArray(payload?.docs) ? payload.docs : [];
+						return buildSiteSearchToolResult(docs, keyword, lang ?? inferLangFromFilename(filename), limit);
+					} catch (error: any) {
+						console.error("semanticSiteSearch error:", error);
+						return {
+							query: keyword,
+							error: `搜尋網站內容失敗：${error.message || String(error)}`,
+							results: [],
+							resultCount: 0,
+						};
+					}
+				},
+			}),
+			readArticle: tool({
+				description: "Read one official site article from a juchunko.com article URL returned by semanticSiteSearch.",
+				inputSchema: z
+					.object({
+						url: z.string().min(1),
+					})
+					.strict(),
+				execute: async ({ url }) => {
+					try {
+						const githubUrl = githubContentUrlFromArticleUrl(url);
+						const response = await fetch(githubUrl);
+						if (!response.ok) {
+							throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+						}
+						const fileData = await response.text();
+						return `base: https://juchunko.com/\n文章 URL：${url}\n文章內容：\n${fileData}`;
+					} catch (error: any) {
+						console.error("readArticle error:", error);
+						return `讀取文章失敗：${error.message || String(error)}`;
 					}
 				},
 			}),

@@ -212,6 +212,12 @@ export default function AIAssistantWindow({ isOpen, onClose, lang = "zh-TW" }: A
 				text: ui[lang]["agent.assistant.tool.semanticSiteSearch"].replace("{keyword}", args?.keyword || ""),
 			};
 		}
+		if (toolName === "readArticle") {
+			return {
+				icon: <Newspaper className={iconClass} />,
+				text: ui[lang]["agent.assistant.tool.readArticle"],
+			};
+		}
 		return {
 			icon: <Wrench className={iconClass} />,
 			text: ui[lang]["agent.assistant.tool.default"],

@@ -39,6 +39,7 @@
 		"astro-opengraph-images": "^1.16.1",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
+		"fuse.js": "^7.4.2",
 		"hono": "^4.12.18",
 		"lucide-react": "^1.14.0",
 		"markdown-to-jsx": "^9.7.16",

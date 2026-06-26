@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import { defaultLang, languages, ui } from "@/i18n/ui";
-import { Menu, Moon, Sun, X } from "lucide-react";
+import { Menu, Moon, Search, Sun, X } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import React, { useEffect, useState, type ReactNode, type SVGProps } from "react";
 import LanguageSelector from "./LanguageSelector";
@@ -55,6 +55,7 @@ function getNavCopy(lang: SupportedLang) {
 	return {
 		siteTitle: copy["site.title"],
 		blog: copy["nav.blog"],
+		search: copy["nav.search"],
 		transcript: copy["nav.transript"],
 	};
 }
@@ -142,6 +143,14 @@ export default function Nav({ lang }: NavProps) {
 					</a>
 				))}
 				<a
+					href={`/${currentLang}/search`}
+					className={cn(navIconButtonClassName, "hidden md:inline-flex")}
+					title={copy.search}
+					aria-label={copy.search}
+				>
+					<Search className="size-6" />
+				</a>
+				<a
 					href={socialLinks[0].href}
 					target="_blank"
 					rel="noreferrer"
@@ -181,6 +190,13 @@ export default function Nav({ lang }: NavProps) {
 					>
 						<div className="flex flex-col gap-6 px-8 pt-8 pb-12">
 							<div className="flex flex-1 flex-col justify-center gap-6 text-2xl font-medium">
+								<a
+									href={`/${currentLang}/search`}
+									onClick={closeMenu}
+									className="hover:text-foreground text-muted-foreground transition-colors"
+								>
+									{copy.search}
+								</a>
 								{externalLinks.map((link) => (
 									<a
 										key={`mobile-${link.href}`}
