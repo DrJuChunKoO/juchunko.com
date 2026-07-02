@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { ACT_SUMMARY_CACHE_CONTROL, buildActSummaryPrompt } from "./act-summary";
+import { ACT_SUMMARY_CACHE_CONTROL, buildActSummaryPrompt, parseActSummaryOutput } from "./act-summary";
 
 test("buildActSummaryPrompt asks for the fixed issue summary sections", () => {
 	const prompt = buildActSummaryPrompt({
@@ -16,6 +16,7 @@ test("buildActSummaryPrompt asks for the fixed issue summary sections", () => {
 	assert.match(prompt, /對我有什麼影響/);
 	assert.doesNotMatch(prompt, /目前的問題/);
 	assert.match(prompt, /結構化輸出 schema/);
+	assert.match(prompt, /problem, changes, impact/);
 });
 
 test("buildActSummaryPrompt uses a separate English prompt for English summaries", () => {
@@ -33,6 +34,40 @@ test("buildActSummaryPrompt uses a separate English prompt for English summaries
 	assert.doesNotMatch(prompt, /你正在/);
 	assert.doesNotMatch(prompt, /議題摘要/);
 	assert.doesNotMatch(prompt, /目前的問題/);
+	assert.match(prompt, /problem, changes, impact/);
+});
+
+test("parseActSummaryOutput recovers JSON with localized labels", () => {
+	const summary = parseActSummaryOutput(`\`\`\`json
+{
+  "問題": "臺灣需要從洗錢防制登記走向完整虛擬資產專法。",
+  "我們提出的做法": "葛如鈞提出委員版本，推動許可制、客戶保護、穩定幣規範與過渡安排。",
+  "對我有什麼影響": "民眾使用虛擬資產服務時，會有更清楚的平台責任、資產保護與市場秩序規則。"
+}
+\`\`\``);
+
+	assert.deepEqual(summary, {
+		problem: "臺灣需要從洗錢防制登記走向完整虛擬資產專法。",
+		changes: "葛如鈞提出委員版本，推動許可制、客戶保護、穩定幣規範與過渡安排。",
+		impact: "民眾使用虛擬資產服務時，會有更清楚的平台責任、資產保護與市場秩序規則。",
+	});
+});
+
+test("parseActSummaryOutput recovers markdown sections", () => {
+	const summary = parseActSummaryOutput(`## Problem
+Taiwan needed a dedicated framework for virtual asset services.
+
+## What We Proposed
+Ko proposed licensing, customer asset protection, stablecoin rules, and transition arrangements.
+
+## How This Affects Me
+Users get clearer platform duties, safeguards, and market-order rules.`);
+
+	assert.deepEqual(summary, {
+		problem: "Taiwan needed a dedicated framework for virtual asset services.",
+		changes: "Ko proposed licensing, customer asset protection, stablecoin rules, and transition arrangements.",
+		impact: "Users get clearer platform duties, safeguards, and market-order rules.",
+	});
 });
 
 test("ACT_SUMMARY_CACHE_CONTROL keeps generated summaries cacheable for seven days", () => {
