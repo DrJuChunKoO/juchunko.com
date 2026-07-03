@@ -12,7 +12,7 @@ import ActProgress from "@/components/ActProgress.astro";
 import NewsTopicEmbed from "@/components/NewsTopicEmbed.astro";
 import Timeline from "@/components/Timeline.astro";
 import TimelineItem from "@/components/TimelineItem.astro";
-import { FileText, Gavel, Scale, ShieldCheck, Users, Video } from "lucide-react";
+import { FileText, Gavel, Scale, ShieldCheck, Users, Video, ScrollText } from "lucide-react";
 import { YouTube } from "@astro-community/astro-embed-youtube";
 
 # Virtual Asset Service Act
@@ -73,6 +73,14 @@ The Virtual Asset Service Act marks Taiwan's move from an anti-money-laundering 
 	<Card title="June 3 Deliberation Video" href="https://www.youtube.com/watch?v=cAio-gujRYg" target="_blank">
 		<Video slot="icon" />
 		**Legislative Yuan stream**: Finance Committee deliberation video for the 16th full committee meeting.
+	</Card>
+	<Card
+		title="June 3 Review Transcript"
+		href="https://transpal.juchunko.com/speeches/2026-06-03-legislative-review-virtual-asset-service-act/"
+		target="_blank"
+	>
+		<ScrollText slot="icon" />
+		**TransPal transcript**: Full transcript compiled from the Legislative Yuan Gazette, vol. 115, no. 48 committee record.
 	</Card>
 </Cards>
 

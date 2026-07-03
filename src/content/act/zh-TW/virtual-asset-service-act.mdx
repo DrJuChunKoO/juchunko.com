@@ -12,7 +12,7 @@ import ActProgress from "@/components/ActProgress.astro";
 import NewsTopicEmbed from "@/components/NewsTopicEmbed.astro";
 import Timeline from "@/components/Timeline.astro";
 import TimelineItem from "@/components/TimelineItem.astro";
-import { FileText, Gavel, Scale, ShieldCheck, Users, Video } from "lucide-react";
+import { FileText, Gavel, Scale, ShieldCheck, Users, Video, ScrollText } from "lucide-react";
 import { YouTube } from "@astro-community/astro-embed-youtube";
 
 # 虛擬資產服務法
@@ -67,6 +67,14 @@ import { YouTube } from "@astro-community/astro-embed-youtube";
 	<Card title="6/3 審議影片" href="https://www.youtube.com/watch?v=cAio-gujRYg" target="_blank">
 		<Video slot="icon" />
 		**立法院直播**：財政委員會第 16 次全體委員會議審查影片。
+	</Card>
+	<Card
+		title="6/3 審查逐字稿"
+		href="https://transpal.juchunko.com/speeches/2026-06-03-legislative-review-virtual-asset-service-act/"
+		target="_blank"
+	>
+		<ScrollText slot="icon" />
+		**TransPal 逐字稿**：依立法院公報第 115 卷第 48 期委員會紀錄整理之審查逐字稿。
 	</Card>
 </Cards>
 
