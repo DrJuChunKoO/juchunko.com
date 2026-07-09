@@ -1,7 +1,7 @@
 export const dialogLayerClassNames = {
-	overlay: "fixed inset-0 z-50 flex items-start justify-center bg-black/55 p-4 pt-14",
+	overlay: "fixed inset-0 z-50 flex items-end justify-center bg-black/55 p-0 sm:items-center sm:p-4 sm:pt-14",
 	panel:
-		"relative max-h-[85vh] w-full max-w-3xl overflow-hidden rounded-2xl border border-black/5 shadow-2xl shadow-black/15 dark:border-white/10 bg-background",
+		"relative grid max-h-[min(92dvh,100%)] w-full max-w-3xl grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden rounded-t-2xl border border-black/5 bg-background shadow-2xl shadow-black/15 sm:max-h-[min(85dvh,calc(100dvh-5.5rem))] sm:rounded-2xl dark:border-white/10",
 } as const;
 
 export const dialogBackdropVariants = {

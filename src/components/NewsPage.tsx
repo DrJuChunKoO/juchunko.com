@@ -513,8 +513,12 @@ function TopicDialog({
 								<div className="flex min-w-0 flex-1 flex-col gap-1">
 									{topicTitle ? (
 										<>
-											<h2 className="text-xl leading-tight font-semibold text-gray-900 dark:text-white">{topicTitle}</h2>
-											{topicSummary && <p className="max-w-2xl text-sm leading-6 text-gray-600 dark:text-gray-300">{topicSummary}</p>}
+											<h2 className="text-lg leading-tight font-semibold text-gray-900 sm:text-xl dark:text-white">{topicTitle}</h2>
+											{topicSummary && (
+												<p className="line-clamp-3 max-w-2xl text-sm leading-6 text-gray-600 sm:line-clamp-none dark:text-gray-300">
+													{topicSummary}
+												</p>
+											)}
 										</>
 									) : (
 										<div className="flex items-center py-1">
@@ -536,7 +540,7 @@ function TopicDialog({
 							</div>
 						</div>
 
-						<div className="max-h-[65vh] overflow-y-auto p-4">
+						<div className="min-h-0 overflow-y-auto overscroll-contain p-4">
 							{isTopicLoading && (
 								<div className="flex items-center justify-center py-12">
 									<Loader />
@@ -561,7 +565,7 @@ function TopicDialog({
 							))}
 						</div>
 
-						<div className="border-border relative flex items-center justify-between border-t">
+						<div className="border-border relative flex items-center justify-between border-t pb-[env(safe-area-inset-bottom)] sm:pb-0">
 							<div className="px-4 py-1 text-sm text-gray-500 dark:text-gray-400">
 								{selectedTopic && formatTopicTotalNewsCount(selectedTopic.totalNewsCount, lang)}
 							</div>
