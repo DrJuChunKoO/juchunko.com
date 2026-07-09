@@ -61,41 +61,44 @@ const shareLinks = [
 		}
 		<button
 			type="button"
-			id="copy-link-btn"
+			data-copy-link
 			data-copied-text={t("post.share.copied")}
 			class="inline-flex md:w-20 cursor-pointer flex-col items-center gap-1.5 rounded-xl bg-secondary px-2 py-3 text-secondary-foreground transition-all hover:scale-105 hover:bg-accent hover:text-accent-foreground hover:shadow-sm"
 		>
-			<span id="copy-link-icon">
+			<span data-copy-link-icon>
 				<TablerLink class="size-6" />
 			</span>
-			<span id="copy-link-label" class="text-xs font-medium">{t("post.share.copy")}</span>
+			<span data-copy-link-label class="text-xs font-medium">{t("post.share.copy")}</span>
 		</button>
 	</div>
 </div>
 
 <script>
-	const btn = document.getElementById("copy-link-btn");
-	const label = document.getElementById("copy-link-label");
-	const icon = document.getElementById("copy-link-icon");
-	const originalText = label?.textContent ?? "";
-	const copiedText = btn?.dataset.copiedText ?? "Copied";
-	const checkSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" class="size-6"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m5 12l5 5l10-10"/></svg>';
-	let originalSvg = icon?.innerHTML ?? "";
-	let timeout: ReturnType<typeof setTimeout> | null = null;
+	const checkSvg =
+		'<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" class="size-6"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m5 12l5 5l10-10"/></svg>';
 
-	btn?.addEventListener("click", async () => {
-		try {
-			await navigator.clipboard.writeText(window.location.href);
-			originalSvg = icon?.innerHTML ?? originalSvg;
-			if (icon) icon.innerHTML = checkSvg;
-			if (label) label.textContent = copiedText;
-			if (timeout) clearTimeout(timeout);
-			timeout = setTimeout(() => {
-				if (icon) icon.innerHTML = originalSvg;
-				if (label) label.textContent = originalText;
-			}, 1500);
-		} catch {
-			// Clipboard API not available, do nothing
-		}
+	document.querySelectorAll<HTMLElement>("[data-copy-link]").forEach((btn) => {
+		const label = btn.querySelector<HTMLElement>("[data-copy-link-label]");
+		const icon = btn.querySelector<HTMLElement>("[data-copy-link-icon]");
+		const originalText = label?.textContent ?? "";
+		const copiedText = btn.dataset.copiedText ?? "Copied";
+		let originalSvg = icon?.innerHTML ?? "";
+		let timeout: ReturnType<typeof setTimeout> | null = null;
+
+		btn.addEventListener("click", async () => {
+			try {
+				await navigator.clipboard.writeText(window.location.href);
+				originalSvg = icon?.innerHTML ?? originalSvg;
+				if (icon) icon.innerHTML = checkSvg;
+				if (label) label.textContent = copiedText;
+				if (timeout) clearTimeout(timeout);
+				timeout = setTimeout(() => {
+					if (icon) icon.innerHTML = originalSvg;
+					if (label) label.textContent = originalText;
+				}, 1500);
+			} catch {
+				// Clipboard API not available.
+			}
+		});
 	});
 </script>

@@ -20,6 +20,7 @@ const id = `callout-${storageKey}`;
 	class="relative mx-auto flex w-full items-center gap-3 rounded-lg bg-gray-50 p-3 md:p-4 dark:bg-white/5"
 	class:list={Astro.props.class}
 	data-callout
+	data-storage-key={storageKey}
 >
 	<div class="flex min-w-0 flex-1 items-center gap-3">
 		<div class="text-foreground/90 min-w-0 text-sm leading-snug">
@@ -66,29 +67,32 @@ const id = `callout-${storageKey}`;
 	}
 </div>
 
-<script define:vars={{ id, storageKey }}>
-	(function () {
-		const el = document.getElementById(id);
-		if (!el) return;
-		const STORAGE_KEY = "callout:" + storageKey;
+<script>
+	document.querySelectorAll<HTMLElement>("[data-callout]").forEach((el) => {
+		const storageKey = el.dataset.storageKey;
+		if (!storageKey) return;
+
+		const STORAGE_KEY = `callout:${storageKey}`;
 		try {
 			if (localStorage.getItem(STORAGE_KEY) === "closed") {
 				el.remove();
 				return;
 			}
-		} catch {}
-		const btn = el.querySelector("[data-callout-close]");
-		if (btn) {
-			btn.addEventListener(
-				"click",
-				() => {
-					try {
-						localStorage.setItem(STORAGE_KEY, "closed");
-					} catch {}
-					el.remove();
-				},
-				{ once: true },
-			);
+		} catch {
+			// Ignore storage failures.
 		}
-	})();
+
+		el.querySelector("[data-callout-close]")?.addEventListener(
+			"click",
+			() => {
+				try {
+					localStorage.setItem(STORAGE_KEY, "closed");
+				} catch {
+					// Ignore storage failures.
+				}
+				el.remove();
+			},
+			{ once: true },
+		);
+	});
 </script>

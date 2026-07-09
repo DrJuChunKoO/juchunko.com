@@ -25,25 +25,25 @@ import ParticleOrb from "@/components/ParticleOrb.tsx";
 	</div>
 </PageLayout>
 <script>
-	const browserLang = navigator.language;
-	const lang = browserLang.startsWith("zh") ? "zh-TW" : "en";
-	const locale = {
+	type Locale = "zh-TW" | "en";
+	type MessageKey = "title" | "buttonText";
+
+	const lang: Locale = navigator.language.startsWith("zh") ? "zh-TW" : "en";
+	const locale: Record<Locale, Record<MessageKey, string>> = {
 		"zh-TW": {
-			sitename: "科技立委葛如鈞．寶博士",
 			title: "先進國會・共識未來",
-			buttonText: `進入「科技立委葛如鈞．寶博士」宇宙`,
+			buttonText: "進入「科技立委葛如鈞．寶博士」宇宙",
 		},
 		en: {
-			sitename: "Ju Chun Ko",
 			title: "Emerging Congress, Converging Consensus",
-			buttonText: `Enter Dr.Ju-Chun KO Universe`,
+			buttonText: "Enter Dr.Ju-Chun KO Universe",
 		},
 	};
 
-	document.querySelector(`[data-lang="button"]`)?.setAttribute("href", `/${lang}`);
+	document.querySelector('[data-lang="button"]')?.setAttribute("href", `/${lang}`);
 	document.querySelectorAll("[data-lang]").forEach((el) => {
 		const key = el.getAttribute("data-lang");
-		if (key && locale[lang][key]) {
+		if (key === "title" || key === "buttonText") {
 			el.textContent = locale[lang][key];
 		}
 	});
