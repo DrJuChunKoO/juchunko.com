@@ -15,3 +15,5 @@ minimumReleaseAgeExclude:
   - "@ai-sdk/react@4.0.0"
   - ai@7.0.0
   - "@ai-sdk/openai-compatible@3.0.0"
+  - "@astrojs/telemetry@3.3.3"
+  - astro@7.0.7

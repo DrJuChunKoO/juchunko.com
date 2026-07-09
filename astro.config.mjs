@@ -11,7 +11,7 @@ import mdx from "@astrojs/mdx";
 
 import opengraphImages from "astro-opengraph-images";
 import fs from "node:fs";
-import { customRenderer } from "./src/lib/og-renderer";
+import { customRenderer } from "./src/lib/og-renderer.ts";
 
 // https://astro.build/config
 export default defineConfig({
