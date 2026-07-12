@@ -12,7 +12,7 @@ import ActProgress from "@/components/ActProgress.astro";
 import NewsTopicEmbed from "@/components/NewsTopicEmbed.astro";
 import Timeline from "@/components/Timeline.astro";
 import TimelineItem from "@/components/TimelineItem.astro";
-import { FileText, Gavel, Scale, ShieldCheck, Users, Video, ScrollText } from "lucide-react";
+import { FileText, Gavel, Scale, ShieldCheck, Users, Video, ScrollText, Languages } from "lucide-react";
 import { YouTube } from "@astro-community/astro-embed-youtube";
 
 # Virtual Asset Service Act
@@ -28,6 +28,16 @@ The Virtual Asset Service Act marks Taiwan's move from an anti-money-laundering 
 ## Resource Hub
 
 <Cards>
+	<Card
+		title="Chinese-English Bilingual Text (with Explanations & Resolutions)"
+		href="/file/vasp/virtual-asset-service-act-bilingual-zh-en.pdf"
+		target="_blank"
+	>
+		<Languages slot="icon" />
+		**Bilingual PDF**: The Finance Committee-approved version, with the table format preserved and each Chinese article followed by its
+		English translation, including the general statement, article-by-article explanations, and full English of all 15 supplementary
+		resolutions. Terminology follows Taiwan FSC conventions; for reference only—the official Chinese text prevails.
+	</Card>
 	<Card title="Third-Reading Act PDF" href="/file/vasp/virtual-asset-service-act-third-reading-1150630.pdf" target="_blank">
 		<FileText slot="icon" />
 		**Passed text**: Full Chinese PDF passed at the 15th sitting of the Legislative Yuan's 11th term, 5th session, on 2026/06/30.
