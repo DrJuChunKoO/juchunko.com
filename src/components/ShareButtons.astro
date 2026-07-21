@@ -52,7 +52,7 @@ const shareLinks = [
 					target="_blank"
 					rel="noopener noreferrer"
 					aria-label={label}
-					class="inline-flex md:w-20 flex-col items-center gap-1.5 rounded-xl bg-secondary px-2 py-3 text-secondary-foreground transition-all hover:scale-105 hover:bg-accent hover:text-accent-foreground hover:shadow-sm"
+					class="bg-secondary text-secondary-foreground hover:bg-accent hover:text-accent-foreground inline-flex flex-col items-center gap-1.5 rounded-xl px-2 py-3 transition-all hover:scale-105 hover:shadow-sm md:w-20"
 				>
 					<Icon class="size-6" />
 					<span class="text-xs font-medium">{label}</span>
@@ -63,7 +63,7 @@ const shareLinks = [
 			type="button"
 			data-copy-link
 			data-copied-text={t("post.share.copied")}
-			class="inline-flex md:w-20 cursor-pointer flex-col items-center gap-1.5 rounded-xl bg-secondary px-2 py-3 text-secondary-foreground transition-all hover:scale-105 hover:bg-accent hover:text-accent-foreground hover:shadow-sm"
+			class="bg-secondary text-secondary-foreground hover:bg-accent hover:text-accent-foreground inline-flex cursor-pointer flex-col items-center gap-1.5 rounded-xl px-2 py-3 transition-all hover:scale-105 hover:shadow-sm md:w-20"
 		>
 			<span data-copy-link-icon>
 				<TablerLink class="size-6" />
