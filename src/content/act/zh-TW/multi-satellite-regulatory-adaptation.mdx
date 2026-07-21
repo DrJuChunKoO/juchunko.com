@@ -8,6 +8,7 @@ status: "《電信管理法》第 36 條及第 95 條修正案已於 2026 年 7 
 
 import Cards from "@/components/Cards.astro";
 import Card from "@/components/Card.astro";
+import CardGroup from "@/components/CardGroup.astro";
 import NewsTopicEmbed from "@/components/NewsTopicEmbed.astro";
 import Timeline from "@/components/Timeline.astro";
 import TimelineItem from "@/components/TimelineItem.astro";
@@ -25,34 +26,48 @@ import { YouTube } from "@astro-community/astro-embed-youtube";
 這次修法獲朝野支持，不是為單一企業量身打造，也不是讓任何業者自動取得營運許可，而是把僵化的形式限制改為可監理、可問責的實質審查。烏克蘭、美國、日本、韓國等地已使用的國際衛星服務，因而取得進入臺灣市場的制度入口；業者仍須通過主管機關審查，並配合資料落地、手機直連衛星等安全規範。
 
 <Cards>
-	<Card
-		title="下載修正草案（PDF）"
-		href="https://ipfs.juchunko.com/ipfs/bafybeifeioryvdxsgvg3tlgxqa42bq7osp5txsvgihwdzwainmc7dcs2ya/LCEWA01_110415_00040.pdf"
-		target="_blank"
-	>
-		<FileText slot="icon" />
-		**PDF**：電信管理法第 36 條修正草案公報版本。
-	</Card>
-	<Card
-		title="下載修正草案（DOC）"
-		href="https://ipfs.juchunko.com/ipfs/bafybeifeioryvdxsgvg3tlgxqa42bq7osp5txsvgihwdzwainmc7dcs2ya/LCEWA01_110415_00040.doc"
-		target="_blank"
-	>
-		<FileText slot="icon" />
-		**DOC**：電信管理法第 36 條修正草案可編輯版本。
-	</Card>
-	<Card title="附帶決議一：資料落地" href="/file/multi-satellite/attached-resolution-data-localization.jpg" target="_blank">
-		<FileText slot="icon" />
-		**原始附件**：要求衛星地面接收站及資料落地於我國境內。
-	</Card>
-	<Card title="附帶決議二：手機直連衛星" href="/file/multi-satellite/attached-resolution-direct-to-satellite.jpg" target="_blank">
-		<FileText slot="icon" />
-		**原始附件**：要求手機直連衛星及設備直連衛星建立完整監理配套。
-	</Card>
-	<Card title="查看議案內容" href="https://ppg.ly.gov.tw/ppg/bills/202110181020000/details" target="_blank">
-		<Rocket slot="icon" />
-		**立法院議案**：查看修正草案一讀付委與議案資訊。
-	</Card>
+	<CardGroup title="《電信管理法》第 36、95 條修法議案">
+		<Card
+			slot="children"
+			title="下載修正草案（PDF）"
+			href="https://ipfs.juchunko.com/ipfs/bafybeifeioryvdxsgvg3tlgxqa42bq7osp5txsvgihwdzwainmc7dcs2ya/LCEWA01_110415_00040.pdf"
+			target="_blank"
+		>
+			<FileText slot="icon" />
+			**PDF**：電信管理法第 36 條修正草案公報版本。
+		</Card>
+		<Card
+			slot="children"
+			title="下載修正草案（DOC）"
+			href="https://ipfs.juchunko.com/ipfs/bafybeifeioryvdxsgvg3tlgxqa42bq7osp5txsvgihwdzwainmc7dcs2ya/LCEWA01_110415_00040.doc"
+			target="_blank"
+		>
+			<FileText slot="icon" />
+			**DOC**：電信管理法第 36 條修正草案可編輯版本。
+		</Card>
+		<Card
+			slot="children"
+			title="附帶決議一：資料落地"
+			href="/file/multi-satellite/attached-resolution-data-localization.jpg"
+			target="_blank"
+		>
+			<FileText slot="icon" />
+			**原始附件**：要求衛星地面接收站及資料落地於我國境內。
+		</Card>
+		<Card
+			slot="children"
+			title="附帶決議二：手機直連衛星"
+			href="/file/multi-satellite/attached-resolution-direct-to-satellite.jpg"
+			target="_blank"
+		>
+			<FileText slot="icon" />
+			**原始附件**：要求手機直連衛星及設備直連衛星建立完整監理配套。
+		</Card>
+		<Card title="查看議案內容" href="https://ppg.ly.gov.tw/ppg/bills/202110181020000/details" target="_blank">
+			<Rocket slot="icon" />
+			**立法院議案**：查看三讀進度與議案資訊。
+		</Card>
+	</CardGroup>
 </Cards>
 
 ## 兩項附帶決議

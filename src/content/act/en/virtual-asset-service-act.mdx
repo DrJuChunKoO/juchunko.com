@@ -8,6 +8,7 @@ status: "Passed third reading in the Legislative Yuan on 2026/06/30"
 
 import Cards from "@/components/Cards.astro";
 import Card from "@/components/Card.astro";
+import CardGroup from "@/components/CardGroup.astro";
 import NewsTopicEmbed from "@/components/NewsTopicEmbed.astro";
 import Timeline from "@/components/Timeline.astro";
 import TimelineItem from "@/components/TimelineItem.astro";
@@ -21,71 +22,94 @@ The Virtual Asset Service Act marks Taiwan's move from an anti-money-laundering 
 ## Resource Hub
 
 <Cards>
-	<Card
-		title="Chinese-English Bilingual Text (with Explanations & Resolutions)"
-		href="/file/vasp/virtual-asset-service-act-bilingual-zh-en.pdf"
-		target="_blank"
-	>
-		<Languages slot="icon" />
-		**Bilingual PDF**: The version passed on third reading by the Legislative Yuan on 2026/06/30 (identical to the committee-approved
-		version, as the third reading involved no further negotiation or textual amendment), with the table format preserved and each Chinese
-		article followed by its English translation, including the general statement, article-by-article explanations, and full English of all
-		15 supplementary resolutions. Terminology follows Taiwan FSC conventions; for reference only—the official Chinese text prevails.
-	</Card>
-	<Card title="Third-Reading Act PDF" href="/file/vasp/virtual-asset-service-act-third-reading-1150630.pdf" target="_blank">
-		<FileText slot="icon" />
-		**Passed text**: Full Chinese PDF passed at the 15th sitting of the Legislative Yuan's 11th term, 5th session, on 2026/06/30.
-	</Card>
-	<Card title="Ko Draft by 20 Legislators" href="/file/vasp/ko-vasp-draft.pdf" target="_blank">
-		<FileText slot="icon" />
-		**Draft text**: Issued on 2026/03/20, including the general explanation, article-by-article notes, and full draft articles.
-	</Card>
-	<Card
-		title="Executive Yuan Draft"
-		href="https://ppg.ly.gov.tw/ppg/download/agenda1/02/pdf/11/05/07/LCEWA01_110507_00034.pdf"
-		target="_blank"
-	>
-		<FileText slot="icon" />
-		**Executive version**: Issued on 2026/04/15 after passage at the Executive Yuan's 3996th meeting and submitted to the Legislative Yuan.
-	</Card>
-	<Card title="Finance Committee Meeting Notice" href="/file/vasp/finance-committee-notice-1150603.pdf" target="_blank">
-		<Gavel slot="icon" />
-		**Agenda material**: 16th full committee meeting of the Finance Committee, held as a two-day meeting on June 1 and June 3.
-	</Card>
-	<Card title="June 3 Agency Attendance List" href="/file/vasp/attendees-1150603.docx" target="_blank">
-		<Users slot="icon" />
-		**Attendance**: FSC, Central Bank, Ministry of Finance, Ministry of Justice, Judicial Yuan, Directorate-General of Personnel
-		Administration, and Criminal Investigation Bureau.
-	</Card>
-	<Card title="Committee-Approved Draft" href="/file/vasp/committee-approved-draft-1150603.docx" target="_blank">
-		<Scale slot="icon" />
-		**Committee version**: Finance Committee review draft with general explanation and article-by-article notes, passed on 2026/06/03.
-	</Card>
-	<Card title="Committee-Approved Explanations" href="/file/vasp/committee-approved-bill-explanations-1150603.docx" target="_blank">
-		<Scale slot="icon" />
-		**Review material**: June 3 committee-approved draft articles, general explanation, and article-by-article notes.
-	</Card>
-	<Card title="Detailed Review Outcome Markup" href="/file/vasp/review-outcome-markup-attached-resolutions-1150603.doc" target="_blank">
-		<FileText slot="icon" />
-		**Review table**: Marked version showing articles passed as submitted, amendments, rejected items, and attached resolutions.
-	</Card>
-	<Card title="15 Attached Resolution Drafts" href="/file/vasp/attached-resolutions-original.pdf" target="_blank">
-		<ShieldCheck slot="icon" />
-		**Attached resolutions**: Working originals covering business opening, overseas platforms, customer protection, fintech funding,
-		derivatives, FATF, staffing, and transition issues.
-	</Card>
-	<Card title="June 3 Deliberation Video" href="https://www.youtube.com/watch?v=cAio-gujRYg" target="_blank">
-		<Video slot="icon" />
-		**Legislative Yuan stream**: Finance Committee deliberation video for the 16th full committee meeting.
-	</Card>
-	<Card
-		title="June 3 Review Transcript"
-		href="https://transpal.juchunko.com/speeches/2026-06-03-legislative-review-virtual-asset-service-act/"
-		target="_blank"
-	>
-		<ScrollText slot="icon" />
-		**TransPal transcript**: Full transcript compiled from the Legislative Yuan Gazette, vol. 115, no. 48 committee record.
-	</Card>
+	<CardGroup title="Virtual Asset Service Act Versions">
+		<Card
+			slot="children"
+			title="Chinese-English Bilingual Text (with Explanations & Resolutions)"
+			href="/file/vasp/virtual-asset-service-act-bilingual-zh-en.pdf"
+			target="_blank"
+		>
+			<Languages slot="icon" />
+			**Bilingual PDF**: The version passed on third reading by the Legislative Yuan on 2026/06/30 (identical to the committee-approved
+			version, as the third reading involved no further negotiation or textual amendment), with the table format preserved and each Chinese
+			article followed by its English translation, including the general statement, article-by-article explanations, and full English of all
+			15 supplementary resolutions. Terminology follows Taiwan FSC conventions; for reference only—the official Chinese text prevails.
+		</Card>
+		<Card
+			slot="children"
+			title="Third-Reading Act PDF"
+			href="/file/vasp/virtual-asset-service-act-third-reading-1150630.pdf"
+			target="_blank"
+		>
+			<FileText slot="icon" />
+			**Passed text**: Full Chinese PDF passed at the 15th sitting of the Legislative Yuan's 11th term, 5th session, on 2026/06/30.
+		</Card>
+		<Card slot="children" title="Ko Draft by 20 Legislators" href="/file/vasp/ko-vasp-draft.pdf" target="_blank">
+			<FileText slot="icon" />
+			**Draft text**: Issued on 2026/03/20, including the general explanation, article-by-article notes, and full draft articles.
+		</Card>
+		<Card
+			slot="children"
+			title="Executive Yuan Draft"
+			href="https://ppg.ly.gov.tw/ppg/download/agenda1/02/pdf/11/05/07/LCEWA01_110507_00034.pdf"
+			target="_blank"
+		>
+			<FileText slot="icon" />
+			**Executive version**: Issued on 2026/04/15 after passage at the Executive Yuan's 3996th meeting and submitted to the Legislative
+			Yuan.
+		</Card>
+	</CardGroup>
+	<CardGroup title="June 3, 2026 Finance Committee Review">
+		<Card slot="children" title="Finance Committee Meeting Notice" href="/file/vasp/finance-committee-notice-1150603.pdf" target="_blank">
+			<Gavel slot="icon" />
+			**Agenda material**: 16th full committee meeting of the Finance Committee, held as a two-day meeting on June 1 and June 3.
+		</Card>
+		<Card slot="children" title="June 3 Agency Attendance List" href="/file/vasp/attendees-1150603.docx" target="_blank">
+			<Users slot="icon" />
+			**Attendance**: FSC, Central Bank, Ministry of Finance, Ministry of Justice, Judicial Yuan, Directorate-General of Personnel
+			Administration, and Criminal Investigation Bureau.
+		</Card>
+		<Card slot="children" title="Committee-Approved Draft" href="/file/vasp/committee-approved-draft-1150603.docx" target="_blank">
+			<Scale slot="icon" />
+			**Committee version**: Finance Committee review draft with general explanation and article-by-article notes, passed on 2026/06/03.
+		</Card>
+		<Card
+			slot="children"
+			title="Committee-Approved Explanations"
+			href="/file/vasp/committee-approved-bill-explanations-1150603.docx"
+			target="_blank"
+		>
+			<Scale slot="icon" />
+			**Review material**: June 3 committee-approved draft articles, general explanation, and article-by-article notes.
+		</Card>
+		<Card
+			slot="children"
+			title="Detailed Review Outcome Markup"
+			href="/file/vasp/review-outcome-markup-attached-resolutions-1150603.doc"
+			target="_blank"
+		>
+			<FileText slot="icon" />
+			**Review table**: Marked version showing articles passed as submitted, amendments, rejected items, and attached resolutions.
+		</Card>
+		<Card slot="children" title="15 Attached Resolution Drafts" href="/file/vasp/attached-resolutions-original.pdf" target="_blank">
+			<ShieldCheck slot="icon" />
+			**Attached resolutions**: Working originals covering business opening, overseas platforms, customer protection, fintech funding,
+			derivatives, FATF, staffing, and transition issues.
+		</Card>
+		<Card slot="children" title="June 3 Deliberation Video" href="https://www.youtube.com/watch?v=cAio-gujRYg" target="_blank">
+			<Video slot="icon" />
+			**Legislative Yuan stream**: Finance Committee deliberation video for the 16th full committee meeting.
+		</Card>
+		<Card
+			slot="children"
+			title="June 3 Review Transcript"
+			href="https://transpal.juchunko.com/speeches/2026-06-03-legislative-review-virtual-asset-service-act/"
+			target="_blank"
+		>
+			<ScrollText slot="icon" />
+			**TransPal transcript**: Full transcript compiled from the Legislative Yuan Gazette, vol. 115, no. 48 committee record.
+		</Card>
+	</CardGroup>
 </Cards>
 
 ## Deliberation Video

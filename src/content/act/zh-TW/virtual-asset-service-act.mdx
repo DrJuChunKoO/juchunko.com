@@ -8,6 +8,7 @@ status: "立法院於 2026/06/30 三讀通過《虛擬資產服務法》"
 
 import Cards from "@/components/Cards.astro";
 import Card from "@/components/Card.astro";
+import CardGroup from "@/components/CardGroup.astro";
 import NewsTopicEmbed from "@/components/NewsTopicEmbed.astro";
 import Timeline from "@/components/Timeline.astro";
 import TimelineItem from "@/components/TimelineItem.astro";
@@ -21,64 +22,80 @@ import { YouTube } from "@astro-community/astro-embed-youtube";
 ## 核心資源區
 
 <Cards>
-	<Card title="中英對照全文（含逐條說明及附帶決議）" href="/file/vasp/virtual-asset-service-act-bilingual-zh-en.pdf" target="_blank">
-		<Languages slot="icon" />
-		**中英對照 PDF**：立法院 2026/06/30
-		三讀通過版本（三讀未再協商修文，內容與財委會出委版一致），表格保留、逐條中英對照（一條中文接該條英文），並含總說明、逐條說明與 15
-		項附帶決議之完整英譯。譯名對照臺灣金管會通用用語，僅供參考，正式效力以中文條文為準。
-	</Card>
-	<Card title="三讀通過條文 PDF" href="/file/vasp/virtual-asset-service-act-third-reading-1150630.pdf" target="_blank">
-		<FileText slot="icon" />
-		**三讀版本**：中華民國 115 年 6 月 30 日，立法院第 11 屆第 5 會期第 15 次會議通過之完整 PDF 條文。
-	</Card>
-	<Card title="葛如鈞等 20 人提案草案" href="/file/vasp/ko-vasp-draft.pdf" target="_blank">
-		<FileText slot="icon" />
-		**草案版本**：2026/03/20 印發，包含總說明、逐條說明與完整條文。
-	</Card>
-	<Card
-		title="行政院函請審議草案"
-		href="https://ppg.ly.gov.tw/ppg/download/agenda1/02/pdf/11/05/07/LCEWA01_110507_00034.pdf"
-		target="_blank"
-	>
-		<FileText slot="icon" />
-		**行政院版本**：2026/04/15 印發，行政院第 3996 次會議通過後函請立法院審議。
-	</Card>
-	<Card title="財政委員會開會通知" href="/file/vasp/finance-committee-notice-1150603.pdf" target="_blank">
-		<Gavel slot="icon" />
-		**議程資料**：第 11 屆第 5 會期財政委員會第 16 次全體委員會議，6/1、6/3 兩天一次會。
-	</Card>
-	<Card title="6/3 列席機關及人員名單" href="/file/vasp/attendees-1150603.docx" target="_blank">
-		<Users slot="icon" />
-		**當天出席**：金管會、央行、財政部、法務部、司法院、行政院人事行政總處、刑事警察局等列席。
-	</Card>
-	<Card title="財委會審查通過版本" href="/file/vasp/committee-approved-draft-1150603.docx" target="_blank">
-		<Scale slot="icon" />
-		**出委版本**：2026/06/03 財政委員會審查會通過草案總說明及逐條說明。
-	</Card>
-	<Card title="財委會審查通過版本總說明" href="/file/vasp/committee-approved-bill-explanations-1150603.docx" target="_blank">
-		<Scale slot="icon" />
-		**審查資料**：2026/06/03 財委會審查通過之條文草案、總說明及逐條說明。
-	</Card>
-	<Card title="審查結果詳列表" href="/file/vasp/review-outcome-markup-attached-resolutions-1150603.doc" target="_blank">
-		<FileText slot="icon" />
-		**逐案對照**：詳列照案通過、修正、不採納與附帶決議之審查標記版本。
-	</Card>
-	<Card title="附帶決議 15 案原稿" href="/file/vasp/attached-resolutions-original.pdf" target="_blank">
-		<ShieldCheck slot="icon" />
-		**附帶決議**：會議用原稿，涵蓋業務開放、境外平台、客戶保護、金融科技基金、衍生性商品、FATF、人力配置、過渡期等議題。
-	</Card>
-	<Card title="6/3 審議影片" href="https://www.youtube.com/watch?v=cAio-gujRYg" target="_blank">
-		<Video slot="icon" />
-		**立法院直播**：財政委員會第 16 次全體委員會議審查影片。
-	</Card>
-	<Card
-		title="6/3 審查逐字稿"
-		href="https://transpal.juchunko.com/speeches/2026-06-03-legislative-review-virtual-asset-service-act/"
-		target="_blank"
-	>
-		<ScrollText slot="icon" />
-		**TransPal 逐字稿**：依立法院公報第 115 卷第 48 期委員會紀錄整理之審查逐字稿。
-	</Card>
+	<CardGroup title="《虛擬資產服務法》法案版本">
+		<Card
+			slot="children"
+			title="中英對照全文（含逐條說明及附帶決議）"
+			href="/file/vasp/virtual-asset-service-act-bilingual-zh-en.pdf"
+			target="_blank"
+		>
+			<Languages slot="icon" />
+			**中英對照 PDF**：立法院 2026/06/30
+			三讀通過版本（三讀未再協商修文，內容與財委會出委版一致），表格保留、逐條中英對照（一條中文接該條英文），並含總說明、逐條說明與 15
+			項附帶決議之完整英譯。譯名對照臺灣金管會通用用語，僅供參考，正式效力以中文條文為準。
+		</Card>
+		<Card slot="children" title="三讀通過條文 PDF" href="/file/vasp/virtual-asset-service-act-third-reading-1150630.pdf" target="_blank">
+			<FileText slot="icon" />
+			**三讀版本**：中華民國 115 年 6 月 30 日，立法院第 11 屆第 5 會期第 15 次會議通過之完整 PDF 條文。
+		</Card>
+		<Card slot="children" title="葛如鈞等 20 人提案草案" href="/file/vasp/ko-vasp-draft.pdf" target="_blank">
+			<FileText slot="icon" />
+			**草案版本**：2026/03/20 印發，包含總說明、逐條說明與完整條文。
+		</Card>
+		<Card
+			slot="children"
+			title="行政院函請審議草案"
+			href="https://ppg.ly.gov.tw/ppg/download/agenda1/02/pdf/11/05/07/LCEWA01_110507_00034.pdf"
+			target="_blank"
+		>
+			<FileText slot="icon" />
+			**行政院版本**：2026/04/15 印發，行政院第 3996 次會議通過後函請立法院審議。
+		</Card>
+	</CardGroup>
+	<CardGroup title="2026/06/03 財政委員會審查資料">
+		<Card slot="children" title="財政委員會開會通知" href="/file/vasp/finance-committee-notice-1150603.pdf" target="_blank">
+			<Gavel slot="icon" />
+			**議程資料**：第 11 屆第 5 會期財政委員會第 16 次全體委員會議，6/1、6/3 兩天一次會。
+		</Card>
+		<Card slot="children" title="6/3 列席機關及人員名單" href="/file/vasp/attendees-1150603.docx" target="_blank">
+			<Users slot="icon" />
+			**當天出席**：金管會、央行、財政部、法務部、司法院、行政院人事行政總處、刑事警察局等列席。
+		</Card>
+		<Card slot="children" title="財委會審查通過版本" href="/file/vasp/committee-approved-draft-1150603.docx" target="_blank">
+			<Scale slot="icon" />
+			**出委版本**：2026/06/03 財政委員會審查會通過草案總說明及逐條說明。
+		</Card>
+		<Card
+			slot="children"
+			title="財委會審查通過版本總說明"
+			href="/file/vasp/committee-approved-bill-explanations-1150603.docx"
+			target="_blank"
+		>
+			<Scale slot="icon" />
+			**審查資料**：2026/06/03 財委會審查通過之條文草案、總說明及逐條說明。
+		</Card>
+		<Card slot="children" title="審查結果詳列表" href="/file/vasp/review-outcome-markup-attached-resolutions-1150603.doc" target="_blank">
+			<FileText slot="icon" />
+			**逐案對照**：詳列照案通過、修正、不採納與附帶決議之審查標記版本。
+		</Card>
+		<Card slot="children" title="附帶決議 15 案原稿" href="/file/vasp/attached-resolutions-original.pdf" target="_blank">
+			<ShieldCheck slot="icon" />
+			**附帶決議**：會議用原稿，涵蓋業務開放、境外平台、客戶保護、金融科技基金、衍生性商品、FATF、人力配置、過渡期等議題。
+		</Card>
+		<Card slot="children" title="6/3 審議影片" href="https://www.youtube.com/watch?v=cAio-gujRYg" target="_blank">
+			<Video slot="icon" />
+			**立法院直播**：財政委員會第 16 次全體委員會議審查影片。
+		</Card>
+		<Card
+			slot="children"
+			title="6/3 審查逐字稿"
+			href="https://transpal.juchunko.com/speeches/2026-06-03-legislative-review-virtual-asset-service-act/"
+			target="_blank"
+		>
+			<ScrollText slot="icon" />
+			**TransPal 逐字稿**：依立法院公報第 115 卷第 48 期委員會紀錄整理之審查逐字稿。
+		</Card>
+	</CardGroup>
 </Cards>
 
 ## 審議影片

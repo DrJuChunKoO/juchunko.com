@@ -8,6 +8,7 @@ status: "於 2025/12/23 三讀通過"
 
 import Cards from "@/components/Cards.astro";
 import Card from "@/components/Card.astro";
+import CardGroup from "@/components/CardGroup.astro";
 import NewsTopicEmbed from "@/components/NewsTopicEmbed.astro";
 import Timeline from "@/components/Timeline.astro";
 import TimelineItem from "@/components/TimelineItem.astro";
@@ -21,18 +22,35 @@ import { YouTube } from "@astro-community/astro-embed-youtube";
 ## 最新法案文本下載
 
 <Cards>
-	<Card title="中英對照全文（PDF）" href="https://ipfs.juchunko.com/ipfs/bafybeigude52wj364ildy7c5omklbethenacmph7ktuhsylhkm7xpycywi/Taiwan_AI_Basic_Act_Bilingual_Final.pdf" target="_blank">
-		<Languages slot="icon" />
-		**PDF**：三讀通過．正式雙語版。
-	</Card>
-	<Card title="中英對照全文（DOCX）" href="https://ipfs.juchunko.com/ipfs/bafybeigude52wj364ildy7c5omklbethenacmph7ktuhsylhkm7xpycywi/Taiwan_AI_Basic_Act_Bilingual_Final.docx" target="_blank">
-		<Languages slot="icon" />
-		**DOCX**：三讀通過．正式雙語版。
-	</Card>
-	<Card title="條文及總說明" href="https://ipfs.juchunko.com/ipfs/bafybeic7bd67bj7o7calff5yo7ecubalwxpt7i6n3vihktiyqc5fys5mj4/1141223%E4%BA%BA%E5%B7%A5%E6%99%BA%E6%85%A7%E5%9F%BA%E6%9C%AC%E6%B3%95%E4%B8%89%E8%AE%80%E9%80%9A%E9%81%8E%E6%A2%9D%E6%96%87-%E5%90%AB%E8%AA%AA%E6%98%8E%E5%8F%8A%E9%99%84%E5%B8%B6%E6%B1%BA%E8%AD%B0v2.pdf" target="_blank">
-		<FileText slot="icon" />
-		**說明版**：數發部 2025.12.24 提供（含附帶決議）。
-	</Card>
+	<CardGroup title="AI 基本法三讀文件">
+		<Card
+			slot="children"
+			title="中英對照全文（PDF）"
+			href="https://ipfs.juchunko.com/ipfs/bafybeigude52wj364ildy7c5omklbethenacmph7ktuhsylhkm7xpycywi/Taiwan_AI_Basic_Act_Bilingual_Final.pdf"
+			target="_blank"
+		>
+			<Languages slot="icon" />
+			**PDF**：三讀通過．正式雙語版。
+		</Card>
+		<Card
+			slot="children"
+			title="中英對照全文（DOCX）"
+			href="https://ipfs.juchunko.com/ipfs/bafybeigude52wj364ildy7c5omklbethenacmph7ktuhsylhkm7xpycywi/Taiwan_AI_Basic_Act_Bilingual_Final.docx"
+			target="_blank"
+		>
+			<Languages slot="icon" />
+			**DOCX**：三讀通過．正式雙語版。
+		</Card>
+		<Card
+			slot="children"
+			title="條文及總說明"
+			href="https://ipfs.juchunko.com/ipfs/bafybeic7bd67bj7o7calff5yo7ecubalwxpt7i6n3vihktiyqc5fys5mj4/1141223%E4%BA%BA%E5%B7%A5%E6%99%BA%E6%85%A7%E5%9F%BA%E6%9C%AC%E6%B3%95%E4%B8%89%E8%AE%80%E9%80%9A%E9%81%8E%E6%A2%9D%E6%96%87-%E5%90%AB%E8%AA%AA%E6%98%8E%E5%8F%8A%E9%99%84%E5%B8%B6%E6%B1%BA%E8%AD%B0v2.pdf"
+			target="_blank"
+		>
+			<FileText slot="icon" />
+			**說明版**：數發部 2025.12.24 提供（含附帶決議）。
+		</Card>
+	</CardGroup>
 </Cards>
 
 ## 最新更新

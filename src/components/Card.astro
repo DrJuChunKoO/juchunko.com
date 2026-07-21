@@ -1,21 +1,81 @@
 ---
+import { Download, ExternalLink, Link2Off } from "lucide-react";
+
+interface Props {
+	href?: string;
+	target?: string;
+	title: string;
+}
+
 const { href, target = "_self", title } = Astro.props;
+const normalizedHref = href?.trim();
+const hasLink = Boolean(normalizedHref && normalizedHref !== "#");
+const isExternal = hasLink && (/^https?:\/\//.test(normalizedHref!) || normalizedHref!.startsWith("//"));
+const isEnglish = Astro.url.pathname.startsWith("/en/");
+const hasIcon = Astro.slots.has("icon");
+const hasDescription = Astro.slots.has("default");
+const fileExtension = normalizedHref?.match(/\.([a-z0-9]+)(?:[?#].*)?$/i)?.[1]?.toUpperCase();
+const isDownload = Boolean(
+	fileExtension && ["PDF", "DOC", "DOCX", "XLS", "XLSX", "PPT", "PPTX", "CSV", "ZIP", "TXT", "MP3", "MP4"].includes(fileExtension),
+);
+const status = isDownload
+	? isEnglish
+		? `Download ${fileExtension}`
+		: `下載 ${fileExtension}`
+	: isExternal
+		? isEnglish
+			? "External link"
+			: "外部連結"
+		: !hasLink
+			? isEnglish
+				? "No link"
+				: "無連結"
+			: null;
+const Element = hasLink ? "a" : "div";
+const StatusIcon = isDownload ? Download : isExternal ? ExternalLink : Link2Off;
 ---
 
-<a
-	href={href}
-	target={target}
-	class="not-prose group hover:outline-primary/50 relative flex h-full flex-col gap-3 overflow-hidden rounded-lg bg-gray-50 p-4 transition-colors hover:bg-gray-100 hover:outline-2 hover:outline-offset-2 dark:bg-white/5 dark:hover:bg-white/10"
->
-	<span
-		class="bg-primary/5 text-primary flex size-10 items-center justify-center rounded-lg dark:bg-white/10 dark:text-white/80 [&_svg]:size-5"
+<div>
+	<Element
+		href={hasLink ? normalizedHref : undefined}
+		target={hasLink ? target : undefined}
+		rel={hasLink && target === "_blank" ? "noopener noreferrer" : undefined}
+		class:list={[
+			"group grid grid-cols-[auto_minmax(0,1fr)_auto] items-start gap-x-3 px-4 py-3 sm:gap-x-3.5 sm:px-5 sm:py-3.5",
+			hasLink
+				? "focus-visible:outline-primary hover:bg-gray-50 focus-visible:outline-2 focus-visible:-outline-offset-2 dark:hover:bg-white/5"
+				: "cursor-default",
+		]}
 	>
-		<slot name="icon" />
-	</span>
-	<div class="min-w-0 flex-1">
-		<div class="text-sm font-semibold md:text-base">{title}</div>
-		<div class="text-muted-foreground mt-2 text-sm leading-relaxed [&_p]:m-0">
-			<slot />
+		<span
+			class="bg-primary/5 text-primary row-span-2 flex size-8 shrink-0 items-center justify-center rounded-md border border-gray-100 dark:border-white/5 dark:bg-white/10 dark:text-white/80 [&_svg]:size-4"
+		>
+			{hasIcon && <slot name="icon" />}
+		</span>
+		<div class="min-w-0 self-center">
+			<div class="text-sm font-semibold sm:text-base">{title}</div>
+			{
+				hasDescription && (
+					<div class="text-muted-foreground mt-0.5 text-sm leading-6 [&_p]:m-0">
+						<slot />
+					</div>
+				)
+			}
 		</div>
-	</div>
-</a>
+		{
+			status && (
+				<span
+					class:list={[
+						"flex items-center gap-1 rounded-md border px-2 py-1 text-xs font-medium whitespace-nowrap transition-colors",
+						hasLink
+							? "text-muted-foreground group-hover:text-foreground border-gray-200 bg-white group-hover:border-gray-300 dark:border-white/10 dark:bg-white/5 dark:group-hover:border-white/20"
+							: "text-muted-foreground/70 border-transparent bg-gray-50 dark:bg-white/5",
+					]}
+				>
+					{status}
+					<StatusIcon aria-hidden="true" className="size-3.5" strokeWidth={1.5} />
+				</span>
+			)
+		}
+	</Element>
+</div>

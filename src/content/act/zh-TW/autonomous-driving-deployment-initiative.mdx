@@ -9,6 +9,7 @@ status: "臺灣特斯拉 6/16 已正式向車安中心遞交 FSD 申請文件，
 
 import Cards from "@/components/Cards.astro";
 import Card from "@/components/Card.astro";
+import CardGroup from "@/components/CardGroup.astro";
 import ActProgress from "@/components/ActProgress.astro";
 import NewsTopicEmbed from "@/components/NewsTopicEmbed.astro";
 import Timeline from "@/components/Timeline.astro";
@@ -152,30 +153,39 @@ Tesla 2024 安全報告也顯示，搭載 FSD（Full Self-Driving）全自動輔
 		<BadgeCheck slot="icon" />
 		**國際認證**：荷蘭交通管理局 RDW 已批准 Tesla FSD Supervised 可於高速公路使用；6 月 10 日會議確認臺灣已採認其國家層級認證路徑。
 	</Card>
-	<Card title="交通部 6/8 書面回覆" href="/file/autonomous-driving/motc-reply-1150608-autonomous-driving.pdf" target="_blank">
-		<FileText slot="icon" />
-		**官方回覆**：交通部說明 FSD 仍屬 Level 2 輔助駕駛、RDW 臨時性型式認證、Tesla 申請狀態與 FMVSS 後續確認方向。
-	</Card>
-	<Card
-		title="6/10 自駕車法規會議紀錄"
-		href="/file/autonomous-driving/motc-meeting-minutes-1150610-autonomous-driving.docx"
-		target="_blank"
-	>
-		<FileText slot="icon" />
-		**會議結論**：確認 FSD V13、V14 在不需修法前提下可引進臺灣，並列出送件後 2 至 4 週技術委員會審查流程。
-	</Card>
-	<Card title="6/16 臺灣特斯拉正式遞交 FSD 申請" href="/zh-TW/act/autonomous-driving-deployment-initiative">
-		<FileCheck slot="icon" />
-		**最新進度**：臺灣特斯拉已向車安中心遞交申請文件，後續進入技術審查、交通部核准、道路測試與技術委員會審議程序。
-	</Card>
-	<Card
-		title="6/10 逐字稿與錄音"
-		href="https://transpal.juchunko.com/speeches/2026-06-10-taiwan-autonomous-driving-fsd-review-discussion/"
-		target="_blank"
-	>
-		<FileText slot="icon" />
-		**公開資料**：Transpal 頁面彙整推進自駕科技在臺落地與 FSD 審驗流程討論會逐字稿、錄音與重點整理。
-	</Card>
+	<CardGroup title="臺灣 FSD 審驗案件資料">
+		<Card
+			slot="children"
+			title="交通部 6/8 書面回覆"
+			href="/file/autonomous-driving/motc-reply-1150608-autonomous-driving.pdf"
+			target="_blank"
+		>
+			<FileText slot="icon" />
+			**官方回覆**：交通部說明 FSD 仍屬 Level 2 輔助駕駛、RDW 臨時性型式認證、Tesla 申請狀態與 FMVSS 後續確認方向。
+		</Card>
+		<Card
+			slot="children"
+			title="6/10 自駕車法規會議紀錄"
+			href="/file/autonomous-driving/motc-meeting-minutes-1150610-autonomous-driving.docx"
+			target="_blank"
+		>
+			<FileText slot="icon" />
+			**會議結論**：確認 FSD V13、V14 在不需修法前提下可引進臺灣，並列出送件後 2 至 4 週技術委員會審查流程。
+		</Card>
+		<Card slot="children" title="6/16 臺灣特斯拉正式遞交 FSD 申請" href="/zh-TW/act/autonomous-driving-deployment-initiative">
+			<FileCheck slot="icon" />
+			**最新進度**：臺灣特斯拉已向車安中心遞交申請文件，後續進入技術審查、交通部核准、道路測試與技術委員會審議程序。
+		</Card>
+		<Card
+			slot="children"
+			title="6/10 逐字稿與錄音"
+			href="https://transpal.juchunko.com/speeches/2026-06-10-taiwan-autonomous-driving-fsd-review-discussion/"
+			target="_blank"
+		>
+			<FileText slot="icon" />
+			**公開資料**：Transpal 頁面彙整推進自駕科技在臺落地與 FSD 審驗流程討論會逐字稿、錄音與重點整理。
+		</Card>
+	</CardGroup>
 	<Card title="美國 FMVSS 自我認證制度" href="https://www.nhtsa.gov/laws-regulations/fmvss" target="_blank">
 		<FileCheck slot="icon" />
 		**制度解方**：參考韓國模式，採用 FMVSS 自我認證與上市後抽測，讓車輛科技不必卡在漫長翻譯與審查流程。

@@ -9,6 +9,7 @@ status: "Tesla Taiwan formally submitted FSD application documents to VSCC on Ju
 
 import Cards from "@/components/Cards.astro";
 import Card from "@/components/Card.astro";
+import CardGroup from "@/components/CardGroup.astro";
 import ActProgress from "@/components/ActProgress.astro";
 import NewsTopicEmbed from "@/components/NewsTopicEmbed.astro";
 import Timeline from "@/components/Timeline.astro";
@@ -153,34 +154,43 @@ Autonomous driving is not science fiction. It is already happening worldwide. Ta
 		**International approval**: RDW approved Tesla FSD Supervised for highway use; the June 10 meeting confirmed Taiwan has recognized this
 		national-level approval path.
 	</Card>
-	<Card title="MOTC June 8 Written Reply" href="/file/autonomous-driving/motc-reply-1150608-autonomous-driving.pdf" target="_blank">
-		<FileText slot="icon" />
-		**Official reply**: MOTC explained FSD's Level 2 status, RDW provisional type approval, Tesla's application status, and the next FMVSS
-		verification steps.
-	</Card>
-	<Card
-		title="June 10 Meeting Minutes"
-		href="/file/autonomous-driving/motc-meeting-minutes-1150610-autonomous-driving.docx"
-		target="_blank"
-	>
-		<FileText slot="icon" />
-		**Meeting conclusions**: Confirms that FSD V13 and V14 can be introduced without statutory amendment and records the 2-to-4-week
-		technical committee timeline after filing.
-	</Card>
-	<Card title="June 16 Tesla Taiwan FSD Filing" href="/en/act/autonomous-driving-deployment-initiative">
-		<FileCheck slot="icon" />
-		**Latest status**: Tesla Taiwan has submitted application documents to VSCC, moving the case into technical review, MOTC approval, road
-		testing, and technical committee deliberation.
-	</Card>
-	<Card
-		title="June 10 Transcript and Audio"
-		href="https://transpal.juchunko.com/speeches/2026-06-10-taiwan-autonomous-driving-fsd-review-discussion/"
-		target="_blank"
-	>
-		<FileText slot="icon" />
-		**Public record**: The Transpal page brings together the transcript, audio, and key points from the discussion on autonomous-driving
-		deployment and FSD review procedures.
-	</Card>
+	<CardGroup title="Taiwan FSD Review File">
+		<Card
+			slot="children"
+			title="MOTC June 8 Written Reply"
+			href="/file/autonomous-driving/motc-reply-1150608-autonomous-driving.pdf"
+			target="_blank"
+		>
+			<FileText slot="icon" />
+			**Official reply**: MOTC explained FSD's Level 2 status, RDW provisional type approval, Tesla's application status, and the next FMVSS
+			verification steps.
+		</Card>
+		<Card
+			slot="children"
+			title="June 10 Meeting Minutes"
+			href="/file/autonomous-driving/motc-meeting-minutes-1150610-autonomous-driving.docx"
+			target="_blank"
+		>
+			<FileText slot="icon" />
+			**Meeting conclusions**: Confirms that FSD V13 and V14 can be introduced without statutory amendment and records the 2-to-4-week
+			technical committee timeline after filing.
+		</Card>
+		<Card slot="children" title="June 16 Tesla Taiwan FSD Filing" href="/en/act/autonomous-driving-deployment-initiative">
+			<FileCheck slot="icon" />
+			**Latest status**: Tesla Taiwan has submitted application documents to VSCC, moving the case into technical review, MOTC approval,
+			road testing, and technical committee deliberation.
+		</Card>
+		<Card
+			slot="children"
+			title="June 10 Transcript and Audio"
+			href="https://transpal.juchunko.com/speeches/2026-06-10-taiwan-autonomous-driving-fsd-review-discussion/"
+			target="_blank"
+		>
+			<FileText slot="icon" />
+			**Public record**: The Transpal page brings together the transcript, audio, and key points from the discussion on autonomous-driving
+			deployment and FSD review procedures.
+		</Card>
+	</CardGroup>
 	<Card title="U.S. FMVSS Self-Certification" href="https://www.nhtsa.gov/laws-regulations/fmvss" target="_blank">
 		<FileCheck slot="icon" />
 		**Regulatory solution**: Follow the Korea model by using FMVSS self-certification and post-market audits instead of years of translation

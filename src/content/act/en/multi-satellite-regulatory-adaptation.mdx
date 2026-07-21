@@ -8,6 +8,7 @@ status: "The amendments to Articles 36 and 95 of the Telecommunications Manageme
 
 import Cards from "@/components/Cards.astro";
 import Card from "@/components/Card.astro";
+import CardGroup from "@/components/CardGroup.astro";
 import NewsTopicEmbed from "@/components/NewsTopicEmbed.astro";
 import Timeline from "@/components/Timeline.astro";
 import TimelineItem from "@/components/TimelineItem.astro";
@@ -25,42 +26,48 @@ The Legislative Yuan passed the amendments to Articles 36 and 95 of the Telecomm
 The cross-party reform is not tailored to one company and does not grant automatic approval to any operator. It replaces rigid formal restrictions with substantive, accountable review. International satellite services already used in Ukraine, the United States, Japan, South Korea, and elsewhere now have a legal pathway into Taiwan, but each provider must still pass regulatory review and comply with safeguards for data localization and direct-to-phone satellite services.
 
 <Cards>
-	<Card
-		title="Download Draft (PDF)"
-		href="https://ipfs.juchunko.com/ipfs/bafybeifeioryvdxsgvg3tlgxqa42bq7osp5txsvgihwdzwainmc7dcs2ya/LCEWA01_110415_00040.pdf"
-		target="_blank"
-	>
-		<FileText slot="icon" />
-		**PDF**: Gazette version of the Article 36 amendment draft.
-	</Card>
-	<Card
-		title="Download Draft (DOC)"
-		href="https://ipfs.juchunko.com/ipfs/bafybeifeioryvdxsgvg3tlgxqa42bq7osp5txsvgihwdzwainmc7dcs2ya/LCEWA01_110415_00040.doc"
-		target="_blank"
-	>
-		<FileText slot="icon" />
-		**DOC**: Editable version of the Article 36 amendment draft.
-	</Card>
-	<Card
-		title="Attached Resolution 1: Data Localization"
-		href="/file/multi-satellite/attached-resolution-data-localization.jpg"
-		target="_blank"
-	>
-		<FileText slot="icon" />
-		**Original attachment**: Requires satellite ground receiving stations and data to be located in Taiwan.
-	</Card>
-	<Card
-		title="Attached Resolution 2: Direct-to-Satellite"
-		href="/file/multi-satellite/attached-resolution-direct-to-satellite.jpg"
-		target="_blank"
-	>
-		<FileText slot="icon" />
-		**Original attachment**: Requires a complete oversight framework for direct-to-phone and direct-to-device satellite services.
-	</Card>
-	<Card title="View Bill Details" href="https://ppg.ly.gov.tw/ppg/bills/202110181020000/details" target="_blank">
-		<Rocket slot="icon" />
-		**Legislative Yuan bill**: View first-reading referral and bill information.
-	</Card>
+	<CardGroup title="Telecommunications Management Act Amendment Bill">
+		<Card
+			slot="children"
+			title="Download Draft (PDF)"
+			href="https://ipfs.juchunko.com/ipfs/bafybeifeioryvdxsgvg3tlgxqa42bq7osp5txsvgihwdzwainmc7dcs2ya/LCEWA01_110415_00040.pdf"
+			target="_blank"
+		>
+			<FileText slot="icon" />
+			**PDF**: Gazette version of the Article 36 amendment draft.
+		</Card>
+		<Card
+			slot="children"
+			title="Download Draft (DOC)"
+			href="https://ipfs.juchunko.com/ipfs/bafybeifeioryvdxsgvg3tlgxqa42bq7osp5txsvgihwdzwainmc7dcs2ya/LCEWA01_110415_00040.doc"
+			target="_blank"
+		>
+			<FileText slot="icon" />
+			**DOC**: Editable version of the Article 36 amendment draft.
+		</Card>
+		<Card
+			slot="children"
+			title="Attached Resolution 1: Data Localization"
+			href="/file/multi-satellite/attached-resolution-data-localization.jpg"
+			target="_blank"
+		>
+			<FileText slot="icon" />
+			**Original attachment**: Requires satellite ground receiving stations and data to be located in Taiwan.
+		</Card>
+		<Card
+			slot="children"
+			title="Attached Resolution 2: Direct-to-Satellite"
+			href="/file/multi-satellite/attached-resolution-direct-to-satellite.jpg"
+			target="_blank"
+		>
+			<FileText slot="icon" />
+			**Original attachment**: Requires a complete oversight framework for direct-to-phone and direct-to-device satellite services.
+		</Card>
+		<Card title="View Bill Details" href="https://ppg.ly.gov.tw/ppg/bills/202110181020000/details" target="_blank">
+			<Rocket slot="icon" />
+			**Legislative Yuan bill**: View third-reading progress and bill information.
+		</Card>
+	</CardGroup>
 </Cards>
 
 ## Two Attached Resolutions
