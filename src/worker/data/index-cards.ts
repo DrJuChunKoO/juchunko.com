@@ -1,4 +1,5 @@
 import type { CardItem } from "../types";
+import { cachedFetch } from "../lib/cache";
 import { fetchRss } from "../lib/rss";
 import { timeAgo, parseToDate } from "../lib/time";
 import { decodeHtmlEntities } from "../lib/html";
@@ -51,7 +52,7 @@ export async function getIndexCards(lang: "en" | "zh-TW") {
 
 	// News
 	try {
-		const resp = await fetch("https://aifferent.juchunko.com/api/news");
+		const resp = await cachedFetch("https://aifferent.juchunko.com/api/news", { method: "GET" }, 900);
 		if (resp.ok) {
 			const data = await resp.json();
 			const newsItems = Array.isArray(data?.data) ? data.data.slice(0, 3) : [];
@@ -71,7 +72,7 @@ export async function getIndexCards(lang: "en" | "zh-TW") {
 
 	// Blog RSS
 	try {
-		const all = await fetchRss(`https://blog.juchunko.com/rss.xml?t=${Date.now()}`);
+		const all = await fetchRss("https://blog.juchunko.com/rss.xml", 900);
 		const filtered = all.filter((it) => {
 			const link = it.link || "";
 			const isEnglishPost = link.includes("/en/");
@@ -96,7 +97,7 @@ export async function getIndexCards(lang: "en" | "zh-TW") {
 
 	// Transpal RSS
 	try {
-		const transpalItems = await fetchRss(`https://transpal.juchunko.com/rss.xml?t=${Date.now()}`);
+		const transpalItems = await fetchRss("https://transpal.juchunko.com/rss.xml", 900);
 		const tItems = (transpalItems || []).slice(0, 3);
 		result.transpalCards = tItems.map((it) => ({
 			title: it.title,
@@ -139,10 +140,14 @@ export async function getIndexCards(lang: "en" | "zh-TW") {
 	}
 
 	async function fetchJSON(path: string) {
-		const response = await fetch(`${API_BASE}${path}`, {
-			method: "GET",
-			headers: { accept: "application/json" },
-		});
+		const response = await cachedFetch(
+			`${API_BASE}${path}`,
+			{
+				method: "GET",
+				headers: { accept: "application/json" },
+			},
+			3600,
+		);
 		if (!response.ok) throw new Error(`Failed to fetch ${path}: ${response.status} ${response.statusText}`);
 		return await response.json();
 	}

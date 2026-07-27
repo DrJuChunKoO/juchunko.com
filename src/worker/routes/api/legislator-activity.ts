@@ -1,7 +1,10 @@
 import { Hono } from "hono";
 import type { Env } from "../../types";
+import { cachedFetch, matchEdgeCache, putEdgeCache } from "../../lib/cache";
 
 const app = new Hono<{ Bindings: Env }>();
+
+export const LEGISLATOR_ACTIVITY_CACHE_CONTROL = "public, max-age=86400, s-maxage=86400, stale-while-revalidate=3600";
 
 const API_BASE = "https://ly.govapi.tw/v2";
 const LEGISLATOR_TERM = 11;
@@ -49,10 +52,14 @@ async function fetchJSON<T>(path: string, params?: Record<string, string | numbe
 		});
 	}
 
-	const response = await fetch(url.toString(), {
-		method: "GET",
-		headers: { accept: "application/json" },
-	});
+	const response = await cachedFetch(
+		url.toString(),
+		{
+			method: "GET",
+			headers: { accept: "application/json" },
+		},
+		3600,
+	);
 
 	if (!response.ok) {
 		return null;
@@ -216,18 +223,18 @@ app.get("/", async (c) => {
 	const page = parseInt(c.req.query("page") || "1", 10);
 	const pageSize = parseInt(c.req.query("pageSize") || "20", 10);
 
-	// Try to get from cache first
-	const cache = caches.default;
-	const cacheUrl = new URL(c.req.url);
-	let response = await cache.match(cacheUrl);
+	const cacheKey = new URL(c.req.url);
+	cacheKey.searchParams.set("page", String(page));
+	cacheKey.searchParams.set("pageSize", String(pageSize));
+	cacheKey.searchParams.sort();
 
-	if (response) {
-		return response;
+	const cached = await matchEdgeCache(cacheKey.toString());
+	if (cached) {
+		return cached;
 	}
 
 	// Strategy: Fetch a large chunk from the beginning of each list (page=1, limit=N)
 	// to ensure we have enough items to merge and sort correctly.
-	// This simulates a "merged" view of multiple data sources.
 	const fetchLimit = Math.max(100, page * pageSize);
 
 	try {
@@ -291,18 +298,16 @@ app.get("/", async (c) => {
 		activities.sort((a, b) => {
 			const dateA = a.date ? new Date(a.date).getTime() : 0;
 			const dateB = b.date ? new Date(b.date).getTime() : 0;
-			// Descending order
 			return dateB - dateA;
 		});
 
-		// Pagination
 		const startIndex = (page - 1) * pageSize;
 		const endIndex = startIndex + pageSize;
 		const pagedActivities = activities.slice(startIndex, endIndex);
 		const totalItems = activities.length;
 		const totalPages = Math.ceil(totalItems / pageSize);
 
-		response = c.json({
+		const response = c.json({
 			success: true,
 			data: pagedActivities,
 			meta: {
@@ -312,11 +317,8 @@ app.get("/", async (c) => {
 				totalPages,
 			},
 		});
-
-		// Cache for 1 day
-		response.headers.set("Cache-Control", "public, max-age=86400");
-		c.executionCtx.waitUntil(cache.put(cacheUrl, response.clone()));
-
+		response.headers.set("Cache-Control", LEGISLATOR_ACTIVITY_CACHE_CONTROL);
+		putEdgeCache(c.executionCtx, cacheKey.toString(), response);
 		return response;
 	} catch (error: any) {
 		console.error("Failed to fetch legislator activity:", error);

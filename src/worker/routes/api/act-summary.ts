@@ -3,8 +3,9 @@ import { createOpenAICompatible, type OpenAICompatibleProvider } from "@ai-sdk/o
 import { generateText, NoObjectGeneratedError, Output } from "ai";
 import { z } from "zod";
 import type { Env } from "../../types";
+import { cachedFetch, matchEdgeCache, putEdgeCache } from "../../lib/cache";
 
-export const ACT_SUMMARY_CACHE_CONTROL = "public, s-maxage=604800, stale-while-revalidate=86400";
+export const ACT_SUMMARY_CACHE_CONTROL = "public, max-age=86400, s-maxage=604800, stale-while-revalidate=86400";
 
 const actSummarySchema = z.object({
 	problem: z.string().trim().min(1).describe("The problem this issue page is addressing."),
@@ -200,7 +201,11 @@ export function parseActSummaryOutput(text: string): ActSummary | null {
 
 async function fetchActMdx(lang: "zh-TW" | "en", slug: string) {
 	const sourcePath = `src/content/act/${lang}/${slug}.mdx`;
-	const response = await fetch(`https://github.com/DrJuChunKoO/juchunko.com/raw/refs/heads/astro/${sourcePath}`);
+	const response = await cachedFetch(
+		`https://github.com/DrJuChunKoO/juchunko.com/raw/refs/heads/astro/${sourcePath}`,
+		{ method: "GET" },
+		3600,
+	);
 	if (!response.ok) {
 		throw new Error(`Failed to fetch act content: HTTP ${response.status}`);
 	}
@@ -241,6 +246,16 @@ app.get("/", async (c) => {
 		return c.json({ success: false, error: "Invalid lang or slug" }, 400);
 	}
 
+	const cacheKey = new URL(c.req.url);
+	cacheKey.searchParams.set("lang", langResult.data);
+	cacheKey.searchParams.set("slug", slugResult.data);
+	cacheKey.searchParams.sort();
+
+	const cached = await matchEdgeCache(cacheKey.toString());
+	if (cached) {
+		return cached;
+	}
+
 	try {
 		const { body, sourcePath, title } = await fetchActMdx(langResult.data, slugResult.data);
 		const openrouter = createOpenAICompatible({
@@ -251,14 +266,16 @@ app.get("/", async (c) => {
 		});
 		const summary = await generateActSummary(openrouter, langResult.data, title, body);
 
-		c.header("Cache-Control", ACT_SUMMARY_CACHE_CONTROL);
-		return c.json({
+		const response = c.json({
 			success: true,
 			title,
 			summary,
 			generatedAt: new Date().toISOString(),
 			sourcePath,
 		});
+		response.headers.set("Cache-Control", ACT_SUMMARY_CACHE_CONTROL);
+		putEdgeCache(c.executionCtx, cacheKey.toString(), response);
+		return response;
 	} catch (error) {
 		console.error("act-summary error:", error);
 		return c.json({ success: false, error: "Failed to generate act summary" }, 502);

@@ -1,5 +1,6 @@
 import type { FeedItem } from "../types";
 import { decodeHtmlEntities } from "./html";
+import { cachedFetch } from "./cache";
 
 // RSS Parser
 function parseRss(xml: string): FeedItem[] {
@@ -40,13 +41,16 @@ function parseRss(xml: string): FeedItem[] {
 	return items;
 }
 
-export async function fetchRss(url: string): Promise<FeedItem[]> {
+export async function fetchRss(url: string, cacheTtlSeconds = 900): Promise<FeedItem[]> {
 	try {
-		const res = await fetch(url, {
-			method: "GET",
-			headers: { accept: "application/xml" },
-			cache: "no-store",
-		});
+		const res = await cachedFetch(
+			url,
+			{
+				method: "GET",
+				headers: { accept: "application/xml" },
+			},
+			cacheTtlSeconds,
+		);
 		if (!res.ok) throw new Error(`Failed to fetch RSS: ${res.status} ${res.statusText}`);
 		const xml = await res.text();
 		return parseRss(xml);

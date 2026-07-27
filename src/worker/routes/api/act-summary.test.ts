@@ -71,5 +71,5 @@ Users get clearer platform duties, safeguards, and market-order rules.`);
 });
 
 test("ACT_SUMMARY_CACHE_CONTROL keeps generated summaries cacheable for seven days", () => {
-	assert.equal(ACT_SUMMARY_CACHE_CONTROL, "public, s-maxage=604800, stale-while-revalidate=86400");
+	assert.equal(ACT_SUMMARY_CACHE_CONTROL, "public, max-age=86400, s-maxage=604800, stale-while-revalidate=86400");
 });
