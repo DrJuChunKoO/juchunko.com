@@ -1,10 +1,65 @@
-import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence, useMotionValue } from "motion/react";
-import { Bot, BotMessageSquare, X, ArrowRight, ArrowUp, Wrench, Eye, Search, Rss, Newspaper } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { AnimatePresence, motion, useMotionValue, useReducedMotion } from "motion/react";
+import {
+	ArrowDown,
+	ArrowRight,
+	ArrowUp,
+	Bot,
+	Check,
+	ChevronDown,
+	Copy,
+	Eye,
+	Lightbulb,
+	Maximize2,
+	Minimize2,
+	Newspaper,
+	RefreshCw,
+	Rss,
+	Search,
+	Square,
+	TriangleAlert,
+	Wrench,
+	X,
+	type LucideIcon,
+} from "lucide-react";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, isTextUIPart } from "ai";
 import Markdown from "markdown-to-jsx";
+
+import { applyDialogScrollLock } from "@/components/news-page-scroll-lock";
+import { Bubble, BubbleContent } from "@/components/ui/bubble";
+import { Button } from "@/components/ui/button";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
+import { Marker, MarkerContent, MarkerIcon } from "@/components/ui/marker";
+import { Message, MessageContent, MessageFooter } from "@/components/ui/message";
+import {
+	MessageScroller,
+	MessageScrollerButton,
+	MessageScrollerContent,
+	MessageScrollerItem,
+	MessageScrollerProvider,
+	MessageScrollerViewport,
+} from "@/components/ui/message-scroller";
+import { Spinner } from "@/components/ui/spinner";
+import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
 import { ui } from "src/i18n/ui";
+import {
+	collectToolParts,
+	extractMessageText,
+	extractReasoningText,
+	formatQuickPromptLabel,
+	getToolDescriptor,
+	getToolLabel,
+	hasRenderableText,
+	isBusyStatus,
+	isToolPartRunning,
+	selectQuickPrompts,
+	type NormalizedToolPart,
+	type QuickPrompt,
+	type ToolIconName,
+} from "./ai-assistant";
 
 type SupportedLang = "en" | "zh-TW";
 
@@ -14,39 +69,116 @@ interface AIAssistantWindowProps {
 	lang?: SupportedLang;
 }
 
-// Loading dots component
-function LoadingDots() {
+const TOOL_ICONS: Record<ToolIconName, LucideIcon> = {
+	view: Eye,
+	search: Search,
+	feed: Rss,
+	article: Newspaper,
+	tool: Wrench,
+};
+
+/** One persistent row per tool call, so the activity stays readable after the answer lands. */
+function ToolMarker({ lang, toolPart }: { lang: SupportedLang; toolPart: NormalizedToolPart }) {
+	const running = isToolPartRunning(toolPart.state);
+	const failed = toolPart.state === "output-error";
+	const ToolIcon = TOOL_ICONS[getToolDescriptor(toolPart.toolName).iconName];
+	const label = getToolLabel(lang, toolPart.toolName, toolPart.input);
+
 	return (
-		<div className="flex space-x-1">
-			{[0, 1, 2].map((i) => (
-				<motion.div
-					key={i}
-					animate={{
-						scale: [1, 1.2, 1],
-						opacity: [0.5, 1, 0.5],
-					}}
-					transition={{
-						duration: 1,
-						repeat: Infinity,
-						delay: i * 0.2,
-					}}
-					className="size-0.5 rounded-full bg-gray-400"
-				/>
+		<Marker role={running ? "status" : undefined} className={cn(failed && "text-destructive")}>
+			<MarkerIcon>{running ? <Spinner /> : <ToolIcon />}</MarkerIcon>
+			<MarkerContent className={cn(running && "shimmer")}>
+				{failed ? `${label} · ${ui[lang]["agent.assistant.toolFailed"]}` : label}
+			</MarkerContent>
+		</Marker>
+	);
+}
+
+function ReasoningDisclosure({ label, text }: { label: string; text: string }) {
+	return (
+		<Collapsible>
+			<CollapsibleTrigger
+				className="group/reasoning text-muted-foreground hover:text-foreground flex cursor-pointer items-center gap-2 text-sm transition-colors"
+				render={<button type="button" />}
+			>
+				<Lightbulb className="size-4" />
+				{label}
+				<ChevronDown className="size-3.5 transition-transform duration-150 group-data-panel-open/reasoning:rotate-180" />
+			</CollapsibleTrigger>
+			<CollapsibleContent className="border-border text-muted-foreground h-(--collapsible-panel-height) overflow-hidden text-xs whitespace-pre-wrap transition-[height] duration-200 ease-out data-ending-style:h-0 data-starting-style:h-0">
+				<div className="border-border mt-2 border-s ps-3">{text}</div>
+			</CollapsibleContent>
+		</Collapsible>
+	);
+}
+
+function QuickPromptList({
+	quickPrompts,
+	ariaLabelTemplate,
+	onSelect,
+	className,
+}: {
+	quickPrompts: QuickPrompt[];
+	ariaLabelTemplate: string;
+	onSelect: (prompt: string) => void;
+	className?: string;
+}) {
+	return (
+		<div className={cn("flex flex-col", className)}>
+			{quickPrompts.map((quickPrompt) => (
+				<button
+					key={quickPrompt.text}
+					type="button"
+					onClick={() => onSelect(quickPrompt.prompt)}
+					aria-label={formatQuickPromptLabel(ariaLabelTemplate, quickPrompt.text)}
+					className="group text-muted-foreground hover:text-foreground flex cursor-pointer items-center gap-0.5 rounded p-1 text-left text-sm transition-all hover:font-medium hover:tracking-wide"
+				>
+					{quickPrompt.text}
+					<ArrowRight className="size-4 opacity-50 transition-all group-hover:translate-x-0.5 group-hover:opacity-100" />
+				</button>
 			))}
 		</div>
 	);
 }
 
 export default function AIAssistantWindow({ isOpen, onClose, lang = "zh-TW" }: AIAssistantWindowProps) {
-	const messagesEndRef = useRef<HTMLDivElement>(null);
 	const inputRef = useRef<HTMLTextAreaElement>(null);
 	const windowRef = useRef<HTMLDivElement>(null);
+	const copyResetRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
-	// 以 y 控制與底部距離，避免覆蓋 footer
+	const [input, setInput] = useState("");
+	const [expanded, setExpanded] = useState(false);
+	const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
+
+	const prefersReducedMotion = Boolean(useReducedMotion());
+
+	// 以 bottom 控制與底部距離，避免覆蓋 footer（全螢幕時不需要）
 	const y = useMotionValue(16);
 
+	const transport = useMemo(
+		() =>
+			new DefaultChatTransport({
+				api: "/api/chat",
+				prepareSendMessagesRequest: ({ messages }) => ({
+					body: {
+						messages,
+						filename: typeof window === "undefined" ? "/" : window.location.pathname,
+					},
+				}),
+			}),
+		[],
+	);
+
+	const { messages, status, sendMessage, stop, regenerate, error, clearError } = useChat({ transport });
+
+	const busy = isBusyStatus(status);
+
 	useEffect(() => {
-		if (!isOpen) return;
+		if (!isOpen || expanded) {
+			// 全螢幕時貼齊視窗底部；`y` 由 motion 直接寫入行內樣式，必須顯式歸零
+			y.set(expanded ? 0 : 16);
+			return;
+		}
 
 		function syncWindowOffset() {
 			const footer = document.getElementById("footer");
@@ -55,8 +187,7 @@ export default function AIAssistantWindow({ isOpen, onClose, lang = "zh-TW" }: A
 				return;
 			}
 			const rect = footer.getBoundingClientRect();
-			const windowHeight = window.innerHeight;
-			const top = rect.y - windowHeight;
+			const top = rect.y - window.innerHeight;
 			const isBottom = top < 0;
 
 			y.set(isBottom ? 16 - top : 16);
@@ -85,389 +216,355 @@ export default function AIAssistantWindow({ isOpen, onClose, lang = "zh-TW" }: A
 				observer.disconnect();
 			}
 		};
-	}, [isOpen, y]);
+	}, [isOpen, expanded, y]);
 
-	const [input, setInput] = useState("");
-
-	// useChat hook for API integration with transport
-	const { messages, status, sendMessage } = useChat({
-		transport: new DefaultChatTransport({
-			api: "/api/chat",
-			body: {
-				filename: typeof window !== "undefined" ? window.location.pathname : "/",
-			},
-		}),
-	});
-
-	// Quick prompts definitions
-	const quickPrompts = [
-		{
-			text: ui[lang]["agent.assistant.prompt.summary"],
-			prompt: ui[lang]["agent.assistant.prompt.summaryText"],
-		},
-		{
-			text: ui[lang]["agent.assistant.prompt.background"],
-			prompt: ui[lang]["agent.assistant.prompt.backgroundText"],
-		},
-		{
-			text: ui[lang]["agent.assistant.prompt.mainPoints"],
-			prompt: ui[lang]["agent.assistant.prompt.mainPointsText"],
-		},
-		{
-			text: ui[lang]["agent.assistant.prompt.explain"],
-			prompt: ui[lang]["agent.assistant.prompt.explainText"],
-		},
-		{
-			text: ui[lang]["agent.assistant.prompt.quiz"],
-			prompt: ui[lang]["agent.assistant.prompt.quizText"],
-		},
-		{
-			text: ui[lang]["agent.assistant.prompt.news"],
-			prompt: ui[lang]["agent.assistant.prompt.newsText"],
-		},
-	] as { text: string; prompt: string }[];
-
-	const sendQuickPrompt = (promptStr: string) => {
-		sendMessage({ text: promptStr });
-	};
-
-	// 自動滾動到最新訊息
+	// 全螢幕時鎖住頁面滾動，關閉後還原
 	useEffect(() => {
-		messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-	}, [messages, status]);
+		if (!isOpen || !expanded) return;
+		return applyDialogScrollLock(document);
+	}, [isOpen, expanded]);
 
-	// 當視窗打開時聚焦輸入框
+	// 關閉視窗時回到浮動模式
+	useEffect(() => {
+		if (!isOpen) setExpanded(false);
+	}, [isOpen]);
+
+	// Esc 先離開全螢幕，再關閉視窗
+	useEffect(() => {
+		if (!isOpen) return;
+
+		function handleEscape(event: KeyboardEvent) {
+			if (event.key !== "Escape") return;
+			if (expanded) {
+				setExpanded(false);
+				return;
+			}
+			onClose();
+		}
+
+		window.addEventListener("keydown", handleEscape);
+		return () => window.removeEventListener("keydown", handleEscape);
+	}, [isOpen, expanded, onClose]);
+
 	useEffect(() => {
 		if (isOpen) {
-			setTimeout(() => inputRef.current?.focus(), 100);
+			const focusTimer = setTimeout(() => inputRef.current?.focus(), 100);
+			return () => clearTimeout(focusTimer);
 		}
 	}, [isOpen]);
 
-	const handleKeyDown = (e: React.KeyboardEvent) => {
-		const isComposing = (e.nativeEvent as any).isComposing;
-		if (e.key === "Enter" && !e.shiftKey && !isComposing) {
-			e.preventDefault();
+	useEffect(() => () => clearTimeout(copyResetRef.current), []);
+
+	// 使用者只會看到本地化的錯誤訊息，實際原因保留在 console 供除錯
+	useEffect(() => {
+		if (error) console.error("AI assistant chat request failed", error);
+	}, [error]);
+
+	const sentTexts = useMemo(
+		() => messages.filter((message) => message.role === "user").map((message) => extractMessageText(message.parts)),
+		[messages],
+	);
+	const quickPrompts = useMemo(() => selectQuickPrompts(lang, sentTexts), [lang, sentTexts]);
+
+	const submitPrompt = useCallback(
+		(text: string) => {
+			const trimmed = text.trim();
+			if (!trimmed || busy) return;
+			if (status === "error") clearError();
+			sendMessage({ text: trimmed });
+		},
+		[busy, clearError, sendMessage, status],
+	);
+
+	const handleSubmit = (event?: React.FormEvent) => {
+		event?.preventDefault();
+		if (!input.trim()) return;
+		submitPrompt(input);
+		setInput("");
+	};
+
+	const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+		if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing) {
+			event.preventDefault();
 			handleSubmit();
 		}
 	};
 
-	const handleSubmit = (e?: React.FormEvent) => {
-		if (e) e.preventDefault();
-		if (!input.trim()) return;
+	const handleRetry = useCallback(() => {
+		if (status === "error") clearError();
+		void regenerate();
+	}, [clearError, regenerate, status]);
 
-		sendMessage({ text: input });
-		setInput("");
-	};
-
-	const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-		setInput(e.target.value);
-	};
-
-	const formatKeywordToolText = (template: string, keyword?: unknown) => {
-		const normalizedKeyword = typeof keyword === "string" ? keyword.trim() : "";
-		if (normalizedKeyword) return template.replace("{keyword}", normalizedKeyword);
-
-		return template
-			.replace(/「\{keyword\}」/g, "")
-			.replace(/"\{keyword\}"/g, "")
-			.replace(/\{keyword\}/g, "")
-			.replace(/\s+for\s*$/i, "")
-			.replace(/\s+/g, " ")
-			.trim();
-	};
-
-	type ToolStatusPart = {
-		type?: string;
-		toolName?: string;
-		state?: "input-streaming" | "input-available" | "output-available" | "output-error";
-		input?: unknown;
-		args?: unknown;
-	};
-
-	const getToolStatusPart = (part: unknown) => {
-		const toolPart = part as ToolStatusPart;
-		if (toolPart.type === "dynamic-tool" && toolPart.toolName) {
-			return {
-				toolName: toolPart.toolName,
-				input: toolPart.input,
-			};
+	const handleCopy = useCallback(async (messageId: string, text: string) => {
+		try {
+			await navigator.clipboard.writeText(text);
+			setCopiedMessageId(messageId);
+			clearTimeout(copyResetRef.current);
+			copyResetRef.current = setTimeout(() => setCopiedMessageId(null), 2000);
+		} catch (copyError) {
+			// 剪貼簿權限可能被拒絕，僅記錄不中斷對話
+			console.error("Failed to copy assistant message", copyError);
 		}
+	}, []);
 
-		if (toolPart.type?.startsWith("tool-")) {
-			return {
-				toolName: toolPart.type.replace("tool-", ""),
-				input: toolPart.input ?? toolPart.args,
-			};
-		}
-
-		return null;
-	};
-
-	const getLatestToolStatusPart = (parts: unknown[]) => {
-		for (const part of [...parts].reverse()) {
-			const toolStatusPart = getToolStatusPart(part);
-			if (toolStatusPart) return toolStatusPart;
-		}
-
-		return null;
-	};
-
-	const getToolUI = (toolName: string, args?: any, iconClass: string = "size-4") => {
-		if (toolName === "viewPage") {
-			return {
-				icon: <Eye className={iconClass} />,
-				text: ui[lang]["agent.assistant.tool.viewPage"],
-			};
-		}
-		if (toolName === "searchNews") {
-			return {
-				icon: <Search className={iconClass} />,
-				text: formatKeywordToolText(ui[lang]["agent.assistant.tool.searchNews"], args?.q),
-			};
-		}
-		if (toolName === "latestNews") {
-			return {
-				icon: <Rss className={iconClass} />,
-				text: ui[lang]["agent.assistant.tool.latestNews"],
-			};
-		}
-		if (toolName === "getNewsByUrl") {
-			return {
-				icon: <Newspaper className={iconClass} />,
-				text: ui[lang]["agent.assistant.tool.getNewsByUrl"],
-			};
-		}
-		if (toolName === "searchNewsTopics") {
-			return {
-				icon: <Search className={iconClass} />,
-				text: formatKeywordToolText(ui[lang]["agent.assistant.tool.searchNewsTopics"], args?.q),
-			};
-		}
-		if (toolName === "latestNewsTopics") {
-			return {
-				icon: <Rss className={iconClass} />,
-				text: ui[lang]["agent.assistant.tool.latestNewsTopics"],
-			};
-		}
-		if (toolName === "viewNewsTopic") {
-			return {
-				icon: <Newspaper className={iconClass} />,
-				text: ui[lang]["agent.assistant.tool.viewNewsTopic"],
-			};
-		}
-		if (toolName === "semanticSiteSearch") {
-			return {
-				icon: <Search className={iconClass} />,
-				text: formatKeywordToolText(ui[lang]["agent.assistant.tool.semanticSiteSearch"], args?.keyword),
-			};
-		}
-		if (toolName === "readArticle") {
-			return {
-				icon: <Newspaper className={iconClass} />,
-				text: ui[lang]["agent.assistant.tool.readArticle"],
-			};
-		}
-		return {
-			icon: <Wrench className={iconClass} />,
-			text: ui[lang]["agent.assistant.tool.default"],
-		};
-	};
-
-	const getStatusUI = () => {
-		if (status !== "submitted" && status !== "streaming") return null;
-
-		const lastMessage = messages[messages.length - 1];
-		if (lastMessage?.role === "assistant" && lastMessage.parts) {
-			const toolStatusPart = getLatestToolStatusPart(lastMessage.parts);
-			if (toolStatusPart) return getToolUI(toolStatusPart.toolName, toolStatusPart.input, "size-4");
-		}
-
-		return {
-			icon: <Bot className="size-4" />,
-			text: ui[lang]["agent.assistant.thinking"],
-		};
-	};
+	const lastMessage = messages[messages.length - 1];
+	const lastAssistantMessage = lastMessage?.role === "assistant" ? lastMessage : undefined;
+	const hasRunningTool = lastAssistantMessage
+		? collectToolParts(lastAssistantMessage.parts).some((toolPart) => isToolPartRunning(toolPart.state))
+		: false;
+	// 只有在還沒有任何工具或文字可看時才顯示「思考中」，避免與工具列重複
+	const showThinking = busy && !hasRunningTool && !hasRenderableText(lastAssistantMessage?.parts);
+	const canRetry = !busy && lastAssistantMessage !== undefined;
 
 	return (
 		<AnimatePresence>
 			{isOpen && (
 				<motion.div
 					ref={windowRef}
-					initial={{ opacity: 0, scale: 0.5, y: 16 }}
-					animate={{
-						opacity: 1,
-						scale: 1,
-						y: 0,
-					}}
-					exit={{ opacity: 0, scale: 0.5, y: 16 }}
-					transition={{ type: "spring", stiffness: 300, damping: 30 }}
+					initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.5, y: 16 }}
+					animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1, y: 0 }}
+					exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.5, y: 16 }}
+					transition={prefersReducedMotion ? { duration: 0.15 } : { type: "spring", stiffness: 300, damping: 30 }}
 					style={{ bottom: y }}
-					className="ring-border/50 bg-card/75 fixed right-4 z-40 flex w-100 max-w-[calc(100vw-32px)] origin-bottom-right flex-col overflow-hidden rounded-xl shadow-lg ring-1 backdrop-blur-xl"
+					className={cn(
+						"ring-border/50 fixed flex flex-col overflow-hidden",
+						expanded
+							? "bg-card inset-0 z-50 rounded-none ring-0"
+							: "bg-card/75 right-4 z-40 w-100 max-w-[calc(100vw-32px)] origin-bottom-right rounded-xl shadow-lg ring-1 backdrop-blur-xl",
+					)}
+					role="dialog"
+					aria-modal={expanded}
+					aria-label={ui[lang]["agent.assistant.title"]}
 				>
 					{/* 標題欄 */}
-					<div className="bg-muted text-foreground border-border flex items-center justify-between rounded-t-lg border-b p-2 pl-4">
-						<div className="flex items-center gap-2">
-							<Bot className="text-primary h-5 w-5" />
-							<h3 className="font-semibold">{ui[lang]["agent.assistant.title"]}</h3>
-						</div>
-						<div className="flex items-center gap-1">
-							<motion.button
-								whileTap={{ scale: 0.95 }}
-								onClick={onClose}
-								className="hover:bg-muted-foreground/10 text-muted-foreground hover:text-foreground cursor-pointer rounded-lg p-2 transition-colors"
-								aria-label={ui[lang]["agent.assistant.close"]}
-							>
-								<X className="size-5" />
-							</motion.button>
+					<div className="bg-muted text-foreground border-border shrink-0 border-b">
+						<div className={cn("flex items-center justify-between gap-2 p-2 pl-4", expanded && "mx-auto w-full max-w-3xl")}>
+							<div className="flex items-center gap-2">
+								<Bot className="text-primary size-5" />
+								<h3 className="font-semibold">{ui[lang]["agent.assistant.title"]}</h3>
+							</div>
+							<div className="flex items-center gap-1">
+								<Button
+									variant="ghost"
+									size="icon-sm"
+									className="text-muted-foreground hover:text-foreground cursor-pointer rounded-lg"
+									onClick={() => setExpanded((value) => !value)}
+									aria-label={expanded ? ui[lang]["agent.assistant.collapse"] : ui[lang]["agent.assistant.expand"]}
+								>
+									{expanded ? <Minimize2 /> : <Maximize2 />}
+								</Button>
+								<Button
+									variant="ghost"
+									size="icon-sm"
+									className="text-muted-foreground hover:text-foreground cursor-pointer rounded-lg"
+									onClick={onClose}
+									aria-label={ui[lang]["agent.assistant.close"]}
+								>
+									<X />
+								</Button>
+							</div>
 						</div>
 					</div>
 
-					{/* 聊天內容 */}
-					<div className="bg-card/50 h-100 overflow-y-auto">
-						<motion.div
-							className="flex flex-col space-y-3 p-4 text-sm"
-							initial={{ opacity: 0, y: 20 }}
-							animate={{ opacity: 1, y: 0 }}
-							exit={{ opacity: 0, y: 20 }}
-							transition={{ delay: 0.2 }}
-						>
-							<div className="text-muted-foreground text-center text-xs">{ui[lang]["agent.assistant.disclaimer"]}</div>
+					{/* 對話內容 */}
+					<MessageScrollerProvider autoScroll defaultScrollPosition="last-anchor" scrollPreviousItemPeek={48}>
+						<MessageScroller className={cn("bg-card/50", expanded ? "min-h-0 flex-1" : "h-100")}>
+							<MessageScrollerViewport aria-label={ui[lang]["agent.assistant.transcript"]}>
+								<MessageScrollerContent aria-busy={busy} className={cn("gap-4 p-4", expanded && "mx-auto w-full max-w-3xl gap-6 py-6")}>
+									<MessageScrollerItem messageId="disclaimer">
+										<Marker variant="separator">
+											<MarkerContent className="text-xs">{ui[lang]["agent.assistant.disclaimer"]}</MarkerContent>
+										</Marker>
+									</MessageScrollerItem>
 
-							{[
-								{
-									id: "system",
-									role: "assistant",
-									parts: [{ type: "text", text: ui[lang]["agent.assistant.greeting"] }],
-									toolInvocations: undefined,
-								},
-								...messages,
-							].map((m) => (
-								<div key={m.id} className={`flex flex-col gap-2 ${m.role === "user" ? "items-end" : "items-start"}`}>
-									{/* Text Content - Rendered inside bubble */}
-									{m.parts && m.parts.some((part) => part.type === "text" && part.text !== "") && (
-										<motion.div
-											className={[
-												"prose prose-sm prose-neutral prose-tight max-w-[80%] rounded-2xl px-4 py-2 wrap-break-word whitespace-pre-wrap",
-												m.role === "user"
-													? "prose-invert bg-primary text-primary-foreground origin-right"
-													: "dark:prose-invert bg-muted text-foreground border-border/50 origin-left border",
-											].join(" ")}
-											role="article"
-											aria-label={
-												m.role === "user" ? ui[lang]["agent.assistant.userMessage"] : ui[lang]["agent.assistant.assistantMessage"]
-											}
-											initial={{
-												opacity: 0,
-												x: m.role === "user" ? 10 : -10,
-												rotate: m.role === "user" ? 1 : -1,
-											}}
-											animate={{
-												opacity: 1,
-												x: 0,
-												rotate: 0,
-											}}
-											exit={{
-												opacity: 0,
-												x: m.role === "user" ? 10 : -10,
-												rotate: m.role === "user" ? -1 : 1,
-											}}
-											transition={{ duration: 0.2 }}
-										>
-											{m.parts.map((part, index) => {
-												if (isTextUIPart(part)) {
-													return part.text === "" ? null : <Markdown key={index}>{part.text}</Markdown>;
-												}
-												return null;
-											})}
-										</motion.div>
+									{messages.length === 0 ? (
+										<MessageScrollerItem messageId="empty-state" className="flex shrink flex-col">
+											<Empty className="border-0 p-2">
+												<EmptyHeader>
+													<EmptyMedia variant="icon">
+														<Bot />
+													</EmptyMedia>
+													<EmptyTitle className="text-base">{ui[lang]["agent.assistant.title"]}</EmptyTitle>
+													<EmptyDescription>{ui[lang]["agent.assistant.greeting"]}</EmptyDescription>
+												</EmptyHeader>
+												<EmptyContent>
+													<QuickPromptList
+														quickPrompts={quickPrompts}
+														ariaLabelTemplate={ui[lang]["agent.assistant.quickPrompt"]}
+														onSelect={submitPrompt}
+														className="w-full items-start"
+													/>
+												</EmptyContent>
+											</Empty>
+										</MessageScrollerItem>
+									) : (
+										messages.map((message) => {
+											const isUser = message.role === "user";
+											const messageText = extractMessageText(message.parts);
+											const reasoningText = extractReasoningText(message.parts);
+											const toolParts = collectToolParts(message.parts);
+											const showFooter = !isUser && messageText !== "" && !busy;
+
+											return (
+												<MessageScrollerItem key={message.id} messageId={message.id} scrollAnchor={isUser}>
+													<Message align={isUser ? "end" : "start"}>
+														<MessageContent>
+															{toolParts.map((toolPart, index) => (
+																<ToolMarker key={toolPart.toolCallId ?? `${toolPart.toolName}-${index}`} lang={lang} toolPart={toolPart} />
+															))}
+
+															{reasoningText !== "" && (
+																<ReasoningDisclosure label={ui[lang]["agent.assistant.reasoning"]} text={reasoningText} />
+															)}
+
+															{hasRenderableText(message.parts) && (
+																<Bubble
+																	variant={isUser ? "default" : "muted"}
+																	align={isUser ? "end" : "start"}
+																	aria-label={
+																		isUser ? ui[lang]["agent.assistant.userMessage"] : ui[lang]["agent.assistant.assistantMessage"]
+																	}
+																>
+																	<BubbleContent
+																		className={cn(
+																			"prose prose-sm prose-neutral max-w-none rounded-2xl",
+																			// 在窄面板中收緊 typography 間距與標題尺寸
+																			"prose-headings:mt-3 prose-headings:mb-1.5 prose-headings:text-[0.95em] prose-p:my-1.5 prose-ul:my-1.5 prose-ol:my-1.5 prose-li:my-0.5 prose-pre:my-2 [&>:first-child]:mt-0 [&>:last-child]:mb-0",
+																			isUser ? "prose-invert" : "dark:prose-invert",
+																		)}
+																	>
+																		{message.parts.map((part, index) =>
+																			isTextUIPart(part) && part.text !== "" ? <Markdown key={index}>{part.text}</Markdown> : null,
+																		)}
+																	</BubbleContent>
+																</Bubble>
+															)}
+
+															{showFooter && (
+																<MessageFooter className="gap-0.5 px-0">
+																	<Button
+																		variant="ghost"
+																		size="icon-xs"
+																		className="text-muted-foreground hover:text-foreground cursor-pointer rounded-md"
+																		onClick={() => void handleCopy(message.id, messageText)}
+																		aria-label={
+																			copiedMessageId === message.id ? ui[lang]["agent.assistant.copied"] : ui[lang]["agent.assistant.copy"]
+																		}
+																	>
+																		{copiedMessageId === message.id ? <Check /> : <Copy />}
+																	</Button>
+																	{canRetry && message.id === lastAssistantMessage?.id && (
+																		<Button
+																			variant="ghost"
+																			size="icon-xs"
+																			className="text-muted-foreground hover:text-foreground cursor-pointer rounded-md"
+																			onClick={handleRetry}
+																			aria-label={ui[lang]["agent.assistant.retry"]}
+																		>
+																			<RefreshCw />
+																		</Button>
+																	)}
+																</MessageFooter>
+															)}
+														</MessageContent>
+													</Message>
+												</MessageScrollerItem>
+											);
+										})
 									)}
-								</div>
-							))}
 
-							{/* Thinking Indicator for 'submitted' state or when waiting for response */}
-							{(() => {
-								const statusUI = getStatusUI();
-								if (!statusUI) return null;
-								return (
-									<motion.div
-										initial={{ opacity: 0, y: 5 }}
-										animate={{ opacity: 1, y: 0 }}
-										className="text-muted-foreground ml-1 flex items-center gap-1 text-sm"
-									>
-										{statusUI.icon}
-										<span>{statusUI.text}</span>
-										<LoadingDots />
-									</motion.div>
-								);
-							})()}
+									{showThinking && (
+										<MessageScrollerItem messageId="thinking">
+											<Marker role="status">
+												<MarkerIcon>
+													<Spinner />
+												</MarkerIcon>
+												<MarkerContent className="shimmer">{ui[lang]["agent.assistant.thinking"]}</MarkerContent>
+											</Marker>
+										</MessageScrollerItem>
+									)}
 
-							{/* Quick prompt buttons */}
-							<AnimatePresence>
-								{status === "ready" && (
-									<motion.div
-										className="-mt-1.5 flex flex-col"
-										initial={{ opacity: 0 }}
-										animate={{ opacity: 1 }}
-										exit={{ opacity: 0 }}
-										transition={{ duration: 0.2 }}
-									>
-										{quickPrompts
-											// filter is in messages - check parts for text content
-											.filter((qp) => !messages.some((m) => m.parts?.some((part) => part.type === "text" && part.text === qp.prompt)))
-											.map((qp) => (
-												<button
-													key={qp.text}
-													onClick={() => sendQuickPrompt(qp.prompt)}
-													aria-label={`快速提示: ${qp.text}`}
-													aria-pressed={false}
-													role="button"
-													tabIndex={0}
-													className="group text-muted-foreground hover:text-foreground flex cursor-pointer items-center gap-0.5 rounded p-1 text-left text-sm transition-all hover:font-medium hover:tracking-wide disabled:opacity-50"
-												>
-													{qp.text}
-													<ArrowRight className="h-4 w-4 opacity-50 transition-all group-hover:translate-x-0.5 group-hover:opacity-100" />
-												</button>
-											))}
-									</motion.div>
-								)}
-							</AnimatePresence>
-							<div ref={messagesEndRef} className="flex-1" />
-						</motion.div>
-					</div>
+									{status === "error" && (
+										<MessageScrollerItem messageId="error">
+											<Marker role="status" className="text-destructive">
+												<MarkerIcon>
+													<TriangleAlert />
+												</MarkerIcon>
+												<MarkerContent>{ui[lang]["agent.assistant.error"]}</MarkerContent>
+											</Marker>
+											<Button
+												variant="outline"
+												size="sm"
+												className="mt-2 cursor-pointer rounded-lg"
+												onClick={handleRetry}
+												aria-label={ui[lang]["agent.assistant.retry"]}
+											>
+												<RefreshCw />
+												{ui[lang]["agent.assistant.retry"]}
+											</Button>
+										</MessageScrollerItem>
+									)}
+
+									{messages.length > 0 && status === "ready" && quickPrompts.length > 0 && (
+										<MessageScrollerItem messageId="quick-prompts">
+											<QuickPromptList
+												quickPrompts={quickPrompts}
+												ariaLabelTemplate={ui[lang]["agent.assistant.quickPrompt"]}
+												onSelect={submitPrompt}
+											/>
+										</MessageScrollerItem>
+									)}
+								</MessageScrollerContent>
+							</MessageScrollerViewport>
+							<MessageScrollerButton className="rounded-full">
+								<ArrowDown />
+								<span className="sr-only">{ui[lang]["agent.assistant.scrollToLatest"]}</span>
+							</MessageScrollerButton>
+						</MessageScroller>
+					</MessageScrollerProvider>
+
 					{/* 輸入區域 */}
 					<form
-						role="form"
 						aria-label={ui[lang]["agent.assistant.chatForm"]}
-						onSubmit={(e) => {
-							handleSubmit(e);
-							setInput("");
-						}}
-						className="p-2"
+						onSubmit={handleSubmit}
+						className={cn("shrink-0 p-2", expanded && "mx-auto w-full max-w-3xl pb-4")}
 					>
-						<div className="bg-muted/50 ring-border/50 focus-within:ring-primary/50 focus-within:bg-muted flex gap-2 rounded-lg p-1 ring-1 transition-all">
-							<textarea
-								className="text-foreground placeholder-muted-foreground w-full flex-1 resize-none bg-transparent px-3 py-2 text-sm outline-none"
-								placeholder={ui[lang]["agent.assistant.placeholder"]}
-								value={input}
-								onChange={handleInputChange}
-								onKeyDown={handleKeyDown}
-								tabIndex={0}
-								aria-describedby="chat-bot-instructions"
+						<div className="bg-muted/50 ring-border/50 focus-within:ring-primary/50 focus-within:bg-muted flex items-end gap-2 rounded-lg p-1 ring-1 transition-all">
+							<Textarea
 								ref={inputRef}
+								value={input}
+								onChange={(event) => setInput(event.target.value)}
+								onKeyDown={handleKeyDown}
+								placeholder={ui[lang]["agent.assistant.placeholder"]}
+								aria-describedby="chat-bot-instructions"
 								rows={1}
+								className="text-foreground max-h-40 min-h-9 flex-1 rounded-md border-0 bg-transparent px-3 py-2 text-sm focus-visible:ring-0 md:text-sm"
 							/>
-							<button
-								type="submit"
-								disabled={status === "streaming" || input.trim() === ""}
-								aria-label={ui[lang]["agent.assistant.send"]}
-								aria-disabled={status === "streaming" || input.trim() === "" ? "true" : "false"}
-								className="bg-primary text-primary-foreground hover:bg-primary/90 disabled:bg-primary/5 disabled:text-primary/25 flex w-9 items-center justify-center rounded-lg transition-all disabled:cursor-not-allowed"
-							>
-								<ArrowUp className="size-4" />
-							</button>
-							<div id="chat-bot-instructions" className="sr-only">
-								{ui[lang]["agent.assistant.instructions"]}
-							</div>
+							{busy ? (
+								<Button
+									type="button"
+									variant="secondary"
+									size="icon-lg"
+									className="cursor-pointer rounded-lg"
+									onClick={() => stop()}
+									aria-label={ui[lang]["agent.assistant.stop"]}
+								>
+									<Square className="size-3.5 fill-current" />
+								</Button>
+							) : (
+								<Button
+									type="submit"
+									size="icon-lg"
+									className="cursor-pointer rounded-lg"
+									disabled={input.trim() === ""}
+									aria-label={ui[lang]["agent.assistant.send"]}
+								>
+									<ArrowUp />
+								</Button>
+							)}
+						</div>
+						<div id="chat-bot-instructions" className="sr-only">
+							{ui[lang]["agent.assistant.instructions"]}
 						</div>
 					</form>
 				</motion.div>
