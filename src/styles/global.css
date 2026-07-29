@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
 html {
 	overflow-y: scroll;
@@ -144,6 +145,32 @@ html {
 :root {
 	text-autospace: normal;
 }
+
+/* Scrollbar utilities used by the base-rhea `message-scroller` component. */
+@utility scrollbar-thin {
+	scrollbar-width: thin;
+	&::-webkit-scrollbar {
+		width: 8px;
+		height: 8px;
+	}
+}
+@utility scrollbar-gutter-stable {
+	scrollbar-gutter: stable;
+}
+@utility scrollbar-track-transparent {
+	scrollbar-color: var(--tw-scrollbar-thumb, color-mix(in oklch, var(--muted-foreground) 30%, transparent)) transparent;
+	&::-webkit-scrollbar-track {
+		background-color: transparent;
+	}
+}
+@utility scrollbar-thumb-transparent {
+	--tw-scrollbar-thumb: transparent;
+	scrollbar-color: transparent transparent;
+	&::-webkit-scrollbar-thumb {
+		background-color: transparent;
+	}
+}
+
 .prose {
 	word-break: normal;
 	overflow-wrap: break-word;

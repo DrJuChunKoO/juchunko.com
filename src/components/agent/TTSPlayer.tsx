@@ -582,7 +582,7 @@ export default function TTSPlayer({ isOpen, lang = "zh-TW" }: TTSPlayerProps) {
 										className="text-muted-foreground hover:bg-muted-foreground/10 h-7 w-auto min-w-[3rem] gap-1 border-0 bg-transparent px-2 font-mono text-xs shadow-none focus:ring-0 [&>svg]:opacity-50"
 										title={ui[lang]["agent.voiceReader.speed"]}
 									>
-										<SelectValue />
+										<SelectValue>{(value) => `${value}×`}</SelectValue>
 									</SelectTrigger>
 									<SelectContent align="end" className="min-w-[4rem]">
 										{[0.5, 0.75, 1, 1.25, 1.5, 1.75, 2].map((rate) => (
