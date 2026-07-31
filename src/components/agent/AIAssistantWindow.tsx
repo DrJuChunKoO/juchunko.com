@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { AnimatePresence, motion, useMotionValue, useReducedMotion } from "motion/react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import {
 	ArrowDown,
 	ArrowRight,
@@ -149,15 +149,13 @@ export default function AIAssistantWindow({ isOpen, onClose, lang = "zh-TW" }: A
 	const [input, setInput] = useState("");
 	const [expanded, setExpanded] = useState(false);
 	const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
+	const [windowOffset, setWindowOffset] = useState(16);
 
 	const prefersReducedMotion = Boolean(useReducedMotion());
 
 	// 開啟／關閉用彈簧；layout（小窗 ↔ 全螢幕）另調一組，避免過度拉伸感
 	const openSpring = prefersReducedMotion ? { duration: 0.15 } : { type: "spring" as const, stiffness: 300, damping: 30 };
 	const layoutSpring = prefersReducedMotion ? { duration: 0 } : { type: "spring" as const, stiffness: 420, damping: 36, mass: 0.85 };
-
-	// 以 bottom 控制與底部距離，避免覆蓋 footer（全螢幕時不需要）
-	const y = useMotionValue(16);
 
 	const transport = useMemo(
 		() =>
@@ -178,23 +176,19 @@ export default function AIAssistantWindow({ isOpen, onClose, lang = "zh-TW" }: A
 	const busy = isBusyStatus(status);
 
 	useEffect(() => {
-		if (!isOpen || expanded) {
-			// 全螢幕時貼齊視窗底部；`y` 由 motion 直接寫入行內樣式，必須顯式歸零
-			y.set(expanded ? 0 : 16);
-			return;
-		}
+		if (!isOpen || expanded) return;
 
 		function syncWindowOffset() {
 			const footer = document.getElementById("footer");
 			if (!footer) {
-				y.set(16);
+				setWindowOffset(16);
 				return;
 			}
 			const rect = footer.getBoundingClientRect();
 			const top = rect.y - window.innerHeight;
 			const isBottom = top < 0;
 
-			y.set(isBottom ? 16 - top : 16);
+			setWindowOffset(isBottom ? 16 - top : 16);
 		}
 
 		window.addEventListener("scroll", syncWindowOffset);
@@ -220,7 +214,7 @@ export default function AIAssistantWindow({ isOpen, onClose, lang = "zh-TW" }: A
 				observer.disconnect();
 			}
 		};
-	}, [isOpen, expanded, y]);
+	}, [isOpen, expanded]);
 
 	// 全螢幕時鎖住頁面滾動，關閉後還原
 	useEffect(() => {
@@ -321,14 +315,14 @@ export default function AIAssistantWindow({ isOpen, onClose, lang = "zh-TW" }: A
 	const canRetry = !busy && lastAssistantMessage !== undefined;
 
 	return (
-		<>
+		<motion.div layoutRoot className="pointer-events-none fixed inset-0">
 			{/* 全螢幕時的背景遮罩：點擊可收合回小窗 */}
 			<AnimatePresence>
 				{isOpen && expanded && (
 					<motion.div
 						key="ai-assistant-backdrop"
 						aria-hidden
-						className="fixed inset-0 z-40 bg-black/40"
+						className="pointer-events-auto fixed inset-0 z-40 bg-black/40"
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
 						exit={{ opacity: 0 }}
@@ -343,32 +337,46 @@ export default function AIAssistantWindow({ isOpen, onClose, lang = "zh-TW" }: A
 					<motion.div
 						ref={windowRef}
 						layout={!prefersReducedMotion}
-						layoutRoot
-						initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.5, y: 16 }}
-						animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1, y: 0 }}
-						exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.5, y: 16 }}
+						layoutAnchor={{ x: 1, y: 1 }}
+						layoutDependency={expanded}
+						initial={prefersReducedMotion ? { opacity: 0, bottom: windowOffset } : { opacity: 0, scale: 0.5, y: 16, bottom: windowOffset }}
+						animate={
+							prefersReducedMotion
+								? { opacity: 1, bottom: expanded ? 0 : windowOffset }
+								: { opacity: 1, scale: 1, y: 0, bottom: expanded ? 0 : windowOffset }
+						}
+						exit={
+							prefersReducedMotion
+								? { opacity: 0, bottom: expanded ? 0 : windowOffset }
+								: { opacity: 0, scale: 0.5, y: 16, bottom: expanded ? 0 : windowOffset }
+						}
 						transition={{
 							...openSpring,
 							layout: layoutSpring,
+							bottom: layoutSpring,
 							borderRadius: layoutSpring,
 						}}
 						style={{
-							bottom: y,
 							// borderRadius 放 style，layout 變形時才不會被 scale 扭歪
 							borderRadius: expanded ? 0 : 12,
 						}}
 						className={cn(
-							"ring-border/50 fixed flex flex-col overflow-hidden will-change-[transform,border-radius]",
+							"ring-border/50 pointer-events-auto fixed flex origin-bottom-right flex-col overflow-hidden will-change-[transform,border-radius]",
 							expanded
 								? "bg-card inset-0 z-50 ring-0"
-								: "bg-card/75 right-4 z-40 w-100 max-w-[calc(100vw-32px)] origin-bottom-right shadow-lg ring-1 backdrop-blur-xl",
+								: "bg-card/75 right-4 z-40 w-100 max-w-[calc(100vw-32px)] shadow-lg ring-1 backdrop-blur-xl",
 						)}
 						role="dialog"
 						aria-modal={expanded}
 						aria-label={ui[lang]["agent.assistant.title"]}
 					>
 						{/* 標題欄 */}
-						<motion.div layout="position" className="bg-muted text-foreground border-border shrink-0 border-b">
+						<motion.div
+							layout="position"
+							layoutDependency={expanded}
+							transition={{ layout: layoutSpring }}
+							className="bg-muted text-foreground border-border shrink-0 border-b"
+						>
 							<div className={cn("flex items-center justify-between gap-2 p-2 pl-4", expanded && "mx-auto w-full max-w-3xl")}>
 								<div className="flex items-center gap-2">
 									<Bot className="text-primary size-5" />
@@ -574,7 +582,10 @@ export default function AIAssistantWindow({ isOpen, onClose, lang = "zh-TW" }: A
 
 						{/* 輸入區域 */}
 						<motion.form
-							layout="position"
+							layout
+							layoutAnchor={{ x: 0.5, y: 1 }}
+							layoutDependency={expanded}
+							transition={{ layout: layoutSpring }}
 							aria-label={ui[lang]["agent.assistant.chatForm"]}
 							onSubmit={handleSubmit}
 							className={cn("shrink-0 p-2", expanded && "mx-auto w-full max-w-3xl pb-4")}
@@ -620,6 +631,6 @@ export default function AIAssistantWindow({ isOpen, onClose, lang = "zh-TW" }: A
 					</motion.div>
 				)}
 			</AnimatePresence>
-		</>
+		</motion.div>
 	);
 }
