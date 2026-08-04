@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type AnchorHTMLAttributes } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import {
 	ArrowDown,
@@ -75,6 +75,25 @@ const TOOL_ICONS: Record<ToolIconName, LucideIcon> = {
 	feed: Rss,
 	article: Newspaper,
 	tool: Wrench,
+};
+
+function isExternalHref(href: string | undefined): boolean {
+	return typeof href === "string" && /^https?:\/\//i.test(href);
+}
+
+function MarkdownLink({ href, children, ...props }: AnchorHTMLAttributes<HTMLAnchorElement>) {
+	const external = isExternalHref(href);
+	return (
+		<a href={href} {...props} {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}>
+			{children}
+		</a>
+	);
+}
+
+const markdownOptions = {
+	overrides: {
+		a: { component: MarkdownLink },
+	},
 };
 
 /** One persistent row per tool call, so the activity stays readable after the answer lands. */
@@ -489,7 +508,11 @@ export default function AIAssistantWindow({ isOpen, onClose, lang = "zh-TW" }: A
 																			)}
 																		>
 																			{message.parts.map((part, index) =>
-																				isTextUIPart(part) && part.text !== "" ? <Markdown key={index}>{part.text}</Markdown> : null,
+																				isTextUIPart(part) && part.text !== "" ? (
+																					<Markdown key={index} options={markdownOptions}>
+																						{part.text}
+																					</Markdown>
+																				) : null,
 																			)}
 																		</BubbleContent>
 																	</Bubble>
