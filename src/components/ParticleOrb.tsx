@@ -4,107 +4,187 @@ const VERT = `
 attribute vec2 a_position;
 attribute float a_seed;
 attribute float a_alpha;
+attribute float a_angle;
+attribute float a_capture;
 
 uniform float u_aspect;
 uniform float u_dpr;
 
 varying float v_seed;
 varying float v_alpha;
+varying float v_angle;
+varying float v_capture;
 
 void main() {
   v_seed = a_seed;
   v_alpha = a_alpha;
-  float dist = length(a_position);
+  v_angle = a_angle;
+  v_capture = a_capture;
   gl_Position = vec4(a_position.x / u_aspect, a_position.y, 0.0, 1.0);
-  float sz = (2.5 + dist * 4.0) * u_dpr;
-  gl_PointSize = clamp(sz, 2.0 * u_dpr, 8.0 * u_dpr);
+  float size = 2.2 + v_seed * 2.0 + a_capture * 10.5;
+  gl_PointSize = clamp(size * u_dpr, 1.8 * u_dpr, 14.5 * u_dpr);
 }
 `;
 
 const FRAG = `
 precision mediump float;
+
 uniform float u_time;
+uniform float u_dark;
+
 varying float v_seed;
 varying float v_alpha;
+varying float v_angle;
+varying float v_capture;
 
 void main() {
-  vec2 coord = gl_PointCoord - vec2(0.5);
-  float r = length(coord);
-  if (r > 0.5) discard;
-  float edge = 1.0 - smoothstep(0.25, 0.5, r);
+  vec2 coord = vec2(gl_PointCoord.x - 0.5, 0.5 - gl_PointCoord.y);
+  float radius = length(coord);
+  float circle = 1.0 - smoothstep(0.22, 0.5, radius);
 
-  float speed  = 2.0 + v_seed * 5.0;
-  float phase  = v_seed * 6.2831853;
-  float f1     = sin(u_time * speed + phase) * 0.5 + 0.5;
-  float speed2 = 1.1 + v_seed * 3.0;
-  float f2     = sin(u_time * speed2 + phase * 1.7) * 0.5 + 0.5;
-  float combined = f1 * 0.6 + f2 * 0.4;
-  float blink  = smoothstep(0.18, 0.38, combined);
+  float cosine = cos(v_angle);
+  float sine = sin(v_angle);
+  vec2 local = vec2(coord.x * cosine + coord.y * sine, -coord.x * sine + coord.y * cosine);
+  float body = 1.0 - smoothstep(0.17, 0.25, length(local - vec2(-0.2, 0.0)));
+  float coneProgress = smoothstep(-0.18, 0.48, local.x);
+  float coneWidth = mix(0.18, 0.012, coneProgress);
+  float coneAxis = smoothstep(-0.34, -0.18, local.x) * (1.0 - smoothstep(0.46, 0.5, local.x));
+  float cone = coneAxis * (1.0 - smoothstep(coneWidth * 0.62, coneWidth, abs(local.y)));
+  float droplet = max(body, cone);
+  float edge = mix(circle, droplet, smoothstep(0.08, 0.42, v_capture));
+  if (edge <= 0.0) discard;
+  float pulse = 0.92 + sin(u_time * (0.5 + v_seed * 0.8) + v_seed * 12.0) * 0.08;
+  float lightGray = 0.10 + v_seed * 0.40;
+  float darkGray = 0.62 + v_seed * 0.38;
+  float gray = mix(lightGray, darkGray, u_dark);
 
-  // Map v_seed to a gray in [#222, #DDD] = [0.133, 0.867]
-  float gray = 0.133 + v_seed * 0.734;
-  float alpha = v_alpha * blink * (0.05 + combined * 0.70) * edge;
-  gl_FragColor = vec4(gray, gray, gray, alpha);
+  gl_FragColor = vec4(vec3(gray), v_alpha * pulse * edge);
 }
 `;
 
-function compileShader(gl: WebGLRenderingContext, type: number, src: string): WebGLShader {
-	const s = gl.createShader(type)!;
-	gl.shaderSource(s, src);
-	gl.compileShader(s);
-	if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
-		const msg = gl.getShaderInfoLog(s);
-		gl.deleteShader(s);
-		throw new Error("Shader: " + msg);
-	}
-	return s;
-}
-
-function createProgram(gl: WebGLRenderingContext, vs: string, fs: string): WebGLProgram {
-	const p = gl.createProgram()!;
-	const v = compileShader(gl, gl.VERTEX_SHADER, vs);
-	const f = compileShader(gl, gl.FRAGMENT_SHADER, fs);
-	gl.attachShader(p, v);
-	gl.attachShader(p, f);
-	gl.linkProgram(p);
-	if (!gl.getProgramParameter(p, gl.LINK_STATUS)) {
-		const msg = gl.getProgramInfoLog(p);
-		gl.deleteProgram(p);
-		throw new Error("Program: " + msg);
-	}
-	gl.deleteShader(v);
-	gl.deleteShader(f);
-	return p;
-}
-
 interface Particle {
-	// original spawn position (used to reset)
 	ox: number;
 	oy: number;
-	// current position
 	x: number;
 	y: number;
+	vx: number;
+	vy: number;
+	targetX: number;
+	targetY: number;
+	wanderTimer: number;
+	wanderRadius: number;
 	seed: number;
-	// 0 = invisible, 1 = fully visible
-	alpha: number;
-	state: "idle" | "attracted" | "dead";
-	respawnTimer: number;
-	// intro delay in seconds (0.2~1.0)
+	baseAlpha: number;
+	opacity: number;
+	captureOpacity: number;
+	captureProgress: number;
 	introDelay: number;
+	state: "idle" | "captured" | "recovering" | "respawning";
 }
 
-function randomOrbPosition(): [number, number] {
-	const angle = Math.random() * Math.PI * 2;
-	const r = Math.random() < 0.3 ? Math.sqrt(Math.random()) * 0.88 : 0.35 + Math.random() * 0.6;
-	return [Math.cos(angle) * r, Math.sin(angle) * r];
+const FIELD_RADIUS = 0.97;
+const INFLUENCE_RADIUS = 0.36;
+const RELEASE_RADIUS = 0.43;
+
+function compileShader(gl: WebGLRenderingContext, type: number, source: string): WebGLShader {
+	const shader = gl.createShader(type)!;
+	gl.shaderSource(shader, source);
+	gl.compileShader(shader);
+	if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+		const message = gl.getShaderInfoLog(shader);
+		gl.deleteShader(shader);
+		throw new Error("Shader: " + message);
+	}
+	return shader;
+}
+
+function createProgram(gl: WebGLRenderingContext, vertexSource: string, fragmentSource: string): WebGLProgram {
+	const program = gl.createProgram()!;
+	const vertexShader = compileShader(gl, gl.VERTEX_SHADER, vertexSource);
+	const fragmentShader = compileShader(gl, gl.FRAGMENT_SHADER, fragmentSource);
+	gl.attachShader(program, vertexShader);
+	gl.attachShader(program, fragmentShader);
+	gl.linkProgram(program);
+	if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+		const message = gl.getProgramInfoLog(program);
+		gl.deleteProgram(program);
+		throw new Error("Program: " + message);
+	}
+	gl.deleteShader(vertexShader);
+	gl.deleteShader(fragmentShader);
+	return program;
 }
 
 function makeParticle(): Particle {
-	const [x, y] = randomOrbPosition();
-	return { ox: x, oy: y, x, y, seed: Math.random(), alpha: 1, state: "idle", respawnTimer: 0, introDelay: 0.2 + Math.random() * 0.8 };
+	const seed = Math.random();
+	const radius = Math.sqrt(Math.random()) * FIELD_RADIUS;
+	const angle = Math.random() * Math.PI * 2;
+	const x = Math.cos(angle) * radius;
+	const y = Math.sin(angle) * radius;
+
+	return {
+		ox: x,
+		oy: y,
+		x,
+		y,
+		vx: 0,
+		vy: 0,
+		targetX: x,
+		targetY: y,
+		wanderTimer: Math.random() * 1.5,
+		wanderRadius: Math.min(0.055, Math.max(0.01, FIELD_RADIUS - radius)),
+		seed,
+		baseAlpha: 0.34 + Math.random() * 0.46,
+		opacity: 1,
+		captureOpacity: 1,
+		captureProgress: 0,
+		introDelay: Math.random() * 0.9,
+		state: "idle",
+	};
 }
 
-export default function ParticleOrb({ particleCount = 500 }: { particleCount?: number }) {
+function setWanderTarget(particle: Particle) {
+	const radius = Math.sqrt(Math.random()) * particle.wanderRadius;
+	const angle = Math.random() * Math.PI * 2;
+	let targetX = particle.ox + Math.cos(angle) * radius;
+	let targetY = particle.oy + Math.sin(angle) * radius;
+	const distanceFromCenter = Math.hypot(targetX, targetY);
+
+	if (distanceFromCenter > FIELD_RADIUS) {
+		targetX = (targetX / distanceFromCenter) * FIELD_RADIUS;
+		targetY = (targetY / distanceFromCenter) * FIELD_RADIUS;
+	}
+
+	particle.targetX = targetX;
+	particle.targetY = targetY;
+	particle.wanderTimer = 1.4 + Math.random() * 2.2;
+}
+
+function regenerateParticle(particle: Particle) {
+	particle.x = particle.ox;
+	particle.y = particle.oy;
+	particle.vx = 0;
+	particle.vy = 0;
+	particle.opacity = 0;
+	particle.captureProgress = 0;
+	particle.state = "respawning";
+	setWanderTarget(particle);
+}
+
+function captureParticle(particle: Particle) {
+	particle.captureOpacity = particle.opacity;
+	particle.captureProgress = 0;
+	particle.vx = 0;
+	particle.vy = 0;
+	particle.state = "captured";
+}
+
+function smoothstep(min: number, max: number, value: number) {
+	const progress = Math.min(1, Math.max(0, (value - min) / (max - min)));
+	return progress * progress * (3 - 2 * progress);
+}
+
+export default function ParticleOrb({ particleCount = 620 }: { particleCount?: number }) {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 
 	useEffect(() => {
@@ -112,229 +192,220 @@ export default function ParticleOrb({ particleCount = 500 }: { particleCount?: n
 		if (!canvas) return;
 
 		const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
 		const gl = canvas.getContext("webgl", { alpha: true, premultipliedAlpha: false });
 		if (!gl) return;
 
-		let prog: WebGLProgram;
+		let program: WebGLProgram;
 		try {
-			prog = createProgram(gl, VERT, FRAG);
-		} catch (e) {
-			console.error("ParticleOrb:", e);
+			program = createProgram(gl, VERT, FRAG);
+		} catch (error) {
+			console.error("ParticleOrb:", error);
 			return;
 		}
-		gl.useProgram(prog);
+		gl.useProgram(program);
 
-		// attribute / uniform locations
-		const aPos = gl.getAttribLocation(prog, "a_position");
-		const aSeed = gl.getAttribLocation(prog, "a_seed");
-		const aAlpha = gl.getAttribLocation(prog, "a_alpha");
-		const uTime = gl.getUniformLocation(prog, "u_time");
-		const uAspect = gl.getUniformLocation(prog, "u_aspect");
-		const uDpr = gl.getUniformLocation(prog, "u_dpr");
+		const positionAttribute = gl.getAttribLocation(program, "a_position");
+		const seedAttribute = gl.getAttribLocation(program, "a_seed");
+		const alphaAttribute = gl.getAttribLocation(program, "a_alpha");
+		const angleAttribute = gl.getAttribLocation(program, "a_angle");
+		const captureAttribute = gl.getAttribLocation(program, "a_capture");
+		const timeUniform = gl.getUniformLocation(program, "u_time");
+		const aspectUniform = gl.getUniformLocation(program, "u_aspect");
+		const dprUniform = gl.getUniformLocation(program, "u_dpr");
+		const darkUniform = gl.getUniformLocation(program, "u_dark");
 
-		// dynamic buffers — updated every frame
-		const posBuf = gl.createBuffer()!;
-		const seedBuf = gl.createBuffer()!;
-		const alphaBuf = gl.createBuffer()!;
-		const posData = new Float32Array(particleCount * 2);
+		const positionBuffer = gl.createBuffer()!;
+		const seedBuffer = gl.createBuffer()!;
+		const alphaBuffer = gl.createBuffer()!;
+		const angleBuffer = gl.createBuffer()!;
+		const captureBuffer = gl.createBuffer()!;
+		const positionData = new Float32Array(particleCount * 2);
 		const seedData = new Float32Array(particleCount);
 		const alphaData = new Float32Array(particleCount);
+		const angleData = new Float32Array(particleCount);
+		const captureData = new Float32Array(particleCount);
+		const particles = Array.from({ length: particleCount }, makeParticle);
+		for (const particle of particles) setWanderTarget(particle);
 
 		gl.enable(gl.BLEND);
 		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 		gl.clearColor(0, 0, 0, 0);
 
-		// sizing
-		let aspect = 1,
-			dpr = 1;
+		let aspect = 1;
+		let dpr = 1;
+		let renderStatic = () => {};
 		const resize = () => {
 			const rect = canvas.getBoundingClientRect();
 			if (rect.width === 0 || rect.height === 0) return;
-			dpr = window.devicePixelRatio || 1;
+			dpr = Math.min(window.devicePixelRatio || 1, 2);
 			canvas.width = Math.round(rect.width * dpr);
 			canvas.height = Math.round(rect.height * dpr);
 			aspect = rect.width / rect.height;
 			gl.viewport(0, 0, canvas.width, canvas.height);
+			renderStatic();
 		};
 		resize();
-		const ro = new ResizeObserver(resize);
-		ro.observe(canvas);
+		const resizeObserver = new ResizeObserver(resize);
+		resizeObserver.observe(canvas);
 
-		// mouse
-		let mx = 0,
-			my = 0,
-			mouseActive = 0;
-		const updateMouse = (cx: number, cy: number) => {
+		let pointerX = 0;
+		let pointerY = 0;
+		let pointerActive = false;
+		const updatePointer = (clientX: number, clientY: number) => {
 			const rect = canvas.getBoundingClientRect();
-			const nx = ((cx - rect.left) / rect.width) * 2 - 1;
-			const ny = -(((cy - rect.top) / rect.height) * 2 - 1);
-			mx = nx * aspect;
-			my = ny;
+			pointerX = (((clientX - rect.left) / rect.width) * 2 - 1) * aspect;
+			pointerY = -(((clientY - rect.top) / rect.height) * 2 - 1);
 		};
-		const onMove = (e: MouseEvent) => {
-			updateMouse(e.clientX, e.clientY);
-			mouseActive = 1;
+		const onPointerMove = (event: PointerEvent) => {
+			updatePointer(event.clientX, event.clientY);
+			pointerActive = true;
 		};
-		const onLeave = () => {
-			mouseActive = 0;
+		const onPointerLeave = () => {
+			pointerActive = false;
 		};
-		const onTouch = (e: TouchEvent) => {
-			updateMouse(e.touches[0].clientX, e.touches[0].clientY);
-			mouseActive = 1;
-		};
-		const onTouchEnd = () => {
-			mouseActive = 0;
-		};
-		canvas.addEventListener("mousemove", onMove);
-		canvas.addEventListener("mouseleave", onLeave);
-		canvas.addEventListener("touchmove", onTouch, { passive: true });
-		canvas.addEventListener("touchend", onTouchEnd);
+		canvas.addEventListener("pointermove", onPointerMove);
+		canvas.addEventListener("pointerleave", onPointerLeave);
 
-		// init particles — all start invisible
-		const particles: Particle[] = Array.from({ length: particleCount }, () => {
-			const p = makeParticle();
-			p.alpha = 0;
-			return p;
+		let dark = document.documentElement.classList.contains("dark") ? 1 : 0;
+		const themeObserver = new MutationObserver(() => {
+			dark = document.documentElement.classList.contains("dark") ? 1 : 0;
+			if (reducedMotion) renderStatic();
 		});
+		themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
 
-		// intro fade-in: 0 → 1 over ~2s, multiplied onto all alphas
-		let introProgress = 0;
-
-		const resetIntro = () => {
-			introProgress = 0;
-			for (const p of particles) {
-				p.alpha = 0;
-				p.state = "idle";
-				p.x = p.ox;
-				p.y = p.oy;
-				p.introDelay = 0.2 + Math.random() * 0.8;
-			}
-		};
-
-		const onVisibilityChange = () => {
-			if (document.visibilityState === "visible") resetIntro();
-		};
-		document.addEventListener("visibilitychange", onVisibilityChange);
-
-		// render loop
 		let rafId = 0;
-		const t0 = performance.now();
-		let lastNow = t0;
-
-		const render = (now: number) => {
-			const t = (now - t0) / 1000;
-			const dt = Math.min((now - lastNow) / 1000, 0.05);
+		const startedAt = performance.now();
+		let lastNow = startedAt;
+		const render = (now: number, animate: boolean) => {
+			const elapsed = (now - startedAt) / 1000;
+			const dt = animate ? Math.min((now - lastNow) / 1000, 0.05) : 0;
 			lastNow = now;
 
-			// intro timer advance
-			introProgress = Math.min(2, introProgress + dt);
-
-			// ── update particles ──
 			for (let i = 0; i < particles.length; i++) {
-				const p = particles[i];
+				const particle = particles[i];
+				if (particle.state === "idle") {
+					if (animate) {
+						particle.wanderTimer -= dt;
+						if (particle.wanderTimer <= 0) setWanderTarget(particle);
 
-				if (p.state === "dead") {
-					// teleport back to origin invisibly, then fade in fast
-					p.x = p.ox;
-					p.y = p.oy;
-					p.alpha = 0;
-					p.state = "idle";
-					// immediately check if should be attracted again
-					if (mouseActive > 0.05) {
-						const mdx = mx - p.x;
-						const mdy = my - p.y;
-						if (Math.sqrt(mdx * mdx + mdy * mdy) < 0.4) {
-							p.state = "attracted";
-							p.alpha = 0.6 + Math.random() * 0.4;
-						}
+						particle.vx += (particle.targetX - particle.x) * 12 * dt;
+						particle.vy += (particle.targetY - particle.y) * 12 * dt;
+						const damping = Math.exp(-dt * 3.8);
+						particle.vx *= damping;
+						particle.vy *= damping;
+						particle.x += particle.vx * dt;
+						particle.y += particle.vy * dt;
 					}
-				} else if (p.state === "attracted") {
-					// move toward mouse
-					const dx = mx - p.x;
-					const dy = my - p.y;
-					const dist = Math.sqrt(dx * dx + dy * dy) + 0.001;
-					const speed = 0.5 + (1 - Math.min(dist, 1)) * 0.6;
-					p.x += (dx / dist) * speed * dt;
-					p.y += (dy / dist) * speed * dt;
 
-					// fade out as it nears the mouse
-					const proximity = Math.max(0, 1 - dist / 0.2);
-					p.alpha -= proximity * dt * 10 + dt * 0.5;
-
-					if (p.alpha <= 0 || dist < 0.015) {
-						p.alpha = 0;
-						p.state = "dead";
+					if (pointerActive && Math.hypot(pointerX - particle.ox, pointerY - particle.oy) < INFLUENCE_RADIUS) {
+						captureParticle(particle);
 					}
-				} else {
-					// idle: fade in quickly
-					p.alpha = Math.min(1, p.alpha + dt * 3.0);
+				} else if (particle.state === "captured" && animate) {
+					const originDistance = Math.hypot(pointerX - particle.ox, pointerY - particle.oy);
+					if (!pointerActive || originDistance > RELEASE_RADIUS) {
+						const pointerDistance = Math.hypot(pointerX - particle.x, pointerY - particle.y);
+						particle.opacity *= smoothstep(0.018, INFLUENCE_RADIUS * 0.82, pointerDistance);
+						particle.state = "recovering";
+					} else {
+						const proximity = Math.max(0, 1 - originDistance / INFLUENCE_RADIUS);
+						const captureRate = 0.65 + proximity * 1.5 + particle.seed * 0.2;
+						particle.captureProgress = Math.min(1, particle.captureProgress + dt * (captureRate + particle.captureProgress ** 2 * 5));
+						const gravityCurve = particle.captureProgress ** 3;
+						const pull = 1 - Math.exp(-dt * (2.5 + gravityCurve * 24));
+						particle.x += (pointerX - particle.x) * pull;
+						particle.y += (pointerY - particle.y) * pull;
+						particle.opacity = particle.captureOpacity * (1 - smoothstep(0.08, 1, particle.captureProgress));
 
-					// only attract particles within a radius of ~0.4 world units from mouse
-					if (mouseActive > 0.05) {
-						const dx = mx - p.x;
-						const dy = my - p.y;
-						const dist = Math.sqrt(dx * dx + dy * dy);
-						if (dist < 0.4) {
-							p.state = "attracted";
+						if (particle.captureProgress >= 1) regenerateParticle(particle);
+					}
+				} else if (particle.state === "recovering" && animate) {
+					particle.opacity = Math.max(0, particle.opacity - dt * 7);
+					if (particle.opacity <= 0) regenerateParticle(particle);
+				} else if (particle.state === "respawning" && animate) {
+					const originDistance = Math.hypot(pointerX - particle.ox, pointerY - particle.oy);
+					const proximity = pointerActive ? Math.max(0, 1 - originDistance / INFLUENCE_RADIUS) : 0;
+					const respawnRate = 5.5 + proximity * 7.5 + particle.seed * 1.4;
+					particle.opacity = Math.min(1, particle.opacity + dt * respawnRate);
+					if (particle.opacity >= 1) {
+						if (pointerActive && originDistance < INFLUENCE_RADIUS) {
+							captureParticle(particle);
+						} else {
+							particle.state = "idle";
 						}
 					}
 				}
 
-				posData[i * 2] = p.x;
-				posData[i * 2 + 1] = p.y;
-				seedData[i] = p.seed;
-				// per-particle intro: fade in over 0.4s after its own delay
-				const introAlpha = Math.min(1, Math.max(0, (introProgress - p.introDelay) / 0.4));
-				alphaData[i] = Math.max(0, p.alpha) * introAlpha;
+				positionData[i * 2] = particle.x;
+				positionData[i * 2 + 1] = particle.y;
+				seedData[i] = particle.seed;
+				const introAlpha = reducedMotion ? 1 : Math.min(1, Math.max(0, (elapsed - particle.introDelay) / 0.55));
+				const distorted = particle.state === "captured";
+				const pointerDistance = Math.hypot(pointerX - particle.x, pointerY - particle.y);
+				const maskedByPointer = distorted || (pointerActive && particle.state === "respawning");
+				const distanceAlpha = maskedByPointer ? smoothstep(0.018, INFLUENCE_RADIUS * 0.82, pointerDistance) : 1;
+				alphaData[i] = particle.baseAlpha * particle.opacity * introAlpha * distanceAlpha;
+				angleData[i] = distorted ? Math.atan2(pointerY - particle.y, pointerX - particle.x) : 0;
+				captureData[i] = distorted ? 0.32 + particle.captureProgress * 0.68 : 0;
 			}
 
-			// ── upload + draw ──
 			gl.clear(gl.COLOR_BUFFER_BIT);
-			gl.useProgram(prog);
+			gl.useProgram(program);
 
-			gl.bindBuffer(gl.ARRAY_BUFFER, posBuf);
-			gl.bufferData(gl.ARRAY_BUFFER, posData, gl.DYNAMIC_DRAW);
-			gl.enableVertexAttribArray(aPos);
-			gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+			gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+			gl.bufferData(gl.ARRAY_BUFFER, positionData, gl.DYNAMIC_DRAW);
+			gl.enableVertexAttribArray(positionAttribute);
+			gl.vertexAttribPointer(positionAttribute, 2, gl.FLOAT, false, 0, 0);
 
-			gl.bindBuffer(gl.ARRAY_BUFFER, seedBuf);
-			gl.bufferData(gl.ARRAY_BUFFER, seedData, gl.DYNAMIC_DRAW);
-			gl.enableVertexAttribArray(aSeed);
-			gl.vertexAttribPointer(aSeed, 1, gl.FLOAT, false, 0, 0);
+			gl.bindBuffer(gl.ARRAY_BUFFER, seedBuffer);
+			gl.bufferData(gl.ARRAY_BUFFER, seedData, gl.STATIC_DRAW);
+			gl.enableVertexAttribArray(seedAttribute);
+			gl.vertexAttribPointer(seedAttribute, 1, gl.FLOAT, false, 0, 0);
 
-			gl.bindBuffer(gl.ARRAY_BUFFER, alphaBuf);
+			gl.bindBuffer(gl.ARRAY_BUFFER, alphaBuffer);
 			gl.bufferData(gl.ARRAY_BUFFER, alphaData, gl.DYNAMIC_DRAW);
-			gl.enableVertexAttribArray(aAlpha);
-			gl.vertexAttribPointer(aAlpha, 1, gl.FLOAT, false, 0, 0);
+			gl.enableVertexAttribArray(alphaAttribute);
+			gl.vertexAttribPointer(alphaAttribute, 1, gl.FLOAT, false, 0, 0);
 
-			gl.uniform1f(uTime, t);
-			gl.uniform1f(uAspect, aspect);
-			gl.uniform1f(uDpr, dpr);
+			gl.bindBuffer(gl.ARRAY_BUFFER, angleBuffer);
+			gl.bufferData(gl.ARRAY_BUFFER, angleData, gl.DYNAMIC_DRAW);
+			gl.enableVertexAttribArray(angleAttribute);
+			gl.vertexAttribPointer(angleAttribute, 1, gl.FLOAT, false, 0, 0);
 
+			gl.bindBuffer(gl.ARRAY_BUFFER, captureBuffer);
+			gl.bufferData(gl.ARRAY_BUFFER, captureData, gl.DYNAMIC_DRAW);
+			gl.enableVertexAttribArray(captureAttribute);
+			gl.vertexAttribPointer(captureAttribute, 1, gl.FLOAT, false, 0, 0);
+
+			gl.uniform1f(timeUniform, reducedMotion ? 0 : elapsed);
+			gl.uniform1f(aspectUniform, aspect);
+			gl.uniform1f(dprUniform, dpr);
+			gl.uniform1f(darkUniform, dark);
 			gl.drawArrays(gl.POINTS, 0, particleCount);
 
-			if (!reducedMotion) {
-				rafId = requestAnimationFrame(render);
-			}
+			if (animate) rafId = requestAnimationFrame((nextNow) => render(nextNow, true));
 		};
 
-		rafId = requestAnimationFrame(render);
+		renderStatic = () => render(performance.now(), false);
+		if (reducedMotion) {
+			renderStatic();
+		} else {
+			rafId = requestAnimationFrame((now) => render(now, true));
+		}
 
 		return () => {
 			cancelAnimationFrame(rafId);
-			ro.disconnect();
-			document.removeEventListener("visibilitychange", onVisibilityChange);
-			canvas.removeEventListener("mousemove", onMove);
-			canvas.removeEventListener("mouseleave", onLeave);
-			canvas.removeEventListener("touchmove", onTouch);
-			canvas.removeEventListener("touchend", onTouchEnd);
-			gl.deleteBuffer(posBuf);
-			gl.deleteBuffer(seedBuf);
-			gl.deleteBuffer(alphaBuf);
-			gl.deleteProgram(prog);
+			resizeObserver.disconnect();
+			themeObserver.disconnect();
+			canvas.removeEventListener("pointermove", onPointerMove);
+			canvas.removeEventListener("pointerleave", onPointerLeave);
+			gl.deleteBuffer(positionBuffer);
+			gl.deleteBuffer(seedBuffer);
+			gl.deleteBuffer(alphaBuffer);
+			gl.deleteBuffer(angleBuffer);
+			gl.deleteBuffer(captureBuffer);
+			gl.deleteProgram(program);
 		};
 	}, [particleCount]);
 
-	return <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" style={{ display: "block" }} aria-hidden="true" />;
+	return <canvas ref={canvasRef} className="absolute inset-0 block h-full w-full touch-pan-y" aria-hidden="true" />;
 }
