@@ -14,7 +14,56 @@ import remarkCjkFriendlyGfmStrikethrough from "remark-cjk-friendly-gfm-strikethr
 
 import opengraphImages from "astro-opengraph-images";
 import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { customRenderer } from "./src/lib/og-renderer.ts";
+
+// Preload eager island chunks (client:load / client:only) so the browser fetches them during
+// HTML parse and caches them in the module map. Without this, Astro's island loader issues a
+// single lazy import() at end-of-body; a large chunk (e.g. ~1 MB Agent island) can then
+// intermittently fail on slow/spotty connections with "Failed to fetch dynamically imported module".
+// client:visible islands are intentionally skipped to keep their lazy behavior.
+function preloadIslandChunks() {
+	return {
+		name: "preload-island-chunks",
+		hooks: {
+			"astro:build:done": ({ dir, logger }) => {
+				const root = fileURLToPath(dir);
+				const htmlFiles = [];
+				(function walk(current) {
+					for (const entry of fs.readdirSync(current, { withFileTypes: true })) {
+						const full = path.join(current, entry.name);
+						if (entry.isDirectory()) walk(full);
+						else if (full.endsWith(".html")) htmlFiles.push(full);
+					}
+				})(root);
+
+				let injected = 0;
+				for (const file of htmlFiles) {
+					const html = fs.readFileSync(file, "utf8");
+					const hrefs = new Set();
+					for (const tag of html.matchAll(/<astro-island\b[^>]*>/g)) {
+						const attrs = tag[0];
+						if (!/(^|\s)client="(?:load|only)"/.test(attrs)) continue;
+						for (const attr of ["component-url", "renderer-url"]) {
+							const match = attrs.match(new RegExp(`${attr}="([^"]+)"`));
+							if (match && match[1].startsWith("/")) hrefs.add(match[1]);
+						}
+					}
+					if (hrefs.size === 0) continue;
+					const links = [...hrefs]
+						.sort()
+						.map((href) => `<link rel="modulepreload" href="${href}">`)
+						.join("");
+					if (html.includes(links)) continue;
+					fs.writeFileSync(file, html.replace("</head>", `${links}</head>`));
+					injected += hrefs.size;
+				}
+				logger.info(`preload-island-chunks: injected ${injected} modulepreload links across ${htmlFiles.length} pages`);
+			},
+		},
+	};
+}
 
 // https://astro.build/config
 export default defineConfig({
@@ -44,6 +93,7 @@ export default defineConfig({
 			},
 		}),
 		mdx(),
+		preloadIslandChunks(),
 		opengraphImages({
 			render: customRenderer,
 			options: {
