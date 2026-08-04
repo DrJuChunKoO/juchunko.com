@@ -8,6 +8,9 @@ import react from "@astrojs/react";
 import sitemap from "@astrojs/sitemap";
 import partytown from "@astrojs/partytown";
 import mdx from "@astrojs/mdx";
+import { unified } from "@astrojs/markdown-remark";
+import remarkCjkFriendly from "remark-cjk-friendly";
+import remarkCjkFriendlyGfmStrikethrough from "remark-cjk-friendly-gfm-strikethrough";
 
 import opengraphImages from "astro-opengraph-images";
 import fs from "node:fs";
@@ -17,6 +20,13 @@ import { customRenderer } from "./src/lib/og-renderer.ts";
 export default defineConfig({
 	output: "static",
 	site: "https://juchunko.com",
+	markdown: {
+		// 官方預設走 Rust 版 satteri，無法套用 remark 外掛；
+		// 改用 @astrojs/markdown-remark，讓全形標點旁的粗體能正常解析（remark-cjk-friendly）。
+		processor: unified({
+			remarkPlugins: [remarkCjkFriendly, remarkCjkFriendlyGfmStrikethrough],
+		}),
+	},
 	integrations: [
 		react(),
 		sitemap({

@@ -24,7 +24,10 @@ import {
 } from "lucide-react";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, isTextUIPart } from "ai";
-import Markdown from "markdown-to-jsx";
+import ReactMarkdown from "react-markdown";
+import remarkCjkFriendly from "remark-cjk-friendly";
+import remarkCjkFriendlyGfmStrikethrough from "remark-cjk-friendly-gfm-strikethrough";
+import remarkGfm from "remark-gfm";
 
 import { applyDialogScrollLock } from "@/components/news-page-scroll-lock";
 import { Bubble, BubbleContent } from "@/components/ui/bubble";
@@ -81,7 +84,7 @@ function isExternalHref(href: string | undefined): boolean {
 	return typeof href === "string" && /^https?:\/\//i.test(href);
 }
 
-function MarkdownLink({ href, children, ...props }: AnchorHTMLAttributes<HTMLAnchorElement>) {
+function MarkdownLink({ href, children, node: _node, ...props }: AnchorHTMLAttributes<HTMLAnchorElement> & { node?: unknown }) {
 	const external = isExternalHref(href);
 	return (
 		<a href={href} {...props} {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}>
@@ -91,8 +94,10 @@ function MarkdownLink({ href, children, ...props }: AnchorHTMLAttributes<HTMLAnc
 }
 
 const markdownOptions = {
-	overrides: {
-		a: { component: MarkdownLink },
+	// remark-cjk-friendly 讓 `**答：**這是…` 這類全形標點旁的粗體能正常解析
+	remarkPlugins: [remarkGfm, remarkCjkFriendly, remarkCjkFriendlyGfmStrikethrough],
+	components: {
+		a: MarkdownLink,
 	},
 };
 
@@ -509,9 +514,9 @@ export default function AIAssistantWindow({ isOpen, onClose, lang = "zh-TW" }: A
 																		>
 																			{message.parts.map((part, index) =>
 																				isTextUIPart(part) && part.text !== "" ? (
-																					<Markdown key={index} options={markdownOptions}>
+																					<ReactMarkdown key={index} {...markdownOptions}>
 																						{part.text}
-																					</Markdown>
+																					</ReactMarkdown>
 																				) : null,
 																			)}
 																		</BubbleContent>
