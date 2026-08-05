@@ -6,7 +6,7 @@ import { getLangFromUrl, useTranslations } from "src/i18n/utils";
 import { getCollection } from "astro:content";
 import { ArrowRight } from "@lucide/astro";
 import { getFeaturedAchievementSummary, getHomepageCopy, selectFeaturedEntries } from "@/lib/homepage";
-import { contentIdMatchesLang } from "@/lib/content";
+import { contentIdMatchesLang, getSlugFromContentId } from "@/lib/content";
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
@@ -26,6 +26,8 @@ const fragments = (await getCollection("fragment"))
 	.filter((post) => contentIdMatchesLang(post.id, lang))
 	.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 const featuredActs = selectFeaturedEntries(acts);
+const featuredSlugs = new Set(featuredActs.map((post) => getSlugFromContentId(post.id)));
+const issueActs = acts.filter((post) => !featuredSlugs.has(getSlugFromContentId(post.id)));
 ---
 
 <PageLayout title={copy.seo.title} description={t("home.description")}>
@@ -74,7 +76,7 @@ const featuredActs = selectFeaturedEntries(acts);
 	<section id="issues" class="mb-12 scroll-mt-24 space-y-6 md:scroll-mt-28">
 		<h2 class="text-foreground mt-2 text-2xl font-bold md:text-3xl">{copy.sectionTitles.issues}</h2>
 		<div class="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-3 md:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] md:gap-6">
-			{acts.map((post) => <CardLink post={post} lang={lang} category="act" headingLevel={3} />)}
+			{issueActs.map((post) => <CardLink post={post} lang={lang} category="act" headingLevel={3} />)}
 		</div>
 	</section>
 
