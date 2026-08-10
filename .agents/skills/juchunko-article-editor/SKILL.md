@@ -223,7 +223,7 @@ Use `NewsTopicEmbed` only with a real `topicId`. Do not invent topic IDs. If no 
 
 Use `Timeline` and `TimelineItem` for legislative progress, public hearings, inquiries, government replies, media reports, and international milestones. Keep timeline dates chronological when the existing page does so; otherwise follow the page's current order.
 
-Use `Cards` and `Card` for source hubs, bill downloads, official documents, related pages, media links, and primary resources. Keep card copy compact.
+Use `Cards` and `Card` for source hubs, bill downloads, official documents, related pages, and primary resources. Keep card copy compact. Do not put news-report links in the Resource Hub: `NewsTopicEmbed` already renders related news automatically below, so news coverage in `Cards` would duplicate it. Keep `NewsTopicEmbed` directly after the Resource Hub (or after the main article body if there is no hub), and reserve `Cards` for substantive primary resources such as bill texts and official documents.
 
 Use `ActProgress` for compact progress or latest-status bars in `act` MDX pages instead of hand-coded progress `div`s. Import it with `import ActProgress from "@/components/ActProgress.astro"`. Props are `label`, `value` from 0 to 100, and `status`. Examples: `<ActProgress label="目前進度" value={55} status="館館有 AI 已獲教育部核定，AI 幣由行政院承諾兩個月內研議。" />` and `<ActProgress label="Current progress" value={55} status="Libraries with AI has been approved by the Ministry of Education; AI vouchers are under Executive Yuan review within two months." />`.
 
