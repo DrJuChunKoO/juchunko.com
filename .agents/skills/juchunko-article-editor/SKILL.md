@@ -236,12 +236,31 @@ Use custom `div className="not-prose ..."` sparingly. Prefer existing neutral st
 ## Writing Standards
 
 Start with what changed, why it matters, and what Legislator Ko is asking the government to do.
-Support claims with official documents, Legislative Yuan records, committee reports, government replies, credible media, or named international references.
+Support claims with official documents, Legislative Yuan records, committee reports, government replies, credible media, office field reports, or named international references.
 Separate facts from advocacy. Use clear phrases such as `Ko argues`, `the office requests`, `the Ministry responded`, and `the current status is`.
 Avoid vague superlatives unless backed by evidence.
 Preserve a pragmatic tone: technology should improve governance, safety, transparency, resilience, rights, and public access.
 When mentioning risks, include safeguards and accountability mechanisms.
 End `act` pages with concrete next steps or a public-facing call to action.
+
+### Voice: human, a bit sharp, still rational
+
+Write like a person making a policy case, not like a lawyer padding every sentence with liability disclaimers.
+
+Do:
+
+- Prefer concrete scenes, short sentences, and plain verbs over bureaucratic stacks of nouns.
+- Match the sharper register already on pages such as the cell-alert section in `mobile-network-throttling-drill`: questions, mild sarcasm, and a clear ask are allowed.
+- State office field reports, user impact, and Ko's demands directly when that is the point of the page.
+- Keep one thin rational spine: what happened, why it is wrong or incomplete, what the government must publish or fix next.
+- Demand data and accountability from the government instead of watering down the claim.
+
+Do not:
+
+- Over-hedge with soft padding such as `這是辦公室收到的個案，不能拿來直接概括…`, `其餘個案仍待政府與電信業者逐項查證`, `This is one office report, not a claim about every user…`, or `the remaining cases await verification case by case` unless the user explicitly asks for that caution.
+- Sound like a press release, a risk memo, or machine-translated policy English.
+- Invent facts. Sharp tone is not a license to fabricate dates, numbers, quotes, or sources.
+- Confuse boldness with conspiracy or personal attacks. Aim the edge at policy design, process failure, and missing accountability.
 
 ## Formatting Standards
 

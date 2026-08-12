@@ -1,9 +1,9 @@
 ---
 title: "Mobile Network Throttling Drill"
-description: "A policy brief on Taiwan's 2026 urban resilience drill that would throttle mobile data for ordinary users across 14 central and northern counties and cities, the controversy over the government's August 3 advance cell-broadcast alert for the drill, and Legislator Ju-Chun Ko's questions on legal basis, proportionality, alert misuse, and real communications resilience—including his two demands."
-date: 2026-08-05
+description: "After the central wave, some people could not even load a speed-test page, shops could not take payment, and the national alert still told people to look up evacuation guidance online. A policy brief on Taiwan's 2026 urban resilience drill that put ordinary users in 14 jurisdictions into a mobile-data restriction, and Legislator Ju-Chun Ko's demands on legal authority, test metrics, damage assessment, and communications resilience."
+date: 2026-08-12
 emoji: "📶"
-status: "Ko issues two demands: reject the fake network-throttling drill and reject the misuse of the national alert"
+status: "After the central wave: publish the metrics, damage assessment, and accountability first—then talk about northern throttling"
 ---
 
 import Cards from "@/components/Cards.astro";
@@ -16,12 +16,12 @@ import { AlertTriangle, Scale, Satellite, ShieldQuestion, FileText } from "lucid
 
 # Mobile Network Throttling Drill
 
-While much of the world is working to prevent internet blackouts, Taiwan is preparing to practice restricting mobile data for ordinary people. Under currently available public information, the 2026 urban resilience exercise will run 30-minute "mobile network disruption" drills on August 10 and 13 across 14 counties and cities in central and northern Taiwan—and on August 3, the government also sent an advance cell-broadcast alert to phones across Taiwan announcing the upcoming drill. Legislator Ju-Chun Ko supports disaster preparedness and real communications-resilience testing, but **opposes** placing millions of ordinary users into a throttled environment while the legal basis, test objectives, success metrics, and risk assessments remain unclear, and **opposes** the government treating the disaster alert system as a calendar and overusing national alerts. For this incident, he has set out two demands.
+While much of the world is working to prevent internet blackouts, Taiwan is practicing on ordinary people's mobile data. Under currently available public information, the 2026 urban resilience exercise already ran a 30-minute "mobile network disruption" drill across seven central jurisdictions on August 10, with the northern wave scheduled for August 13—and on August 3, the government also sent an advance cell-broadcast alert to phones across Taiwan. After the central wave, field reports were not "a bit slower." Some people could not even open a speed-test page. Legislator Ju-Chun Ko supports disaster preparedness and real communications-resilience testing, but **opposes** dropping millions of ordinary users into a throttled environment while the legal basis, test objectives, success metrics, and risk assessments remain unclear, and **opposes** treating the disaster alert system as a government calendar and overusing national alerts. With the central wave done, he wants the government to account for metrics, damage assessment, and responsibility before the north goes next.
 
 <ActProgress
 	label="Current progress"
-	value={35}
-	status="Ko issues two demands: reject the fake network-throttling drill and reject the misuse of national alerts; he continues to ask the government to explain the legal basis for cell-broadcast alerts and the purpose of the drill."
+	value={45}
+	status="After the central wave: publish test objectives, success criteria, damage assessment, and recovery procedures first. If those are missing, do not rush the northern throttle."
 />
 
 ## What Has Been Publicly Announced
@@ -38,6 +38,16 @@ Based on media reporting and related government statements, the drill is not a t
 | South Taiwan          | Tainan, Kaohsiung, and Pingtung also join the August 7 urban resilience air-defense exercise, and public plans may list "network disruption" items, but ordinary local users are not clearly included in this mobile-data restriction |
 
 > Precision matters: this is not "all communications disappear." Voice and SMS are expected to work. But many emergency, financial, and daily services now depend on mobile data.
+
+## The August 10 Central Wave: Throttling, or a Blackout?
+
+At 2:30 p.m. on August 10, as soon as the central wave started, a staff member from Legislator Ko's office on the ground in central Taiwan reported that Google would not connect—and even a speed-test page would not load. From a user's point of view, that is not measurable "throttling." It is simply offline. If the government still wants to claim the impact was under control, publish the raw connection data by operator, location, and time—do not make the public guess.
+
+The exercise was booked for 30 minutes. The same staff member said it wrapped after about 25. If this is a formal drill to validate response capacity, start and end times are not enough: How long did it actually run? Why did it stop early? Was a stop or recovery procedure triggered? Ko wants verifiable exercise metrics and a damage assessment—not a shrug of "well, it was not a total outage."
+
+[CNA's field report](https://www.cna.com.tw/news/aloc/202608100199.aspx) put it bluntly: in Chiayi, LINE photos that normally take a few seconds barely moved after the throttle; at Douliu Station in Yunlin, LINE was almost unusable; someone tried to send a Help image and could not. Web pages, mobile payments, games, and speed-test pages locked up the same way. Phone calls stayed normal. In Changhua, a supermarket just pulled down the shutters for half an hour. In Nantou, a civil servant had full signal bars and still could not open a webpage. Add the office reports of parking systems losing connectivity and a national-alert message that still pointed people to evacuation guidance online—LINE and other mobile-data services went down. If you restrict the network and then tell people to look up evacuation info online, that information cannot live only on the same connection you just pinched. The script is already broken.
+
+What a real exercise should test is the other half: after a blackout, or after submarine cables or base stations fail, how fast can government fail over to diverse backups—microwave links and LEO systems such as OneWeb, Kuiper, and Starlink. Define the metrics up front. Publish the damage assessment afterward. Say who may flip the switch on, who may stop it, and who cleans up. Restricting ordinary users without a working backup does not prove communications resilience. It only proves someone can press a button.
 
 ## Legislator Ko's Position
 
@@ -144,7 +154,11 @@ The closest public cases Ko found include:
 
 The technical methods are not identical to Taiwan's plan. But in the available record, mature democracies rarely initiate mobile-data restrictions across such large areas and ordinary populations without a real disaster.
 
-An administrative switch that can remove mobile data from large regions in peacetime should not become precedent while law, process, and oversight remain vague — even if the first use lasts only 30 minutes.
+Ko also draws a political-risk line with Uganda, where authorities have restricted internet access around elections under national-security, disinformation, or foreign-interference justifications. Turning shutdowns into a political habit should not be Taiwan's path. That is not a claim that Taiwan and Uganda share the same institutions or events. It is an oversight point. If Taiwan lets an administrative agency lock in a precedent to restrict communications across large areas before objectives, success criteria, risk assessment, and accountability are clearly published, the public has every reason to ask who gets to flip that switch next.
+
+What people felt on August 10 in central Taiwan was blunter: many were not "a bit slower." They were throttled into a disconnect. So "throttling equaled a blackout" is not rhetorical spice. It is what web pages, LINE, mobile payments, and other mobile-data services actually did. Ko therefore wants the exercise script published in advance; a network-outage response manual and alternative information systems built; costs and outcomes disclosed afterward; and legislative oversight put in place.
+
+An administrative switch that can strip mobile data from large regions in peacetime should not become precedent while law, process, and oversight are still a blur—even if the first flip lasts only 30 minutes.
 
 ## The Right Resilience Path: Add Routes, Do Not Practice Blackouts
 
@@ -261,9 +275,15 @@ The real resilience of a democratic society is not merely that the government ha
 		Tainan, Kaohsiung, and Pingtung participate; available public information does not show ordinary local users facing the same mobile-data
 		restriction as the central and northern waves.
 	</TimelineItem>
-	<TimelineItem date="2026.08.10" title="[Scheduled] Central 7-jurisdiction mobile-network disruption drill">
-		14:30–15:00 in Miaoli, Taichung, Changhua, Nantou, Yunlin, Chiayi County, and Chiayi City. Voice and SMS expected to remain; mobile data
-		restricted.
+	<TimelineItem date="2026.08.10" title="Central 7-jurisdiction mobile-network disruption drill conducted">
+		Scheduled for 14:30–15:00. Front-line reports from central Taiwan said some services could not connect at all, and the exercise wrapped
+		after about 25 minutes. Shops could not take payment, parking connectivity failed, and the alert still told people to look up evacuation
+		guidance online.
+	</TimelineItem>
+	<TimelineItem date="2026.08.12" title="Ko calls for public central-wave metrics and damage assessment">
+		A network shutdown is not the point of an exercise. The government should say how long it actually ran, what it tested, what counted as
+		success, how much damage it caused, how backups fail over, and who is accountable. If that is still missing, do not rush the northern
+		throttle.
 	</TimelineItem>
 	<TimelineItem date="2026.08.13" title="[Scheduled] Northern 7-jurisdiction mobile-network disruption drill">
 		14:30–15:00 in Taipei, New Taipei, Keelung, Taoyuan, Hsinchu County, Hsinchu City, and Yilan. Voice and SMS expected to remain; mobile
