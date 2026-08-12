@@ -11,6 +11,7 @@ import mdx from "@astrojs/mdx";
 import { unified } from "@astrojs/markdown-remark";
 import remarkCjkFriendly from "remark-cjk-friendly";
 import remarkCjkFriendlyGfmStrikethrough from "remark-cjk-friendly-gfm-strikethrough";
+import rehypeExternalLinks from "rehype-external-links";
 
 import opengraphImages from "astro-opengraph-images";
 import fs from "node:fs";
@@ -72,8 +73,18 @@ export default defineConfig({
 	markdown: {
 		// 官方預設走 Rust 版 satteri，無法套用 remark 外掛；
 		// 改用 @astrojs/markdown-remark，讓全形標點旁的粗體能正常解析（remark-cjk-friendly）。
+		// MDX 會繼承此 processor；rehype-external-links 讓文章內 http(s) 外連預設新分頁開啟。
 		processor: unified({
 			remarkPlugins: [remarkCjkFriendly, remarkCjkFriendlyGfmStrikethrough],
+			rehypePlugins: [
+				[
+					rehypeExternalLinks,
+					{
+						target: "_blank",
+						rel: ["noopener", "noreferrer"],
+					},
+				],
+			],
 		}),
 	},
 	integrations: [
