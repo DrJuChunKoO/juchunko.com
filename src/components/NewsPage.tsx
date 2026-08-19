@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { QueryClient, useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { ArrowUpRight, Search, X } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Search, X } from "lucide-react";
 import { Loader } from "./Loader";
 import { AnimatePresence, motion } from "motion/react";
 import { useTranslations } from "../i18n/utils";
@@ -217,7 +217,7 @@ function getLocalizedNewsTitle(item: { title?: string; title_en?: string | null 
 
 function LoadingState() {
 	return (
-		<div className="flex items-center justify-center rounded-2xl border border-dashed border-black/10 p-10 text-sm text-gray-500 dark:border-white/10 dark:text-gray-400">
+		<div className="flex items-center justify-center rounded-xl border border-dashed border-black/10 bg-gray-50/60 p-10 text-sm text-gray-500 dark:border-white/10 dark:bg-white/3 dark:text-gray-400">
 			<Loader />
 		</div>
 	);
@@ -225,7 +225,7 @@ function LoadingState() {
 
 function EmptyState({ children }: { children: React.ReactNode }) {
 	return (
-		<div className="rounded-2xl border border-dashed border-black/10 p-8 text-center text-sm text-gray-500 dark:border-white/10 dark:text-gray-400">
+		<div className="rounded-xl border border-dashed border-black/10 bg-gray-50/60 p-8 text-center text-sm text-gray-500 dark:border-white/10 dark:bg-white/3 dark:text-gray-400">
 			{children}
 		</div>
 	);
@@ -240,26 +240,33 @@ function ErrorAlert({ children }: { children: React.ReactNode }) {
 }
 
 function TopicNewsLink({ item, lang }: { item: NewsItem | TopicArchiveNewsItem; lang: NewsPageLang }) {
+	const sourceMark = item.source?.trim().charAt(0) || "N";
+
 	return (
 		<a
 			href={item.url}
 			target="_blank"
 			rel="noopener noreferrer"
-			className="group hover:outline-primary/50 flex items-start gap-3 rounded-lg border border-black/5 bg-white/70 px-3 py-2 transition hover:border-black/10 hover:bg-white hover:outline-2 hover:outline-offset-2 dark:border-white/10 dark:bg-white/3 dark:hover:bg-white/6"
+			className="group grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-lg px-2 py-3 transition-[background-color,transform] duration-150 ease-out hover:bg-gray-100 active:scale-[0.99] dark:hover:bg-white/6"
 		>
+			<span className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-black/8 bg-white text-xs font-semibold text-gray-600 dark:border-white/10 dark:bg-white/5 dark:text-gray-300">
+				{sourceMark}
+			</span>
 			<div className="min-w-0 flex-1">
-				<p className="text-sm leading-6 font-medium text-gray-900 dark:text-white">{getLocalizedNewsTitle(item, lang)}</p>
+				<p className="text-sm leading-5 font-medium text-gray-900 sm:text-[15px] dark:text-gray-100">{getLocalizedNewsTitle(item, lang)}</p>
 				<div className="mt-1 flex flex-wrap items-center text-xs text-gray-500 dark:text-gray-400">
-					<span>{timeAgo(item.time, lang)}</span>
 					{item.source && (
 						<>
-							<span className="mx-1 text-gray-500">·</span>
 							<span>{item.source}</span>
+							<span className="mx-1.5 text-gray-300 dark:text-gray-600">/</span>
 						</>
 					)}
+					<span>{timeAgo(item.time, lang)}</span>
 				</div>
 			</div>
-			<ArrowUpRight className="mt-0.5 size-4 shrink-0 text-gray-400 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-gray-700 dark:group-hover:text-white" />
+			<span className="flex size-8 shrink-0 items-center justify-center text-gray-400 transition-[color,transform] duration-150 ease-out group-hover:translate-x-0.5 group-hover:text-black dark:text-gray-500 dark:group-hover:text-white">
+				<ArrowUpRight className="size-4" />
+			</span>
 		</a>
 	);
 }
@@ -278,42 +285,47 @@ function TopicCard({
 	const t = useTranslations(lang);
 
 	return (
-		<article className="overflow-hidden rounded-2xl border">
-			<div className="relative flex flex-col gap-4 p-4 md:flex-row md:items-start md:justify-between">
-				<div className="flex min-w-0 flex-1 flex-col gap-1">
-					<h3 className="text-lg leading-snug font-semibold text-gray-900 dark:text-white">{getTopicDisplayTitle(topic, lang)}</h3>
-					{getTopicDisplaySummary(topic, lang) && (
-						<p className="max-w-2xl text-sm leading-6 text-gray-600 dark:text-gray-300">{getTopicDisplaySummary(topic, lang)}</p>
-					)}
+		<article className="overflow-hidden rounded-2xl border border-black/10 bg-white dark:border-white/10 dark:bg-white/3">
+			<div className="flex items-start gap-4 p-5 sm:p-6">
+				<div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-gray-100 text-xl dark:bg-white/8">
+					<span aria-hidden="true">{topic.emoji || "📰"}</span>
 				</div>
-
-				<div className="flex shrink-0 flex-wrap gap-2">
-					{relatedPage && (
-						<a
-							href={relatedPage}
-							className="hover:outline-primary/50 inline-flex h-11 items-center justify-center rounded-lg bg-black px-4 text-sm font-medium text-white transition hover:bg-black/80 hover:outline-2 hover:outline-offset-2 dark:bg-white dark:text-black dark:hover:bg-white/85"
-						>
-							{t("newsPage.topic.readArticle")}
-						</a>
+				<div className="min-w-0 flex-1">
+					<p className="mb-1.5 text-xs font-medium text-gray-500 dark:text-gray-400">{formatTopicMeta(topic, lang)}</p>
+					<h3 className="text-lg leading-snug font-semibold tracking-[-0.02em] text-gray-950 sm:text-xl dark:text-white">
+						{getTopicDisplayTitle(topic, lang)}
+					</h3>
+					{getTopicDisplaySummary(topic, lang) && (
+						<p className="mt-2 max-w-2xl text-sm leading-6 text-gray-600 dark:text-gray-300">{getTopicDisplaySummary(topic, lang)}</p>
 					)}
-					<button
-						type="button"
-						onClick={() => onOpenTopic(topic)}
-						className="hover:outline-primary/50 inline-flex h-11 cursor-pointer items-center justify-center rounded-lg border border-black/10 px-4 text-sm font-medium backdrop-blur-sm transition hover:bg-black/4 hover:outline-2 hover:outline-offset-2 dark:border-white/10 dark:hover:bg-white/5"
-					>
-						{t("newsPage.topic.viewMore")}
-					</button>
 				</div>
 			</div>
 
-			<div className="grid gap-2 p-4 pt-0">
+			<div className="mx-3 grid border-t border-black/8 py-2 sm:mx-4 dark:border-white/8">
 				{getTopicPreviewItems(topic).map((item) => (
 					<TopicNewsLink key={item.url} item={item} lang={lang} />
 				))}
 			</div>
-			<div className="border-border relative flex items-center justify-between border-t">
-				<div className="px-4 py-1 text-sm text-gray-500 dark:text-gray-400">{formatTopicMeta(topic, lang)}</div>
-				<div className="to-border bg-linear-to-r from-transparent px-4 py-1 text-2xl">{topic.emoji || "📰"}</div>
+			<div className="flex flex-wrap items-center justify-between gap-3 border-t border-black/8 bg-gray-50/70 px-5 py-3 dark:border-white/8 dark:bg-white/3">
+				{relatedPage ? (
+					<a
+						href={relatedPage}
+						className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-600 transition-colors duration-150 hover:text-black dark:text-gray-300 dark:hover:text-white"
+					>
+						{t("newsPage.topic.readArticle")}
+						<ArrowUpRight className="size-3.5" />
+					</a>
+				) : (
+					<span />
+				)}
+				<button
+					type="button"
+					onClick={() => onOpenTopic(topic)}
+					className="inline-flex h-9 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-lg bg-black px-4 text-xs font-semibold text-white transition-[background-color,transform] duration-150 ease-out hover:bg-black/75 active:scale-[0.97] dark:bg-white dark:text-black dark:hover:bg-white/80"
+				>
+					{t("newsPage.topic.viewMore")}
+					<ArrowRight className="size-3.5" />
+				</button>
 			</div>
 		</article>
 	);
@@ -337,13 +349,13 @@ function SearchForm({
 	const t = useTranslations(lang);
 
 	return (
-		<section className="mb-8">
+		<section className="mb-12 sm:mb-14">
 			<form id="news-search-form-react" onSubmit={onSubmit}>
 				<label className="sr-only" htmlFor="q-react">
 					{t("newsPage.search.label")}
 				</label>
-				<div className="group focus-within:outline-primary/50 relative flex items-center rounded-2xl border border-black/15 bg-white outline outline-2 outline-transparent transition-all focus-within:border-black/30 focus-within:outline-offset-2 dark:border-white/15 dark:bg-white/5 dark:focus-within:border-white/30">
-					<Search className="pointer-events-none absolute left-5 size-5 shrink-0 text-black/30 transition group-focus-within:text-black/60 dark:text-white/30 dark:group-focus-within:text-white/60" />
+				<div className="group relative flex items-center rounded-xl border border-black/10 bg-white shadow-[0_1px_0_rgba(0,0,0,0.03)] transition-[border-color,box-shadow] duration-150 focus-within:border-black/25 focus-within:shadow-[0_0_0_3px_rgba(0,0,0,0.04)] dark:border-white/10 dark:bg-white/3 dark:focus-within:border-white/25 dark:focus-within:shadow-[0_0_0_3px_rgba(255,255,255,0.05)]">
+					<Search className="pointer-events-none absolute left-4 size-4 shrink-0 text-black/35 transition-colors duration-150 group-focus-within:text-black/65 dark:text-white/35 dark:group-focus-within:text-white/65" />
 					<input
 						id="q-react"
 						name="q"
@@ -351,21 +363,21 @@ function SearchForm({
 						value={searchDraft}
 						onChange={(event) => onSearchDraftChange(event.target.value)}
 						placeholder={t("newsPage.search.placeholder")}
-						className="h-14 min-w-0 flex-1 bg-transparent pr-4 pl-14 text-base outline-none placeholder:text-black/30 dark:placeholder:text-white/30"
+						className="h-13 min-w-0 flex-1 bg-transparent pr-3 pl-11 text-sm outline-none placeholder:text-black/35 sm:text-base dark:placeholder:text-white/35"
 					/>
 					<div className="flex shrink-0 items-center gap-1 pr-2">
 						{searchQuery && (
 							<button
 								type="button"
 								onClick={onClear}
-								className="hover:outline-primary/50 inline-flex h-9 cursor-pointer items-center justify-center rounded-lg px-3 text-sm font-medium text-black/40 transition hover:bg-black/5 hover:text-black/70 hover:outline-2 hover:outline-offset-2 dark:text-white/40 dark:hover:bg-white/8 dark:hover:text-white/70"
+								className="inline-flex h-9 cursor-pointer items-center justify-center rounded-lg px-3 text-sm font-medium text-black/40 transition-[background-color,color,transform] duration-150 hover:bg-black/5 hover:text-black/70 active:scale-[0.97] dark:text-white/40 dark:hover:bg-white/8 dark:hover:text-white/70"
 							>
 								{t("newsPage.search.clear")}
 							</button>
 						)}
 						<button
 							type="submit"
-							className="hover:outline-primary/50 inline-flex h-10 cursor-pointer items-center justify-center rounded-lg bg-black px-4 text-sm font-medium text-white transition hover:bg-black/80 hover:outline-2 hover:outline-offset-2 dark:bg-white dark:text-black dark:hover:bg-white/85"
+							className="inline-flex h-10 cursor-pointer items-center justify-center rounded-lg bg-black px-5 text-sm font-semibold text-white transition-[background-color,transform] duration-150 hover:bg-black/75 active:scale-[0.97] dark:bg-white dark:text-black dark:hover:bg-white/80"
 						>
 							{t("newsPage.search.submit")}
 						</button>
@@ -397,7 +409,7 @@ function SearchResultsSection({
 	const t = useTranslations(lang);
 
 	return (
-		<section className="grid gap-3">
+		<section className="grid rounded-2xl border border-black/10 p-2 dark:border-white/10">
 			{searchItems.map((item, index) => (
 				<TopicNewsLink key={`${item.url}-${index}`} item={item} lang={lang} />
 			))}
@@ -441,7 +453,7 @@ function ArchiveSection({
 	const t = useTranslations(lang);
 
 	return (
-		<section className="space-y-10">
+		<section className="space-y-16 sm:space-y-20">
 			{isMonthIndexLoading && <LoadingState />}
 
 			{isMonthIndexError && <ErrorAlert>{getNewsPageErrorMessage(monthIndexError, lang, "newsPage.archive.error")}</ErrorAlert>}
@@ -490,6 +502,18 @@ function TopicDialog({
 	onExitComplete: () => void;
 }) {
 	const t = useTranslations(lang);
+
+	useEffect(() => {
+		if (!selectedTopicId) return;
+
+		const handleKeyDown = (event: KeyboardEvent) => {
+			if (event.key === "Escape") onClose();
+		};
+
+		window.addEventListener("keydown", handleKeyDown);
+		return () => window.removeEventListener("keydown", handleKeyDown);
+	}, [onClose, selectedTopicId]);
+
 	const topicTitle = selectedTopic?.topic
 		? lang === "en"
 			? selectedTopic.topic.titleEn || selectedTopic.topic.title
@@ -518,54 +542,52 @@ function TopicDialog({
 				>
 					<motion.div
 						className={dialogLayerClassNames.panel}
+						role="dialog"
+						aria-modal="true"
+						aria-label={topicTitle || t("newsPage.topic.loading")}
 						onClick={(event) => event.stopPropagation()}
 						variants={dialogPanelVariants}
 						initial="closed"
 						animate="open"
 						exit="closed"
 					>
-						<div className="border-b p-4 dark:border-white/10">
-							<div className="flex gap-4">
-								<div className="flex min-w-0 flex-1 flex-col gap-1">
-									{topicTitle ? (
-										<>
-											<h2 className="text-lg leading-tight font-semibold text-gray-900 sm:text-xl dark:text-white">{topicTitle}</h2>
-											{topicSummary && (
-												<p className="line-clamp-3 max-w-2xl text-sm leading-6 text-gray-600 sm:line-clamp-none dark:text-gray-300">
-													{topicSummary}
-												</p>
-											)}
-											{relatedPage && (
-												<a
-													href={relatedPage}
-													className="hover:outline-primary/50 mt-2 inline-flex w-max items-center gap-1.5 rounded-lg bg-black px-3 py-2 text-sm font-medium text-white transition hover:bg-black/80 hover:outline-2 hover:outline-offset-2 dark:bg-white dark:text-black dark:hover:bg-white/85"
-												>
-													{t("newsPage.topic.readArticle")}
-													<ArrowUpRight className="size-4" />
-												</a>
-											)}
-										</>
-									) : (
-										<div className="flex items-center py-1">
-											<Loader />
-										</div>
+						<header className="relative border-b border-black/8 px-5 pt-8 pb-5 sm:px-7 sm:pt-7 sm:pb-6 dark:border-white/8">
+							<div className="absolute top-2 left-1/2 h-1 w-10 -translate-x-1/2 rounded-full bg-black/15 sm:hidden dark:bg-white/20" />
+							<button
+								type="button"
+								autoFocus
+								onClick={onClose}
+								aria-label={t("newsPage.topic.close")}
+								className="absolute top-5 right-5 inline-flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-full bg-gray-100 text-gray-600 transition-[background-color,color,transform] duration-150 ease-out hover:bg-gray-200 hover:text-black active:scale-[0.94] sm:top-6 sm:right-7 dark:bg-white/8 dark:text-gray-300 dark:hover:bg-white/12 dark:hover:text-white"
+							>
+								<X className="size-4" />
+							</button>
+
+							{topicTitle ? (
+								<div className="pr-11">
+									<div className="mb-3 flex items-center gap-2 text-xs font-semibold text-gray-500 dark:text-gray-400">
+										<span className="flex size-7 items-center justify-center rounded-lg bg-gray-100 text-base dark:bg-white/8">
+											{selectedTopic?.topic?.emoji || selectedTopicPreview?.emoji || "📰"}
+										</span>
+										{selectedTopic && <span>{formatTopicTotalNewsCount(selectedTopic.totalNewsCount, lang)}</span>}
+									</div>
+									<h2 className="max-w-2xl text-xl leading-tight font-semibold tracking-[-0.025em] text-gray-950 sm:text-2xl dark:text-white">
+										{topicTitle}
+									</h2>
+									{topicSummary && (
+										<p className="mt-2 line-clamp-3 max-w-2xl text-sm leading-6 text-gray-600 sm:line-clamp-none dark:text-gray-300">
+											{topicSummary}
+										</p>
 									)}
 								</div>
-
-								<div className="flex flex-col items-end justify-between">
-									<button
-										type="button"
-										onClick={onClose}
-										aria-label={t("newsPage.topic.close")}
-										className="hover:outline-primary/50 inline-flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-black/10 text-sm font-medium backdrop-blur-sm transition hover:bg-black/4 hover:outline-2 hover:outline-offset-2 dark:border-white/10 dark:hover:bg-white/5"
-									>
-										<X className="size-4" />
-									</button>
+							) : (
+								<div className="flex items-center py-2">
+									<Loader />
 								</div>
-							</div>
-						</div>
+							)}
+						</header>
 
-						<div className="min-h-0 overflow-y-auto overscroll-contain p-4">
+						<div className="min-h-0 overflow-y-auto overscroll-contain bg-gray-50/70 p-4 sm:p-6 dark:bg-black/10">
 							{isTopicLoading && (
 								<div className="flex items-center justify-center py-12">
 									<Loader />
@@ -575,13 +597,13 @@ function TopicDialog({
 							{isTopicError && <ErrorAlert>{getNewsPageErrorMessage(topicError, lang, "newsPage.topic.timelineError")}</ErrorAlert>}
 
 							{selectedTopic?.months?.map((month) => (
-								<section key={month.month} className="mb-8 last:mb-0">
-									<div className="mb-2 flex items-center justify-between gap-2">
-										<h3 className="text-lg font-semibold text-gray-900 dark:text-white">{formatArchiveMonthLabel(month.month, lang)}</h3>
-										<p className="text-xs text-gray-500 dark:text-gray-400">{formatStoryCount(month.items.length, lang)}</p>
+								<section key={month.month} className="mb-7 grid gap-3 last:mb-0 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-5">
+									<div className="border-t border-black/10 pt-3 dark:border-white/10">
+										<h3 className="text-sm font-semibold text-gray-900 dark:text-white">{formatArchiveMonthLabel(month.month, lang)}</h3>
+										<p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{formatStoryCount(month.items.length, lang)}</p>
 									</div>
 
-									<div className="grid gap-2">
+									<div className="grid rounded-xl border border-black/8 bg-white p-1 dark:border-white/8 dark:bg-white/3">
 										{month.items.map((item) => (
 											<TopicNewsLink key={item.url} item={item} lang={lang} />
 										))}
@@ -590,14 +612,17 @@ function TopicDialog({
 							))}
 						</div>
 
-						<div className="border-border relative flex items-center justify-between border-t pb-[env(safe-area-inset-bottom)] sm:pb-0">
-							<div className="px-4 py-1 text-sm text-gray-500 dark:text-gray-400">
-								{selectedTopic && formatTopicTotalNewsCount(selectedTopic.totalNewsCount, lang)}
-							</div>
-							<div className="to-border bg-linear-to-r from-transparent px-4 py-1 text-2xl">
-								{selectedTopic?.topic?.emoji || selectedTopicPreview?.emoji || "📰"}
-							</div>
-						</div>
+						{relatedPage && (
+							<footer className="flex min-h-14 items-center justify-end gap-3 border-t border-black/8 px-5 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] sm:px-7 sm:pb-2 dark:border-white/8">
+								<a
+									href={relatedPage}
+									className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-black px-4 text-xs font-semibold text-white transition-[background-color,transform] duration-150 ease-out hover:bg-black/75 active:scale-[0.97] dark:bg-white dark:text-black dark:hover:bg-white/80"
+								>
+									{t("newsPage.topic.readArticle")}
+									<ArrowUpRight className="size-3.5" />
+								</a>
+							</footer>
+						)}
 					</motion.div>
 				</motion.div>
 			)}
@@ -632,38 +657,40 @@ function MonthTopicsSection({
 	);
 
 	return (
-		<section id={`month-${monthMeta.month}`} className="space-y-4">
-			<div className="flex items-center justify-between gap-4">
-				<h2 className="text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">
+		<section id={`month-${monthMeta.month}`} className="scroll-mt-24 md:grid md:grid-cols-[10rem_minmax(0,1fr)] md:items-start md:gap-8">
+			<div className="mb-5 border-t border-black/10 pt-4 md:sticky md:top-24 md:mb-0 dark:border-white/10">
+				<h2 className="text-lg font-semibold tracking-[-0.02em] text-gray-950 sm:text-xl dark:text-white">
 					{formatArchiveMonthLabel(monthMeta.month, lang)}
 				</h2>
 
-				<p className="text-sm text-gray-500 dark:text-gray-400">
+				<p className="mt-1 text-xs leading-5 font-medium text-gray-500 dark:text-gray-400">
 					{formatArchiveMonthSummary(monthMeta.topicCount, monthMeta.newsCount, lang)}
 				</p>
 			</div>
 
-			{isLoading && <LoadingState />}
+			<div className="min-w-0">
+				{isLoading && <LoadingState />}
 
-			{isError && <ErrorAlert>{getNewsPageErrorMessage(error, lang, "newsPage.archive.error")}</ErrorAlert>}
+				{isError && <ErrorAlert>{getNewsPageErrorMessage(error, lang, "newsPage.archive.error")}</ErrorAlert>}
 
-			{archiveMonth && archiveMonth.topics.length === 0 && !isLoading && !isError && (
-				<EmptyState>{t("newsPage.archive.monthEmpty")}</EmptyState>
-			)}
+				{archiveMonth && archiveMonth.topics.length === 0 && !isLoading && !isError && (
+					<EmptyState>{t("newsPage.archive.monthEmpty")}</EmptyState>
+				)}
 
-			{archiveMonth && archiveMonth.topics.length > 0 && (
-				<div className="space-y-4">
-					{archiveMonth.topics.map((topic) => (
-						<TopicCard
-							key={`${monthMeta.month}-${topic.id}`}
-							topic={topic}
-							lang={lang}
-							relatedPage={relatedPages[topic.id]}
-							onOpenTopic={onOpenTopic}
-						/>
-					))}
-				</div>
-			)}
+				{archiveMonth && archiveMonth.topics.length > 0 && (
+					<div className="space-y-5">
+						{archiveMonth.topics.map((topic) => (
+							<TopicCard
+								key={`${monthMeta.month}-${topic.id}`}
+								topic={topic}
+								lang={lang}
+								relatedPage={relatedPages[topic.id]}
+								onOpenTopic={onOpenTopic}
+							/>
+						))}
+					</div>
+				)}
+			</div>
 		</section>
 	);
 }
@@ -921,7 +948,7 @@ export default function NewsPage({ lang, relatedPages }: { lang: NewsPageLang; r
 	const archiveEmpty = !isMonthIndexLoading && !isMonthIndexError && (archiveMonthIndex?.length ?? 0) === 0;
 
 	return (
-		<div>
+		<div className="pb-8">
 			<SearchForm
 				lang={lang}
 				searchDraft={searchDraft}
