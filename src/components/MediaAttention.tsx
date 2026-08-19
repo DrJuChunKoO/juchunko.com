@@ -85,20 +85,20 @@ export default function MediaAttention({ lang }: MediaAttentionProps) {
 							<a
 								key={topic.id}
 								href={newsHref}
-								className="group bg-muted/50 hover:bg-muted hover:outline-primary/50 flex min-h-44 flex-col rounded-lg p-4 transition-colors hover:outline-2 hover:outline-offset-2 md:p-6"
+								className="group bg-muted/50 hover:bg-muted hover:outline-primary/50 flex flex-col rounded-lg p-3 transition-colors hover:outline-2 hover:outline-offset-2 md:p-4"
 							>
 								<div className="mb-3 flex items-center justify-between gap-3">
 									<span className="text-2xl" aria-hidden="true">
 										{topic.emoji || "📰"}
 									</span>
-									<span className="text-muted-foreground inline-flex items-center gap-1 text-xs font-medium">
+									<span className="text-muted-foreground inline-flex items-center gap-1 text-sm font-medium">
 										<Newspaper className="size-3.5" />
 										{copy.count(topic.monthNewsCount)}
 									</span>
 								</div>
-								<h3 className="text-foreground font-semibold md:text-lg">{title}</h3>
-								{summary && <p className="text-muted-foreground mt-2 line-clamp-2 text-sm leading-relaxed">{summary}</p>}
-								<span className="text-foreground mt-auto inline-flex items-center gap-1 pt-4 text-sm font-medium">
+								<h3 className="text-foreground text-sm font-semibold md:text-lg">{title}</h3>
+								{summary && <p className="text-muted-foreground mt-2 line-clamp-2 text-xs leading-relaxed md:text-sm">{summary}</p>}
+								<span className="text-foreground mt-auto inline-flex items-center gap-1 pt-4 text-xs font-medium md:text-sm">
 									{copy.news}
 									<ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
 								</span>
