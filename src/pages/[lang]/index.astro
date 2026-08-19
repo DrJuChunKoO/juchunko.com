@@ -2,10 +2,11 @@
 import PageLayout from "../../layouts/PageLayout.astro";
 import CardLink from "@/components/CardLink.astro";
 import HomeFeeds from "@/components/HomeFeeds.tsx";
+import MediaAttention from "@/components/MediaAttention.tsx";
 import { getLangFromUrl, useTranslations } from "src/i18n/utils";
 import { getCollection } from "astro:content";
 import { ArrowRight } from "@lucide/astro";
-import { getFeaturedAchievementSummary, getHomepageCopy, selectFeaturedEntries } from "@/lib/homepage";
+import { getFeaturedAchievementSummary, getHomepageCopy, isRecentlyUpdated, selectFeaturedEntries } from "@/lib/homepage";
 import { contentIdMatchesLang, getSlugFromContentId } from "@/lib/content";
 
 const lang = getLangFromUrl(Astro.url);
@@ -28,6 +29,7 @@ const fragments = (await getCollection("fragment"))
 const featuredActs = selectFeaturedEntries(acts);
 const featuredSlugs = new Set(featuredActs.map((post) => getSlugFromContentId(post.id)));
 const issueActs = acts.filter((post) => !featuredSlugs.has(getSlugFromContentId(post.id)));
+const recentlyUpdatedBadge = lang === "zh-TW" ? "最近更新" : "Recently updated";
 ---
 
 <PageLayout title={copy.seo.title} description={t("home.description")}>
@@ -66,6 +68,7 @@ const issueActs = acts.filter((post) => !featuredSlugs.has(getSlugFromContentId(
 						category="act"
 						showDescription
 						description={getFeaturedAchievementSummary(post.id, lang)}
+						badge={isRecentlyUpdated(post.data.updatedDate) ? recentlyUpdatedBadge : undefined}
 						headingLevel={3}
 					/>
 				))
@@ -76,8 +79,23 @@ const issueActs = acts.filter((post) => !featuredSlugs.has(getSlugFromContentId(
 	<section id="issues" class="mb-12 scroll-mt-24 space-y-6 md:scroll-mt-28">
 		<h2 class="text-foreground mt-2 text-2xl font-bold md:text-3xl">{copy.sectionTitles.issues}</h2>
 		<div class="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-3 md:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] md:gap-6">
-			{issueActs.map((post) => <CardLink post={post} lang={lang} category="act" headingLevel={3} />)}
+			{
+				issueActs.map((post) => (
+					<CardLink
+						post={post}
+						lang={lang}
+						category="act"
+						badge={isRecentlyUpdated(post.data.updatedDate) ? recentlyUpdatedBadge : undefined}
+						headingLevel={3}
+					/>
+				))
+			}
 		</div>
+	</section>
+
+	<section id="media-attention" class="mb-12 scroll-mt-24 space-y-6 md:scroll-mt-28">
+		<h2 class="text-foreground mt-2 text-2xl font-bold md:text-3xl">{copy.sectionTitles.mediaAttention}</h2>
+		<MediaAttention lang={lang} client:visible />
 	</section>
 
 	<section id="updates" class="mb-12 scroll-mt-24 space-y-6 md:scroll-mt-28">
@@ -92,14 +110,34 @@ const issueActs = acts.filter((post) => !featuredSlugs.has(getSlugFromContentId(
 			<div class="space-y-4">
 				<h3 class="text-foreground text-xl font-semibold">{copy.sectionTitles.manuals}</h3>
 				<div class="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-3 md:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] md:gap-6">
-					{manuals.map((post) => <CardLink post={post} lang={lang} category="manual" headingLevel={4} />)}
+					{
+						manuals.map((post) => (
+							<CardLink
+								post={post}
+								lang={lang}
+								category="manual"
+								badge={isRecentlyUpdated(post.data.updatedDate) ? recentlyUpdatedBadge : undefined}
+								headingLevel={4}
+							/>
+						))
+					}
 				</div>
 			</div>
 
 			<div class="space-y-4">
 				<h3 class="text-foreground text-xl font-semibold">{copy.sectionTitles.fragments}</h3>
 				<div class="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-3 md:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] md:gap-6">
-					{fragments.map((post) => <CardLink post={post} lang={lang} category="fragment" headingLevel={4} />)}
+					{
+						fragments.map((post) => (
+							<CardLink
+								post={post}
+								lang={lang}
+								category="fragment"
+								badge={isRecentlyUpdated(post.data.updatedDate) ? recentlyUpdatedBadge : undefined}
+								headingLevel={4}
+							/>
+						))
+					}
 				</div>
 			</div>
 		</div>

@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { getFeaturedAchievementSummary, getHomepageCopy, selectFeaturedEntries } from "./homepage";
+import { getFeaturedAchievementSummary, getHomepageCopy, isRecentlyUpdated, selectFeaturedEntries } from "./homepage";
 
 test("selectFeaturedEntries keeps the curated homepage order", () => {
 	const entries = [
@@ -39,4 +39,12 @@ test("getFeaturedAchievementSummary returns why-it-matters summaries for feature
 		getFeaturedAchievementSummary("en/nuclear-reactor-facility-control-act.mdx", "en"),
 		"It reopens a legal path for extending stable low-carbon power, turning an energy dead end into a decision that can be reviewed on safety and evidence.",
 	);
+});
+
+test("isRecentlyUpdated only marks explicit updates from the last 30 days", () => {
+	const now = new Date("2026-08-19T12:00:00Z");
+
+	assert.equal(isRecentlyUpdated(new Date("2026-08-11T12:00:00Z"), now), true);
+	assert.equal(isRecentlyUpdated(new Date("2026-07-01T12:00:00Z"), now), false);
+	assert.equal(isRecentlyUpdated(undefined, now), false);
 });

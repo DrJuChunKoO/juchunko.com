@@ -3,6 +3,8 @@ import PageLayout from "../../layouts/PageLayout.astro";
 import { useTranslations } from "../../i18n/utils";
 import { languages } from "../../i18n/ui";
 import NewsPage from "../../components/NewsPage";
+import { contentIdMatchesLang, getSlugFromContentId } from "@/lib/content";
+import { getCollection } from "astro:content";
 
 export function getStaticPaths() {
 	return Object.keys(languages).map((lang) => ({
@@ -15,6 +17,11 @@ const t = useTranslations(lang as "en" | "zh-TW");
 
 const title = t("home.news.title");
 const description = t("home.news.subtitle");
+const relatedPages = Object.fromEntries(
+	(await getCollection("act"))
+		.filter((post) => contentIdMatchesLang(post.id, lang as "en" | "zh-TW"))
+		.flatMap((post) => post.data.newsTopicIds.map((topicId) => [topicId, `/${lang}/act/${getSlugFromContentId(post.id)}`])),
+);
 ---
 
 <PageLayout {title} {description}>
@@ -29,6 +36,6 @@ const description = t("home.news.subtitle");
 		>
 
 		<!-- React-based News page -->
-		<NewsPage client:only="react" lang={lang as "en" | "zh-TW"} />
+		<NewsPage client:only="react" lang={lang as "en" | "zh-TW"} {relatedPages} />
 	</div>
 </PageLayout>

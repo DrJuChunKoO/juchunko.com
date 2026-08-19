@@ -1,5 +1,5 @@
 ---
-const { post, lang, category, showDescription = false, description, headingLevel = 2 } = Astro.props;
+const { post, lang, category, showDescription = false, description, badge, headingLevel = 2 } = Astro.props;
 const cardDescription = description ?? post.data.description;
 const Heading = `h${headingLevel}`;
 ---
@@ -8,6 +8,13 @@ const Heading = `h${headingLevel}`;
 	href={`/${lang}/${category}/${post.id.replace(/^.+?\//, "").replace(/\.(md|mdx)$/, "")}`}
 	class="group hover:outline-primary/50 relative flex flex-col items-start overflow-hidden rounded-lg bg-gray-50 p-0.5 transition-colors hover:bg-gray-100 hover:outline-2 hover:outline-offset-2 md:p-4 md:pr-24 dark:bg-white/5 dark:hover:bg-white/10"
 >
+	{
+		badge && (
+			<span class="border-primary/15 bg-background/90 text-primary absolute top-2 right-2 z-10 inline-flex rounded-full border px-2 py-0.5 text-[0.625rem] font-semibold backdrop-blur-sm md:top-3 md:right-3 md:text-xs">
+				{badge}
+			</span>
+		)
+	}
 	<div class="bg-primary/5 dark:bg-primary/7.5 flex h-16 w-full items-center justify-center rounded-lg text-3xl md:hidden">
 		{post.data.emoji}
 	</div>

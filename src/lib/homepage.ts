@@ -22,6 +22,7 @@ export interface HomepageCopy {
 	sectionTitles: {
 		achievements: string;
 		issues: string;
+		mediaAttention: string;
 		updates: string;
 		reading: string;
 		manuals: string;
@@ -68,6 +69,12 @@ export function getFeaturedAchievementSummary(id: string, lang: SupportedLang) {
 	return featuredAchievementSummaries[lang][getContentSlug(id)];
 }
 
+export function isRecentlyUpdated(updatedDate: Date | undefined, now = new Date(), days = 30) {
+	if (!updatedDate) return false;
+	const age = now.valueOf() - updatedDate.valueOf();
+	return age >= 0 && age <= days * 24 * 60 * 60 * 1000;
+}
+
 export function getHomepageCopy(lang: SupportedLang): HomepageCopy {
 	if (lang === "zh-TW") {
 		return {
@@ -90,6 +97,7 @@ export function getHomepageCopy(lang: SupportedLang): HomepageCopy {
 			sectionTitles: {
 				achievements: "代表成果",
 				issues: "重點議題",
+				mediaAttention: "近期媒體關注",
 				updates: "最新動態與更新",
 				reading: "進一步閱讀",
 				manuals: "寶博士使用說明",
@@ -119,6 +127,7 @@ export function getHomepageCopy(lang: SupportedLang): HomepageCopy {
 		sectionTitles: {
 			achievements: "Representative achievements",
 			issues: "Key issues",
+			mediaAttention: "Recent media attention",
 			updates: "Latest updates",
 			reading: "Extended reading",
 			manuals: "Manuals",

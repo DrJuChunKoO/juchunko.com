@@ -53,6 +53,7 @@ const articleSection = collectionSectionMap[currentCollection] ?? currentCollect
 
 // Build article tags from status (act only) for GEO signals
 const articleTags: string[] = [];
+articleTags.push(...post.data.tags);
 if (post.collection === "act" && "status" in post.data && post.data.status) {
 	articleTags.push(post.data.status);
 }
@@ -65,7 +66,7 @@ const articleSchema = post.data.date
 			headline: post.data.title,
 			description: description,
 			datePublished: post.data.date.toISOString(),
-			dateModified: post.data.date.toISOString(),
+			dateModified: (post.data.updatedDate ?? post.data.date).toISOString(),
 			inLanguage: lang,
 			mainEntityOfPage: {
 				"@type": "WebPage",

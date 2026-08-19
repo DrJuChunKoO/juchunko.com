@@ -6,6 +6,9 @@ const act = defineCollection({
 	schema: z.object({
 		title: z.string(),
 		date: z.coerce.date(),
+		updatedDate: z.coerce.date().optional(),
+		tags: z.array(z.string()).default([]),
+		newsTopicIds: z.array(z.string()).default([]),
 		emoji: z.string().optional().default("🤓"),
 		description: z.string().optional(),
 		image: z.string().optional(),
@@ -17,6 +20,8 @@ const manual = defineCollection({
 	schema: z.object({
 		title: z.string(),
 		date: z.coerce.date(),
+		updatedDate: z.coerce.date().optional(),
+		tags: z.array(z.string()).default([]),
 		emoji: z.string().optional().default("🤓"),
 		description: z.string().optional(),
 		image: z.string().optional(),
@@ -27,6 +32,8 @@ const fragment = defineCollection({
 	schema: z.object({
 		title: z.string(),
 		date: z.coerce.date(),
+		updatedDate: z.coerce.date().optional(),
+		tags: z.array(z.string()).default([]),
 		emoji: z.string().optional().default("🤓"),
 		description: z.string().optional(),
 		image: z.string().optional(),

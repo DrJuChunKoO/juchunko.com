@@ -267,10 +267,12 @@ function TopicNewsLink({ item, lang }: { item: NewsItem | TopicArchiveNewsItem; 
 function TopicCard({
 	topic,
 	lang,
+	relatedPage,
 	onOpenTopic,
 }: {
 	topic: TopicArchiveCard;
 	lang: NewsPageLang;
+	relatedPage?: string;
 	onOpenTopic: (topic: TopicArchiveCard) => void;
 }) {
 	const t = useTranslations(lang);
@@ -285,13 +287,23 @@ function TopicCard({
 					)}
 				</div>
 
-				<button
-					type="button"
-					onClick={() => onOpenTopic(topic)}
-					className="hover:outline-primary/50 inline-flex h-11 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-black/10 px-4 text-sm font-medium backdrop-blur-sm transition hover:bg-black/4 hover:outline-2 hover:outline-offset-2 dark:border-white/10 dark:hover:bg-white/5"
-				>
-					{t("newsPage.topic.viewMore")}
-				</button>
+				<div className="flex shrink-0 flex-wrap gap-2">
+					{relatedPage && (
+						<a
+							href={relatedPage}
+							className="hover:outline-primary/50 inline-flex h-11 items-center justify-center rounded-lg bg-black px-4 text-sm font-medium text-white transition hover:bg-black/80 hover:outline-2 hover:outline-offset-2 dark:bg-white dark:text-black dark:hover:bg-white/85"
+						>
+							{t("newsPage.topic.readArticle")}
+						</a>
+					)}
+					<button
+						type="button"
+						onClick={() => onOpenTopic(topic)}
+						className="hover:outline-primary/50 inline-flex h-11 cursor-pointer items-center justify-center rounded-lg border border-black/10 px-4 text-sm font-medium backdrop-blur-sm transition hover:bg-black/4 hover:outline-2 hover:outline-offset-2 dark:border-white/10 dark:hover:bg-white/5"
+					>
+						{t("newsPage.topic.viewMore")}
+					</button>
+				</div>
 			</div>
 
 			<div className="grid gap-2 p-4 pt-0">
@@ -413,6 +425,7 @@ function ArchiveSection({
 	archiveEmpty,
 	visibleMonths,
 	totalMonths,
+	relatedPages,
 	onOpenTopic,
 }: {
 	lang: NewsPageLang;
@@ -422,6 +435,7 @@ function ArchiveSection({
 	archiveEmpty: boolean;
 	visibleMonths: ArchiveMonthIndexEntry[];
 	totalMonths: number;
+	relatedPages: Record<string, string>;
 	onOpenTopic: (topic: TopicArchiveCard) => void;
 }) {
 	const t = useTranslations(lang);
@@ -435,7 +449,7 @@ function ArchiveSection({
 			{archiveEmpty && <EmptyState>{t("newsPage.archive.empty")}</EmptyState>}
 
 			{visibleMonths.map((monthMeta) => (
-				<MonthTopicsSection key={monthMeta.month} monthMeta={monthMeta} lang={lang} onOpenTopic={onOpenTopic} />
+				<MonthTopicsSection key={monthMeta.month} monthMeta={monthMeta} lang={lang} relatedPages={relatedPages} onOpenTopic={onOpenTopic} />
 			))}
 
 			{visibleMonths.length > 0 && visibleMonths.length < totalMonths && (
@@ -454,6 +468,7 @@ function ArchiveSection({
 
 function TopicDialog({
 	lang,
+	relatedPage,
 	selectedTopicId,
 	selectedTopicPreview,
 	selectedTopic,
@@ -464,6 +479,7 @@ function TopicDialog({
 	onExitComplete,
 }: {
 	lang: NewsPageLang;
+	relatedPage?: string;
 	selectedTopicId: string | null;
 	selectedTopicPreview: TopicArchiveCard | null;
 	selectedTopic: TopicDetailResponse | undefined;
@@ -518,6 +534,15 @@ function TopicDialog({
 												<p className="line-clamp-3 max-w-2xl text-sm leading-6 text-gray-600 sm:line-clamp-none dark:text-gray-300">
 													{topicSummary}
 												</p>
+											)}
+											{relatedPage && (
+												<a
+													href={relatedPage}
+													className="hover:outline-primary/50 mt-2 inline-flex w-max items-center gap-1.5 rounded-lg bg-black px-3 py-2 text-sm font-medium text-white transition hover:bg-black/80 hover:outline-2 hover:outline-offset-2 dark:bg-white dark:text-black dark:hover:bg-white/85"
+												>
+													{t("newsPage.topic.readArticle")}
+													<ArrowUpRight className="size-4" />
+												</a>
 											)}
 										</>
 									) : (
@@ -583,10 +608,12 @@ function TopicDialog({
 function MonthTopicsSection({
 	monthMeta,
 	lang,
+	relatedPages,
 	onOpenTopic,
 }: {
 	monthMeta: ArchiveMonthIndexEntry;
 	lang: NewsPageLang;
+	relatedPages: Record<string, string>;
 	onOpenTopic: (topic: TopicArchiveCard) => void;
 }) {
 	const t = useTranslations(lang);
@@ -627,7 +654,13 @@ function MonthTopicsSection({
 			{archiveMonth && archiveMonth.topics.length > 0 && (
 				<div className="space-y-4">
 					{archiveMonth.topics.map((topic) => (
-						<TopicCard key={`${monthMeta.month}-${topic.id}`} topic={topic} lang={lang} onOpenTopic={onOpenTopic} />
+						<TopicCard
+							key={`${monthMeta.month}-${topic.id}`}
+							topic={topic}
+							lang={lang}
+							relatedPage={relatedPages[topic.id]}
+							onOpenTopic={onOpenTopic}
+						/>
 					))}
 				</div>
 			)}
@@ -635,7 +668,7 @@ function MonthTopicsSection({
 	);
 }
 
-export default function NewsPage({ lang }: { lang: NewsPageLang }) {
+export default function NewsPage({ lang, relatedPages }: { lang: NewsPageLang; relatedPages: Record<string, string> }) {
 	const [searchDraft, setSearchDraft] = useState("");
 	const [searchQuery, setSearchQuery] = useState("");
 	const [selectedTopicPreview, setSelectedTopicPreview] = useState<TopicArchiveCard | null>(null);
@@ -917,12 +950,14 @@ export default function NewsPage({ lang }: { lang: NewsPageLang }) {
 					archiveEmpty={archiveEmpty}
 					visibleMonths={visibleMonths}
 					totalMonths={archiveMonthIndex?.length ?? 0}
+					relatedPages={relatedPages}
 					onOpenTopic={openTopicDialog}
 				/>
 			)}
 
 			<TopicDialog
 				lang={lang}
+				relatedPage={selectedTopicId ? relatedPages[selectedTopicId] : undefined}
 				selectedTopicId={selectedTopicId}
 				selectedTopicPreview={selectedTopicPreview}
 				selectedTopic={selectedTopic}
