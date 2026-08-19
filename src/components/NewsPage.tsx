@@ -23,6 +23,7 @@ import {
 } from "./news-page-format";
 import { applyDialogScrollLock } from "./news-page-scroll-lock";
 import { dialogBackdropVariants, dialogLayerClassNames, dialogPanelVariants } from "./news-page-motion";
+import { getNewsSourceLogo } from "./news-source-logo";
 
 const queryClient = new QueryClient({
 	defaultOptions: {
@@ -241,6 +242,7 @@ function ErrorAlert({ children }: { children: React.ReactNode }) {
 
 function TopicNewsLink({ item, lang }: { item: NewsItem | TopicArchiveNewsItem; lang: NewsPageLang }) {
 	const sourceMark = item.source?.trim().charAt(0) || "N";
+	const sourceLogo = getNewsSourceLogo(item.source);
 
 	return (
 		<a
@@ -250,7 +252,17 @@ function TopicNewsLink({ item, lang }: { item: NewsItem | TopicArchiveNewsItem; 
 			className="group grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-lg px-2 py-3 transition-[background-color,transform] duration-150 ease-out hover:bg-gray-100 active:scale-[0.99] dark:hover:bg-white/6"
 		>
 			<span className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-black/8 bg-white text-xs font-semibold text-gray-600 dark:border-white/10 dark:bg-white/5 dark:text-gray-300">
-				{sourceMark}
+				{sourceLogo ? (
+					<img
+						src={sourceLogo}
+						alt=""
+						className="size-full rounded-[0.45rem] object-contain p-1 saturate-[0.35] transition-[filter] duration-150 ease-out group-hover:saturate-100"
+						loading="lazy"
+						decoding="async"
+					/>
+				) : (
+					sourceMark
+				)}
 			</span>
 			<div className="min-w-0 flex-1">
 				<p className="text-sm leading-5 font-medium text-gray-900 sm:text-[15px] dark:text-gray-100">{getLocalizedNewsTitle(item, lang)}</p>
