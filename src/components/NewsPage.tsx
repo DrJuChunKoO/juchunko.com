@@ -4,7 +4,7 @@ import { ArrowRight, ArrowUpRight, Search, X } from "lucide-react";
 import { Loader } from "./Loader";
 import { AnimatePresence, motion } from "motion/react";
 import { useTranslations } from "../i18n/utils";
-import { timeAgo } from "../lib/utils";
+import { cn, timeAgo } from "../lib/utils";
 import {
 	createNewsPageRequestError,
 	formatArchiveMonthLabel,
@@ -240,7 +240,7 @@ function ErrorAlert({ children }: { children: React.ReactNode }) {
 	);
 }
 
-function TopicNewsLink({ item, lang }: { item: NewsItem | TopicArchiveNewsItem; lang: NewsPageLang }) {
+function TopicNewsLink({ item, lang, className }: { item: NewsItem | TopicArchiveNewsItem; lang: NewsPageLang; className?: string }) {
 	const sourceMark = item.source?.trim().charAt(0) || "N";
 	const sourceLogo = getNewsSourceLogo(item.source);
 
@@ -249,7 +249,10 @@ function TopicNewsLink({ item, lang }: { item: NewsItem | TopicArchiveNewsItem; 
 			href={item.url}
 			target="_blank"
 			rel="noopener noreferrer"
-			className="group grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-lg px-2 py-3 transition-[background-color,transform] duration-150 ease-out hover:bg-gray-100 active:scale-[0.99] dark:hover:bg-white/6"
+			className={cn(
+				"group grid grid-cols-[2.25rem_minmax(0,1fr)_auto] items-center gap-3 rounded-lg px-2 py-3 transition-[background-color,transform] duration-150 ease-out hover:bg-gray-100 active:scale-[0.99] dark:hover:bg-white/6",
+				className,
+			)}
 		>
 			<span className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-black/8 bg-white text-xs font-semibold text-gray-600 dark:border-white/10 dark:bg-white/5 dark:text-gray-300">
 				{sourceLogo ? (
@@ -304,11 +307,11 @@ function TopicCard({
 
 	return (
 		<article className="overflow-hidden rounded-2xl border border-black/10 bg-white dark:border-white/10 dark:bg-white/3">
-			<div className="flex items-start gap-4 p-5 sm:p-6">
-				<div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-gray-100 text-xl dark:bg-white/8">
+			<div className="grid grid-cols-[2.25rem_minmax(0,1fr)] items-start gap-3 px-5 py-5 sm:px-6 sm:py-6">
+				<div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-lg dark:bg-white/8">
 					<span aria-hidden="true">{topic.emoji || "📰"}</span>
 				</div>
-				<div className="min-w-0 flex-1">
+				<div className="min-w-0">
 					<p className="mb-1.5 text-xs font-medium text-gray-500 dark:text-gray-400">{formatTopicMeta(topic, lang)}</p>
 					<h3 className="text-lg leading-snug font-semibold tracking-[-0.02em] text-gray-950 sm:text-xl dark:text-white">
 						{getTopicDisplayTitle(topic, lang)}
@@ -319,12 +322,12 @@ function TopicCard({
 				</div>
 			</div>
 
-			<div className="mx-3 grid border-t border-black/8 py-2 sm:mx-4 dark:border-white/8">
+			<div className="grid border-t border-black/8 px-5 py-2 sm:px-6 dark:border-white/8">
 				{getTopicPreviewItems(topic).map((item) => (
-					<TopicNewsLink key={item.url} item={item} lang={lang} />
+					<TopicNewsLink key={item.url} item={item} lang={lang} className="px-0" />
 				))}
 			</div>
-			<div className="flex flex-wrap items-center justify-between gap-3 border-t border-black/8 bg-gray-50/70 px-5 py-3 dark:border-white/8 dark:bg-white/3">
+			<div className="flex flex-wrap items-center justify-between gap-3 border-t border-black/8 bg-gray-50/70 px-5 py-3 sm:px-6 dark:border-white/8 dark:bg-white/3">
 				{relatedPage ? (
 					<a
 						href={relatedPage}
