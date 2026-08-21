@@ -26,18 +26,14 @@ const relatedPages = Object.fromEntries(
 
 <PageLayout {title} {description}>
 	<div class="container mx-auto max-w-5xl md:px-4">
-		<header class="mb-10 border-b border-black/10 pb-8 sm:mb-12 sm:pb-10 dark:border-white/10">
-			<div class="mb-5 flex items-center gap-3 text-xs font-semibold tracking-[0.16em] text-gray-500 uppercase dark:text-gray-400">
-				<span>{t("newsPage.topics.label")}</span>
-				<span class="h-px flex-1 bg-black/10 dark:bg-white/10"></span>
-			</div>
-			<div class="grid items-end gap-4 sm:grid-cols-[minmax(0,1fr)_minmax(15rem,24rem)] sm:gap-10">
-				<h1 class="text-4xl leading-none font-semibold tracking-[-0.045em] text-gray-950 sm:text-6xl dark:text-white">
-					{t("home.news.title")}
-				</h1>
-				<p class="text-sm leading-6 text-gray-500 sm:pb-1 sm:text-base dark:text-gray-400">{t("home.news.subtitle")}</p>
-			</div>
-		</header>
+		<div class="prose prose-slate dark:prose-invert mx-auto mb-6 max-w-full">
+			<p class="font-medium tracking-tight text-gray-500 opacity-75 dark:text-gray-400">{description}</p>
+			<h1>{title}</h1>
+		</div>
+		<span
+			class="absolute top-0 right-8 hidden h-24 w-16 items-end justify-center rounded-b-xl bg-linear-to-b from-gray-100 to-gray-200 p-3 text-4xl transition-all md:flex dark:from-white/10 dark:to-white/5"
+			>📰</span
+		>
 
 		<NewsPage client:only="react" lang={lang as "en" | "zh-TW"} {relatedPages} />
 	</div>

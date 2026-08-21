@@ -276,8 +276,14 @@ function TopicNewsLink({ item, lang }: { item: NewsItem | TopicArchiveNewsItem; 
 					<span>{timeAgo(item.time, lang)}</span>
 				</div>
 			</div>
-			<span className="flex size-8 shrink-0 items-center justify-center text-gray-400 transition-[color,transform] duration-150 ease-out group-hover:translate-x-0.5 group-hover:text-black dark:text-gray-500 dark:group-hover:text-white">
-				<ArrowUpRight className="size-4" />
+			<span
+				aria-hidden="true"
+				className="flex size-8 shrink-0 items-center justify-center text-gray-400 transition-colors duration-150 ease-out group-hover:text-black dark:text-gray-500 dark:group-hover:text-white"
+			>
+				<span className="relative size-4 overflow-hidden">
+					<ArrowUpRight className="absolute inset-0 size-4 transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-full group-hover:-translate-y-full motion-reduce:transition-none motion-reduce:group-hover:translate-none" />
+					<ArrowUpRight className="absolute inset-0 size-4 translate-x-[-100%] translate-y-full transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-none motion-reduce:hidden" />
+				</span>
 			</span>
 		</a>
 	);
@@ -610,7 +616,7 @@ function TopicDialog({
 
 							{selectedTopic?.months?.map((month) => (
 								<section key={month.month} className="mb-7 grid gap-3 last:mb-0 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-5">
-									<div className="border-t border-black/10 pt-3 dark:border-white/10">
+									<div>
 										<h3 className="text-sm font-semibold text-gray-900 dark:text-white">{formatArchiveMonthLabel(month.month, lang)}</h3>
 										<p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{formatStoryCount(month.items.length, lang)}</p>
 									</div>
@@ -670,7 +676,7 @@ function MonthTopicsSection({
 
 	return (
 		<section id={`month-${monthMeta.month}`} className="scroll-mt-24 md:grid md:grid-cols-[10rem_minmax(0,1fr)] md:items-start md:gap-8">
-			<div className="mb-5 border-t border-black/10 pt-4 md:sticky md:top-24 md:mb-0 dark:border-white/10">
+			<div className="mb-5 md:sticky md:top-24 md:mb-0">
 				<h2 className="text-lg font-semibold tracking-[-0.02em] text-gray-950 sm:text-xl dark:text-white">
 					{formatArchiveMonthLabel(monthMeta.month, lang)}
 				</h2>
