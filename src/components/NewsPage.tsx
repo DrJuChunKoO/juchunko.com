@@ -322,9 +322,9 @@ function TopicCard({
 				</div>
 			</div>
 
-			<div className="grid border-t border-black/8 px-5 py-2 sm:px-6 dark:border-white/8">
+			<div className="grid border-t border-black/8 px-3 py-2 sm:px-4 dark:border-white/8">
 				{getTopicPreviewItems(topic).map((item) => (
-					<TopicNewsLink key={item.url} item={item} lang={lang} className="px-0" />
+					<TopicNewsLink key={item.url} item={item} lang={lang} />
 				))}
 			</div>
 			<div className="flex flex-wrap items-center justify-between gap-3 border-t border-black/8 bg-gray-50/70 px-5 py-3 sm:px-6 dark:border-white/8 dark:bg-white/3">
