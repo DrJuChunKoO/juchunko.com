@@ -7,13 +7,14 @@ emoji: "💬"
 status: "Libraries with AI approved by the Ministry of Education; Executive Yuan promised a two-month review of AI vouchers"
 ---
 
+import { YouTube } from "@astro-community/astro-embed-youtube";
+import { Coins, GraduationCap } from "lucide-react";
 import Cards from "@/components/Cards.astro";
 import Card from "@/components/Card.astro";
 import ActProgress from "@/components/ActProgress.astro";
 import NewsTopicEmbed from "@/components/NewsTopicEmbed.astro";
 import Timeline from "@/components/Timeline.astro";
 import TimelineItem from "@/components/TimelineItem.astro";
-import { Coins, GraduationCap } from "lucide-react";
 
 # AI Equity and AI Voucher Initiative
 
@@ -123,10 +124,13 @@ The AI cabinet cannot remain a slogan. As AI becomes new infrastructure for know
 	<TimelineItem date="2026.04.30" title="[Policy Progress] Ministry of Education approved Libraries with AI">
 		After Legislator Ko's continued advocacy, the Ministry of Education approved Libraries with AI, with paid AI access expected to begin in
 		affiliated national libraries in Q4 2026 as the first step toward AI equity.
-	</TimelineItem>
-	<TimelineItem date="2026.04.01" title="[Education Committee Inquiry] Proposal for Libraries with AI">
-		In the Education and Culture Committee, Ko asked the Ministry of Education to deploy AI resources in affiliated libraries first, turning
-		public libraries into frontline infrastructure for digital equity and technology access. Minister Cheng Ying-yao called the proposal
-		"professional and well-intentioned" and committed to further study and a written assessment within one month.
-	</TimelineItem>
+
+    	<YouTube id="K5wDw-aXK1Q" title="Libraries with AI: public access to paid AI tools" />
+    </TimelineItem>
+    <TimelineItem date="2026.04.01" title="[Education Committee Inquiry] Proposal for Libraries with AI">
+    	In the Education and Culture Committee, Ko asked the Ministry of Education to deploy AI resources in affiliated libraries first, turning
+    	public libraries into frontline infrastructure for digital equity and technology access. Minister Cheng Ying-yao called the proposal
+    	"professional and well-intentioned" and committed to further study and a written assessment within one month.
+    </TimelineItem>
+
 </Timeline>

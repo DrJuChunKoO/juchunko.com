@@ -7,6 +7,7 @@ emoji: "🎮"
 status: "教育及文化委員會 2026/06/10 舉辦公聽會、2026/07/30 排審《電子競技運動發展基本法草案》，因朝野對專法立場不同而暫停"
 ---
 
+import { YouTube } from "@astro-community/astro-embed-youtube";
 import ActProgress from "@/components/ActProgress.astro";
 import NewsTopicEmbed from "@/components/NewsTopicEmbed.astro";
 import Timeline from "@/components/Timeline.astro";
@@ -85,11 +86,14 @@ import TimelineItem from "@/components/TimelineItem.astro";
 	</TimelineItem>
 	<TimelineItem date="2026.06.10" title="《電子競技運動發展基本法》草案公聽會">
 		教育及文化委員會由羅廷瑋委員擔任召集人召開公聽會。葛如鈞以台灣電競供應鏈實力、韓國立法歷程說明制定基本法的必要性；李洋坦言電競發展確實慢了許多，但反對制定專法。
-	</TimelineItem>
-	<TimelineItem date="2026.05.29" title="羅廷瑋、葛如鈞對外說明草案">
-		匯流新聞網報導，羅廷瑋、葛如鈞兩位委員攜手推動《電子競技運動發展基本法》，補足台灣電競制度缺口。
-	</TimelineItem>
-	<TimelineItem date="2017.11.07" title="立法院三讀將電子競技納入《運動產業發展條例》">
-		立法院三讀通過《運動產業發展條例》部分條文修正案，電子競技業正式納入運動產業，並於 2017/11/29 公布。
-	</TimelineItem>
+
+    	<YouTube id="S3iE4YAwVcA" title="台灣這麼小，憑什麼撐起全球電競？葛如鈞籲盡快制定電競基本法" />
+    </TimelineItem>
+    <TimelineItem date="2026.05.29" title="羅廷瑋、葛如鈞對外說明草案">
+    	匯流新聞網報導，羅廷瑋、葛如鈞兩位委員攜手推動《電子競技運動發展基本法》，補足台灣電競制度缺口。
+    </TimelineItem>
+    <TimelineItem date="2017.11.07" title="立法院三讀將電子競技納入《運動產業發展條例》">
+    	立法院三讀通過《運動產業發展條例》部分條文修正案，電子競技業正式納入運動產業，並於 2017/11/29 公布。
+    </TimelineItem>
+
 </Timeline>

@@ -7,13 +7,14 @@ emoji: "💬"
 status: "館館有 AI 已獲教育部核定，AI 幣由行政院承諾兩個月內研議"
 ---
 
+import { YouTube } from "@astro-community/astro-embed-youtube";
+import { Coins, GraduationCap } from "lucide-react";
 import Cards from "@/components/Cards.astro";
 import Card from "@/components/Card.astro";
 import ActProgress from "@/components/ActProgress.astro";
 import NewsTopicEmbed from "@/components/NewsTopicEmbed.astro";
 import Timeline from "@/components/Timeline.astro";
 import TimelineItem from "@/components/TimelineItem.astro";
-import { Coins, GraduationCap } from "lucide-react";
 
 # AI 平權與 AI 幣倡議
 
@@ -113,9 +114,12 @@ AI 內閣不能只喊口號。當 AI 已經成為知識、教育與工作的新�
 	<TimelineItem date="2026.04.30" title="【政策進度】教育部核定館館有 AI">
 		經葛委員持續爭取，教育部核定「館館有 AI」政策，預計自今年第四季開始，於教育部直屬主管圖書館提供付費 AI 工具近用服務，作為 AI
 		平權的第一步。
-	</TimelineItem>
-	<TimelineItem date="2026.04.01" title="【教文委員會質詢】倡議館館有 AI">
-		葛委員於教育及文化委員會質詢教育部，要求從教育部所屬圖書館率先布建 AI
-		資源，讓公共圖書館成為推動數位平權與科技近用的重要基地。教育部長鄭英耀答詢表示建議「非常專業，也非常良善」，承諾進一步研議並於一個月內提供書面評估。
-	</TimelineItem>
+
+    	<YouTube id="K5wDw-aXK1Q" title="AI 平權來了！葛如鈞推動館館有 AI" />
+    </TimelineItem>
+    <TimelineItem date="2026.04.01" title="【教文委員會質詢】倡議館館有 AI">
+    	葛委員於教育及文化委員會質詢教育部，要求從教育部所屬圖書館率先布建 AI
+    	資源，讓公共圖書館成為推動數位平權與科技近用的重要基地。教育部長鄭英耀答詢表示建議「非常專業，也非常良善」，承諾進一步研議並於一個月內提供書面評估。
+    </TimelineItem>
+
 </Timeline>
