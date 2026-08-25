@@ -229,7 +229,7 @@ Use `ActProgress` for compact progress or latest-status bars in `act` MDX pages 
 
 `ActSummary` is injected by `SharedContentTemplate.astro` for `act` pages and calls `/api/act-summary`; authors do not need to import it in MDX. Its three labels are `問題 / Problem`, `我們提出的做法 / What We Proposed`, and `對我有什麼影響 / How This Affects Me`. Do not use `目前的問題` or `Current Problem` in generated summary UI or prompts, because passed legislation may describe a past problem.
 
-Use `YouTube` for real videos only. Include `params="start=..."` when deep-linking to a segment.
+Use `YouTube` for real videos only. When an article would benefit from primary-source footage, proactively look for relevant videos in Legislator Ko's official YouTube channel or playlists; `yt-dlp --flat-playlist` is appropriate for inspecting titles and IDs before selecting embeds. Prefer a small number of videos that directly document the article's policy proposal, inquiry, public hearing, legislative milestone, or implementation update. Do not add loosely related clips, duplicate edits of the same event, political miscellany, or enough embeds to overwhelm the article. Check existing embeds first, place each selected video beside the most relevant passage or `TimelineItem`, and mirror the same YouTube ID in both language versions with localized titles. Include `params="start=..."` when deep-linking to a segment.
 
 Use custom `div className="not-prose ..."` sparingly. Prefer existing neutral styles: `rounded-lg`, subtle borders, `bg-gray-50`, `dark:bg-white/5`, and hover outlines. Do not introduce decorative shadows or strong color fills without a strong reason.
 
