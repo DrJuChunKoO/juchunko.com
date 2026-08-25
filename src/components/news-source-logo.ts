@@ -1,5 +1,6 @@
 export const newsSourceLogos: Record<string, string> = {
 	UDN: "/news-logos/udn.png",
+	聯合報: "/news-logos/udn.png",
 	自由時報: "/news-logos/ltn.png",
 	中央社: "/news-logos/cna.png",
 	"Focus Taiwan - CNA English News": "/news-logos/cna.png",
@@ -20,6 +21,22 @@ export const newsSourceLogos: Record<string, string> = {
 	CTWANT: "/news-logos/ctwant.png",
 	太報: "/news-logos/taisounds.png",
 	民視新聞網: "/news-logos/ftvnews.png",
+	知新聞: "/news-logos/knews.png",
+	人間福報: "/news-logos/merit-times.png",
+	華視新聞網: "/news-logos/cts.png",
+	"Domino Theory": "/news-logos/domino-theory.png",
+	"BigGo Finance": "/news-logos/biggo-finance.png",
+	"Bloomberg Law": "/news-logos/bloomberg-law.png",
+	"BTC Times": "/news-logos/btctimes.png",
+	CoinDesk: "/news-logos/coindesk.png",
+	ICRT: "/news-logos/icrt.png",
+	"Taiwan News": "/news-logos/taiwan-news.png",
+	"Yahoo Finance": "/news-logos/yahoo-finance.png",
+	"Yahoo News": "/news-logos/yahoo-news.png",
+	中天新聞網: "/news-logos/ctinews.png",
+	元豐媒體: "/news-logos/yuanfengmedia.png",
+	"爆新聞 Bow Media": "/news-logos/bowmedia.png",
+	"鏡週刊 Mirror Media": "/news-logos/mirrormedia.png",
 };
 
 export function getNewsSourceLogo(source?: string | null) {
