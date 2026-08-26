@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { fetchNegotiatedAsset } from "./content-negotiation";
 import api from "./routes/api";
 import type { Env } from "./types";
 
@@ -27,9 +28,10 @@ app.get("/docs/*", (c) => {
 	return c.redirect(`/zh-TW/fragment/${path}`, 301);
 });
 
+app.get("/about", (c) => c.redirect("/zh-TW/manual/introduction", 302));
+app.get("/contact", (c) => c.redirect("/zh-TW/fragment/contact", 302));
+
 // Static assets fallback - serve all other requests through Cloudflare Workers Assets
-app.all("*", (c) => {
-	return c.env.ASSETS.fetch(c.req.raw);
-});
+app.all("*", (c) => fetchNegotiatedAsset(c.req.raw, c.env.ASSETS));
 
 export default app;

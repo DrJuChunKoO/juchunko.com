@@ -7,8 +7,20 @@ import TablerBrandInstagram from "./icon/TablerBrandInstagram.astro";
 import TablerBrandTiktok from "./icon/TablerBrandTiktok.astro";
 import TablerBrandYoutube from "./icon/TablerBrandYoutube.astro";
 import TablerBrandX from "./icon/TablerBrandX.astro";
+import { getLangFromUrl } from "@/i18n/utils";
 
 const currentPath = Astro.url.pathname;
+const lang = getLangFromUrl(Astro.url);
+const trustLinks =
+	lang === "zh-TW"
+		? [
+				{ href: `/${lang}/manual/introduction`, label: "關於" },
+				{ href: `/${lang}/fragment/contact`, label: "聯絡" },
+			]
+		: [
+				{ href: `/${lang}/manual/introduction`, label: "About" },
+				{ href: `/${lang}/fragment/contact`, label: "Contact" },
+			];
 ---
 
 <footer id="footer" class="relative w-full print:hidden">
@@ -27,8 +39,15 @@ const currentPath = Astro.url.pathname;
 			)
 		}
 		<div class="flex items-center gap-6 max-md:flex-col-reverse md:justify-between">
-			<div class="text-sm text-gray-500 dark:text-gray-300">
-				© {new Date().getFullYear()} JUCHUNKO.COM All rights reserved.
+			<div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-gray-500 max-md:justify-center dark:text-gray-300">
+				<span>© {new Date().getFullYear()} JUCHUNKO.COM All rights reserved.</span>
+				{
+					trustLinks.map((link) => (
+						<a class="hover:text-foreground underline-offset-4 hover:underline" href={link.href}>
+							{link.label}
+						</a>
+					))
+				}
 			</div>
 
 			<div class="flex items-center gap-3">
