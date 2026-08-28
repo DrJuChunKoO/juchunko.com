@@ -89,8 +89,8 @@ export default function ActSummary({ collection, lang, slug }: ActSummaryProps) 
 					<h2 className="mt-1 mb-0 text-lg leading-tight font-semibold tracking-tight text-gray-950 dark:text-white">{labels.heading}</h2>
 					<button
 						type="button"
-						className="hover:outline-primary/50 inline-flex w-fit items-center gap-2 rounded-full bg-white px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 hover:outline-2 hover:outline-offset-2 dark:bg-white/10 dark:text-gray-200 dark:hover:bg-white/15"
-						onClick={openAIAssistant}
+						className="hover:outline-primary/50 focus-visible:outline-primary/50 inline-flex w-fit items-center gap-2 rounded-full bg-white px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 hover:outline-2 hover:outline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 dark:bg-white/10 dark:text-gray-200 dark:hover:bg-white/15"
+						onClick={(event) => openAIAssistant(event.currentTarget)}
 					>
 						<BotMessageSquare className="size-4" aria-hidden="true" strokeWidth={1.8} />
 						{labels.discussWithAI}

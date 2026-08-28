@@ -75,7 +75,7 @@ export default function MediaAttention({ lang }: MediaAttentionProps) {
 	return (
 		<div className="grid gap-3 md:grid-cols-3 md:gap-6" aria-busy={loading} aria-label={loading ? copy.loading : undefined}>
 			{loading
-				? Array.from({ length: 3 }, (_, index) => <div key={index} className="bg-muted/50 h-44 animate-pulse rounded-lg" />)
+				? Array.from({ length: 3 }, (_, index) => <div key={index} className="bg-muted/50 h-44 rounded-lg motion-safe:animate-pulse" />)
 				: topics.map((topic) => {
 						const title = lang === "en" ? topic.titleEn || topic.title : topic.title;
 						const summary = lang === "en" ? topic.summaryEn || topic.summary : topic.summary;
@@ -85,7 +85,7 @@ export default function MediaAttention({ lang }: MediaAttentionProps) {
 							<a
 								key={topic.id}
 								href={newsHref}
-								className="group bg-muted/50 hover:bg-muted hover:outline-primary/50 flex flex-col rounded-lg p-3 transition-colors hover:outline-2 hover:outline-offset-2 md:p-4"
+								className="group bg-muted/50 hover:bg-muted hover:outline-primary/50 focus-visible:outline-primary/50 flex flex-col rounded-lg p-3 transition-colors hover:outline-2 hover:outline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 md:p-4"
 							>
 								<div className="mb-3 flex items-center justify-between gap-3">
 									<span className="text-2xl" aria-hidden="true">
@@ -97,8 +97,8 @@ export default function MediaAttention({ lang }: MediaAttentionProps) {
 									</span>
 								</div>
 								<h3 className="text-foreground text-sm font-semibold md:text-lg">{title}</h3>
-								{summary && <p className="text-muted-foreground mt-2 line-clamp-2 text-xs leading-relaxed md:text-sm">{summary}</p>}
-								<span className="text-foreground mt-auto inline-flex items-center gap-1 pt-4 text-xs font-medium md:text-sm">
+								{summary && <p className="text-muted-foreground mt-2 line-clamp-2 text-sm leading-relaxed">{summary}</p>}
+								<span className="text-foreground mt-auto inline-flex items-center gap-1 pt-4 text-sm font-medium">
 									{copy.news}
 									<ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
 								</span>

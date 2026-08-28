@@ -101,7 +101,7 @@ export default function SearchPage({ lang }: SearchPageProps) {
 
 	return (
 		<div className="space-y-6">
-			<form onSubmit={submitSearch} className="border-border/70 bg-card/70 flex items-center gap-2 rounded-2xl border p-2 backdrop-blur">
+			<form onSubmit={submitSearch} className="border-border/70 bg-card/70 flex items-center gap-2 rounded-xl border p-2 backdrop-blur">
 				<Search className="text-muted-foreground ml-3 size-5 shrink-0" aria-hidden="true" />
 				<label className="sr-only" htmlFor="site-search-input">
 					{copy["search.label"]}
@@ -118,7 +118,7 @@ export default function SearchPage({ lang }: SearchPageProps) {
 					<button
 						type="button"
 						onClick={clearSearch}
-						className="text-muted-foreground hover:text-foreground hover:bg-muted rounded-full p-2 transition-colors"
+						className="text-muted-foreground hover:text-foreground hover:bg-muted rounded-full p-2 transition-colors motion-safe:active:scale-[0.97]"
 					>
 						<span className="sr-only">{copy["search.clear"]}</span>
 						<X className="size-4" aria-hidden="true" />
@@ -126,7 +126,7 @@ export default function SearchPage({ lang }: SearchPageProps) {
 				) : null}
 				<button
 					type="submit"
-					className="bg-foreground text-background hover:bg-foreground/85 rounded-xl px-4 py-3 text-sm font-medium transition-colors"
+					className="bg-foreground text-background hover:bg-foreground/85 rounded-lg px-4 py-3 text-sm font-medium transition-colors motion-safe:active:scale-[0.97]"
 				>
 					{copy["search.submit"]}
 				</button>
@@ -146,7 +146,7 @@ export default function SearchPage({ lang }: SearchPageProps) {
 			) : null}
 
 			{!isLoading && !error && deferredQuery && results.length === 0 ? (
-				<div className="border-border/70 bg-muted/30 text-muted-foreground rounded-2xl border p-6 text-sm">{copy["search.empty"]}</div>
+				<div className="border-border/70 bg-muted/30 text-muted-foreground rounded-xl border p-6 text-sm">{copy["search.empty"]}</div>
 			) : null}
 
 			<div className="space-y-3">
@@ -157,8 +157,8 @@ export default function SearchPage({ lang }: SearchPageProps) {
 							key={doc.id}
 							href={doc.url}
 							className={cn(
-								"border-border/70 bg-card/60 hover:border-foreground/35 group block rounded-2xl border p-4 transition-colors",
-								"hover:bg-muted/30 focus-visible:outline-primary focus-visible:outline-2 focus-visible:outline-offset-2",
+								"border-border/70 bg-card/60 hover:border-foreground/35 group block rounded-xl border p-4 transition-colors",
+								"hover:bg-muted/30 focus-visible:border-foreground/35 focus-visible:outline-primary focus-visible:outline-2 focus-visible:outline-offset-2",
 							)}
 						>
 							<div className="flex items-start gap-3">

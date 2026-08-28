@@ -37,7 +37,7 @@ export default function LanguageSelector({ initialLang = "zh-TW" }: LanguageSele
 					<button
 						type="button"
 						onClick={() => handleLanguageChange(lang)}
-						className={`transition-colors ${
+						className={`focus-visible:outline-primary/50 inline-flex min-h-11 items-center justify-center px-3 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 ${
 							selectedLanguage === lang
 								? "text-foreground font-semibold"
 								: "text-gray-500 hover:text-gray-900 dark:text-white/60 dark:hover:text-white"

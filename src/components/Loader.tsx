@@ -7,5 +7,5 @@ interface LoaderProps {
 }
 
 export function Loader({ className, size = 20 }: LoaderProps) {
-	return <Loader2 className={cn("animate-spin text-gray-400", className)} size={size} />;
+	return <Loader2 aria-hidden="true" className={cn("animate-spin text-gray-400", className)} size={size} />;
 }

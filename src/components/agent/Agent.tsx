@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, type MouseEvent as ReactMouseEvent } from "react";
 import { AnimatePresence, motion, useMotionValue, useReducedMotion, type Variants } from "motion/react";
 import { BotMessageSquare, Phone, BookAudio, Sparkles, ChevronDown } from "lucide-react";
 import AgentButton from "./AgentButton";
@@ -6,7 +6,7 @@ import PhoneCallInterface from "./PhoneCallInterface";
 import AIAssistantWindow from "./AIAssistantWindow";
 import VoiceReaderWindow from "./VoiceReaderWindow";
 import { ui } from "src/i18n/ui";
-import { OPEN_AI_ASSISTANT_EVENT } from "./events";
+import { OPEN_AI_ASSISTANT_EVENT, type OpenAIAssistantEventDetail } from "./events";
 
 type SupportedLang = "en" | "zh-TW";
 
@@ -86,6 +86,8 @@ export default function Agent({ lang = "zh-TW" }: AgentProps = {}) {
 	const [phoneCallOpen, setPhoneCallOpen] = useState(false);
 	const [aiAssistantOpen, setAiAssistantOpen] = useState(false);
 	const [voiceReaderOpen, setVoiceReaderOpen] = useState(false);
+	const aiAssistantOpenerRef = useRef<HTMLElement | null>(null);
+	const voiceReaderOpenerRef = useRef<HTMLElement | null>(null);
 	// 以 y 控制與底部距離，避免覆蓋 footer
 	const y = useMotionValue(16);
 
@@ -111,19 +113,32 @@ export default function Agent({ lang = "zh-TW" }: AgentProps = {}) {
 		setOpen(false); // 關閉手機選單
 	};
 
-	const handleAIAssistant = () => {
+	const showAIAssistant = (opener: HTMLElement | null) => {
+		if (!aiAssistantOpen) aiAssistantOpenerRef.current = opener;
 		// 關閉語音朗讀窗口，只允許一個小窗口同時開啟
 		setVoiceReaderOpen(false);
 		setAiAssistantOpen(true);
 		setOpen(false); // 關閉手機選單
 	};
 
-	useEffect(() => {
-		window.addEventListener(OPEN_AI_ASSISTANT_EVENT, handleAIAssistant);
-		return () => window.removeEventListener(OPEN_AI_ASSISTANT_EVENT, handleAIAssistant);
-	});
+	const handleAIAssistant = (event: ReactMouseEvent<HTMLButtonElement>) => {
+		showAIAssistant(event.currentTarget);
+	};
 
-	const handleVoiceReader = () => {
+	useEffect(() => {
+		function handleOpenAIAssistant(event: Event) {
+			const opener = (event as CustomEvent<OpenAIAssistantEventDetail>).detail?.opener;
+			const focusedElement =
+				document.activeElement instanceof HTMLElement && document.activeElement !== document.body ? document.activeElement : null;
+			showAIAssistant(opener?.isConnected ? opener : focusedElement);
+		}
+
+		window.addEventListener(OPEN_AI_ASSISTANT_EVENT, handleOpenAIAssistant);
+		return () => window.removeEventListener(OPEN_AI_ASSISTANT_EVENT, handleOpenAIAssistant);
+	}, [aiAssistantOpen]);
+
+	const handleVoiceReader = (event: ReactMouseEvent<HTMLButtonElement>) => {
+		if (!voiceReaderOpen) voiceReaderOpenerRef.current = event.currentTarget;
 		// 關閉 AI 助手窗口，只允許一個小窗口同時開啟
 		setAiAssistantOpen(false);
 		setVoiceReaderOpen(true);
@@ -178,6 +193,7 @@ export default function Agent({ lang = "zh-TW" }: AgentProps = {}) {
 						label={ui[lang]["agent.callAI"]}
 						showLabel={open}
 						onClick={handlePhoneCall}
+						data-agent-launcher="phone"
 					/>
 					{showVoiceReader && (
 						<AgentButton
@@ -185,6 +201,7 @@ export default function Agent({ lang = "zh-TW" }: AgentProps = {}) {
 							label={ui[lang]["agent.voiceReader"]}
 							showLabel={open}
 							onClick={handleVoiceReader}
+							data-agent-launcher="voice-reader"
 						/>
 					)}
 					<AgentButton
@@ -192,6 +209,7 @@ export default function Agent({ lang = "zh-TW" }: AgentProps = {}) {
 						label={ui[lang]["agent.chatWithAI"]}
 						showLabel={open}
 						onClick={handleAIAssistant}
+						data-agent-launcher="ai-assistant"
 					/>
 				</div>
 			)}
@@ -277,11 +295,12 @@ export default function Agent({ lang = "zh-TW" }: AgentProps = {}) {
 				<motion.button
 					type="button"
 					onClick={() => setOpen((v) => !v)}
-					className="border-border/50 bg-card text-card-foreground hover:bg-accent hover:text-accent-foreground flex cursor-pointer items-center gap-1.5 rounded-full border-2 p-3 shadow-2xl shadow-black/5 backdrop-blur-xl transition-colors md:hidden"
+					data-agent-launcher="toggle"
+					className="border-border/50 bg-card text-card-foreground hover:bg-accent hover:text-accent-foreground flex cursor-pointer items-center gap-1.5 rounded-full border-2 p-3 shadow-lg shadow-black/5 backdrop-blur-xl transition-colors md:hidden"
 					aria-expanded={open}
 					aria-label={open ? ui[lang]["agent.closeQuickActions"] : ui[lang]["agent.openQuickActions"]}
-					whileTap={{ scale: 0.95 }}
-					whileHover={{ scale: 1.05 }}
+					whileTap={prefersReduced ? undefined : { scale: 0.95 }}
+					whileHover={prefersReduced ? undefined : { scale: 1.05 }}
 					transition={{ type: "spring", stiffness: 400, damping: 30 }}
 				>
 					{open ? <ChevronDown className="size-6" /> : <Sparkles className="size-6" />}
@@ -292,10 +311,20 @@ export default function Agent({ lang = "zh-TW" }: AgentProps = {}) {
 			<PhoneCallInterface isOpen={phoneCallOpen} onClose={() => setPhoneCallOpen(false)} lang={lang} />
 
 			{/* AI 助手小窗口 */}
-			<AIAssistantWindow isOpen={aiAssistantOpen} onClose={() => setAiAssistantOpen(false)} lang={lang} />
+			<AIAssistantWindow
+				isOpen={aiAssistantOpen}
+				onClose={() => setAiAssistantOpen(false)}
+				opener={aiAssistantOpenerRef.current}
+				lang={lang}
+			/>
 
 			{/* 語音朗讀小窗口 */}
-			<VoiceReaderWindow isOpen={voiceReaderOpen} onClose={() => setVoiceReaderOpen(false)} lang={lang} />
+			<VoiceReaderWindow
+				isOpen={voiceReaderOpen}
+				onClose={() => setVoiceReaderOpen(false)}
+				opener={voiceReaderOpenerRef.current}
+				lang={lang}
+			/>
 		</motion.div>
 	);
 }

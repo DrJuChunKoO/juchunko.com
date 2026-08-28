@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { ArrowUpRight, BookText, Signature, User } from "lucide-react";
 import { Loader } from "./Loader";
 import { timeAgo } from "../lib/utils";
+import { useTranslations } from "../i18n/utils";
 
 type ActivityItem = {
 	id: string;
@@ -21,6 +22,7 @@ type Props = {
 };
 
 export default function LegislatorActivityList({ lang, labels }: Props) {
+	const t = useTranslations(lang);
 	const [items, setItems] = useState<ActivityItem[]>([]);
 	const [page, setPage] = useState<number>(1);
 	const [totalPages, setTotalPages] = useState<number | null>(null);
@@ -154,7 +156,7 @@ export default function LegislatorActivityList({ lang, labels }: Props) {
 					return (
 						<Wrapper
 							key={activity.id}
-							className="group bg-muted/50 hover:bg-muted relative flex items-center gap-4 rounded-xl p-5 py-3 no-underline transition-all"
+							className="group bg-muted/50 hover:bg-muted focus-visible:bg-muted focus-visible:outline-primary/50 relative flex items-center gap-4 rounded-xl p-5 py-3 no-underline transition-[background-color,transform] focus-visible:outline-2 focus-visible:outline-offset-2"
 							{...wrapperProps}
 						>
 							{/* Icon */}
@@ -186,16 +188,34 @@ export default function LegislatorActivityList({ lang, labels }: Props) {
 
 							{/* Arrow icon */}
 							{activity.url && (
-								<ArrowUpRight className="size-5 shrink-0 -translate-x-0.5 translate-y-0.5 opacity-0 transition-all group-hover:translate-none group-hover:opacity-100" />
+								<ArrowUpRight className="size-5 shrink-0 -translate-x-0.5 translate-y-0.5 opacity-0 transition-[opacity,transform] group-hover:translate-none group-hover:opacity-100 group-focus-visible:translate-none group-focus-visible:opacity-100" />
 							)}
 						</Wrapper>
 					);
 				})}
 			</section>
 
-			<div className="text-muted-foreground my-4 flex items-center justify-center text-sm">
+			<div
+				role="status"
+				aria-busy={loading}
+				className="text-muted-foreground my-4 flex flex-wrap items-center justify-center gap-3 text-sm"
+			>
 				{loading && <Loader />}
-				{error && <span className="text-red-500">{error}</span>}
+				{error && (
+					<span className="flex min-w-0 flex-wrap items-center justify-center gap-3">
+						<span className="min-w-0 break-words text-red-500">{error}</span>
+						<button
+							type="button"
+							onClick={() => {
+								retryAttemptsRef.current = 0;
+								fetchActivities();
+							}}
+							className="hover:bg-muted focus-visible:outline-primary/50 inline-flex min-h-11 items-center rounded-md px-3 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2"
+						>
+							{t("home.legislatorActivity.retry")}
+						</button>
+					</span>
+				)}
 			</div>
 
 			<div ref={sentinelRef} style={{ minHeight: 1 }} />

@@ -106,7 +106,7 @@ export default function LanguagePrompt({ currentUrl }: LanguagePromptProps) {
 					exit="hidden"
 					variants={shouldReduceMotion ? {} : variants}
 					transition={{ duration: 0.3 }}
-					className="text-primary fixed bottom-4 left-4 z-50 m-auto w-max divide-y overflow-hidden rounded-xl border shadow-lg max-sm:right-4"
+					className="text-primary fixed bottom-4 left-4 z-50 m-auto divide-y overflow-hidden rounded-xl border shadow-lg max-sm:right-4 max-sm:w-[calc(100vw-2rem)] max-sm:max-w-sm sm:w-auto sm:max-w-sm"
 				>
 					<div className="bg-background flex shrink-0 flex-col items-start gap-1 p-2 px-4 pr-10">
 						<div className="font-medium">{title}</div>

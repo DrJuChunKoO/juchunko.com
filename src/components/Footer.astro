@@ -25,7 +25,7 @@ const trustLinks =
 
 <footer id="footer" class="relative w-full print:hidden">
 	<div
-		class="pointer-events-none absolute h-full w-full bg-white shadow-[0_-4px_32px_rgba(0,0,0,.1)] transition-all duration-500 contrast-more:shadow-[0_0_0_1px_#000] dark:bg-[#181616] dark:shadow-[0_1px_0_rgba(255,255,255,.15)_inset] contrast-more:dark:shadow-[0_0_0_1px_#fff]"
+		class="border-border dark:bg-background pointer-events-none absolute h-full w-full border-t bg-white contrast-more:shadow-[0_0_0_1px_#000] contrast-more:dark:shadow-[0_0_0_1px_#fff]"
 	>
 	</div>
 	<div
@@ -43,7 +43,7 @@ const trustLinks =
 				<span>© {new Date().getFullYear()} JUCHUNKO.COM All rights reserved.</span>
 				{
 					trustLinks.map((link) => (
-						<a class="hover:text-foreground underline-offset-4 hover:underline" href={link.href}>
+						<a class="hover:text-foreground underline-offset-4 hover:underline focus-visible:underline" href={link.href}>
 							{link.label}
 						</a>
 					))

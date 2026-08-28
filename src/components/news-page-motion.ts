@@ -32,3 +32,25 @@ export const dialogPanelVariants = {
 		},
 	},
 } as const;
+
+export const dialogBackdropVariantsReduced = {
+	closed: {
+		opacity: 0,
+		transition: { duration: 0.1, ease: [0.4, 0, 1, 1] },
+	},
+	open: {
+		opacity: 1,
+		transition: { duration: 0.1, ease: [0.22, 1, 0.36, 1] },
+	},
+} as const;
+
+export const dialogPanelVariantsReduced = {
+	closed: {
+		opacity: 0,
+		transition: { duration: 0.1, ease: [0.4, 0, 1, 1] },
+	},
+	open: {
+		opacity: 1,
+		transition: { duration: 0.1, ease: [0.22, 1, 0.36, 1] },
+	},
+} as const;

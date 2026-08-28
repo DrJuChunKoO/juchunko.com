@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 import { defaultLang, languages, ui } from "@/i18n/ui";
 import { Menu, Moon, Search, Sun, X } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import React, { useEffect, useState, type ReactNode, type SVGProps } from "react";
+import React, { useEffect, useRef, useState, type ReactNode, type SVGProps } from "react";
 import LanguageSelector from "./LanguageSelector";
 import { createMobileNavMenuVariants } from "./nav-motion";
 
@@ -35,7 +35,7 @@ const socialLinks = [
 ] as const;
 
 const navIconButtonClassName =
-	"hover:outline-primary/50 text-muted-foreground hover:text-foreground rounded-full p-1 transition-opacity hover:opacity-80 hover:outline-2 hover:outline-offset-2";
+	"hover:outline-primary/50 text-muted-foreground hover:text-foreground flex size-11 items-center justify-center rounded-full transition-opacity hover:opacity-80 hover:outline-2 hover:outline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/50";
 
 export function resolveNavLang(pathname: string, browserLanguage?: string, fallbackLang: SupportedLang = defaultLang) {
 	const [, pathLang] = pathname.split("/");
@@ -68,7 +68,7 @@ function SocialLink({ href, children, className, onClick }: SocialLinkProps) {
 			rel="noopener noreferrer"
 			onClick={onClick}
 			className={cn(
-				"hover:outline-primary/50 hover:bg-primary/5 text-primary/75 hover:text-primary/90 active:text-primary rounded-full p-1 hover:outline-2 hover:outline-offset-2",
+				"hover:outline-primary/50 hover:bg-primary/5 text-primary/75 hover:text-primary/90 active:text-primary focus-visible:outline-primary/50 flex min-h-11 min-w-11 items-center justify-center rounded-full hover:outline-2 hover:outline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2",
 				className,
 			)}
 		>
@@ -83,6 +83,19 @@ export default function Nav({ lang }: NavProps) {
 	const [currentLang, setCurrentLang] = useState<SupportedLang>(lang);
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	const copy = getNavCopy(currentLang);
+	const menuButtonRef = useRef<HTMLButtonElement>(null);
+	const firstMenuItemRef = useRef<HTMLAnchorElement>(null);
+	const wasMenuOpenRef = useRef(false);
+
+	useEffect(() => {
+		if (isMenuOpen) {
+			wasMenuOpenRef.current = true;
+			firstMenuItemRef.current?.focus();
+		} else if (wasMenuOpenRef.current) {
+			wasMenuOpenRef.current = false;
+			menuButtonRef.current?.focus();
+		}
+	}, [isMenuOpen]);
 
 	useEffect(() => {
 		setCurrentLang(resolveNavLang(window.location.pathname, window.navigator.language, lang));
@@ -115,7 +128,7 @@ export default function Nav({ lang }: NavProps) {
 	const closeMenu = () => setIsMenuOpen(false);
 
 	return (
-		<div className="in-[.scrolled]:border-border bg-card/75 border-border/25 sticky inset-x-0 top-0 z-20 flex w-full flex-col border-b shadow-black/5 backdrop-blur-xl transition-all in-[.scrolled]:shadow-sm print:hidden">
+		<div className="in-[.scrolled]:border-border bg-card/75 border-border/25 sticky inset-x-0 top-0 z-20 flex w-full flex-col border-b shadow-black/5 backdrop-blur-xl transition-[border-color,box-shadow] in-[.scrolled]:shadow-sm print:hidden">
 			<nav
 				className={cn(
 					"mx-auto flex min-h-16 w-full max-w-360 items-center justify-end gap-2 text-sm md:max-w-[90vw]",
@@ -124,7 +137,7 @@ export default function Nav({ lang }: NavProps) {
 				)}
 			>
 				<a
-					className="hover:outline-primary/50 -m-1 flex items-center rounded-lg p-1 text-sm transition-opacity hover:opacity-80 hover:outline-2 hover:outline-offset-2 md:text-base ltr:mr-auto rtl:ml-auto"
+					className="hover:outline-primary/50 focus-visible:outline-primary/50 -m-1 flex min-h-11 items-center rounded-lg p-1 text-sm transition-opacity hover:opacity-80 hover:outline-2 hover:outline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 md:text-base ltr:mr-auto rtl:ml-auto"
 					href={`/${currentLang}`}
 				>
 					<span className="text-foreground font-medium tracking-wide uppercase" id="site-title">
@@ -137,7 +150,7 @@ export default function Nav({ lang }: NavProps) {
 						href={link.href}
 						target="_blank"
 						rel="noreferrer"
-						className="hover:text-foreground hover:outline-primary/50 text-muted-foreground relative hidden rounded-lg p-1 text-sm whitespace-nowrap transition-colors duration-200 hover:outline-2 hover:outline-offset-2 md:inline-block"
+						className="hover:text-foreground hover:outline-primary/50 text-muted-foreground focus-visible:outline-primary/50 relative hidden min-h-10 items-center rounded-lg p-1 text-sm whitespace-nowrap transition-colors duration-200 hover:outline-2 hover:outline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 md:inline-flex"
 					>
 						{link.copyKey === "nav.blog" ? copy.blog : copy.transcript}
 					</a>
@@ -165,9 +178,10 @@ export default function Nav({ lang }: NavProps) {
 					<Moon className="hidden h-6 w-6 dark:block" />
 				</button>
 				<button
-					className="hover:outline-primary/50 text-muted-foreground hover:text-foreground inline-flex items-center justify-center rounded-lg p-2 transition-colors hover:outline-2 hover:outline-offset-2 md:hidden"
+					className="hover:outline-primary/50 text-muted-foreground hover:text-foreground focus-visible:outline-primary/50 inline-flex size-11 items-center justify-center rounded-lg p-2 transition-colors hover:outline-2 hover:outline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 md:hidden"
 					type="button"
 					onClick={() => setIsMenuOpen((open) => !open)}
+					ref={menuButtonRef}
 					aria-label={isMenuOpen ? "Close navigation menu" : "Open navigation menu"}
 					aria-controls="mobile-nav"
 					aria-expanded={isMenuOpen}
@@ -193,7 +207,8 @@ export default function Nav({ lang }: NavProps) {
 								<a
 									href={`/${currentLang}/search`}
 									onClick={closeMenu}
-									className="hover:text-foreground text-muted-foreground transition-colors"
+									ref={firstMenuItemRef}
+									className="hover:text-foreground text-muted-foreground inline-flex min-h-11 items-center transition-colors"
 								>
 									{copy.search}
 								</a>
@@ -204,7 +219,7 @@ export default function Nav({ lang }: NavProps) {
 										target="_blank"
 										rel="noreferrer"
 										onClick={closeMenu}
-										className="hover:text-foreground text-muted-foreground transition-colors"
+										className="hover:text-foreground text-muted-foreground inline-flex min-h-11 items-center transition-colors"
 									>
 										{link.copyKey === "nav.blog" ? copy.blog : copy.transcript}
 									</a>

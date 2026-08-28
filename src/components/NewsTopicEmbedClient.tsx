@@ -67,14 +67,14 @@ function StoryLink({ item, lang }: { item: NewsTopicEmbedItem; lang: NewsTopicEm
 			href={item.url}
 			target="_blank"
 			rel="noopener noreferrer"
-			className="group grid grid-cols-[2.25rem_minmax(0,1fr)_auto] items-center gap-3 rounded-lg px-2 py-3 no-underline transition-[background-color,transform] duration-150 ease-out hover:bg-gray-100 active:scale-[0.99] dark:hover:bg-white/6"
+			className="group grid grid-cols-[2.25rem_minmax(0,1fr)_auto] items-center gap-3 rounded-lg px-2 py-3 no-underline transition-[background-color,transform] duration-150 ease-out hover:bg-gray-100 focus-visible:bg-gray-100 motion-safe:active:scale-[0.99] dark:hover:bg-white/6 dark:focus-visible:bg-white/6"
 		>
 			<span className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-black/8 bg-white text-xs font-semibold text-gray-600 dark:border-white/10 dark:bg-white/5 dark:text-gray-300">
 				{sourceLogo ? (
 					<img
 						src={sourceLogo}
 						alt=""
-						className="size-full rounded-[0.45rem] object-contain p-1 saturate-[0.35] transition-[filter] duration-150 ease-out group-hover:saturate-100"
+						className="size-full rounded-[0.45rem] object-contain p-1 saturate-[0.35] transition-[filter] duration-150 ease-out group-hover:saturate-100 group-focus-visible:saturate-100"
 						loading="lazy"
 						decoding="async"
 					/>
@@ -96,11 +96,11 @@ function StoryLink({ item, lang }: { item: NewsTopicEmbedItem; lang: NewsTopicEm
 			</div>
 			<span
 				aria-hidden="true"
-				className="flex size-8 shrink-0 items-center justify-center text-gray-400 transition-colors duration-150 ease-out group-hover:text-black dark:text-gray-500 dark:group-hover:text-white"
+				className="flex size-8 shrink-0 items-center justify-center text-gray-400 transition-colors duration-150 ease-out group-hover:text-black group-focus-visible:text-black dark:text-gray-500 dark:group-hover:text-white dark:group-focus-visible:text-white"
 			>
 				<span className="relative size-4 overflow-hidden">
-					<ArrowUpRight className="absolute inset-0 size-4 transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-full group-hover:-translate-y-full motion-reduce:transition-none motion-reduce:group-hover:translate-none" />
-					<ArrowUpRight className="absolute inset-0 size-4 translate-x-[-100%] translate-y-full transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-none motion-reduce:hidden" />
+					<ArrowUpRight className="absolute inset-0 size-4 transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-full group-hover:-translate-y-full group-focus-visible:translate-x-full group-focus-visible:-translate-y-full motion-reduce:transition-none motion-reduce:group-hover:translate-none motion-reduce:group-focus-visible:translate-none" />
+					<ArrowUpRight className="absolute inset-0 size-4 translate-x-[-100%] translate-y-full transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-none group-focus-visible:translate-none motion-reduce:hidden" />
 				</span>
 			</span>
 		</a>
@@ -147,7 +147,7 @@ export default function NewsTopicEmbedClient({
 
 	if (error) {
 		return (
-			<div className="not-prose rounded-lg border border-red-200 bg-red-50/80 p-4 text-sm text-red-600 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
+			<div className="not-prose rounded-xl border border-red-200 bg-red-50/80 p-4 text-sm text-red-600 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
 				{localeLabels.error}
 			</div>
 		);
@@ -155,7 +155,7 @@ export default function NewsTopicEmbedClient({
 
 	if (!data?.topic) {
 		return (
-			<div className="not-prose rounded-lg border border-dashed border-black/10 p-5 text-sm text-gray-500 dark:border-white/10 dark:text-gray-400">
+			<div className="not-prose rounded-xl border border-dashed border-black/10 p-5 text-sm text-gray-500 dark:border-white/10 dark:text-gray-400">
 				{localeLabels.loading}
 			</div>
 		);
@@ -194,7 +194,7 @@ export default function NewsTopicEmbedClient({
 				</div>
 				<a
 					href={newsPageHref}
-					className="inline-flex h-9 shrink-0 items-center justify-center gap-2 rounded-lg bg-black px-4 text-xs font-semibold text-white no-underline transition-[background-color,transform] duration-150 ease-out hover:bg-black/75 active:scale-[0.97] dark:bg-white dark:text-black dark:hover:bg-white/80"
+					className="focus-visible:ring-ring inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-lg bg-black px-4 text-xs font-semibold text-white no-underline transition-[background-color,transform] duration-150 ease-out hover:bg-black/75 focus-visible:ring-2 motion-safe:active:scale-[0.97] sm:h-10 dark:bg-white dark:text-black dark:hover:bg-white/80"
 				>
 					{localeLabels.viewTopic}
 					<ArrowRight className="size-3.5" />

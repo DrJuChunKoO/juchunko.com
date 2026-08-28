@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Sparkles, Newspaper, BookText, Signature, User, Rss, Mic, ArrowRight, ArrowUpRight } from "lucide-react";
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import { ui } from "src/i18n/ui";
 
 type SupportedLang = "en" | "zh-TW";
@@ -113,43 +113,49 @@ export default function HomeFeeds({ lang = "zh-TW", headingLevel = 2 }: HomeFeed
 
 	const [sections, setSections] = useState<SectionConfig[]>(sectionsConfig);
 	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState(false);
+	const prefersReducedMotion = Boolean(useReducedMotion());
+
+	const loadHomeFeeds = useCallback(async () => {
+		setLoading(true);
+		setError(false);
+		try {
+			const response = await fetch(`/api/index-cards?lang=${lang}`);
+			if (!response.ok) {
+				throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+			}
+
+			const data = await response.json();
+
+			const loadedSections = sectionsConfig.map((config) => {
+				let cards: CardData[] = [];
+				if (config.key === "news") {
+					cards = data.newsCards || [];
+				} else if (config.key === "legislator") {
+					cards = (data.legislatorCards || []).slice().reverse();
+				} else if (config.key === "blog") {
+					cards = data.blogCards || [];
+				} else if (config.key === "transpal") {
+					cards = data.transpalCards || [];
+				}
+				return { ...config, cards };
+			});
+
+			setSections(loadedSections);
+			setLoading(false);
+		} catch (err) {
+			console.error("Failed to load home feeds:", err);
+			setLoading(false);
+			setError(true);
+		}
+	}, [lang]);
 
 	useEffect(() => {
-		async function loadHomeFeeds() {
-			try {
-				const response = await fetch(`/api/index-cards?lang=${lang}`);
-				if (!response.ok) {
-					throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-				}
+		void loadHomeFeeds();
+	}, [loadHomeFeeds]);
 
-				const data = await response.json();
-
-				const loadedSections = sectionsConfig.map((config) => {
-					let cards: CardData[] = [];
-					if (config.key === "news") {
-						cards = data.newsCards || [];
-					} else if (config.key === "legislator") {
-						cards = (data.legislatorCards || []).slice().reverse();
-					} else if (config.key === "blog") {
-						cards = data.blogCards || [];
-					} else if (config.key === "transpal") {
-						cards = data.transpalCards || [];
-					}
-					return { ...config, cards };
-				});
-
-				setSections(loadedSections);
-				setLoading(false);
-			} catch (error) {
-				console.error("Failed to load home feeds:", error);
-				// Keep loading true or handle error state if needed,
-				// but for now we might just want to show skeletons or nothing?
-				// The original code kept skeletons visible on error.
-			}
-		}
-
-		loadHomeFeeds();
-	}, [lang]);
+	const feedErrorCopy = lang === "zh-TW" ? "暫時無法載入，請再試一次。" : "Unable to load right now. Please try again.";
+	const retryCopy = lang === "zh-TW" ? "重試" : "Retry";
 
 	// Utility: calculate transform style for display layout
 	const getDisplayTransform = (index: number) => {
@@ -178,73 +184,94 @@ export default function HomeFeeds({ lang = "zh-TW", headingLevel = 2 }: HomeFeed
 
 	return (
 		<div
-			className="mb-4 flex gap-4 max-lg:-mx-4 max-lg:-mt-2 max-lg:overflow-x-auto max-lg:px-4 max-lg:py-2 lg:grid lg:grid-cols-2"
+			className="mb-4 flex gap-4 max-lg:-mx-4 max-lg:-mt-2 max-lg:snap-x max-lg:snap-mandatory max-lg:overflow-x-auto max-lg:px-4 max-lg:py-2 lg:grid lg:grid-cols-2"
 			data-lang={lang}
 		>
-			{sections.map((sec, sIndex) => (
-				<a
-					key={sec.key}
-					className="group bg-muted/50 hover:bg-muted hover:outline-primary/50 relative flex shrink-0 flex-col overflow-hidden rounded-lg transition-colors hover:outline-2 hover:outline-offset-2 max-lg:w-[50vw] max-md:w-[70vw]"
-					href={sec.href}
-					target={sec.href && sec.href.startsWith("http") ? "_blank" : "_self"}
-				>
-					{loading ? (
-						<div className="p-4 md:p-6">
-							<div className="h-60" />
-						</div>
-					) : (
-						<div className="p-4 md:p-6">
-							<div className="relative flex h-60 flex-col data-[type=display]:max-md:scale-75" data-type={sec.type}>
-								<AnimatePresence>
-									{(sec.cards || []).slice(0, sec.max).map((c, index) => {
-										const style = sec.type === "display" ? getDisplayTransform(index) : getAlbumTransform(index);
-										const Icon = getIconComponent(c.icon);
-
-										return (
-											<motion.div
-												key={`${sec.key}-${index}`}
-												initial={{ opacity: 0, y: 64, scale: 0.8 }}
-												animate={{ opacity: 1, ...style }}
-												transition={{
-													duration: 0.48,
-													ease: [0.2, 0.9, 0.2, 1],
-													delay: sIndex * 0.15 + (3 - index) * 0.12,
-												}}
-												className="border-muted-foreground/10 from-muted/50 to-muted/25 absolute top-1/2 left-1/2 w-[min(26rem,65vw)] -translate-x-1/2 -translate-y-1/2 transform-gpu rounded-xl border px-6 py-4 backdrop-blur-sm select-none data-[type=album]:bg-linear-to-b data-[type=display]:bg-linear-to-br"
-												data-type={sec.type}
-											>
-												<div className={c.description ? "flex h-28 flex-col justify-between" : "flex h-18 flex-col justify-center gap-3"}>
-													<div className="flex items-center gap-2">
-														<span className="bg-background/70 text-muted-foreground relative inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-base drop-shadow-md dark:bg-white/10 dark:text-white/80">
-															<Icon className="h-4 w-4" />
-														</span>
-														<p className="text-foreground line-clamp-2 text-sm font-medium dark:text-white/80">{c.title || ""}</p>
-													</div>
-													{c.description && (
-														<p className="text-muted-foreground line-clamp-2 text-sm dark:text-white/50">{removeMarkdown(c.description)}</p>
-													)}
-													<p className="text-muted-foreground text-xs">{c.date || ""}</p>
-												</div>
-											</motion.div>
-										);
-									})}
-								</AnimatePresence>
+			{error ? (
+				<div className="bg-muted/50 flex min-h-60 w-full flex-col items-center justify-center gap-3 rounded-lg p-4 text-center md:p-6 lg:col-span-2">
+					<p role="status" className="text-muted-foreground text-sm">
+						{feedErrorCopy}
+					</p>
+					<button
+						type="button"
+						onClick={() => void loadHomeFeeds()}
+						className="hover:outline-primary/50 text-muted-foreground hover:text-foreground border-muted focus-visible:outline-primary/50 min-h-11 rounded-lg border px-4 text-sm transition-colors hover:outline-2 hover:outline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2"
+					>
+						{retryCopy}
+					</button>
+				</div>
+			) : (
+				sections.map((sec) => (
+					<a
+						key={sec.key}
+						className="group bg-muted/50 hover:bg-muted hover:outline-primary/50 focus-visible:outline-primary/50 relative flex shrink-0 flex-col overflow-hidden rounded-lg transition-colors hover:outline-2 hover:outline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 max-lg:w-[70vw] max-lg:shrink-0 max-lg:snap-start max-md:w-[80vw]"
+						href={sec.href}
+						target={sec.href && sec.href.startsWith("http") ? "_blank" : "_self"}
+					>
+						{loading ? (
+							<div className="p-4 md:p-6">
+								<div className="h-60" />
 							</div>
-						</div>
-					)}
-					<div className="text-foreground bg-muted/40 relative z-10 flex w-full items-center justify-between gap-2 p-4 py-3 backdrop-blur-sm md:p-6 md:py-4 dark:bg-white/5">
-						<header>
-							<SectionHeading className="line-clamp-1 font-semibold md:text-xl">{sec.title}</SectionHeading>
-							<p className="text-muted-foreground line-clamp-1 text-sm md:text-base">{sec.subtitle}</p>
-						</header>
-						{sec.href && sec.href.startsWith("http") ? (
-							<ArrowUpRight className="h-6 w-6 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
 						) : (
-							<ArrowRight className="h-6 w-6 transition-transform group-hover:translate-x-0.5" />
+							<div className="p-4 md:p-6">
+								<div className="relative flex h-60 flex-col data-[type=display]:max-md:scale-75" data-type={sec.type}>
+									<AnimatePresence>
+										{(sec.cards || []).slice(0, sec.max).map((c, index) => {
+											const style = sec.type === "display" ? getDisplayTransform(index) : getAlbumTransform(index);
+											const Icon = getIconComponent(c.icon);
+
+											return (
+												<motion.div
+													key={`${sec.key}-${index}`}
+													initial={prefersReducedMotion ? false : { opacity: 0, y: 14 }}
+													animate={{ opacity: 1, ...style }}
+													transition={
+														prefersReducedMotion
+															? undefined
+															: {
+																	duration: 0.22,
+																	ease: [0.2, 0.9, 0.2, 1],
+																	delay: (3 - index) * 0.06,
+																}
+													}
+													className="border-muted-foreground/10 from-muted/50 to-muted/25 absolute top-1/2 left-1/2 w-[min(26rem,65vw)] -translate-x-1/2 -translate-y-1/2 transform-gpu rounded-xl border px-6 py-4 backdrop-blur-sm select-none data-[type=album]:bg-linear-to-b data-[type=display]:bg-linear-to-br"
+													data-type={sec.type}
+												>
+													<div className={c.description ? "flex h-28 flex-col justify-between" : "flex h-18 flex-col justify-center gap-3"}>
+														<div className="flex items-center gap-2">
+															<span className="bg-background/70 text-muted-foreground relative inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-base drop-shadow-md dark:bg-white/10 dark:text-white/80">
+																<Icon className="h-4 w-4" />
+															</span>
+															<p className="text-foreground line-clamp-2 text-sm font-medium dark:text-white/80">{c.title || ""}</p>
+														</div>
+														{c.description && (
+															<p className="text-muted-foreground line-clamp-2 text-sm dark:text-white/50">
+																{removeMarkdown(c.description)}
+															</p>
+														)}
+														<p className="text-muted-foreground text-xs">{c.date || ""}</p>
+													</div>
+												</motion.div>
+											);
+										})}
+									</AnimatePresence>
+								</div>
+							</div>
 						)}
-					</div>
-				</a>
-			))}
+						<div className="text-foreground bg-muted/40 relative z-10 flex w-full items-center justify-between gap-2 p-4 py-3 backdrop-blur-sm md:p-6 md:py-4 dark:bg-white/5">
+							<header>
+								<SectionHeading className="line-clamp-1 font-semibold md:text-xl">{sec.title}</SectionHeading>
+								<p className="text-muted-foreground line-clamp-1 text-sm md:text-base">{sec.subtitle}</p>
+							</header>
+							{sec.href && sec.href.startsWith("http") ? (
+								<ArrowUpRight className="h-6 w-6 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+							) : (
+								<ArrowRight className="h-6 w-6 transition-transform group-hover:translate-x-0.5" />
+							)}
+						</div>
+					</a>
+				))
+			)}
 		</div>
 	);
 }

@@ -42,14 +42,14 @@ const recentlyUpdatedBadge = lang === "zh-TW" ? "最近更新" : "Recently updat
 		<div class="flex flex-wrap gap-3">
 			<a
 				href={copy.hero.primaryCta.href}
-				class="bg-primary text-primary-foreground hover:bg-primary/90 active:bg-primary/80 group hover:outline-primary/50 inline-flex w-max items-center justify-center gap-1.5 rounded-full px-4 py-2 text-sm tracking-tight transition-colors hover:outline-2 hover:outline-offset-2 md:gap-2 md:px-6 md:py-3 md:text-base"
+				class="bg-primary text-primary-foreground hover:bg-primary/90 active:bg-primary/80 group hover:outline-primary/50 focus-visible:outline-primary/50 inline-flex w-max items-center justify-center gap-1.5 rounded-full px-5 py-2.5 text-sm tracking-tight transition-colors hover:outline-2 hover:outline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 md:gap-2 md:px-6 md:py-3 md:text-base"
 			>
 				{copy.hero.primaryCta.label}
 				<ArrowRight class="size-4 transition-transform group-hover:translate-x-1 md:size-5" />
 			</a>
 			<a
 				href={copy.hero.secondaryCta.href}
-				class="hover:outline-primary/50 group border-border bg-card hover:bg-muted/50 inline-flex w-max items-center justify-center gap-1.5 rounded-full border px-4 py-2 text-sm tracking-tight transition-colors hover:outline-2 hover:outline-offset-2 md:gap-2 md:px-6 md:py-3 md:text-base"
+				class="hover:outline-primary/50 focus-visible:outline-primary/50 group border-border bg-card hover:bg-muted/50 inline-flex w-max items-center justify-center gap-1.5 rounded-full border px-5 py-2.5 text-sm tracking-tight transition-colors hover:outline-2 hover:outline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 md:gap-2 md:px-6 md:py-3 md:text-base"
 			>
 				{copy.hero.secondaryCta.label}
 				<ArrowRight class="size-4 transition-transform group-hover:translate-x-1 md:size-5" />
@@ -59,7 +59,7 @@ const recentlyUpdatedBadge = lang === "zh-TW" ? "最近更新" : "Recently updat
 
 	<section id="achievements" class="mb-12 scroll-mt-24 space-y-6 md:scroll-mt-28">
 		<h2 class="text-foreground mt-2 text-2xl font-bold md:text-3xl">{copy.sectionTitles.achievements}</h2>
-		<div class="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-3 md:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] md:gap-6">
+		<div class="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] md:gap-6">
 			{
 				featuredActs.map((post) => (
 					<CardLink
@@ -78,7 +78,7 @@ const recentlyUpdatedBadge = lang === "zh-TW" ? "最近更新" : "Recently updat
 
 	<section id="issues" class="mb-12 scroll-mt-24 space-y-6 md:scroll-mt-28">
 		<h2 class="text-foreground mt-2 text-2xl font-bold md:text-3xl">{copy.sectionTitles.issues}</h2>
-		<div class="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-3 md:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] md:gap-6">
+		<div class="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] md:gap-6">
 			{
 				issueActs.map((post) => (
 					<CardLink
@@ -109,7 +109,7 @@ const recentlyUpdatedBadge = lang === "zh-TW" ? "最近更新" : "Recently updat
 		<div class="space-y-8">
 			<div class="space-y-4">
 				<h3 class="text-foreground text-xl font-semibold">{copy.sectionTitles.manuals}</h3>
-				<div class="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-3 md:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] md:gap-6">
+				<div class="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] md:gap-6">
 					{
 						manuals.map((post) => (
 							<CardLink
@@ -126,7 +126,7 @@ const recentlyUpdatedBadge = lang === "zh-TW" ? "最近更新" : "Recently updat
 
 			<div class="space-y-4">
 				<h3 class="text-foreground text-xl font-semibold">{copy.sectionTitles.fragments}</h3>
-				<div class="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-3 md:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] md:gap-6">
+				<div class="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] md:gap-6">
 					{
 						fragments.map((post) => (
 							<CardLink

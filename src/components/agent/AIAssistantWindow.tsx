@@ -69,6 +69,7 @@ type SupportedLang = "en" | "zh-TW";
 interface AIAssistantWindowProps {
 	isOpen: boolean;
 	onClose: () => void;
+	opener?: HTMLElement | null;
 	lang?: SupportedLang;
 }
 
@@ -155,20 +156,22 @@ function QuickPromptList({
 					type="button"
 					onClick={() => onSelect(quickPrompt.prompt)}
 					aria-label={formatQuickPromptLabel(ariaLabelTemplate, quickPrompt.text)}
-					className="group text-muted-foreground hover:text-foreground flex cursor-pointer items-center gap-0.5 rounded p-1 text-left text-sm transition-all hover:font-medium hover:tracking-wide"
+					className="group text-muted-foreground hover:text-foreground hover:bg-muted focus-visible:ring-ring flex min-h-11 cursor-pointer items-center gap-1 rounded px-2 py-1 text-left text-sm transition-[background-color,color] focus-visible:ring-2"
 				>
 					{quickPrompt.text}
-					<ArrowRight className="size-4 opacity-50 transition-all group-hover:translate-x-0.5 group-hover:opacity-100" />
+					<ArrowRight className="size-4 opacity-50 transition-[transform,opacity] group-hover:translate-x-0.5 group-hover:opacity-100 group-focus-visible:translate-x-0.5 group-focus-visible:opacity-100" />
 				</button>
 			))}
 		</div>
 	);
 }
 
-export default function AIAssistantWindow({ isOpen, onClose, lang = "zh-TW" }: AIAssistantWindowProps) {
+export default function AIAssistantWindow({ isOpen, onClose, opener, lang = "zh-TW" }: AIAssistantWindowProps) {
 	const inputRef = useRef<HTMLTextAreaElement>(null);
 	const windowRef = useRef<HTMLDivElement>(null);
 	const copyResetRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+	const wasOpenRef = useRef(false);
+	const openerRef = useRef<HTMLElement | null>(null);
 
 	const [input, setInput] = useState("");
 	const [expanded, setExpanded] = useState(false);
@@ -274,6 +277,23 @@ export default function AIAssistantWindow({ isOpen, onClose, lang = "zh-TW" }: A
 			return () => clearTimeout(focusTimer);
 		}
 	}, [isOpen]);
+
+	useEffect(() => {
+		if (!wasOpenRef.current && isOpen) openerRef.current = opener ?? null;
+
+		if (wasOpenRef.current && !isOpen) {
+			let focusTarget = openerRef.current;
+			if (!focusTarget?.isConnected) {
+				focusTarget =
+					Array.from(document.querySelectorAll<HTMLElement>('[data-agent-launcher="ai-assistant"], [data-agent-launcher="toggle"]')).find(
+						(element) => element.getClientRects().length > 0,
+					) ?? null;
+			}
+			focusTarget?.focus();
+			openerRef.current = null;
+		}
+		wasOpenRef.current = isOpen;
+	}, [isOpen, opener]);
 
 	useEffect(() => () => clearTimeout(copyResetRef.current), []);
 
@@ -382,7 +402,7 @@ export default function AIAssistantWindow({ isOpen, onClose, lang = "zh-TW" }: A
 						}}
 						style={{
 							// borderRadius 放 style，layout 變形時才不會被 scale 扭歪
-							borderRadius: expanded ? 0 : 12,
+							borderRadius: expanded ? 0 : 14,
 						}}
 						className={cn(
 							"ring-border/50 pointer-events-auto fixed flex origin-bottom-right flex-col overflow-hidden will-change-[transform,border-radius]",
@@ -506,7 +526,7 @@ export default function AIAssistantWindow({ isOpen, onClose, lang = "zh-TW" }: A
 																	>
 																		<BubbleContent
 																			className={cn(
-																				"prose prose-sm prose-neutral max-w-none rounded-2xl",
+																				"prose prose-sm prose-neutral max-w-none",
 																				// 在窄面板中收緊 typography 間距與標題尺寸
 																				"prose-headings:mt-3 prose-headings:mb-1.5 prose-headings:text-[0.95em] prose-p:my-1.5 prose-ul:my-1.5 prose-ol:my-1.5 prose-li:my-0.5 prose-pre:my-2 [&>:first-child]:mt-0 [&>:last-child]:mb-0",
 																				isUser ? "prose-invert" : "dark:prose-invert",
@@ -618,7 +638,7 @@ export default function AIAssistantWindow({ isOpen, onClose, lang = "zh-TW" }: A
 							onSubmit={handleSubmit}
 							className={cn("shrink-0 p-2", expanded && "mx-auto w-full max-w-3xl pb-4")}
 						>
-							<div className="bg-muted/50 ring-border/50 focus-within:ring-primary/50 focus-within:bg-muted flex items-end gap-2 rounded-lg p-1 ring-1 transition-all">
+							<div className="bg-muted/50 ring-border/50 focus-within:ring-primary/50 focus-within:bg-muted flex items-end gap-2 rounded-lg p-1 ring-1 transition-[background-color,box-shadow]">
 								<Textarea
 									ref={inputRef}
 									value={input}

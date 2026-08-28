@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { QueryClient, useQuery } from "@tanstack/react-query";
-import { motion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import { BookAudio, Play, Pause, Rewind, FastForward, StepForward, StepBack } from "lucide-react";
 import ElevenLabsAudioNative from "./ElevenLabsAudioNative";
 import { Loader } from "src/components/Loader";
@@ -75,6 +75,7 @@ async function fetchTTSAudioSegments(domain: string, path: string): Promise<Audi
 }
 
 export default function TTSPlayer({ isOpen, lang = "zh-TW" }: TTSPlayerProps) {
+	const prefersReducedMotion = Boolean(useReducedMotion());
 	const [mode, setMode] = useState<Mode>("loading");
 	const [isPlaying, setIsPlaying] = useState(false);
 	const [currentIndex, setCurrentIndex] = useState(0);
@@ -567,9 +568,9 @@ export default function TTSPlayer({ isOpen, lang = "zh-TW" }: TTSPlayerProps) {
 							<span className="text-muted-foreground font-mono text-xs tabular-nums">{formatTime(currentTime)}</span>
 							<div className="flex items-center gap-2">
 								<motion.button
-									whileTap={{ scale: 0.95 }}
+									whileTap={prefersReducedMotion ? undefined : { scale: 0.95 }}
 									onClick={() => setHighlightEnabled(!highlightEnabled)}
-									className={`cursor-pointer rounded-md p-1.5 transition-colors ${
+									className={`focus-visible:ring-ring inline-flex size-11 cursor-pointer items-center justify-center rounded-md transition-colors focus-visible:ring-2 ${
 										highlightEnabled ? "bg-primary/15 text-primary" : "text-muted-foreground hover:bg-muted-foreground/10"
 									}`}
 									title={highlightEnabled ? ui[lang]["agent.voiceReader.disableHighlight"] : ui[lang]["agent.voiceReader.enableHighlight"]}
@@ -579,7 +580,7 @@ export default function TTSPlayer({ isOpen, lang = "zh-TW" }: TTSPlayerProps) {
 
 								<Select value={playbackRate.toString()} onValueChange={(v) => setPlaybackRate(Number(v))}>
 									<SelectTrigger
-										className="text-muted-foreground hover:bg-muted-foreground/10 h-7 w-auto min-w-[3rem] gap-1 border-0 bg-transparent px-2 font-mono text-xs shadow-none focus:ring-0 [&>svg]:opacity-50"
+										className="text-muted-foreground hover:bg-muted-foreground/10 h-11 w-auto min-w-[3rem] gap-1 border-0 bg-transparent px-2 font-mono text-xs shadow-none focus:ring-0 sm:h-8 [&>svg]:opacity-50"
 										title={ui[lang]["agent.voiceReader.speed"]}
 									>
 										<SelectValue>{(value) => `${value}×`}</SelectValue>
@@ -600,50 +601,48 @@ export default function TTSPlayer({ isOpen, lang = "zh-TW" }: TTSPlayerProps) {
 					{/* Controls */}
 					<div className="flex items-center justify-center gap-1">
 						<motion.button
-							whileTap={{ scale: 0.9 }}
+							whileTap={prefersReducedMotion ? undefined : { scale: 0.9 }}
 							onClick={() => jumpToSegment(currentIndex - 1)}
 							disabled={currentIndex === 0}
-							className="text-muted-foreground hover:bg-muted/50 hover:text-foreground cursor-pointer rounded-lg p-2 transition-all disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent"
+							className="text-muted-foreground hover:bg-muted/50 hover:text-foreground focus-visible:ring-ring inline-flex size-11 cursor-pointer items-center justify-center rounded-lg transition-[background-color,color] focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent"
 							aria-label={ui[lang]["agent.voiceReader.previous"]}
 						>
 							<StepBack className="size-4" />
 						</motion.button>
 
 						<motion.button
-							whileTap={{ scale: 0.9 }}
+							whileTap={prefersReducedMotion ? undefined : { scale: 0.9 }}
 							onClick={seekBackward}
 							disabled={currentTime < 1}
-							className="text-muted-foreground hover:bg-muted/50 hover:text-foreground cursor-pointer rounded-lg p-2 transition-all disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent"
+							className="text-muted-foreground hover:bg-muted/50 hover:text-foreground focus-visible:ring-ring inline-flex size-11 cursor-pointer items-center justify-center rounded-lg transition-[background-color,color] focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent"
 							aria-label={ui[lang]["agent.voiceReader.rewind15s"]}
 						>
 							<Rewind className="size-4" />
 						</motion.button>
 
 						<motion.button
-							whileTap={{ scale: 0.9 }}
-							whileHover={{ scale: 1.05 }}
 							onClick={togglePlay}
-							className="bg-primary text-primary-foreground hover:bg-primary/90 mx-1 cursor-pointer rounded-full p-3.5 shadow-md transition-all"
+							className="bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-ring mx-1 cursor-pointer rounded-full p-3.5 shadow-md transition-[background-color,color,transform] focus-visible:ring-2 motion-safe:hover:scale-[1.05] motion-safe:active:scale-[0.95]"
 							aria-label={isPlaying ? ui[lang]["agent.voiceReader.pause"] : ui[lang]["agent.voiceReader.play"]}
 						>
 							{isPlaying ? <Pause className="size-5" /> : <Play className="size-5" />}
 						</motion.button>
 
 						<motion.button
-							whileTap={{ scale: 0.9 }}
+							whileTap={prefersReducedMotion ? undefined : { scale: 0.9 }}
 							onClick={seekForward}
 							disabled={currentTime >= totalDuration - 1}
-							className="text-muted-foreground hover:bg-muted/50 hover:text-foreground cursor-pointer rounded-lg p-2 transition-all disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent"
+							className="text-muted-foreground hover:bg-muted/50 hover:text-foreground focus-visible:ring-ring inline-flex size-11 cursor-pointer items-center justify-center rounded-lg transition-[background-color,color] focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent"
 							aria-label={ui[lang]["agent.voiceReader.forward15s"]}
 						>
 							<FastForward className="size-4" />
 						</motion.button>
 
 						<motion.button
-							whileTap={{ scale: 0.9 }}
+							whileTap={prefersReducedMotion ? undefined : { scale: 0.9 }}
 							onClick={() => jumpToSegment(currentIndex + 1)}
 							disabled={currentIndex === segments.length - 1}
-							className="text-muted-foreground hover:bg-muted/50 hover:text-foreground cursor-pointer rounded-lg p-2 transition-all disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent"
+							className="text-muted-foreground hover:bg-muted/50 hover:text-foreground focus-visible:ring-ring inline-flex size-11 cursor-pointer items-center justify-center rounded-lg transition-[background-color,color] focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent"
 							aria-label={ui[lang]["agent.voiceReader.next"]}
 						>
 							<StepForward className="size-4" />

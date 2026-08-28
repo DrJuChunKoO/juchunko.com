@@ -6,7 +6,7 @@ const Heading = `h${headingLevel}`;
 
 <a
 	href={`/${lang}/${category}/${post.id.replace(/^.+?\//, "").replace(/\.(md|mdx)$/, "")}`}
-	class="group hover:outline-primary/50 relative flex flex-col items-start overflow-hidden rounded-lg bg-gray-50 p-0.5 transition-colors hover:bg-gray-100 hover:outline-2 hover:outline-offset-2 md:p-4 md:pr-24 dark:bg-white/5 dark:hover:bg-white/10"
+	class="group hover:outline-primary/50 focus-visible:outline-primary/50 relative flex flex-col items-start overflow-hidden rounded-lg bg-gray-50 p-0.5 transition-colors hover:bg-gray-100 hover:outline-2 hover:outline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 md:p-4 md:pr-24 dark:bg-white/5 dark:hover:bg-white/10"
 >
 	{
 		badge && (
@@ -15,11 +15,11 @@ const Heading = `h${headingLevel}`;
 			</span>
 		)
 	}
-	<div class="bg-primary/5 dark:bg-primary/7.5 flex h-16 w-full items-center justify-center rounded-lg text-3xl md:hidden">
+	<div class="bg-primary/5 dark:bg-primary/7.5 flex h-16 w-full items-center justify-center rounded-md text-3xl md:hidden">
 		{post.data.emoji}
 	</div>
 	<div class="p-2 md:p-0">
-		<Heading class="text-sm font-semibold md:text-lg">{post.data.title}</Heading>
+		<Heading class="text-base font-semibold md:text-lg">{post.data.title}</Heading>
 		<p class="text-muted-foreground text-xs tracking-tight md:text-sm">
 			{
 				post.data.status
@@ -31,11 +31,11 @@ const Heading = `h${headingLevel}`;
 						})
 			}
 		</p>
-		{showDescription && cardDescription && <p class="text-muted-foreground mt-2 text-xs leading-relaxed md:text-sm">{cardDescription}</p>}
+		{showDescription && cardDescription && <p class="text-muted-foreground mt-2 text-sm leading-relaxed">{cardDescription}</p>}
 	</div>
 	<div class="absolute right-0 bottom-0 hidden size-24 items-end justify-end pr-4 drop-shadow-lg drop-shadow-black/10 md:flex">
 		<div
-			class="dark:group-hover:bg-bg-white/10 flex h-32 w-16 translate-y-16 rotate-6 items-start justify-center rounded-lg border border-black/5 bg-gray-50 pt-3 text-4xl transition-all group-hover:translate-y-14 group-hover:rotate-0 group-hover:bg-gray-100 dark:border-white/5 dark:bg-white/5"
+			class="flex h-32 w-16 translate-y-16 rotate-6 items-start justify-center rounded-lg border border-black/5 bg-gray-50 pt-3 text-4xl transition-[translate,rotate,background-color] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:translate-y-14 group-hover:rotate-0 group-hover:bg-gray-100 group-focus-visible:translate-y-14 group-focus-visible:rotate-0 dark:border-white/5 dark:bg-white/5 dark:group-hover:bg-white/10 dark:group-focus-visible:bg-white/10"
 		>
 			{post.data.emoji}
 		</div>

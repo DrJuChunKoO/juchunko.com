@@ -9,12 +9,12 @@ export function createMobileNavMenuVariants(reduced: boolean): Variants {
 			closed: {
 				height: 0,
 				opacity: 0,
-				transition: { duration: 0.12, ease: EXIT_EASE },
+				transition: { duration: 0 },
 			},
 			open: {
 				height: "auto",
 				opacity: 1,
-				transition: { duration: 0.18, ease: ENTER_EASE },
+				transition: { duration: 0 },
 			},
 		};
 	}

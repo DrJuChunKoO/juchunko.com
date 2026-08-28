@@ -144,7 +144,7 @@ const definedTermSetSchema =
 	{legalDocSchema && <script type="application/ld+json" set:html={JSON.stringify(legalDocSchema)} />}
 	{definedTermSetSchema && <script type="application/ld+json" set:html={JSON.stringify(definedTermSetSchema)} />}
 	<span
-		class="absolute top-0 right-8 hidden h-24 w-16 items-end justify-center rounded-b-xl bg-gradient-to-b from-gray-100 to-gray-200 p-3 text-4xl transition-all md:flex dark:from-white/10 dark:to-white/5"
+		class="absolute top-0 right-8 hidden h-24 w-16 items-end justify-center rounded-b-xl bg-gradient-to-b from-gray-100 to-gray-200 p-3 text-4xl md:flex dark:from-white/10 dark:to-white/5"
 		>{post.data.emoji}</span
 	>
 	<article class="prose prose-slate dark:prose-invert mx-auto max-w-3xl" id="content">
@@ -159,7 +159,7 @@ const definedTermSetSchema =
 		(prevPost || nextPost) && (
 			<div class="mx-auto mt-20 max-w-3xl border-t-2 border-black/5 py-6 dark:border-white/5">
 				<h2 class="mb-3 text-xl font-semibold">{t("post.recommend")}</h2>
-				<div class="grid grid-cols-2 gap-2">
+				<div class="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
 					{nextPost && <CardLink post={nextPost} lang={lang} category={categoryForCard} headingLevel={3} />}
 					{prevPost && <CardLink post={prevPost} lang={lang} category={categoryForCard} headingLevel={3} />}
 				</div>
@@ -173,7 +173,7 @@ const definedTermSetSchema =
 		width: 100%;
 		max-width: none;
 		overflow: hidden;
-		border-radius: 0.5rem;
+		border-radius: var(--radius-md);
 	}
 	#content table {
 		display: block;

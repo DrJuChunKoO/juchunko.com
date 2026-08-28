@@ -10,9 +10,9 @@ const { date, title } = Astro.props;
 <div class="ms-6 mb-10">
 	<div class="relative flex items-center">
 		<div class="absolute -start-[32.5px] size-4 rounded-full border border-white bg-gray-200 dark:border-gray-900 dark:bg-gray-700"></div>
-		<time class="text-sm leading-none font-normal text-gray-400 dark:text-white/75">{date}</time>
+		<time class="text-muted-foreground text-sm leading-none font-normal">{date}</time>
 	</div>
-	{title && <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{title}</h3>}
+	{title && <h3 class="mt-1 text-lg font-semibold text-gray-900 dark:text-white">{title}</h3>}
 	<div class="mb-4 text-base font-normal text-pretty">
 		<slot />
 	</div>

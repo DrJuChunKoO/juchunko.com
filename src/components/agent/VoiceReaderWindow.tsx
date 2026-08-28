@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { motion, AnimatePresence, useMotionValue } from "motion/react";
+import { motion, AnimatePresence, useMotionValue, useReducedMotion } from "motion/react";
 import { BookAudio, X } from "lucide-react";
 import TTSPlayer from "./TTSPlayer";
 import { ui } from "src/i18n/ui";
@@ -9,12 +9,51 @@ type SupportedLang = "en" | "zh-TW";
 interface VoiceReaderWindowProps {
 	isOpen: boolean;
 	onClose: () => void;
+	opener?: HTMLElement | null;
 	lang?: SupportedLang;
 }
 
-export default function VoiceReaderWindow({ isOpen, onClose, lang = "zh-TW" }: VoiceReaderWindowProps) {
+export default function VoiceReaderWindow({ isOpen, onClose, opener, lang = "zh-TW" }: VoiceReaderWindowProps) {
 	const y = useMotionValue(16);
 	const windowRef = useRef<HTMLDivElement>(null);
+	const closeButtonRef = useRef<HTMLButtonElement>(null);
+	const wasOpenRef = useRef(false);
+	const openerRef = useRef<HTMLElement | null>(null);
+	const prefersReduced = Boolean(useReducedMotion());
+
+	useEffect(() => {
+		if (!isOpen) return;
+
+		function handleEscape(event: KeyboardEvent) {
+			if (event.key === "Escape") onClose();
+		}
+
+		window.addEventListener("keydown", handleEscape);
+		return () => window.removeEventListener("keydown", handleEscape);
+	}, [isOpen, onClose]);
+
+	useEffect(() => {
+		if (!wasOpenRef.current && isOpen) openerRef.current = opener ?? null;
+
+		if (wasOpenRef.current && !isOpen) {
+			let focusTarget = openerRef.current;
+			if (!focusTarget?.isConnected) {
+				focusTarget =
+					Array.from(document.querySelectorAll<HTMLElement>('[data-agent-launcher="voice-reader"], [data-agent-launcher="toggle"]')).find(
+						(element) => element.getClientRects().length > 0,
+					) ?? null;
+			}
+			focusTarget?.focus();
+			openerRef.current = null;
+		}
+		wasOpenRef.current = isOpen;
+	}, [isOpen, opener]);
+
+	useEffect(() => {
+		if (!isOpen) return;
+		const focusTimer = setTimeout(() => closeButtonRef.current?.focus(), 0);
+		return () => clearTimeout(focusTimer);
+	}, [isOpen]);
 
 	useEffect(() => {
 		if (!isOpen) return;
@@ -63,27 +102,34 @@ export default function VoiceReaderWindow({ isOpen, onClose, lang = "zh-TW" }: V
 			{isOpen && (
 				<motion.div
 					ref={windowRef}
-					initial={{ opacity: 0, scale: 0.5, y: 16 }}
-					animate={{
-						opacity: 1,
-						scale: 1,
-						y: 0,
-					}}
-					exit={{ opacity: 0, scale: 0.5, y: 16 }}
-					transition={{ type: "spring", stiffness: 300, damping: 30 }}
+					initial={prefersReduced ? { opacity: 0 } : { opacity: 0, scale: 0.5, y: 16 }}
+					animate={
+						prefersReduced
+							? { opacity: 1 }
+							: {
+									opacity: 1,
+									scale: 1,
+									y: 0,
+								}
+					}
+					exit={prefersReduced ? { opacity: 0 } : { opacity: 0, scale: 0.5, y: 16 }}
+					transition={prefersReduced ? { duration: 0.15 } : { type: "spring", stiffness: 300, damping: 30 }}
 					style={{ bottom: y }}
+					role="dialog"
+					aria-label={ui[lang]["agent.voiceReader.title"]}
 					className="ring-border/50 bg-card/75 fixed right-4 z-40 w-[420px] max-w-[calc(100vw-32px)] origin-bottom-right overflow-hidden rounded-xl shadow-lg ring-1 backdrop-blur-xl"
 				>
-					<div className="bg-muted text-foreground border-border flex items-center justify-between rounded-t-lg border-b p-2 pl-4">
+					<div className="bg-muted text-foreground border-border flex items-center justify-between border-b p-2 pl-4">
 						<div className="flex items-center gap-2">
 							<BookAudio className="text-primary h-5 w-5" />
 							<h3 className="font-semibold">{ui[lang]["agent.voiceReader.title"]}</h3>
 						</div>
 						<div className="flex items-center gap-1">
 							<motion.button
-								whileTap={{ scale: 0.95 }}
+								ref={closeButtonRef}
+								whileTap={prefersReduced ? undefined : { scale: 0.95 }}
 								onClick={onClose}
-								className="hover:bg-muted-foreground/10 text-muted-foreground hover:text-foreground cursor-pointer rounded-lg p-2 transition-colors"
+								className="hover:bg-muted-foreground/10 text-muted-foreground hover:text-foreground focus-visible:ring-ring inline-flex size-11 cursor-pointer items-center justify-center rounded-lg transition-colors focus-visible:ring-2"
 								aria-label={ui[lang]["agent.voiceReader.close"]}
 							>
 								<X className="size-5" />

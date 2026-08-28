@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import { useConversation, ConversationProvider } from "@elevenlabs/react";
 import { X, Phone, PhoneOff } from "lucide-react";
 import { ui } from "src/i18n/ui";
@@ -16,6 +16,7 @@ interface PhoneCallInterfaceProps {
 function PhoneCallInterfaceInner({ isOpen, onClose, lang = "zh-TW" }: PhoneCallInterfaceProps) {
 	const conversation = useConversation();
 	const [callDuration, setCallDuration] = useState(0);
+	const prefersReduced = Boolean(useReducedMotion());
 	// const [isMuted, setIsMuted] = useState(false);
 
 	// 通話計時器
@@ -82,18 +83,19 @@ function PhoneCallInterfaceInner({ isOpen, onClose, lang = "zh-TW" }: PhoneCallI
 		<AnimatePresence>
 			{isOpen && (
 				<motion.div
-					initial={{ opacity: 0, scale: 1.25 }}
-					animate={{ opacity: 1, scale: 1 }}
-					exit={{ opacity: 0, scale: 1.25 }}
-					transition={{ duration: 0.3 }}
+					initial={prefersReduced ? { opacity: 0 } : { opacity: 0, scale: 1.25 }}
+					animate={prefersReduced ? { opacity: 1 } : { opacity: 1, scale: 1 }}
+					exit={prefersReduced ? { opacity: 0 } : { opacity: 0, scale: 1.25 }}
+					transition={prefersReduced ? { duration: 0.1 } : { duration: 0.3 }}
 					className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md"
 				>
 					{/* 關閉按鈕 */}
 					<motion.button
-						initial={{ opacity: 0, scale: 0.8, transition: { delay: 0.5 } }}
-						animate={{ opacity: 1, scale: 1 }}
+						initial={prefersReduced ? { opacity: 0 } : { opacity: 0, scale: 0.8, transition: { delay: 0.5 } }}
+						animate={prefersReduced ? { opacity: 1 } : { opacity: 1, scale: 1 }}
+						transition={prefersReduced ? { duration: 0.1 } : undefined}
 						onClick={handleEndCall}
-						className="absolute top-6 right-6 flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-lg transition-colors hover:bg-white/50"
+						className="focus-visible:ring-ring absolute top-6 right-6 flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-lg transition-colors hover:bg-white/50 focus-visible:ring-2"
 						aria-label={ui[lang]["agent.phone.closeInterface"]}
 					>
 						<X className="h-6 w-6" />
@@ -103,24 +105,24 @@ function PhoneCallInterfaceInner({ isOpen, onClose, lang = "zh-TW" }: PhoneCallI
 					<div className="relative z-10 flex flex-col items-center text-white">
 						{/* AI 頭像 */}
 						<motion.div
-							initial={{ scale: 0.8, opacity: 0 }}
-							animate={{ scale: 1, opacity: 1 }}
-							transition={{ delay: 0.1 }}
+							initial={prefersReduced ? { opacity: 0 } : { scale: 0.8, opacity: 0 }}
+							animate={prefersReduced ? { opacity: 1 } : { scale: 1, opacity: 1 }}
+							transition={prefersReduced ? { duration: 0.1 } : { delay: 0.1 }}
 							className="mb-8"
 						>
 							<motion.div
 								className="relative mx-auto my-5 aspect-square w-[300px] overflow-hidden rounded-lg md:w-[350px]"
-								transition={{ duration: 2, repeat: Infinity }}
-								animate={conversation.status === "connected" ? { scale: [1, 1.05, 1] } : {}}
+								transition={prefersReduced ? { duration: 0 } : { duration: 2, repeat: Infinity }}
+								animate={!prefersReduced && conversation.status === "connected" ? { scale: [1, 1.05, 1] } : {}}
 							>
 								<GaussianSplatViewer url="/scene.ply" className="absolute inset-0" />
 							</motion.div>
 						</motion.div>
 						{/* 聯絡人資訊 */}
 						<motion.div
-							initial={{ y: 20, opacity: 0 }}
-							animate={{ y: 0, opacity: 1 }}
-							transition={{ delay: 0.2 }}
+							initial={prefersReduced ? { opacity: 0 } : { y: 20, opacity: 0 }}
+							animate={prefersReduced ? { opacity: 1 } : { y: 0, opacity: 1 }}
+							transition={prefersReduced ? { duration: 0.1 } : { delay: 0.2 }}
 							className="mb-4 text-center"
 						>
 							<h2 className="mb-2 text-3xl font-bold">{ui[lang]["agent.phone.aiName"]}</h2>
@@ -139,15 +141,8 @@ function PhoneCallInterfaceInner({ isOpen, onClose, lang = "zh-TW" }: PhoneCallI
 									{[0, 1, 2].map((i) => (
 										<motion.div
 											key={i}
-											animate={{
-												scale: [1, 1.2, 1],
-												opacity: [0.5, 1, 0.5],
-											}}
-											transition={{
-												duration: 1,
-												repeat: Infinity,
-												delay: i * 0.2,
-											}}
+											animate={prefersReduced ? { opacity: 1 } : { scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5] }}
+											transition={prefersReduced ? { duration: 0 } : { duration: 1, repeat: Infinity, delay: i * 0.2 }}
 											className="bg-primary h-2 w-2 rounded-full"
 										/>
 									))}
@@ -157,17 +152,17 @@ function PhoneCallInterfaceInner({ isOpen, onClose, lang = "zh-TW" }: PhoneCallI
 
 						{/* 控制按鈕 */}
 						<motion.div
-							initial={{ y: 20, opacity: 0 }}
-							animate={{ y: 0, opacity: 1 }}
-							transition={{ delay: 0.3 }}
+							initial={prefersReduced ? { opacity: 0 } : { y: 20, opacity: 0 }}
+							animate={prefersReduced ? { opacity: 1 } : { y: 0, opacity: 1 }}
+							transition={prefersReduced ? { duration: 0.1 } : { delay: 0.3 }}
 							className="flex space-x-6"
 						>
 							{conversation.status === "disconnected" && (
 								<motion.button
-									whileTap={{ scale: 0.95 }}
-									whileHover={{ scale: 1.05 }}
+									whileTap={prefersReduced ? undefined : { scale: 0.95 }}
+									whileHover={prefersReduced ? undefined : { scale: 1.05 }}
 									onClick={handleCall}
-									className="flex h-16 w-16 cursor-pointer items-center justify-center rounded-full bg-green-500 text-white shadow-lg transition-colors hover:bg-green-600"
+									className="focus-visible:ring-ring flex h-16 w-16 cursor-pointer items-center justify-center rounded-full bg-green-500 text-white shadow-lg transition-colors hover:bg-green-600 focus-visible:ring-2"
 									aria-label={ui[lang]["agent.phone.dial"]}
 								>
 									<Phone className="h-8 w-8" />
@@ -176,10 +171,10 @@ function PhoneCallInterfaceInner({ isOpen, onClose, lang = "zh-TW" }: PhoneCallI
 
 							{(conversation.status === "connected" || conversation.status === "connecting") && (
 								<motion.button
-									whileTap={{ scale: 0.95 }}
-									whileHover={{ scale: 1.05 }}
+									whileTap={prefersReduced ? undefined : { scale: 0.95 }}
+									whileHover={prefersReduced ? undefined : { scale: 1.05 }}
 									onClick={handleEndCall}
-									className="bg-destructive text-destructive-foreground hover:bg-destructive/90 flex h-16 w-16 cursor-pointer items-center justify-center rounded-full shadow-lg transition-colors"
+									className="bg-destructive text-destructive-foreground hover:bg-destructive/90 focus-visible:ring-ring flex h-16 w-16 cursor-pointer items-center justify-center rounded-full shadow-lg transition-colors focus-visible:ring-2"
 									aria-label={ui[lang]["agent.phone.endCall"]}
 								>
 									<PhoneOff className="h-8 w-8" />

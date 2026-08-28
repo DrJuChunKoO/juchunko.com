@@ -6,7 +6,7 @@ const { href, className } = Astro.props;
 	href={href}
 	target="_blank"
 	rel="noopener noreferrer"
-	class={`hover:outline-primary/50 hover:bg-primary/5 text-primary/75 hover:text-primary/90 active:text-primary rounded-full p-1 hover:outline-2 hover:outline-offset-2 ${className ?? ""}`}
+	class={`hover:outline-primary/50 hover:bg-primary/5 focus-visible:outline-primary/50 text-primary/75 hover:text-primary/90 active:text-primary flex size-10 items-center justify-center rounded-full hover:outline-2 hover:outline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 ${className ?? ""}`}
 >
 	<slot />
 </a>

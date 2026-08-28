@@ -1,8 +1,9 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { QueryClient, useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { ArrowRight, ArrowUpRight, Search, X } from "lucide-react";
 import { Loader } from "./Loader";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useTranslations } from "../i18n/utils";
 import { cn, timeAgo } from "../lib/utils";
 import {
@@ -22,7 +23,13 @@ import {
 	type TopicArchiveNewsItem,
 } from "./news-page-format";
 import { applyDialogScrollLock } from "./news-page-scroll-lock";
-import { dialogBackdropVariants, dialogLayerClassNames, dialogPanelVariants } from "./news-page-motion";
+import {
+	dialogBackdropVariants,
+	dialogBackdropVariantsReduced,
+	dialogLayerClassNames,
+	dialogPanelVariants,
+	dialogPanelVariantsReduced,
+} from "./news-page-motion";
 import { getNewsSourceLogo } from "./news-source-logo";
 
 const queryClient = new QueryClient({
@@ -100,6 +107,7 @@ type TopicDetailResponse = {
 
 const PAGE_SIZE = 20;
 const ARCHIVE_MONTHS = 240;
+const useClientLayoutEffect = typeof document === "undefined" ? useEffect : useLayoutEffect;
 
 type NewsPageLang = "en" | "zh-TW";
 
@@ -234,7 +242,7 @@ function EmptyState({ children }: { children: React.ReactNode }) {
 
 function ErrorAlert({ children }: { children: React.ReactNode }) {
 	return (
-		<div className="rounded-2xl border border-red-200 bg-red-50/80 p-4 text-sm text-red-600 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
+		<div className="rounded-xl border border-red-200 bg-red-50/80 p-4 text-sm text-red-600 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
 			{children}
 		</div>
 	);
@@ -250,7 +258,7 @@ function TopicNewsLink({ item, lang, className }: { item: NewsItem | TopicArchiv
 			target="_blank"
 			rel="noopener noreferrer"
 			className={cn(
-				"group grid grid-cols-[2.25rem_minmax(0,1fr)_auto] items-center gap-3 rounded-lg px-2 py-3 transition-[background-color,transform] duration-150 ease-out hover:bg-gray-100 active:scale-[0.99] dark:hover:bg-white/6",
+				"group grid grid-cols-[2.25rem_minmax(0,1fr)_auto] items-center gap-3 rounded-lg px-2 py-3 transition-[background-color,transform] duration-150 ease-out hover:bg-gray-100 focus-visible:bg-gray-100 motion-safe:active:scale-[0.99] dark:hover:bg-white/6 dark:focus-visible:bg-white/6",
 				className,
 			)}
 		>
@@ -259,7 +267,7 @@ function TopicNewsLink({ item, lang, className }: { item: NewsItem | TopicArchiv
 					<img
 						src={sourceLogo}
 						alt=""
-						className="size-full rounded-[0.45rem] object-contain p-1 saturate-[0.35] transition-[filter] duration-150 ease-out group-hover:saturate-100"
+						className="size-full rounded-[0.45rem] object-contain p-1 saturate-[0.35] transition-[filter] duration-150 ease-out group-focus-within:saturate-100 group-hover:saturate-100 group-focus-visible:saturate-100"
 						loading="lazy"
 						decoding="async"
 					/>
@@ -281,11 +289,11 @@ function TopicNewsLink({ item, lang, className }: { item: NewsItem | TopicArchiv
 			</div>
 			<span
 				aria-hidden="true"
-				className="flex size-8 shrink-0 items-center justify-center text-gray-400 transition-colors duration-150 ease-out group-hover:text-black dark:text-gray-500 dark:group-hover:text-white"
+				className="flex size-8 shrink-0 items-center justify-center text-gray-400 transition-colors duration-150 ease-out group-hover:text-black group-focus-visible:text-black dark:text-gray-500 dark:group-hover:text-white dark:group-focus-visible:text-white"
 			>
 				<span className="relative size-4 overflow-hidden">
-					<ArrowUpRight className="absolute inset-0 size-4 transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-full group-hover:-translate-y-full motion-reduce:transition-none motion-reduce:group-hover:translate-none" />
-					<ArrowUpRight className="absolute inset-0 size-4 translate-x-[-100%] translate-y-full transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-none motion-reduce:hidden" />
+					<ArrowUpRight className="absolute inset-0 size-4 transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-full group-hover:-translate-y-full group-focus-visible:translate-x-full group-focus-visible:-translate-y-full motion-reduce:transition-none motion-reduce:group-hover:translate-none motion-reduce:group-focus-visible:translate-none" />
+					<ArrowUpRight className="absolute inset-0 size-4 translate-x-[-100%] translate-y-full transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-none group-focus-visible:translate-none motion-reduce:hidden" />
 				</span>
 			</span>
 		</a>
@@ -331,7 +339,7 @@ function TopicCard({
 				{relatedPage ? (
 					<a
 						href={relatedPage}
-						className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-600 transition-colors duration-150 hover:text-black dark:text-gray-300 dark:hover:text-white"
+						className="inline-flex min-h-11 items-center gap-1.5 text-xs font-semibold text-gray-600 transition-colors duration-150 hover:text-black sm:min-h-10 dark:text-gray-300 dark:hover:text-white"
 					>
 						{t("newsPage.topic.readArticle")}
 						<ArrowUpRight className="size-3.5" />
@@ -342,7 +350,7 @@ function TopicCard({
 				<button
 					type="button"
 					onClick={() => onOpenTopic(topic)}
-					className="inline-flex h-9 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-lg bg-black px-4 text-xs font-semibold text-white transition-[background-color,transform] duration-150 ease-out hover:bg-black/75 active:scale-[0.97] dark:bg-white dark:text-black dark:hover:bg-white/80"
+					className="focus-visible:ring-ring inline-flex h-11 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-lg bg-black px-4 text-xs font-semibold text-white transition-[background-color,transform] duration-150 ease-out hover:bg-black/75 focus-visible:ring-2 motion-safe:active:scale-[0.97] sm:h-10 dark:bg-white dark:text-black dark:hover:bg-white/80"
 				>
 					{t("newsPage.topic.viewMore")}
 					<ArrowRight className="size-3.5" />
@@ -375,30 +383,32 @@ function SearchForm({
 				<label className="sr-only" htmlFor="q-react">
 					{t("newsPage.search.label")}
 				</label>
-				<div className="group relative flex items-center rounded-xl border border-black/10 bg-white shadow-[0_1px_0_rgba(0,0,0,0.03)] transition-[border-color,box-shadow] duration-150 focus-within:border-black/25 focus-within:shadow-[0_0_0_3px_rgba(0,0,0,0.04)] dark:border-white/10 dark:bg-white/3 dark:focus-within:border-white/25 dark:focus-within:shadow-[0_0_0_3px_rgba(255,255,255,0.05)]">
-					<Search className="pointer-events-none absolute left-4 size-4 shrink-0 text-black/35 transition-colors duration-150 group-focus-within:text-black/65 dark:text-white/35 dark:group-focus-within:text-white/65" />
-					<input
-						id="q-react"
-						name="q"
-						type="search"
-						value={searchDraft}
-						onChange={(event) => onSearchDraftChange(event.target.value)}
-						placeholder={t("newsPage.search.placeholder")}
-						className="h-13 min-w-0 flex-1 bg-transparent pr-3 pl-11 text-sm outline-none placeholder:text-black/35 sm:text-base dark:placeholder:text-white/35"
-					/>
-					<div className="flex shrink-0 items-center gap-1 pr-2">
+				<div className="group flex items-center rounded-xl border border-black/10 bg-white shadow-[0_1px_0_rgba(0,0,0,0.03)] transition-[border-color,box-shadow] duration-150 focus-within:border-black/25 focus-within:shadow-[0_0_0_3px_rgba(0,0,0,0.04)] max-sm:flex-wrap max-sm:gap-y-2 dark:border-white/10 dark:bg-white/3 dark:focus-within:border-white/25 dark:focus-within:shadow-[0_0_0_3px_rgba(255,255,255,0.05)]">
+					<div className="relative flex min-w-0 flex-1 items-center max-sm:w-full max-sm:basis-full">
+						<Search className="pointer-events-none absolute left-4 size-4 shrink-0 text-black/35 transition-colors duration-150 group-focus-within:text-black/65 dark:text-white/35 dark:group-focus-within:text-white/65" />
+						<input
+							id="q-react"
+							name="q"
+							type="search"
+							value={searchDraft}
+							onChange={(event) => onSearchDraftChange(event.target.value)}
+							placeholder={t("newsPage.search.placeholder")}
+							className="h-13 min-w-0 flex-1 bg-transparent pr-3 pl-11 text-sm outline-none placeholder:text-black/35 sm:text-base dark:placeholder:text-white/35"
+						/>
+					</div>
+					<div className="flex shrink-0 items-center gap-1 pr-2 max-sm:w-full max-sm:justify-between max-sm:pr-0">
 						{searchQuery && (
 							<button
 								type="button"
 								onClick={onClear}
-								className="inline-flex h-9 cursor-pointer items-center justify-center rounded-lg px-3 text-sm font-medium text-black/40 transition-[background-color,color,transform] duration-150 hover:bg-black/5 hover:text-black/70 active:scale-[0.97] dark:text-white/40 dark:hover:bg-white/8 dark:hover:text-white/70"
+								className="inline-flex h-10 cursor-pointer items-center justify-center rounded-lg px-3 text-sm font-medium text-black/40 transition-[background-color,color,transform] duration-150 hover:bg-black/5 hover:text-black/70 motion-safe:active:scale-[0.97] max-sm:h-11 max-sm:flex-1 dark:text-white/40 dark:hover:bg-white/8 dark:hover:text-white/70"
 							>
 								{t("newsPage.search.clear")}
 							</button>
 						)}
 						<button
 							type="submit"
-							className="inline-flex h-10 cursor-pointer items-center justify-center rounded-lg bg-black px-5 text-sm font-semibold text-white transition-[background-color,transform] duration-150 hover:bg-black/75 active:scale-[0.97] dark:bg-white dark:text-black dark:hover:bg-white/80"
+							className="inline-flex h-10 cursor-pointer items-center justify-center rounded-lg bg-black px-5 text-sm font-semibold text-white transition-[background-color,transform] duration-150 hover:bg-black/75 motion-safe:active:scale-[0.97] max-sm:h-11 max-sm:flex-1 dark:bg-white dark:text-black dark:hover:bg-white/80"
 						>
 							{t("newsPage.search.submit")}
 						</button>
@@ -508,6 +518,8 @@ function TopicDialog({
 	isTopicLoading,
 	isTopicError,
 	topicError,
+	prefersReducedMotion,
+	isMounted,
 	onClose,
 	onExitComplete,
 }: {
@@ -519,10 +531,15 @@ function TopicDialog({
 	isTopicLoading: boolean;
 	isTopicError: boolean;
 	topicError: unknown;
+	prefersReducedMotion: boolean;
+	isMounted: boolean;
 	onClose: () => void;
 	onExitComplete: () => void;
 }) {
 	const t = useTranslations(lang);
+	const dialogRef = useRef<HTMLDivElement>(null);
+	const dialogLayerRef = useRef<HTMLDivElement>(null);
+	const releaseIsolationRef = useRef<(() => void) | null>(null);
 
 	useEffect(() => {
 		if (!selectedTopicId) return;
@@ -534,6 +551,63 @@ function TopicDialog({
 		window.addEventListener("keydown", handleKeyDown);
 		return () => window.removeEventListener("keydown", handleKeyDown);
 	}, [onClose, selectedTopicId]);
+
+	useClientLayoutEffect(() => {
+		const dialogLayer = dialogLayerRef.current;
+		if (!isMounted || !dialogLayer) return;
+
+		const previousInertValues = new Map<HTMLElement, boolean>();
+		let released = false;
+		const isolateBodyChild = (child: Element) => {
+			if (!(child instanceof HTMLElement) || child === dialogLayer || previousInertValues.has(child)) return;
+			previousInertValues.set(child, child.inert);
+			child.inert = true;
+		};
+		Array.from(document.body.children).forEach(isolateBodyChild);
+
+		const observer = new MutationObserver((mutations) => {
+			for (const mutation of mutations) {
+				mutation.addedNodes.forEach((node) => {
+					if (node instanceof Element) isolateBodyChild(node);
+				});
+			}
+		});
+		observer.observe(document.body, { childList: true });
+
+		const releaseIsolation = () => {
+			if (released) return;
+			released = true;
+			observer.disconnect();
+			previousInertValues.forEach((inert, element) => {
+				element.inert = inert;
+			});
+		};
+		releaseIsolationRef.current = releaseIsolation;
+
+		return () => {
+			releaseIsolation();
+			if (releaseIsolationRef.current === releaseIsolation) releaseIsolationRef.current = null;
+		};
+	}, [isMounted]);
+
+	const handleDialogKeyDown = (event: React.KeyboardEvent) => {
+		if (event.key !== "Tab") return;
+		const root = dialogRef.current;
+		if (!root) return;
+		const focusable = root.querySelectorAll<HTMLElement>(
+			'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])',
+		);
+		if (focusable.length === 0) return;
+		const first = focusable[0];
+		const last = focusable[focusable.length - 1];
+		if (event.shiftKey && document.activeElement === first) {
+			event.preventDefault();
+			last.focus();
+		} else if (!event.shiftKey && document.activeElement === last) {
+			event.preventDefault();
+			first.focus();
+		}
+	};
 
 	const topicTitle = selectedTopic?.topic
 		? lang === "en"
@@ -549,25 +623,34 @@ function TopicDialog({
 		: selectedTopicPreview
 			? getTopicDisplaySummary(selectedTopicPreview, lang)
 			: null;
+	const handleExitComplete = () => {
+		releaseIsolationRef.current?.();
+		onExitComplete();
+	};
 
-	return (
-		<AnimatePresence initial={false} onExitComplete={onExitComplete}>
+	if (typeof document === "undefined") return null;
+
+	return createPortal(
+		<AnimatePresence initial={false} onExitComplete={handleExitComplete}>
 			{selectedTopicId && (
 				<motion.div
+					ref={dialogLayerRef}
 					className={dialogLayerClassNames.overlay}
 					onClick={onClose}
-					variants={dialogBackdropVariants}
+					variants={prefersReducedMotion ? dialogBackdropVariantsReduced : dialogBackdropVariants}
 					initial="closed"
 					animate="open"
 					exit="closed"
 				>
 					<motion.div
+						ref={dialogRef}
 						className={dialogLayerClassNames.panel}
 						role="dialog"
 						aria-modal="true"
 						aria-label={topicTitle || t("newsPage.topic.loading")}
 						onClick={(event) => event.stopPropagation()}
-						variants={dialogPanelVariants}
+						onKeyDown={handleDialogKeyDown}
+						variants={prefersReducedMotion ? dialogPanelVariantsReduced : dialogPanelVariants}
 						initial="closed"
 						animate="open"
 						exit="closed"
@@ -579,7 +662,7 @@ function TopicDialog({
 								autoFocus
 								onClick={onClose}
 								aria-label={t("newsPage.topic.close")}
-								className="absolute top-5 right-5 inline-flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-full bg-gray-100 text-gray-600 transition-[background-color,color,transform] duration-150 ease-out hover:bg-gray-200 hover:text-black active:scale-[0.94] sm:top-6 sm:right-7 dark:bg-white/8 dark:text-gray-300 dark:hover:bg-white/12 dark:hover:text-white"
+								className="absolute top-5 right-5 inline-flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full bg-gray-100 text-gray-600 transition-[background-color,color,transform] duration-150 ease-out hover:bg-gray-200 hover:text-black motion-safe:active:scale-[0.94] sm:top-6 sm:right-7 sm:size-10 dark:bg-white/8 dark:text-gray-300 dark:hover:bg-white/12 dark:hover:text-white"
 							>
 								<X className="size-4" />
 							</button>
@@ -637,7 +720,7 @@ function TopicDialog({
 							<footer className="flex min-h-14 items-center justify-end gap-3 border-t border-black/8 px-5 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] sm:px-7 sm:pb-2 dark:border-white/8">
 								<a
 									href={relatedPage}
-									className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-black px-4 text-xs font-semibold text-white transition-[background-color,transform] duration-150 ease-out hover:bg-black/75 active:scale-[0.97] dark:bg-white dark:text-black dark:hover:bg-white/80"
+									className="focus-visible:ring-ring inline-flex h-11 items-center gap-1.5 rounded-lg bg-black px-4 text-xs font-semibold text-white transition-[background-color,transform] duration-150 ease-out hover:bg-black/75 focus-visible:ring-2 motion-safe:active:scale-[0.97] sm:h-10 dark:bg-white dark:text-black dark:hover:bg-white/80"
 								>
 									{t("newsPage.topic.readArticle")}
 									<ArrowUpRight className="size-3.5" />
@@ -647,7 +730,8 @@ function TopicDialog({
 					</motion.div>
 				</motion.div>
 			)}
-		</AnimatePresence>
+		</AnimatePresence>,
+		document.body,
 	);
 }
 
@@ -721,12 +805,15 @@ export default function NewsPage({ lang, relatedPages }: { lang: NewsPageLang; r
 	const [searchQuery, setSearchQuery] = useState("");
 	const [selectedTopicPreview, setSelectedTopicPreview] = useState<TopicArchiveCard | null>(null);
 	const [selectedTopicId, setSelectedTopicId] = useState<string | null>(null);
+	const [isTopicDialogMounted, setIsTopicDialogMounted] = useState(false);
 	const [visibleMonthCount, setVisibleMonthCount] = useState(1);
+	const prefersReducedMotion = Boolean(useReducedMotion());
 
 	// Map topic id → month string, populated as months load
 	const topicMonthMapRef = useRef<Map<string, string>>(new Map());
 	// Track whether initial URL ?topic has been handled
 	const initialTopicHandledRef = useRef(false);
+	const topicDialogOpenerRef = useRef<HTMLElement | null>(null);
 
 	const {
 		data: archiveMonthIndex,
@@ -836,10 +923,10 @@ export default function NewsPage({ lang, relatedPages }: { lang: NewsPageLang; r
 	}, [searchQuery]);
 
 	useEffect(() => {
-		if (selectedTopicId) {
+		if (isTopicDialogMounted) {
 			return applyDialogScrollLock(document);
 		}
-	}, [selectedTopicId]);
+	}, [isTopicDialogMounted]);
 
 	// Build/update topic→month map as archive month data loads
 	useEffect(() => {
@@ -855,10 +942,10 @@ export default function NewsPage({ lang, relatedPages }: { lang: NewsPageLang; r
 			const params = new URLSearchParams(window.location.search);
 			const topicId = params.get("topic");
 			if (topicId) {
+				setIsTopicDialogMounted(true);
 				setSelectedTopicId(topicId);
 			} else {
 				setSelectedTopicId(null);
-				setSelectedTopicPreview(null);
 			}
 		};
 		window.addEventListener("popstate", onPopState);
@@ -911,6 +998,7 @@ export default function NewsPage({ lang, relatedPages }: { lang: NewsPageLang; r
 					const cached = queryClient.getQueryData<ArchiveMonth | null>(["news-archive-month", monthKey]);
 					const topicPreview = cached?.topics.find((t) => t.id === topicId) ?? null;
 					setSelectedTopicPreview(topicPreview);
+					setIsTopicDialogMounted(true);
 					setSelectedTopicId(topicId);
 				} else if (attempts < 20) {
 					setTimeout(() => tryScrollAndOpen(attempts + 1), 100);
@@ -928,6 +1016,7 @@ export default function NewsPage({ lang, relatedPages }: { lang: NewsPageLang; r
 
 		// Otherwise open dialog immediately (data will load via useQuery),
 		// and try to find the month as months fetch in the background
+		setIsTopicDialogMounted(true);
 		setSelectedTopicId(topicId);
 
 		const findAndScrollWhenReady = (attempts = 0) => {
@@ -951,13 +1040,20 @@ export default function NewsPage({ lang, relatedPages }: { lang: NewsPageLang; r
 		setSearchQuery("");
 	};
 
-	const openTopicDialog = useCallback((topic: TopicArchiveCard) => {
-		setSelectedTopicPreview(topic);
-		setSelectedTopicId(topic.id);
-		const url = new URL(window.location.href);
-		url.searchParams.set("topic", topic.id);
-		window.history.pushState({ topicId: topic.id }, "", url.toString());
-	}, []);
+	const openTopicDialog = useCallback(
+		(topic: TopicArchiveCard) => {
+			if (!isTopicDialogMounted) {
+				topicDialogOpenerRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+			}
+			setSelectedTopicPreview(topic);
+			setIsTopicDialogMounted(true);
+			setSelectedTopicId(topic.id);
+			const url = new URL(window.location.href);
+			url.searchParams.set("topic", topic.id);
+			window.history.pushState({ topicId: topic.id }, "", url.toString());
+		},
+		[isTopicDialogMounted],
+	);
 
 	const closeTopicDialog = useCallback(() => {
 		setSelectedTopicId(null);
@@ -966,42 +1062,52 @@ export default function NewsPage({ lang, relatedPages }: { lang: NewsPageLang; r
 		window.history.pushState({}, "", url.toString());
 	}, []);
 
+	const handleTopicDialogExitComplete = useCallback(() => {
+		setSelectedTopicPreview(null);
+		setIsTopicDialogMounted(false);
+		const opener = topicDialogOpenerRef.current;
+		topicDialogOpenerRef.current = null;
+		if (opener?.isConnected) opener.focus();
+	}, []);
+
 	const archiveEmpty = !isMonthIndexLoading && !isMonthIndexError && (archiveMonthIndex?.length ?? 0) === 0;
 
 	return (
 		<div className="pb-8">
-			<SearchForm
-				lang={lang}
-				searchDraft={searchDraft}
-				searchQuery={searchQuery}
-				onSearchDraftChange={setSearchDraft}
-				onSubmit={handleSearchSubmit}
-				onClear={clearSearch}
-			/>
-
-			{searchQuery ? (
-				<SearchResultsSection
+			<div>
+				<SearchForm
 					lang={lang}
+					searchDraft={searchDraft}
 					searchQuery={searchQuery}
-					searchItems={searchItems}
-					isSearchLoading={isSearchLoading}
-					isFetchingNextPage={isFetchingNextPage}
-					isSearchError={isSearchError}
-					searchError={searchError}
+					onSearchDraftChange={setSearchDraft}
+					onSubmit={handleSearchSubmit}
+					onClear={clearSearch}
 				/>
-			) : (
-				<ArchiveSection
-					lang={lang}
-					isMonthIndexLoading={isMonthIndexLoading}
-					isMonthIndexError={isMonthIndexError}
-					monthIndexError={monthIndexError}
-					archiveEmpty={archiveEmpty}
-					visibleMonths={visibleMonths}
-					totalMonths={archiveMonthIndex?.length ?? 0}
-					relatedPages={relatedPages}
-					onOpenTopic={openTopicDialog}
-				/>
-			)}
+
+				{searchQuery ? (
+					<SearchResultsSection
+						lang={lang}
+						searchQuery={searchQuery}
+						searchItems={searchItems}
+						isSearchLoading={isSearchLoading}
+						isFetchingNextPage={isFetchingNextPage}
+						isSearchError={isSearchError}
+						searchError={searchError}
+					/>
+				) : (
+					<ArchiveSection
+						lang={lang}
+						isMonthIndexLoading={isMonthIndexLoading}
+						isMonthIndexError={isMonthIndexError}
+						monthIndexError={monthIndexError}
+						archiveEmpty={archiveEmpty}
+						visibleMonths={visibleMonths}
+						totalMonths={archiveMonthIndex?.length ?? 0}
+						relatedPages={relatedPages}
+						onOpenTopic={openTopicDialog}
+					/>
+				)}
+			</div>
 
 			<TopicDialog
 				lang={lang}
@@ -1012,8 +1118,10 @@ export default function NewsPage({ lang, relatedPages }: { lang: NewsPageLang; r
 				isTopicLoading={isTopicLoading}
 				isTopicError={isTopicError}
 				topicError={topicError}
+				prefersReducedMotion={prefersReducedMotion}
+				isMounted={isTopicDialogMounted}
 				onClose={closeTopicDialog}
-				onExitComplete={() => setSelectedTopicPreview(null)}
+				onExitComplete={handleTopicDialogExitComplete}
 			/>
 		</div>
 	);
