@@ -258,6 +258,8 @@ Do:
 Do not:
 
 - Over-hedge with soft padding such as `這是辦公室收到的個案，不能拿來直接概括…`, `其餘個案仍待政府與電信業者逐項查證`, `This is one office report, not a claim about every user…`, or `the remaining cases await verification case by case` unless the user explicitly asks for that caution.
+- Use preachy or lecturing editorializing (說教語句), such as `不只看預算有多大，更要看最後形成多少可用的裝備、技術與產能` or lecturing the reader on what they "should actually look at".
+- Insert defensive liability disclaimers or finger-wagging caveats (免責贅句), such as `這不是一次通過...特別預算，也不代表經費已全數到位` or `本頁以...為進度，不將兩者直接等同於...`. State statutory mechanisms, budget types, and facts directly instead of putting up defensive guardrails.
 - Sound like a press release, a risk memo, or machine-translated policy English.
 - Invent facts. Sharp tone is not a license to fabricate dates, numbers, quotes, or sources.
 - Confuse boldness with conspiracy or personal attacks. Aim the edge at policy design, process failure, and missing accountability.
