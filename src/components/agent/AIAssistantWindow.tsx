@@ -33,7 +33,7 @@ import { applyDialogScrollLock } from "@/components/news-page-scroll-lock";
 import { Bubble, BubbleContent } from "@/components/ui/bubble";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
+import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia } from "@/components/ui/empty";
 import { Marker, MarkerContent, MarkerIcon } from "@/components/ui/marker";
 import { Message, MessageContent, MessageFooter } from "@/components/ui/message";
 import {
@@ -149,17 +149,17 @@ function QuickPromptList({
 	className?: string;
 }) {
 	return (
-		<div className={cn("flex flex-col", className)}>
+		<div className={cn("grid w-full grid-cols-[repeat(auto-fit,minmax(min(100%,9rem),1fr))] gap-2", className)}>
 			{quickPrompts.map((quickPrompt) => (
 				<button
 					key={quickPrompt.text}
 					type="button"
 					onClick={() => onSelect(quickPrompt.prompt)}
 					aria-label={formatQuickPromptLabel(ariaLabelTemplate, quickPrompt.text)}
-					className="group text-muted-foreground hover:text-foreground hover:bg-muted focus-visible:ring-ring flex min-h-11 cursor-pointer items-center gap-1 rounded px-2 py-1 text-left text-sm transition-[background-color,color] focus-visible:ring-2"
+					className="border-border/70 bg-card/80 text-foreground hover:border-border hover:bg-muted focus-visible:ring-ring flex min-h-11 min-w-0 cursor-pointer items-center justify-between gap-2 rounded-lg border px-3 py-2 text-left text-sm transition-colors focus-visible:ring-2 focus-visible:ring-offset-2"
 				>
-					{quickPrompt.text}
-					<ArrowRight className="size-4 opacity-50 transition-[transform,opacity] group-hover:translate-x-0.5 group-hover:opacity-100 group-focus-visible:translate-x-0.5 group-focus-visible:opacity-100" />
+					<span className="min-w-0 wrap-break-word">{quickPrompt.text}</span>
+					<ArrowRight aria-hidden="true" className="text-muted-foreground size-3.5 shrink-0" />
 				</button>
 			))}
 		</div>
@@ -402,7 +402,7 @@ export default function AIAssistantWindow({ isOpen, onClose, opener, lang = "zh-
 						}}
 						style={{
 							// borderRadius 放 style，layout 變形時才不會被 scale 扭歪
-							borderRadius: expanded ? 0 : 14,
+							borderRadius: expanded ? 0 : "calc(var(--radius-xl) + 8px)",
 						}}
 						className={cn(
 							"ring-border/50 pointer-events-auto fixed flex origin-bottom-right flex-col overflow-hidden will-change-[transform,border-radius]",
@@ -463,9 +463,9 @@ export default function AIAssistantWindow({ isOpen, onClose, opener, lang = "zh-
 
 						{/* 對話內容 */}
 						<MessageScrollerProvider autoScroll defaultScrollPosition="last-anchor" scrollPreviousItemPeek={48}>
-							<MessageScroller className={cn("bg-card/50 min-h-0", expanded ? "flex-1" : "h-100")}>
+							<MessageScroller className={cn("bg-card/50 min-h-0", expanded ? "flex-1" : messages.length === 0 ? "max-h-100" : "h-100")}>
 								<MessageScrollerViewport aria-label={ui[lang]["agent.assistant.transcript"]}>
-									<MessageScrollerContent aria-busy={busy} className={cn("gap-4 p-4", expanded && "mx-auto w-full max-w-3xl gap-6 py-6")}>
+									<MessageScrollerContent aria-busy={busy} className={cn("gap-4 p-2", expanded && "mx-auto w-full max-w-3xl gap-6 py-6")}>
 										<MessageScrollerItem messageId="disclaimer">
 											<Marker variant="separator">
 												<MarkerContent className="text-xs">{ui[lang]["agent.assistant.disclaimer"]}</MarkerContent>
@@ -474,20 +474,18 @@ export default function AIAssistantWindow({ isOpen, onClose, opener, lang = "zh-
 
 										{messages.length === 0 ? (
 											<MessageScrollerItem messageId="empty-state" className="flex shrink flex-col">
-												<Empty className="border-0 p-2">
-													<EmptyHeader>
-														<EmptyMedia variant="icon">
+												<Empty className="gap-3 border-0 p-0 text-left text-pretty">
+													<EmptyHeader className="w-full max-w-none items-start">
+														<EmptyMedia variant="icon" className="mb-0">
 															<Bot />
 														</EmptyMedia>
-														<EmptyTitle className="text-base">{ui[lang]["agent.assistant.title"]}</EmptyTitle>
 														<EmptyDescription>{ui[lang]["agent.assistant.greeting"]}</EmptyDescription>
 													</EmptyHeader>
-													<EmptyContent>
+													<EmptyContent className="max-w-none text-pretty">
 														<QuickPromptList
 															quickPrompts={quickPrompts}
 															ariaLabelTemplate={ui[lang]["agent.assistant.quickPrompt"]}
 															onSelect={submitPrompt}
-															className="w-full items-start"
 														/>
 													</EmptyContent>
 												</Empty>
@@ -636,9 +634,9 @@ export default function AIAssistantWindow({ isOpen, onClose, opener, lang = "zh-
 							transition={{ layout: layoutSpring }}
 							aria-label={ui[lang]["agent.assistant.chatForm"]}
 							onSubmit={handleSubmit}
-							className={cn("shrink-0 p-2", expanded && "mx-auto w-full max-w-3xl pb-4")}
+							className={cn("shrink-0 p-2", expanded && "mx-auto w-full max-w-3xl")}
 						>
-							<div className="bg-muted/50 ring-border/50 focus-within:ring-primary/50 focus-within:bg-muted flex items-end gap-2 rounded-lg p-1 ring-1 transition-[background-color,box-shadow]">
+							<div className="bg-muted/50 border-border/70 focus-within:ring-primary/50 focus-within:bg-muted flex items-end gap-2 rounded-xl border p-1 transition-[background-color,box-shadow] focus-within:ring-1">
 								<Textarea
 									ref={inputRef}
 									value={input}
@@ -654,7 +652,7 @@ export default function AIAssistantWindow({ isOpen, onClose, opener, lang = "zh-
 										type="button"
 										variant="secondary"
 										size="icon-lg"
-										className="cursor-pointer rounded-lg"
+										className="cursor-pointer rounded-[calc(var(--radius-xl)-5px)]"
 										onClick={() => stop()}
 										aria-label={ui[lang]["agent.assistant.stop"]}
 									>
@@ -664,7 +662,7 @@ export default function AIAssistantWindow({ isOpen, onClose, opener, lang = "zh-
 									<Button
 										type="submit"
 										size="icon-lg"
-										className="cursor-pointer rounded-lg"
+										className="cursor-pointer rounded-[calc(var(--radius-xl)-5px)]"
 										disabled={input.trim() === ""}
 										aria-label={ui[lang]["agent.assistant.send"]}
 									>

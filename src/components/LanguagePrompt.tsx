@@ -106,13 +106,15 @@ export default function LanguagePrompt({ currentUrl }: LanguagePromptProps) {
 					exit="hidden"
 					variants={shouldReduceMotion ? {} : variants}
 					transition={{ duration: 0.3 }}
-					className="text-primary fixed bottom-4 left-4 z-50 m-auto divide-y overflow-hidden rounded-xl border shadow-lg max-sm:right-4 max-sm:w-[calc(100vw-2rem)] max-sm:max-w-sm sm:w-auto sm:max-w-sm"
+					className="text-foreground ring-border/50 bg-card/75 fixed bottom-4 left-4 z-50 w-100 max-w-[calc(100vw-32px)] overflow-hidden rounded-[calc(var(--radius-xl)+8px)] shadow-lg ring-1 backdrop-blur-xl"
 				>
-					<div className="bg-background flex shrink-0 flex-col items-start gap-1 p-2 px-4 pr-10">
-						<div className="font-medium">{title}</div>
-						<p className="text-muted-foreground">{message}</p>
+					<div className="bg-muted border-border border-b px-4 py-3">
+						<div className="font-semibold">{title}</div>
 					</div>
-					<div className="bg-primary-foreground flex w-full justify-between gap-2 p-2">
+					<div className="bg-card/50 p-2">
+						<p className="text-muted-foreground text-sm/relaxed">{message}</p>
+					</div>
+					<div className="flex w-full justify-between gap-2 p-2">
 						<Button
 							variant="outline"
 							onClick={() => {
@@ -121,12 +123,12 @@ export default function LanguagePrompt({ currentUrl }: LanguagePromptProps) {
 								setShowPrompt(false);
 							}}
 							size="sm"
-							className="cursor-pointer"
+							className="min-h-11 cursor-pointer rounded-xl"
 						>
 							<X />
 							{dismissLabel}
 						</Button>
-						<Button className="group cursor-pointer" onClick={handleSwitch} size="sm">
+						<Button className="group min-h-11 cursor-pointer rounded-xl" onClick={handleSwitch} size="sm">
 							{switchLabel}
 							<ArrowRight className="transition-transform group-hover:translate-x-0.5" />
 						</Button>

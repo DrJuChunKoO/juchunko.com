@@ -517,7 +517,7 @@ export default function TTSPlayer({ isOpen, lang = "zh-TW" }: TTSPlayerProps) {
 	}, [resetAllStyles]);
 
 	return (
-		<div className="bg-card/50 flex flex-col p-4">
+		<div className="bg-card/50 flex flex-col p-2">
 			{mode === "loading" && (
 				<div className="flex min-h-[160px] flex-col items-center justify-center">
 					<Loader size={24} />
@@ -532,13 +532,13 @@ export default function TTSPlayer({ isOpen, lang = "zh-TW" }: TTSPlayerProps) {
 
 			{mode === "api" && segments.length > 0 && (
 				<motion.div
-					className="flex flex-col space-y-5 py-2"
+					className="flex flex-col gap-3"
 					initial={{ opacity: 0, y: 10 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.3 }}
 				>
 					{/* Currently Playing Text */}
-					<div className="bg-muted/30 border-border/50 rounded-lg border px-3 py-2.5">
+					<div className="bg-muted/50 border-border/70 rounded-xl border px-3 py-2">
 						<div className="text-muted-foreground mb-1 text-xs">{ui[lang]["agent.voiceReader.playing"]}</div>
 						<div className="text-foreground line-clamp-2 text-sm leading-relaxed">{segments[currentIndex]?.text || ""}</div>
 					</div>
@@ -570,7 +570,7 @@ export default function TTSPlayer({ isOpen, lang = "zh-TW" }: TTSPlayerProps) {
 								<motion.button
 									whileTap={prefersReducedMotion ? undefined : { scale: 0.95 }}
 									onClick={() => setHighlightEnabled(!highlightEnabled)}
-									className={`focus-visible:ring-ring inline-flex size-11 cursor-pointer items-center justify-center rounded-md transition-colors focus-visible:ring-2 ${
+									className={`focus-visible:ring-ring inline-flex size-11 cursor-pointer items-center justify-center rounded-lg transition-colors focus-visible:ring-2 ${
 										highlightEnabled ? "bg-primary/15 text-primary" : "text-muted-foreground hover:bg-muted-foreground/10"
 									}`}
 									title={highlightEnabled ? ui[lang]["agent.voiceReader.disableHighlight"] : ui[lang]["agent.voiceReader.enableHighlight"]}

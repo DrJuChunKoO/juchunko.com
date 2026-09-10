@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { motion, AnimatePresence, useMotionValue, useReducedMotion } from "motion/react";
 import { BookAudio, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import TTSPlayer from "./TTSPlayer";
 import { ui } from "src/i18n/ui";
 
@@ -117,23 +118,24 @@ export default function VoiceReaderWindow({ isOpen, onClose, opener, lang = "zh-
 					style={{ bottom: y }}
 					role="dialog"
 					aria-label={ui[lang]["agent.voiceReader.title"]}
-					className="ring-border/50 bg-card/75 fixed right-4 z-40 w-[420px] max-w-[calc(100vw-32px)] origin-bottom-right overflow-hidden rounded-xl shadow-lg ring-1 backdrop-blur-xl"
+					className="ring-border/50 bg-card/75 fixed right-4 z-40 w-100 max-w-[calc(100vw-32px)] origin-bottom-right overflow-hidden rounded-[calc(var(--radius-xl)+8px)] shadow-lg ring-1 backdrop-blur-xl"
 				>
-					<div className="bg-muted text-foreground border-border flex items-center justify-between border-b p-2 pl-4">
+					<div className="bg-muted text-foreground border-border flex items-center justify-between gap-2 border-b p-2 pl-4">
 						<div className="flex items-center gap-2">
 							<BookAudio className="text-primary h-5 w-5" />
 							<h3 className="font-semibold">{ui[lang]["agent.voiceReader.title"]}</h3>
 						</div>
 						<div className="flex items-center gap-1">
-							<motion.button
+							<Button
 								ref={closeButtonRef}
-								whileTap={prefersReduced ? undefined : { scale: 0.95 }}
+								variant="ghost"
+								size="icon-sm"
 								onClick={onClose}
-								className="hover:bg-muted-foreground/10 text-muted-foreground hover:text-foreground focus-visible:ring-ring inline-flex size-11 cursor-pointer items-center justify-center rounded-lg transition-colors focus-visible:ring-2"
+								className="text-muted-foreground hover:text-foreground cursor-pointer rounded-lg"
 								aria-label={ui[lang]["agent.voiceReader.close"]}
 							>
-								<X className="size-5" />
-							</motion.button>
+								<X />
+							</Button>
 						</div>
 					</div>
 
