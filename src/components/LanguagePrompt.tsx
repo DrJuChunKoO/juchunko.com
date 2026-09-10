@@ -106,7 +106,7 @@ export default function LanguagePrompt({ currentUrl }: LanguagePromptProps) {
 					exit="hidden"
 					variants={shouldReduceMotion ? {} : variants}
 					transition={{ duration: 0.3 }}
-					className="text-foreground ring-border/50 bg-card/75 fixed bottom-4 left-4 z-50 w-100 max-w-[calc(100vw-32px)] overflow-hidden rounded-[calc(var(--radius-xl)+8px)] shadow-lg ring-1 backdrop-blur-xl"
+					className="text-foreground ring-border/50 bg-card/75 fixed bottom-4 left-4 z-50 w-100 max-w-[calc(100vw-32px)] overflow-hidden rounded-xl shadow-lg ring-1 backdrop-blur-xl"
 				>
 					<div className="bg-muted border-border border-b px-4 py-3">
 						<div className="font-semibold">{title}</div>
@@ -123,12 +123,16 @@ export default function LanguagePrompt({ currentUrl }: LanguagePromptProps) {
 								setShowPrompt(false);
 							}}
 							size="sm"
-							className="min-h-11 cursor-pointer rounded-xl"
+							className="min-h-11 cursor-pointer rounded-[max(0.5rem,calc(var(--radius-xl)-6px))]"
 						>
 							<X />
 							{dismissLabel}
 						</Button>
-						<Button className="group min-h-11 cursor-pointer rounded-xl" onClick={handleSwitch} size="sm">
+						<Button
+							className="group min-h-11 cursor-pointer rounded-[max(0.5rem,calc(var(--radius-xl)-6px))]"
+							onClick={handleSwitch}
+							size="sm"
+						>
 							{switchLabel}
 							<ArrowRight className="transition-transform group-hover:translate-x-0.5" />
 						</Button>

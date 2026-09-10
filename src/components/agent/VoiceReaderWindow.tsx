@@ -118,7 +118,7 @@ export default function VoiceReaderWindow({ isOpen, onClose, opener, lang = "zh-
 					style={{ bottom: y }}
 					role="dialog"
 					aria-label={ui[lang]["agent.voiceReader.title"]}
-					className="ring-border/50 bg-card/75 fixed right-4 z-40 w-100 max-w-[calc(100vw-32px)] origin-bottom-right overflow-hidden rounded-[calc(var(--radius-xl)+8px)] shadow-lg ring-1 backdrop-blur-xl"
+					className="ring-border/50 bg-card/75 fixed right-4 z-40 w-100 max-w-[calc(100vw-32px)] origin-bottom-right overflow-hidden rounded-xl shadow-lg ring-1 backdrop-blur-xl"
 				>
 					<div className="bg-muted text-foreground border-border flex items-center justify-between gap-2 border-b p-2 pl-4">
 						<div className="flex items-center gap-2">
@@ -131,7 +131,7 @@ export default function VoiceReaderWindow({ isOpen, onClose, opener, lang = "zh-
 								variant="ghost"
 								size="icon-sm"
 								onClick={onClose}
-								className="text-muted-foreground hover:text-foreground cursor-pointer rounded-lg"
+								className="text-muted-foreground hover:text-foreground cursor-pointer rounded-[max(0.5rem,calc(var(--radius-xl)-6px))]"
 								aria-label={ui[lang]["agent.voiceReader.close"]}
 							>
 								<X />

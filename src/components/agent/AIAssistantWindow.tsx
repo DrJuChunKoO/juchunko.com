@@ -156,7 +156,7 @@ function QuickPromptList({
 					type="button"
 					onClick={() => onSelect(quickPrompt.prompt)}
 					aria-label={formatQuickPromptLabel(ariaLabelTemplate, quickPrompt.text)}
-					className="border-border/70 bg-card/80 text-foreground hover:border-border hover:bg-muted focus-visible:ring-ring flex min-h-11 min-w-0 cursor-pointer items-center justify-between gap-2 rounded-lg border px-3 py-2 text-left text-sm transition-colors focus-visible:ring-2 focus-visible:ring-offset-2"
+					className="border-border/70 bg-card/80 text-foreground hover:border-border hover:bg-muted focus-visible:ring-ring flex min-h-11 min-w-0 cursor-pointer items-center justify-between gap-2 rounded-[max(0.5rem,calc(var(--radius-xl)-6px))] border px-3 py-2 text-left text-sm transition-colors focus-visible:ring-2 focus-visible:ring-offset-2"
 				>
 					<span className="min-w-0 wrap-break-word">{quickPrompt.text}</span>
 					<ArrowRight aria-hidden="true" className="text-muted-foreground size-3.5 shrink-0" />
@@ -402,7 +402,7 @@ export default function AIAssistantWindow({ isOpen, onClose, opener, lang = "zh-
 						}}
 						style={{
 							// borderRadius 放 style，layout 變形時才不會被 scale 扭歪
-							borderRadius: expanded ? 0 : "calc(var(--radius-xl) + 8px)",
+							borderRadius: expanded ? 0 : "var(--radius-xl)",
 						}}
 						className={cn(
 							"ring-border/50 pointer-events-auto fixed flex origin-bottom-right flex-col overflow-hidden will-change-[transform,border-radius]",
@@ -430,7 +430,7 @@ export default function AIAssistantWindow({ isOpen, onClose, opener, lang = "zh-
 									<Button
 										variant="ghost"
 										size="icon-sm"
-										className="text-muted-foreground hover:text-foreground relative cursor-pointer overflow-hidden rounded-lg"
+										className="text-muted-foreground hover:text-foreground relative cursor-pointer overflow-hidden rounded-[max(0.5rem,calc(var(--radius-xl)-6px))]"
 										onClick={() => setExpanded((value) => !value)}
 										aria-label={expanded ? ui[lang]["agent.assistant.collapse"] : ui[lang]["agent.assistant.expand"]}
 										aria-pressed={expanded}
@@ -451,7 +451,7 @@ export default function AIAssistantWindow({ isOpen, onClose, opener, lang = "zh-
 									<Button
 										variant="ghost"
 										size="icon-sm"
-										className="text-muted-foreground hover:text-foreground cursor-pointer rounded-lg"
+										className="text-muted-foreground hover:text-foreground cursor-pointer rounded-[max(0.5rem,calc(var(--radius-xl)-6px))]"
 										onClick={onClose}
 										aria-label={ui[lang]["agent.assistant.close"]}
 									>
@@ -636,7 +636,7 @@ export default function AIAssistantWindow({ isOpen, onClose, opener, lang = "zh-
 							onSubmit={handleSubmit}
 							className={cn("shrink-0 p-2", expanded && "mx-auto w-full max-w-3xl")}
 						>
-							<div className="bg-muted/50 border-border/70 focus-within:ring-primary/50 focus-within:bg-muted flex items-end gap-2 rounded-xl border p-1 transition-[background-color,box-shadow] focus-within:ring-1">
+							<div className="bg-muted/50 border-border/70 focus-within:ring-primary/50 focus-within:bg-muted flex items-end gap-2 rounded-[max(0.625rem,calc(var(--radius-xl)-4px))] border p-1 transition-[background-color,box-shadow] focus-within:ring-1">
 								<Textarea
 									ref={inputRef}
 									value={input}
@@ -652,7 +652,7 @@ export default function AIAssistantWindow({ isOpen, onClose, opener, lang = "zh-
 										type="button"
 										variant="secondary"
 										size="icon-lg"
-										className="cursor-pointer rounded-[calc(var(--radius-xl)-5px)]"
+										className="cursor-pointer rounded-[max(0.5rem,calc(var(--radius-xl)-6px))]"
 										onClick={() => stop()}
 										aria-label={ui[lang]["agent.assistant.stop"]}
 									>
@@ -662,7 +662,7 @@ export default function AIAssistantWindow({ isOpen, onClose, opener, lang = "zh-
 									<Button
 										type="submit"
 										size="icon-lg"
-										className="cursor-pointer rounded-[calc(var(--radius-xl)-5px)]"
+										className="cursor-pointer rounded-[max(0.5rem,calc(var(--radius-xl)-6px))]"
 										disabled={input.trim() === ""}
 										aria-label={ui[lang]["agent.assistant.send"]}
 									>

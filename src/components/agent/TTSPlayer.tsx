@@ -538,7 +538,7 @@ export default function TTSPlayer({ isOpen, lang = "zh-TW" }: TTSPlayerProps) {
 					transition={{ duration: 0.3 }}
 				>
 					{/* Currently Playing Text */}
-					<div className="bg-muted/50 border-border/70 rounded-xl border px-3 py-2">
+					<div className="bg-muted/50 border-border/70 rounded-[max(0.5rem,calc(var(--radius-xl)-6px))] border px-3 py-2">
 						<div className="text-muted-foreground mb-1 text-xs">{ui[lang]["agent.voiceReader.playing"]}</div>
 						<div className="text-foreground line-clamp-2 text-sm leading-relaxed">{segments[currentIndex]?.text || ""}</div>
 					</div>
