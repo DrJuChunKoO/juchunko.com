@@ -1,26 +1,30 @@
 ---
-const { post, lang, category, showDescription = false, description, badge, headingLevel = 2 } = Astro.props;
+const { post, lang, category, showDescription = false, description, badge, headingLevel = 2, compactMobile = false } = Astro.props;
 const cardDescription = description ?? post.data.description;
 const Heading = `h${headingLevel}`;
 ---
 
 <a
 	href={`/${lang}/${category}/${post.id.replace(/^.+?\//, "").replace(/\.(md|mdx)$/, "")}`}
+	class:list={{ "compact-mobile": compactMobile }}
 	class="group hover:outline-primary/50 focus-visible:outline-primary/50 relative flex flex-col items-start overflow-hidden rounded-lg bg-gray-50 p-0.5 transition-colors hover:bg-gray-100 hover:outline-2 hover:outline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 md:p-4 md:pr-24 dark:bg-white/5 dark:hover:bg-white/10"
 >
 	{
 		badge && (
-			<span class="border-primary/15 bg-background/90 text-primary absolute top-2 right-2 z-10 inline-flex rounded-full border px-2 py-0.5 text-[0.625rem] font-semibold backdrop-blur-sm md:top-3 md:right-3 md:text-xs">
+			<span class="card-badge border-primary/15 bg-background/90 text-primary absolute top-2 right-2 z-10 inline-flex rounded-full border px-2 py-0.5 text-[0.625rem] font-semibold backdrop-blur-sm md:top-3 md:right-3 md:text-xs">
 				{badge}
 			</span>
 		)
 	}
-	<div class="bg-primary/5 dark:bg-primary/7.5 flex h-16 w-full items-center justify-center rounded-md text-3xl md:hidden">
+	<div
+		aria-hidden="true"
+		class="card-icon bg-primary/5 dark:bg-primary/7.5 flex h-16 w-full items-center justify-center rounded-md text-3xl md:hidden"
+	>
 		{post.data.emoji}
 	</div>
-	<div class="p-2 md:p-0">
-		<Heading class="text-base font-semibold md:text-lg">{post.data.title}</Heading>
-		<p class="text-muted-foreground text-xs tracking-tight md:text-sm">
+	<div class="card-content p-2 md:p-0">
+		<Heading class="card-title text-base font-semibold md:text-lg">{post.data.title}</Heading>
+		<p class="card-status text-muted-foreground text-xs tracking-tight md:text-sm">
 			{
 				post.data.status
 					? post.data.status
@@ -31,7 +35,11 @@ const Heading = `h${headingLevel}`;
 						})
 			}
 		</p>
-		{showDescription && cardDescription && <p class="text-muted-foreground mt-2 text-sm leading-relaxed">{cardDescription}</p>}
+		{
+			showDescription && cardDescription && (
+				<p class="card-description text-muted-foreground mt-2 text-sm leading-relaxed">{cardDescription}</p>
+			)
+		}
 	</div>
 	<div class="absolute right-0 bottom-0 hidden size-24 items-end justify-end pr-4 drop-shadow-lg drop-shadow-black/10 md:flex">
 		<div
@@ -41,3 +49,60 @@ const Heading = `h${headingLevel}`;
 		</div>
 	</div>
 </a>
+
+<style>
+	@media (width < 48rem) {
+		.compact-mobile {
+			display: grid;
+			grid-template-columns: 2.5rem minmax(0, 1fr);
+			align-content: start;
+			gap: 0.375rem 0.875rem;
+			padding: 1rem;
+		}
+
+		.compact-mobile .card-icon {
+			grid-column: 1;
+			grid-row: 1 / span 2;
+			width: 2.5rem;
+			height: 2.5rem;
+			font-size: 1.5rem;
+		}
+
+		.compact-mobile .card-content {
+			display: contents;
+		}
+
+		.compact-mobile .card-title {
+			grid-column: 2;
+			grid-row: 1;
+			font-size: 1rem;
+			line-height: 1.5;
+			text-wrap: pretty;
+		}
+
+		.compact-mobile .card-status {
+			grid-column: 2;
+			grid-row: 2;
+			font-size: 0.8125rem;
+			line-height: 1.65;
+		}
+
+		.compact-mobile .card-badge {
+			position: static;
+			grid-column: 2;
+			grid-row: 3;
+			justify-self: start;
+			margin-top: 0.25rem;
+			font-size: 0.625rem;
+		}
+
+		.compact-mobile .card-description {
+			grid-column: 1 / -1;
+			margin-top: 0.5rem;
+			padding-top: 0.75rem;
+			border-top: 1px solid var(--color-border);
+			font-size: 0.875rem;
+			line-height: 1.75;
+		}
+	}
+</style>
