@@ -1,12 +1,13 @@
-import { useEffect, useRef, useState, type MouseEvent as ReactMouseEvent } from "react";
+import { lazy, Suspense, useEffect, useRef, useState, type MouseEvent as ReactMouseEvent } from "react";
 import { AnimatePresence, motion, useMotionValue, useReducedMotion, type Variants } from "motion/react";
 import { BotMessageSquare, Phone, BookAudio, Sparkles, ChevronDown } from "lucide-react";
 import AgentButton from "./AgentButton";
-import PhoneCallInterface from "./PhoneCallInterface";
-import AIAssistantWindow from "./AIAssistantWindow";
-import VoiceReaderWindow from "./VoiceReaderWindow";
 import { ui } from "src/i18n/ui";
 import { OPEN_AI_ASSISTANT_EVENT, type OpenAIAssistantEventDetail } from "./events";
+
+const PhoneCallInterface = lazy(() => import("./PhoneCallInterface"));
+const AIAssistantWindow = lazy(() => import("./AIAssistantWindow"));
+const VoiceReaderWindow = lazy(() => import("./VoiceReaderWindow"));
 
 type SupportedLang = "en" | "zh-TW";
 
@@ -86,6 +87,7 @@ export default function Agent({ lang = "zh-TW" }: AgentProps = {}) {
 	const [phoneCallOpen, setPhoneCallOpen] = useState(false);
 	const [aiAssistantOpen, setAiAssistantOpen] = useState(false);
 	const [voiceReaderOpen, setVoiceReaderOpen] = useState(false);
+	const mountedWindows = useRef({ phone: false, assistant: false, reader: false });
 	const aiAssistantOpenerRef = useRef<HTMLElement | null>(null);
 	const voiceReaderOpenerRef = useRef<HTMLElement | null>(null);
 	// 以 y 控制與底部距離，避免覆蓋 footer
@@ -109,11 +111,13 @@ export default function Agent({ lang = "zh-TW" }: AgentProps = {}) {
 
 	// 處理按鈕點擊事件
 	const handlePhoneCall = () => {
+		mountedWindows.current.phone = true;
 		setPhoneCallOpen(true);
 		setOpen(false); // 關閉手機選單
 	};
 
 	const showAIAssistant = (opener: HTMLElement | null) => {
+		mountedWindows.current.assistant = true;
 		if (!aiAssistantOpen) aiAssistantOpenerRef.current = opener;
 		// 關閉語音朗讀窗口，只允許一個小窗口同時開啟
 		setVoiceReaderOpen(false);
@@ -138,6 +142,7 @@ export default function Agent({ lang = "zh-TW" }: AgentProps = {}) {
 	}, [aiAssistantOpen]);
 
 	const handleVoiceReader = (event: ReactMouseEvent<HTMLButtonElement>) => {
+		mountedWindows.current.reader = true;
 		if (!voiceReaderOpen) voiceReaderOpenerRef.current = event.currentTarget;
 		// 關閉 AI 助手窗口，只允許一個小窗口同時開啟
 		setAiAssistantOpen(false);
@@ -182,6 +187,11 @@ export default function Agent({ lang = "zh-TW" }: AgentProps = {}) {
 
 	// 檢查是否有任何窗口打開
 	const hasWindowOpen = phoneCallOpen || aiAssistantOpen || voiceReaderOpen;
+	const loadingStatus = (
+		<span role="status" className="bg-card text-card-foreground border-border rounded-lg border px-4 py-2 text-sm shadow-sm">
+			{ui[lang]["agent.assistant.loading"]}
+		</span>
+	);
 
 	return (
 		<motion.div style={{ bottom: y }} className="fixed right-4 bottom-4 z-20 m-auto flex w-max flex-col items-end justify-end gap-2">
@@ -307,24 +317,29 @@ export default function Agent({ lang = "zh-TW" }: AgentProps = {}) {
 				</motion.button>
 			)}
 
-			{/* 全螢幕撥打電話介面 */}
-			<PhoneCallInterface isOpen={phoneCallOpen} onClose={() => setPhoneCallOpen(false)} lang={lang} />
-
-			{/* AI 助手小窗口 */}
-			<AIAssistantWindow
-				isOpen={aiAssistantOpen}
-				onClose={() => setAiAssistantOpen(false)}
-				opener={aiAssistantOpenerRef.current}
-				lang={lang}
-			/>
-
-			{/* 語音朗讀小窗口 */}
-			<VoiceReaderWindow
-				isOpen={voiceReaderOpen}
-				onClose={() => setVoiceReaderOpen(false)}
-				opener={voiceReaderOpenerRef.current}
-				lang={lang}
-			/>
+			<Suspense fallback={loadingStatus}>
+				{mountedWindows.current.phone && <PhoneCallInterface isOpen={phoneCallOpen} onClose={() => setPhoneCallOpen(false)} lang={lang} />}
+			</Suspense>
+			<Suspense fallback={loadingStatus}>
+				{mountedWindows.current.assistant && (
+					<AIAssistantWindow
+						isOpen={aiAssistantOpen}
+						onClose={() => setAiAssistantOpen(false)}
+						opener={aiAssistantOpenerRef.current}
+						lang={lang}
+					/>
+				)}
+			</Suspense>
+			<Suspense fallback={loadingStatus}>
+				{mountedWindows.current.reader && (
+					<VoiceReaderWindow
+						isOpen={voiceReaderOpen}
+						onClose={() => setVoiceReaderOpen(false)}
+						opener={voiceReaderOpenerRef.current}
+						lang={lang}
+					/>
+				)}
+			</Suspense>
 		</motion.div>
 	);
 }

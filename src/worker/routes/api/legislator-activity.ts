@@ -10,6 +10,9 @@ const API_BASE = "https://ly.govapi.tw/v2";
 const LEGISLATOR_TERM = 11;
 const LEGISLATOR_NAME = "葛如鈞";
 const encodedName = encodeURIComponent(LEGISLATOR_NAME);
+const MAX_PAGE = 50;
+const MAX_PAGE_SIZE = 100;
+const MAX_FETCH_LIMIT = 1000;
 
 interface BillActivity {
 	id: string;
@@ -44,7 +47,7 @@ export type ActivityItem = {
 	location?: string;
 };
 
-async function fetchJSON<T>(path: string, params?: Record<string, string | number>): Promise<T | null> {
+async function fetchJSON<T>(path: string, params?: Record<string, string | number>): Promise<T> {
 	const url = new URL(`${API_BASE}${path}`);
 	if (params) {
 		Object.entries(params).forEach(([key, value]) => {
@@ -62,7 +65,7 @@ async function fetchJSON<T>(path: string, params?: Record<string, string | numbe
 	);
 
 	if (!response.ok) {
-		return null;
+		throw new Error(`Failed to fetch legislator activity from ${url}: HTTP ${response.status}`);
 	}
 
 	return (await response.json()) as T;
@@ -212,16 +215,25 @@ function mapMeetActivity(entry: Record<string, unknown>): MeetActivity | null {
 }
 
 type BillsResponse = {
-	bills?: Record<string, unknown>[];
+	bills: Record<string, unknown>[];
 };
 
 type MeetsResponse = {
-	meets?: Record<string, unknown>[];
+	meets: Record<string, unknown>[];
 };
 
 app.get("/", async (c) => {
-	const page = parseInt(c.req.query("page") || "1", 10);
-	const pageSize = parseInt(c.req.query("pageSize") || "20", 10);
+	const pageParam = c.req.query("page") ?? "1";
+	const pageSizeParam = c.req.query("pageSize") ?? "20";
+	const page = Number(pageParam);
+	const pageSize = Number(pageSizeParam);
+	if (
+		!(/^[1-9]\d*$/.test(pageParam) && page <= MAX_PAGE) ||
+		!(/^[1-9]\d*$/.test(pageSizeParam) && pageSize <= MAX_PAGE_SIZE) ||
+		page * pageSize > MAX_FETCH_LIMIT
+	) {
+		return c.json({ success: false, message: "Invalid page or pageSize" }, 400);
+	}
 
 	const cacheKey = new URL(c.req.url);
 	cacheKey.searchParams.set("page", String(page));
@@ -252,12 +264,15 @@ app.get("/", async (c) => {
 				limit: fetchLimit,
 			}),
 		]);
+		if (!Array.isArray(proposeRes.bills) || !Array.isArray(cosignRes.bills) || !Array.isArray(meetsRes.meets)) {
+			throw new Error("Invalid legislator activity response from upstream");
+		}
 
-		const proposedBills = proposeRes?.bills?.map((entry) => mapBillActivity(entry)).filter((item): item is BillActivity => !!item) ?? [];
+		const proposedBills = proposeRes.bills.map((entry) => mapBillActivity(entry)).filter((item): item is BillActivity => !!item);
 
-		const cosignedBills = cosignRes?.bills?.map((entry) => mapBillActivity(entry)).filter((item): item is BillActivity => !!item) ?? [];
+		const cosignedBills = cosignRes.bills.map((entry) => mapBillActivity(entry)).filter((item): item is BillActivity => !!item);
 
-		const meetList = meetsRes?.meets?.map((entry) => mapMeetActivity(entry)).filter((item): item is MeetActivity => !!item) ?? [];
+		const meetList = meetsRes.meets.map((entry) => mapMeetActivity(entry)).filter((item): item is MeetActivity => !!item);
 
 		const activities: ActivityItem[] = [
 			...proposedBills.map(
@@ -320,9 +335,9 @@ app.get("/", async (c) => {
 		response.headers.set("Cache-Control", LEGISLATOR_ACTIVITY_CACHE_CONTROL);
 		putEdgeCache(c.executionCtx, cacheKey.toString(), response);
 		return response;
-	} catch (error: any) {
+	} catch (error) {
 		console.error("Failed to fetch legislator activity:", error);
-		return c.json({ success: false, message: error.message }, 500);
+		return c.json({ success: false, message: error instanceof Error ? error.message : "Failed to fetch legislator activity" }, 500);
 	}
 });
 

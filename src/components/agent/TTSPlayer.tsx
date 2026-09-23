@@ -98,15 +98,6 @@ export default function TTSPlayer({ isOpen, lang = "zh-TW" }: TTSPlayerProps) {
 			el.style.transition = style.transition;
 		});
 		originalStylesRef.current.clear();
-		// Also clean up any lingering styles on all elements in main
-		const main = document.querySelector("main") || document.querySelector("article");
-		if (main) {
-			main.querySelectorAll("*").forEach((el) => {
-				const htmlEl = el as HTMLElement;
-				htmlEl.style.color = "";
-				htmlEl.style.transition = "";
-			});
-		}
 	}, []);
 
 	const {

@@ -11,11 +11,18 @@ interface LanguageSelectorProps {
 	initialLang?: SupportedLang;
 }
 
+export function getLanguageUrl(url: URL, lang: SupportedLang) {
+	const pathname = /^\/(en|zh-TW)(?=\/|$)/.test(url.pathname)
+		? url.pathname.replace(/^\/(en|zh-TW)(?=\/|$)/, `/${lang}`)
+		: `/${lang}${url.pathname === "/" ? "" : url.pathname}`;
+	return `${pathname}${url.search}${url.hash}`;
+}
+
 export default function LanguageSelector({ initialLang = "zh-TW" }: LanguageSelectorProps) {
 	const [selectedLanguage, setSelectedLanguage] = useState<SupportedLang>(initialLang);
 	useEffect(() => {
 		const pathname = window.location.pathname;
-		const langMatch = pathname.match(/^\/(en|zh-TW)/);
+		const langMatch = pathname.match(/^\/(en|zh-TW)(?=\/|$)/);
 		if (langMatch) {
 			setSelectedLanguage(langMatch[1] as SupportedLang);
 		} else {
@@ -24,10 +31,9 @@ export default function LanguageSelector({ initialLang = "zh-TW" }: LanguageSele
 	}, [initialLang]);
 
 	const handleLanguageChange = (lang: SupportedLang) => {
-		if (lang === selectedLanguage) return;
-		const newPath = window.location.pathname.replace(/^(\/en|\/zh-TW)/, `/${lang}`);
-		window.history.pushState({}, "", newPath);
-		location.reload();
+		const target = getLanguageUrl(new URL(window.location.href), lang);
+		if (target === `${window.location.pathname}${window.location.search}${window.location.hash}`) return;
+		window.location.assign(target);
 	};
 
 	return (

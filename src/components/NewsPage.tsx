@@ -111,6 +111,21 @@ const useClientLayoutEffect = typeof document === "undefined" ? useEffect : useL
 
 type NewsPageLang = "en" | "zh-TW";
 
+export function closeTopicHistory(history: Pick<History, "state" | "back" | "replaceState">, url: URL, entryId: string | null) {
+	if (entryId && history.state?.newsTopicDialogId === entryId) {
+		history.back();
+		return;
+	}
+
+	url.searchParams.delete("topic");
+	history.replaceState(history.state, "", url.toString());
+}
+
+export function getTopicMonthKeys(months: string[], latestNewsTime: string | null) {
+	const latestMonth = latestNewsTime?.slice(0, 7);
+	return latestMonth && months.includes(latestMonth) ? [latestMonth, ...months.filter((month) => month !== latestMonth)] : months;
+}
+
 function mapTopicNewsItem(item: any): TopicArchiveNewsItem {
 	return {
 		url: item.url,
@@ -540,6 +555,8 @@ function TopicDialog({
 	const dialogRef = useRef<HTMLDivElement>(null);
 	const dialogLayerRef = useRef<HTMLDivElement>(null);
 	const releaseIsolationRef = useRef<(() => void) | null>(null);
+	const selectedTopicIdRef = useRef(selectedTopicId);
+	selectedTopicIdRef.current = selectedTopicId;
 
 	useEffect(() => {
 		if (!selectedTopicId) return;
@@ -624,6 +641,7 @@ function TopicDialog({
 			? getTopicDisplaySummary(selectedTopicPreview, lang)
 			: null;
 	const handleExitComplete = () => {
+		if (selectedTopicIdRef.current) return;
 		releaseIsolationRef.current?.();
 		onExitComplete();
 	};
@@ -809,11 +827,10 @@ export default function NewsPage({ lang, relatedPages }: { lang: NewsPageLang; r
 	const [visibleMonthCount, setVisibleMonthCount] = useState(1);
 	const prefersReducedMotion = Boolean(useReducedMotion());
 
-	// Map topic id → month string, populated as months load
-	const topicMonthMapRef = useRef<Map<string, string>>(new Map());
-	// Track whether initial URL ?topic has been handled
-	const initialTopicHandledRef = useRef(false);
+	const topicHistoryIdRef = useRef<string | null>(null);
 	const topicDialogOpenerRef = useRef<HTMLElement | null>(null);
+	const selectedTopicIdRef = useRef(selectedTopicId);
+	selectedTopicIdRef.current = selectedTopicId;
 
 	const {
 		data: archiveMonthIndex,
@@ -928,107 +945,100 @@ export default function NewsPage({ lang, relatedPages }: { lang: NewsPageLang; r
 		}
 	}, [isTopicDialogMounted]);
 
-	// Build/update topic→month map as archive month data loads
 	useEffect(() => {
-		if (!archiveMonthIndex) return;
-		// We rely on MonthTopicsSection to populate the map when it renders,
-		// but for the initial URL topic lookup we need the month index only to
-		// figure out which month to expand; the actual preview data comes later.
-	}, [archiveMonthIndex]);
-
-	// popstate: sync state when user navigates back/forward
-	useEffect(() => {
-		const onPopState = () => {
+		const syncTopicFromUrl = () => {
 			const params = new URLSearchParams(window.location.search);
 			const topicId = params.get("topic");
 			if (topicId) {
+				if (
+					!topicDialogOpenerRef.current &&
+					document.activeElement instanceof HTMLElement &&
+					document.activeElement !== document.body &&
+					!document.activeElement.closest('[role="dialog"]')
+				) {
+					topicDialogOpenerRef.current = document.activeElement;
+				}
+				setSelectedTopicPreview(null);
 				setIsTopicDialogMounted(true);
 				setSelectedTopicId(topicId);
 			} else {
 				setSelectedTopicId(null);
 			}
 		};
-		window.addEventListener("popstate", onPopState);
-		return () => window.removeEventListener("popstate", onPopState);
+		syncTopicFromUrl();
+		window.addEventListener("popstate", syncTopicFromUrl);
+		return () => window.removeEventListener("popstate", syncTopicFromUrl);
 	}, []);
 
-	// Initial URL topic: once archiveMonthIndex is loaded, handle ?topic in URL
 	useEffect(() => {
-		if (initialTopicHandledRef.current) return;
-		if (!archiveMonthIndex || archiveMonthIndex.length === 0) return;
-
-		const params = new URLSearchParams(window.location.search);
-		const topicId = params.get("topic");
-		if (!topicId) {
-			initialTopicHandledRef.current = true;
+		if (
+			!selectedTopicId ||
+			selectedTopicPreview ||
+			!archiveMonthIndex?.length ||
+			!selectedTopic ||
+			selectedTopic.topic.id !== selectedTopicId ||
+			searchQuery
+		)
 			return;
-		}
 
-		initialTopicHandledRef.current = true;
+		let cancelled = false;
+		let scrollTimer: ReturnType<typeof setTimeout> | undefined;
+		const isCurrentTopic = () => !cancelled && new URLSearchParams(window.location.search).get("topic") === selectedTopicId;
+		const monthKeys = getTopicMonthKeys(
+			archiveMonthIndex.map((month) => month.month),
+			selectedTopic.topic.latestNewsTime,
+		);
 
-		// Find which month contains this topic from the cached query data
-		// We need to expand months until we find it; start by revealing all months
-		// progressively until the topic's month section is in the DOM.
-		const allMonthKeys = archiveMonthIndex.map((m) => m.month);
-
-		// Try to find the month from already-loaded query cache
-		const findMonthForTopic = (): string | null => {
-			for (const monthKey of allMonthKeys) {
-				const cached = queryClient.getQueryData<ArchiveMonth | null>(["news-archive-month", monthKey]);
-				if (cached?.topics.some((t) => t.id === topicId)) {
-					return monthKey;
-				}
-			}
-			return null;
-		};
-
-		const scrollAndOpen = (monthKey: string) => {
-			// Ensure the month is visible
-			const monthIndex = allMonthKeys.indexOf(monthKey);
-			if (monthIndex >= 0) {
-				setVisibleMonthCount((c) => Math.max(c, monthIndex + 1));
-			}
-
-			// Wait for the section to render, then scroll and open dialog
-			const tryScrollAndOpen = (attempts = 0) => {
-				const section = document.getElementById(`month-${monthKey}`);
+		const revealMonth = (month: string, preview: TopicArchiveCard) => {
+			setVisibleMonthCount((count) => Math.max(count, archiveMonthIndex.findIndex((entry) => entry.month === month) + 1));
+			const scrollWhenRendered = (attempts = 0) => {
+				if (!isCurrentTopic()) return;
+				const section = document.getElementById(`month-${month}`);
 				if (section) {
 					section.scrollIntoView({ behavior: "smooth", block: "start" });
-					// Find the topic preview from cache and open dialog
-					const cached = queryClient.getQueryData<ArchiveMonth | null>(["news-archive-month", monthKey]);
-					const topicPreview = cached?.topics.find((t) => t.id === topicId) ?? null;
-					setSelectedTopicPreview(topicPreview);
-					setIsTopicDialogMounted(true);
-					setSelectedTopicId(topicId);
+					setSelectedTopicPreview(preview);
 				} else if (attempts < 20) {
-					setTimeout(() => tryScrollAndOpen(attempts + 1), 100);
+					scrollTimer = setTimeout(() => scrollWhenRendered(attempts + 1), 100);
 				}
 			};
-			tryScrollAndOpen();
+			scrollWhenRendered();
 		};
 
-		// Check if we already know the month
-		const knownMonth = findMonthForTopic();
-		if (knownMonth) {
-			scrollAndOpen(knownMonth);
-			return;
-		}
+		const findMonth = async () => {
+			for (const month of monthKeys) {
+				const cached = queryClient.getQueryData<ArchiveMonth | null>(["news-archive-month", month]);
+				const preview = cached?.topics.find((topic) => topic.id === selectedTopicId);
+				if (preview && isCurrentTopic()) {
+					revealMonth(month, preview);
+					return;
+				}
+			}
 
-		// Otherwise open dialog immediately (data will load via useQuery),
-		// and try to find the month as months fetch in the background
-		setIsTopicDialogMounted(true);
-		setSelectedTopicId(topicId);
-
-		const findAndScrollWhenReady = (attempts = 0) => {
-			const month = findMonthForTopic();
-			if (month) {
-				scrollAndOpen(month);
-			} else if (attempts < 30) {
-				setTimeout(() => findAndScrollWhenReady(attempts + 1), 200);
+			for (const month of monthKeys) {
+				if (!isCurrentTopic()) return;
+				let archive = queryClient.getQueryData<ArchiveMonth | null>(["news-archive-month", month]);
+				if (archive === undefined) {
+					try {
+						archive = await queryClient.fetchQuery({ queryKey: ["news-archive-month", month], queryFn: () => fetchArchiveMonth(month) });
+					} catch (error) {
+						console.error(`Failed to find news topic in archive month ${month}`, error);
+						continue;
+					}
+				}
+				const preview = archive?.topics.find((topic) => topic.id === selectedTopicId);
+				if (preview && isCurrentTopic()) {
+					revealMonth(month, preview);
+					return;
+				}
 			}
 		};
-		findAndScrollWhenReady();
-	}, [archiveMonthIndex]);
+
+		void findMonth();
+		return () => {
+			cancelled = true;
+			clearTimeout(scrollTimer);
+		};
+	}, [archiveMonthIndex, searchQuery, selectedTopic, selectedTopicId, selectedTopicPreview]);
 
 	const handleSearchSubmit = (event: React.FormEvent) => {
 		event.preventDefault();
@@ -1042,6 +1052,7 @@ export default function NewsPage({ lang, relatedPages }: { lang: NewsPageLang; r
 
 	const openTopicDialog = useCallback(
 		(topic: TopicArchiveCard) => {
+			if (selectedTopicId === topic.id) return;
 			if (!isTopicDialogMounted) {
 				topicDialogOpenerRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
 			}
@@ -1050,19 +1061,23 @@ export default function NewsPage({ lang, relatedPages }: { lang: NewsPageLang; r
 			setSelectedTopicId(topic.id);
 			const url = new URL(window.location.href);
 			url.searchParams.set("topic", topic.id);
-			window.history.pushState({ topicId: topic.id }, "", url.toString());
+			if (selectedTopicId) {
+				window.history.replaceState(window.history.state, "", url.toString());
+			} else {
+				const entryId = (topicHistoryIdRef.current = crypto.randomUUID());
+				window.history.pushState({ newsTopicDialogId: entryId }, "", url.toString());
+			}
 		},
-		[isTopicDialogMounted],
+		[isTopicDialogMounted, selectedTopicId],
 	);
 
 	const closeTopicDialog = useCallback(() => {
 		setSelectedTopicId(null);
-		const url = new URL(window.location.href);
-		url.searchParams.delete("topic");
-		window.history.pushState({}, "", url.toString());
+		closeTopicHistory(window.history, new URL(window.location.href), topicHistoryIdRef.current);
 	}, []);
 
 	const handleTopicDialogExitComplete = useCallback(() => {
+		if (selectedTopicIdRef.current) return;
 		setSelectedTopicPreview(null);
 		setIsTopicDialogMounted(false);
 		const opener = topicDialogOpenerRef.current;

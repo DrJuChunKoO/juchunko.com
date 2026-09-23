@@ -3,6 +3,8 @@ import SearchPage from "@/components/SearchPage";
 import { languages } from "@/i18n/ui";
 import { useTranslations } from "@/i18n/utils";
 import PageLayout from "@/layouts/PageLayout.astro";
+import { contentIdMatchesLang, getSlugFromContentId } from "@/lib/content";
+import { getCollection } from "astro:content";
 
 export function getStaticPaths() {
 	return Object.keys(languages).map((lang) => ({
@@ -15,6 +17,11 @@ const t = useTranslations(lang as "en" | "zh-TW");
 
 const title = t("search.title");
 const description = t("search.description");
+const fallbackPosts = (await Promise.all([getCollection("act"), getCollection("manual"), getCollection("fragment")]))
+	.flat()
+	.filter((post) => contentIdMatchesLang(post.id, lang as "en" | "zh-TW"))
+	.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+	.slice(0, 6);
 ---
 
 <PageLayout {title} {description}>
@@ -29,5 +36,17 @@ const description = t("search.description");
 		>
 
 		<SearchPage client:only="react" lang={lang as "en" | "zh-TW"} />
+		<noscript>
+			<p>{t("search.noScript")}</p>
+			<ul>
+				{
+					fallbackPosts.map((post) => (
+						<li>
+							<a href={`/${lang}/${post.collection}/${getSlugFromContentId(post.id)}`}>{post.data.title}</a>
+						</li>
+					))
+				}
+			</ul>
+		</noscript>
 	</div>
 </PageLayout>

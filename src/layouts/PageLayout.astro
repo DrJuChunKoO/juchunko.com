@@ -43,9 +43,16 @@ const pageImage = image || post?.data.image || "/favicon.png";
 		slot="head"
 	/>
 
+	<a
+		href="#main-content"
+		class="bg-background text-foreground focus-visible:ring-ring sr-only fixed top-4 left-4 z-50 rounded-lg px-4 py-2 focus:not-sr-only focus-visible:ring-2"
+		>{lang === "en" ? "Skip to main content" : "跳至主要內容"}</a
+	>
 	<div class="flex min-h-svh w-full flex-col">
 		<Nav lang={lang} client:load />
-		<div
+		<main
+			id="main-content"
+			tabindex="-1"
 			class={cn(
 				"relative mx-auto w-full max-w-360 flex-1 py-10 md:max-w-[90vw] md:py-16",
 				"pr-[max(env(safe-area-inset-right),1rem)] pl-[max(env(safe-area-inset-left),1rem)]",
@@ -53,7 +60,7 @@ const pageImage = image || post?.data.image || "/favicon.png";
 			)}
 		>
 			<slot />
-		</div>
+		</main>
 		{currentPath !== "/" && <Agent client:only="react" lang={lang} />}
 		<Footer />
 	</div>

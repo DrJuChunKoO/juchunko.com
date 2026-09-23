@@ -17,10 +17,9 @@ const t = useTranslations(lang as "en" | "zh-TW");
 
 const title = t("home.news.title");
 const description = t("home.news.subtitle");
+const relatedPosts = (await getCollection("act")).filter((post) => contentIdMatchesLang(post.id, lang as "en" | "zh-TW"));
 const relatedPages = Object.fromEntries(
-	(await getCollection("act"))
-		.filter((post) => contentIdMatchesLang(post.id, lang as "en" | "zh-TW"))
-		.flatMap((post) => post.data.newsTopicIds.map((topicId) => [topicId, `/${lang}/act/${getSlugFromContentId(post.id)}`])),
+	relatedPosts.flatMap((post) => post.data.newsTopicIds.map((topicId) => [topicId, `/${lang}/act/${getSlugFromContentId(post.id)}`])),
 );
 ---
 
@@ -36,5 +35,20 @@ const relatedPages = Object.fromEntries(
 		>
 
 		<NewsPage client:only="react" lang={lang as "en" | "zh-TW"} {relatedPages} />
+		<noscript>
+			<p>{t("newsPage.noScript")}</p>
+			<ul>
+				{
+					relatedPosts
+						.filter((post) => post.data.newsTopicIds.length > 0)
+						.slice(0, 6)
+						.map((post) => (
+							<li>
+								<a href={`/${lang}/act/${getSlugFromContentId(post.id)}`}>{post.data.title}</a>
+							</li>
+						))
+				}
+			</ul>
+		</noscript>
 	</div>
 </PageLayout>

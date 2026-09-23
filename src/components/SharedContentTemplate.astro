@@ -92,27 +92,6 @@ const articleSchema = post.data.date
 		}
 	: null;
 
-// GEO: LegalDocument schema for act collection
-const legalDocSchema =
-	post.collection === "act" && post.data.date
-		? {
-				"@context": "https://schema.org",
-				"@type": "GovernmentPermit",
-				name: post.data.title,
-				description: description,
-				url: Astro.url.href,
-				datePublished: post.data.date.toISOString(),
-				inLanguage: lang,
-				issuedBy: {
-					"@type": "GovernmentOrganization",
-					name: lang === "zh-TW" ? "中華民國立法院" : "Legislative Yuan, Republic of China (Taiwan)",
-					url: "https://www.ly.gov.tw/",
-				},
-				legislationIdentifier: `juchunko-act-${post.id.replace(/^.*\//, "")}`,
-				...("status" in post.data && post.data.status ? { legislationLegalValue: post.data.status } : {}),
-			}
-		: null;
-
 // GEO: DefinedTermSet schema for the "keyword" fragment (dictionary page)
 const definedTermSetSchema =
 	post.collection === "fragment" && post.id.replace(/^.*\//, "") === "keyword"
@@ -141,7 +120,6 @@ const definedTermSetSchema =
 	articleTags={articleTags.length > 0 ? articleTags : undefined}
 >
 	{articleSchema && <script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />}
-	{legalDocSchema && <script type="application/ld+json" set:html={JSON.stringify(legalDocSchema)} />}
 	{definedTermSetSchema && <script type="application/ld+json" set:html={JSON.stringify(definedTermSetSchema)} />}
 	<span
 		class="absolute top-0 right-8 hidden h-24 w-16 items-end justify-center rounded-b-xl bg-gradient-to-b from-gray-100 to-gray-200 p-3 text-4xl md:flex dark:from-white/10 dark:to-white/5"

@@ -24,6 +24,11 @@ const externalLinks = [
 	{ href: "https://transpal.juchunko.com/", copyKey: "nav.transript" },
 ] as const;
 
+const internalLinks = [
+	{ path: "news", copyKey: "nav.news" },
+	{ path: "activities", copyKey: "nav.activities" },
+] as const;
+
 const socialLinks = [
 	{ href: "https://github.com/DrJuChunKoO/juchunko.com", label: "GitHub repository for this site", Icon: GithubIcon },
 	{ href: "https://fb.com/dr.juchunko/", label: "Facebook", Icon: FacebookIcon },
@@ -55,6 +60,8 @@ function getNavCopy(lang: SupportedLang) {
 	return {
 		siteTitle: copy["site.title"],
 		blog: copy["nav.blog"],
+		news: copy["nav.news"],
+		activities: copy["nav.activities"],
 		search: copy["nav.search"],
 		transcript: copy["nav.transript"],
 	};
@@ -137,27 +144,36 @@ export default function Nav({ lang }: NavProps) {
 				)}
 			>
 				<a
-					className="hover:outline-primary/50 focus-visible:outline-primary/50 -m-1 flex min-h-11 items-center rounded-lg p-1 text-sm transition-opacity hover:opacity-80 hover:outline-2 hover:outline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 md:text-base ltr:mr-auto rtl:ml-auto"
+					className="hover:outline-primary/50 focus-visible:outline-primary/50 -m-1 flex min-h-11 min-w-0 items-center rounded-lg p-1 text-sm transition-opacity hover:opacity-80 hover:outline-2 hover:outline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 md:text-base ltr:mr-auto rtl:ml-auto"
 					href={`/${currentLang}`}
 				>
-					<span className="text-foreground font-medium tracking-wide uppercase" id="site-title">
+					<span className="text-foreground truncate font-medium tracking-wide uppercase" id="site-title">
 						{copy.siteTitle}
 					</span>
 				</a>
+				{internalLinks.map((link) => (
+					<a
+						key={link.path}
+						href={`/${currentLang}/${link.path}`}
+						className="hover:text-foreground hover:outline-primary/50 text-muted-foreground focus-visible:outline-primary/50 hidden min-h-10 items-center rounded-lg p-1 whitespace-nowrap transition-colors duration-200 hover:outline-2 hover:outline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 lg:inline-flex"
+					>
+						{link.copyKey === "nav.news" ? copy.news : copy.activities}
+					</a>
+				))}
 				{externalLinks.map((link) => (
 					<a
 						key={link.href}
 						href={link.href}
 						target="_blank"
 						rel="noreferrer"
-						className="hover:text-foreground hover:outline-primary/50 text-muted-foreground focus-visible:outline-primary/50 relative hidden min-h-10 items-center rounded-lg p-1 text-sm whitespace-nowrap transition-colors duration-200 hover:outline-2 hover:outline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 md:inline-flex"
+						className="hover:text-foreground hover:outline-primary/50 text-muted-foreground focus-visible:outline-primary/50 relative hidden min-h-10 items-center rounded-lg p-1 text-sm whitespace-nowrap transition-colors duration-200 hover:outline-2 hover:outline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 lg:inline-flex"
 					>
 						{link.copyKey === "nav.blog" ? copy.blog : copy.transcript}
 					</a>
 				))}
 				<a
 					href={`/${currentLang}/search`}
-					className={cn(navIconButtonClassName, "hidden md:inline-flex")}
+					className={cn(navIconButtonClassName, "hidden lg:inline-flex")}
 					title={copy.search}
 					aria-label={copy.search}
 				>
@@ -167,7 +183,7 @@ export default function Nav({ lang }: NavProps) {
 					href={socialLinks[0].href}
 					target="_blank"
 					rel="noreferrer"
-					className={cn(navIconButtonClassName, "hidden md:inline-flex")}
+					className={cn(navIconButtonClassName, "hidden lg:inline-flex")}
 					title={socialLinks[0].label}
 					aria-label={socialLinks[0].label}
 				>
@@ -178,7 +194,7 @@ export default function Nav({ lang }: NavProps) {
 					<Moon className="hidden h-6 w-6 dark:block" />
 				</button>
 				<button
-					className="hover:outline-primary/50 text-muted-foreground hover:text-foreground focus-visible:outline-primary/50 inline-flex size-11 items-center justify-center rounded-lg p-2 transition-colors hover:outline-2 hover:outline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 md:hidden"
+					className="hover:outline-primary/50 text-muted-foreground hover:text-foreground focus-visible:outline-primary/50 inline-flex size-11 items-center justify-center rounded-lg p-2 transition-colors hover:outline-2 hover:outline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 lg:hidden"
 					type="button"
 					onClick={() => setIsMenuOpen((open) => !open)}
 					ref={menuButtonRef}
@@ -199,7 +215,7 @@ export default function Nav({ lang }: NavProps) {
 						animate="open"
 						exit="closed"
 						variants={mobileNavMenuVariants}
-						className="text-foreground z-50 origin-top overflow-y-hidden md:hidden"
+						className="text-foreground z-50 origin-top overflow-y-hidden lg:hidden"
 						aria-hidden={!isMenuOpen}
 					>
 						<div className="flex flex-col gap-6 px-8 pt-8 pb-12">
@@ -212,6 +228,16 @@ export default function Nav({ lang }: NavProps) {
 								>
 									{copy.search}
 								</a>
+								{internalLinks.map((link) => (
+									<a
+										key={`mobile-${link.path}`}
+										href={`/${currentLang}/${link.path}`}
+										onClick={closeMenu}
+										className="hover:text-foreground text-muted-foreground inline-flex min-h-11 items-center transition-colors"
+									>
+										{link.copyKey === "nav.news" ? copy.news : copy.activities}
+									</a>
+								))}
 								{externalLinks.map((link) => (
 									<a
 										key={`mobile-${link.href}`}
