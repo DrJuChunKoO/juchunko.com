@@ -1,4 +1,4 @@
-import type { Fetcher } from "@cloudflare/workers-types";
+import type { AssetFetcher } from "./types";
 
 const markdownAssetPaths: Record<string, string> = {
 	"/": "/llms.txt",
@@ -42,7 +42,7 @@ function addVary(response: Response, value: string) {
 	return result;
 }
 
-export async function fetchNegotiatedAsset(request: Request, assets: Fetcher) {
+export async function fetchNegotiatedAsset(request: Request, assets: AssetFetcher) {
 	const url = new URL(request.url);
 	const markdownPath = getMarkdownAssetPath(url.pathname);
 	const canNegotiate = (request.method === "GET" || request.method === "HEAD") && Boolean(markdownPath);

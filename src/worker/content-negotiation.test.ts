@@ -1,8 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import type { Fetcher } from "@cloudflare/workers-types";
 import { acceptsMarkdown, fetchNegotiatedAsset, getMarkdownAssetPath } from "./content-negotiation";
+import type { AssetFetcher } from "./types";
 
 test("acceptsMarkdown respects an explicit zero quality value", () => {
 	assert.equal(acceptsMarkdown("text/html, text/markdown"), true);
@@ -27,7 +27,7 @@ test("canonical pages negotiate markdown and preserve existing Vary values", asy
 				}),
 			);
 		},
-	} as unknown as Fetcher;
+	} satisfies AssetFetcher;
 
 	const response = await fetchNegotiatedAsset(
 		new Request("https://juchunko.com/en/act/ai-basic-act", { headers: { Accept: "text/markdown" } }),
@@ -44,7 +44,7 @@ test("canonical HTML responses also vary on Accept", async () => {
 		fetch() {
 			return Promise.resolve(new Response("<h1>AI Basic Act</h1>", { headers: { "Content-Type": "text/html" } }));
 		},
-	} as unknown as Fetcher;
+	} satisfies AssetFetcher;
 
 	const response = await fetchNegotiatedAsset(
 		new Request("https://juchunko.com/en/act/ai-basic-act", { headers: { Accept: "text/html" } }),

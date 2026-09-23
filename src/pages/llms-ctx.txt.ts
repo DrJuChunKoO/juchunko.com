@@ -35,7 +35,7 @@ export const GET: APIRoute = async () => {
 		content += `## ${section.title}\n\n`;
 		for (const post of section.posts) {
 			content += `### ${post.data.title}\n\n`;
-			content += `${stripMarkdown(post.body)}\n\n`;
+			content += `${stripMarkdown(post.body ?? "")}\n\n`;
 			content += "---\n\n";
 		}
 	}

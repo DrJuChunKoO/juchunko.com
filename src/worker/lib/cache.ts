@@ -19,12 +19,13 @@ export function putEdgeCache(ctx: { waitUntil: (promise: Promise<unknown>) => vo
 
 /** Cache third-party subrequests via Cloudflare's HTTP cache (tiered). */
 export function cachedFetch(input: string | URL | Request, init: CfCacheInit = {}, cacheTtlSeconds = 900): Promise<Response> {
-	return fetch(input, {
+	const requestInit: CfCacheInit = {
 		...init,
 		cf: {
 			...init.cf,
 			cacheTtl: init.cf?.cacheTtl ?? cacheTtlSeconds,
 			cacheEverything: init.cf?.cacheEverything ?? true,
 		},
-	});
+	};
+	return fetch(input, requestInit);
 }

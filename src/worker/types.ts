@@ -1,4 +1,6 @@
-import type { Fetcher } from "@cloudflare/workers-types";
+export interface AssetFetcher {
+	fetch(request: Request): Promise<Response>;
+}
 
 export type CardItem = {
 	title?: string;
@@ -20,7 +22,7 @@ export type FeedItem = {
 
 export interface Env {
 	// 靜態資源綁定（wrangler.assets.binding）
-	ASSETS: Fetcher;
+	ASSETS: AssetFetcher;
 
 	// Supabase 與 OpenRouter 相關變數，請於 wrangler secret / vars 設定
 	OPENROUTER_API_KEY: string;

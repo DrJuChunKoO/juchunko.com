@@ -107,11 +107,9 @@ export const ui = {
 
 複製現有的 Slug 頁面（例如 `src/pages/[lang]/act/[slug].astro`）到新分類目錄 `src/pages/[lang]/news/[slug].astro`，並修改 `getCollection` 的參數：
 
-```astro
-// src/pages/[lang]/news/[slug].astro import {getCollection} from "astro:content"; // ... 其他 import export async function getStaticPaths()
-{ const pages = await getCollection("news"); // 修改這裡為 "news" // ... } // ...
-
-<!-- 內容通常不需要修改，除非有特殊排版需求 -->
+```typescript
+// 在複製的 getStaticPaths() 中，將集合名稱改為 news：
+const pages = await getCollection("news");
 ```
 
 ### 步驟 5：更新首頁列表

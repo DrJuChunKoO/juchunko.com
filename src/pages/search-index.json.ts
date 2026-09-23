@@ -24,7 +24,7 @@ async function getSearchDocs(collection: SearchableCollection): Promise<SearchDo
 				description: entry.data.description ?? "",
 				status: "status" in entry.data ? entry.data.status : undefined,
 				emoji: entry.data.emoji,
-				body: stripMarkdown(entry.body),
+				body: stripMarkdown(entry.body ?? ""),
 			},
 		];
 	});

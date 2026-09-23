@@ -1,4 +1,4 @@
-import Fuse from "fuse.js";
+import Fuse, { type FuseResult, type IFuseOptions } from "fuse.js";
 
 import type { Lang } from "@/i18n/ui";
 
@@ -19,9 +19,9 @@ export interface SearchDoc {
 	body: string;
 }
 
-export type SearchResult = Fuse.FuseResult<SearchDoc>;
+export type SearchResult = FuseResult<SearchDoc>;
 
-export function buildFuseOptions(): Fuse.IFuseOptions<SearchDoc> {
+export function buildFuseOptions(): IFuseOptions<SearchDoc> {
 	return {
 		includeMatches: true,
 		ignoreLocation: true,

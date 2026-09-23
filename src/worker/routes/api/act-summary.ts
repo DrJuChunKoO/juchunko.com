@@ -227,7 +227,7 @@ async function generateActSummary(openrouter: OpenAICompatibleProvider, lang: "z
 
 		return result.output;
 	} catch (error) {
-		if (NoObjectGeneratedError.isInstance(error)) {
+		if (NoObjectGeneratedError.isInstance(error) && error.text) {
 			const summary = parseActSummaryOutput(error.text);
 			if (summary) return summary;
 		}
