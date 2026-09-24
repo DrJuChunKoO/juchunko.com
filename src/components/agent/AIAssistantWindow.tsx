@@ -70,6 +70,7 @@ interface AIAssistantWindowProps {
 	isOpen: boolean;
 	onClose: () => void;
 	opener?: HTMLElement | null;
+	loadingShown?: React.RefObject<boolean>;
 	lang?: SupportedLang;
 }
 
@@ -166,7 +167,7 @@ function QuickPromptList({
 	);
 }
 
-export default function AIAssistantWindow({ isOpen, onClose, opener, lang = "zh-TW" }: AIAssistantWindowProps) {
+export default function AIAssistantWindow({ isOpen, onClose, opener, loadingShown, lang = "zh-TW" }: AIAssistantWindowProps) {
 	const inputRef = useRef<HTMLTextAreaElement>(null);
 	const windowRef = useRef<HTMLDivElement>(null);
 	const copyResetRef = useRef<ReturnType<typeof setTimeout>>(undefined);
@@ -376,7 +377,8 @@ export default function AIAssistantWindow({ isOpen, onClose, opener, lang = "zh-
 				)}
 			</AnimatePresence>
 
-			<AnimatePresence>
+			{/* The loading shell has already played the opening animation. */}
+			<AnimatePresence initial={!loadingShown?.current}>
 				{isOpen && (
 					<motion.div
 						ref={windowRef}

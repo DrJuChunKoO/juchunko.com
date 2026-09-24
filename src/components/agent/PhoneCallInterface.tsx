@@ -10,10 +10,12 @@ type SupportedLang = "en" | "zh-TW";
 interface PhoneCallInterfaceProps {
 	isOpen: boolean;
 	onClose: () => void;
+	opener?: HTMLElement | null;
+	loadingShown?: React.RefObject<boolean>;
 	lang?: SupportedLang;
 }
 
-function PhoneCallInterfaceInner({ isOpen, onClose, lang = "zh-TW" }: PhoneCallInterfaceProps) {
+function PhoneCallInterfaceInner({ isOpen, onClose, opener, loadingShown, lang = "zh-TW" }: PhoneCallInterfaceProps) {
 	const conversation = useConversation();
 	const [callDuration, setCallDuration] = useState(0);
 	const prefersReduced = Boolean(useReducedMotion());
@@ -26,7 +28,8 @@ function PhoneCallInterfaceInner({ isOpen, onClose, lang = "zh-TW" }: PhoneCallI
 	useEffect(() => {
 		if (isOpen && !wasOpenRef.current) {
 			openerRef.current =
-				document.activeElement instanceof HTMLElement && document.activeElement !== document.body ? document.activeElement : null;
+				opener ??
+				(document.activeElement instanceof HTMLElement && document.activeElement !== document.body ? document.activeElement : null);
 			closeButtonRef.current?.focus();
 		} else if (!isOpen && wasOpenRef.current) {
 			const opener = openerRef.current;
@@ -37,7 +40,7 @@ function PhoneCallInterfaceInner({ isOpen, onClose, lang = "zh-TW" }: PhoneCallI
 			openerRef.current = null;
 		}
 		wasOpenRef.current = isOpen;
-	}, [isOpen]);
+	}, [isOpen, opener]);
 
 	useEffect(() => {
 		if (!isOpen) return;
@@ -131,7 +134,7 @@ function PhoneCallInterfaceInner({ isOpen, onClose, lang = "zh-TW" }: PhoneCallI
 	};
 
 	return (
-		<AnimatePresence>
+		<AnimatePresence initial={!loadingShown?.current}>
 			{isOpen && (
 				<motion.div
 					ref={dialogRef}

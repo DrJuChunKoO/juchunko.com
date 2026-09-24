@@ -11,10 +11,11 @@ interface VoiceReaderWindowProps {
 	isOpen: boolean;
 	onClose: () => void;
 	opener?: HTMLElement | null;
+	loadingShown?: React.RefObject<boolean>;
 	lang?: SupportedLang;
 }
 
-export default function VoiceReaderWindow({ isOpen, onClose, opener, lang = "zh-TW" }: VoiceReaderWindowProps) {
+export default function VoiceReaderWindow({ isOpen, onClose, opener, loadingShown, lang = "zh-TW" }: VoiceReaderWindowProps) {
 	const y = useMotionValue(16);
 	const windowRef = useRef<HTMLDivElement>(null);
 	const closeButtonRef = useRef<HTMLButtonElement>(null);
@@ -99,7 +100,7 @@ export default function VoiceReaderWindow({ isOpen, onClose, opener, lang = "zh-
 	}, [isOpen, y]);
 
 	return (
-		<AnimatePresence>
+		<AnimatePresence initial={!loadingShown?.current}>
 			{isOpen && (
 				<motion.div
 					ref={windowRef}

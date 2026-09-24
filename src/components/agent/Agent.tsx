@@ -1,7 +1,9 @@
 import { lazy, Suspense, useEffect, useRef, useState, type MouseEvent as ReactMouseEvent } from "react";
 import { AnimatePresence, motion, useMotionValue, useReducedMotion, type Variants } from "motion/react";
-import { BotMessageSquare, Phone, BookAudio, Sparkles, ChevronDown } from "lucide-react";
+import { BotMessageSquare, Phone, BookAudio, Sparkles, ChevronDown, Bot, X } from "lucide-react";
 import AgentButton from "./AgentButton";
+import { Spinner } from "@/components/ui/spinner";
+import { cn } from "@/lib/utils";
 import { ui } from "src/i18n/ui";
 import { OPEN_AI_ASSISTANT_EVENT, type OpenAIAssistantEventDetail } from "./events";
 
@@ -10,6 +12,143 @@ const AIAssistantWindow = lazy(() => import("./AIAssistantWindow"));
 const VoiceReaderWindow = lazy(() => import("./VoiceReaderWindow"));
 
 type SupportedLang = "en" | "zh-TW";
+
+function restoreLauncherFocus(opener: HTMLElement | null, kind: "phone" | "ai-assistant" | "voice-reader") {
+	requestAnimationFrame(() => {
+		const focusTarget =
+			opener?.isConnected && opener.getClientRects().length > 0
+				? opener
+				: Array.from(document.querySelectorAll<HTMLElement>(`[data-agent-launcher="${kind}"], [data-agent-launcher="toggle"]`)).find(
+						(element) => element.getClientRects().length > 0,
+					);
+		focusTarget?.focus();
+	});
+}
+
+function SmallWindowLoading({
+	kind,
+	lang,
+	onClose,
+	reducedMotion,
+	onMount,
+}: {
+	kind: "assistant" | "reader";
+	lang: SupportedLang;
+	onClose: () => void;
+	reducedMotion: boolean;
+	onMount: () => void;
+}) {
+	const isAssistant = kind === "assistant";
+	const title = ui[lang][isAssistant ? "agent.assistant.title" : "agent.voiceReader.title"];
+	const TitleIcon = isAssistant ? Bot : BookAudio;
+	const closeButtonRef = useRef<HTMLButtonElement>(null);
+	useEffect(() => {
+		closeButtonRef.current?.focus();
+		function handleEscape(event: KeyboardEvent) {
+			if (event.key === "Escape") onClose();
+		}
+		window.addEventListener("keydown", handleEscape);
+		return () => window.removeEventListener("keydown", handleEscape);
+	}, [onClose]);
+
+	return (
+		<motion.div
+			ref={(element) => {
+				if (element) onMount();
+			}}
+			initial={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.5, y: 16 }}
+			animate={reducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1, y: 0 }}
+			transition={reducedMotion ? { duration: 0.15 } : { type: "spring", stiffness: 300, damping: 30 }}
+			className={cn(
+				"ring-border/50 bg-card/75 pointer-events-auto fixed right-4 bottom-4 z-40 flex w-100 max-w-[calc(100vw-32px)] origin-bottom-right flex-col overflow-hidden rounded-xl shadow-lg ring-1 backdrop-blur-xl",
+				isAssistant && "h-100",
+			)}
+			role="dialog"
+			aria-label={title}
+		>
+			<div className="bg-muted text-foreground border-border flex shrink-0 items-center justify-between border-b p-2 pl-4">
+				<div className="flex items-center gap-2 font-semibold">
+					<TitleIcon className="text-primary size-5" />
+					{title}
+				</div>
+				<button
+					ref={closeButtonRef}
+					type="button"
+					onClick={onClose}
+					aria-label={ui[lang][isAssistant ? "agent.assistant.close" : "agent.voiceReader.close"]}
+					className="text-muted-foreground hover:text-foreground focus-visible:ring-ring flex size-8 cursor-pointer items-center justify-center rounded-lg focus-visible:ring-2"
+				>
+					<X className="size-4" />
+				</button>
+			</div>
+			<div
+				role="status"
+				className={cn("text-muted-foreground flex items-center justify-center gap-2 text-sm", isAssistant ? "flex-1" : "min-h-40")}
+			>
+				<Spinner aria-hidden="true" />
+				{ui[lang][isAssistant ? "agent.assistant.loading" : "agent.voiceReader.loading"]}
+			</div>
+			{isAssistant && <div className="border-border/70 bg-muted/50 m-2 h-12 shrink-0 rounded-lg border" aria-hidden="true" />}
+		</motion.div>
+	);
+}
+
+function PhoneLoadingWindow({
+	lang,
+	onClose,
+	reducedMotion,
+	onMount,
+}: {
+	lang: SupportedLang;
+	onClose: () => void;
+	reducedMotion: boolean;
+	onMount: () => void;
+}) {
+	const closeButtonRef = useRef<HTMLButtonElement>(null);
+	useEffect(() => {
+		closeButtonRef.current?.focus();
+		function handleEscape(event: KeyboardEvent) {
+			if (event.key === "Escape") onClose();
+		}
+		window.addEventListener("keydown", handleEscape);
+		return () => window.removeEventListener("keydown", handleEscape);
+	}, [onClose]);
+
+	return (
+		<motion.div
+			ref={(element) => {
+				if (element) onMount();
+			}}
+			initial={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 1.25 }}
+			animate={reducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }}
+			transition={reducedMotion ? { duration: 0.1 } : { duration: 0.3 }}
+			className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/90 text-white backdrop-blur-md"
+			role="dialog"
+			aria-modal="true"
+			aria-label={ui[lang]["agent.phone.aiName"]}
+			onKeyDown={(event) => {
+				if (event.key === "Tab") {
+					event.preventDefault();
+					closeButtonRef.current?.focus();
+				}
+			}}
+		>
+			<button
+				ref={closeButtonRef}
+				type="button"
+				onClick={onClose}
+				className="focus-visible:ring-ring fixed top-[max(env(safe-area-inset-top),1rem)] right-[max(env(safe-area-inset-right),1rem)] flex size-12 cursor-pointer items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-lg hover:bg-white/50 focus-visible:ring-2"
+				aria-label={ui[lang]["agent.phone.closeInterface"]}
+			>
+				<X className="size-6" />
+			</button>
+			<div role="status" className="flex flex-col items-center gap-4 text-lg">
+				<Spinner aria-hidden="true" className="size-8" />
+				<span>{ui[lang]["agent.phone.aiName"]}</span>
+			</div>
+		</motion.div>
+	);
+}
 
 interface AgentProps {
 	lang?: SupportedLang;
@@ -88,6 +227,10 @@ export default function Agent({ lang = "zh-TW" }: AgentProps = {}) {
 	const [aiAssistantOpen, setAiAssistantOpen] = useState(false);
 	const [voiceReaderOpen, setVoiceReaderOpen] = useState(false);
 	const mountedWindows = useRef({ phone: false, assistant: false, reader: false });
+	const phoneLoadingShown = useRef(false);
+	const assistantLoadingShown = useRef(false);
+	const readerLoadingShown = useRef(false);
+	const phoneCallOpenerRef = useRef<HTMLElement | null>(null);
 	const aiAssistantOpenerRef = useRef<HTMLElement | null>(null);
 	const voiceReaderOpenerRef = useRef<HTMLElement | null>(null);
 	// 以 y 控制與底部距離，避免覆蓋 footer
@@ -110,8 +253,9 @@ export default function Agent({ lang = "zh-TW" }: AgentProps = {}) {
 	}, []);
 
 	// 處理按鈕點擊事件
-	const handlePhoneCall = () => {
+	const handlePhoneCall = (event: ReactMouseEvent<HTMLButtonElement>) => {
 		mountedWindows.current.phone = true;
+		phoneCallOpenerRef.current = event.currentTarget;
 		setPhoneCallOpen(true);
 		setOpen(false); // 關閉手機選單
 	};
@@ -192,6 +336,18 @@ export default function Agent({ lang = "zh-TW" }: AgentProps = {}) {
 			{ui[lang]["agent.assistant.loading"]}
 		</span>
 	);
+	const closeLoadingAssistant = () => {
+		setAiAssistantOpen(false);
+		restoreLauncherFocus(aiAssistantOpenerRef.current, "ai-assistant");
+	};
+	const closeLoadingPhone = () => {
+		setPhoneCallOpen(false);
+		restoreLauncherFocus(phoneCallOpenerRef.current, "phone");
+	};
+	const closeLoadingReader = () => {
+		setVoiceReaderOpen(false);
+		restoreLauncherFocus(voiceReaderOpenerRef.current, "voice-reader");
+	};
 
 	return (
 		<motion.div style={{ bottom: y }} className="fixed right-4 bottom-4 z-20 m-auto flex w-max flex-col items-end justify-end gap-2">
@@ -317,25 +473,70 @@ export default function Agent({ lang = "zh-TW" }: AgentProps = {}) {
 				</motion.button>
 			)}
 
-			<Suspense fallback={loadingStatus}>
-				{mountedWindows.current.phone && <PhoneCallInterface isOpen={phoneCallOpen} onClose={() => setPhoneCallOpen(false)} lang={lang} />}
+			<Suspense
+				fallback={
+					phoneCallOpen ? (
+						<PhoneLoadingWindow
+							lang={lang}
+							onClose={closeLoadingPhone}
+							reducedMotion={prefersReduced}
+							onMount={() => (phoneLoadingShown.current = true)}
+						/>
+					) : null
+				}
+			>
+				{mountedWindows.current.phone && (
+					<PhoneCallInterface
+						isOpen={phoneCallOpen}
+						onClose={() => setPhoneCallOpen(false)}
+						opener={phoneCallOpenerRef.current}
+						loadingShown={phoneLoadingShown}
+						lang={lang}
+					/>
+				)}
 			</Suspense>
-			<Suspense fallback={loadingStatus}>
+			<Suspense
+				fallback={
+					aiAssistantOpen ? (
+						<SmallWindowLoading
+							kind="assistant"
+							lang={lang}
+							onClose={closeLoadingAssistant}
+							reducedMotion={prefersReduced}
+							onMount={() => (assistantLoadingShown.current = true)}
+						/>
+					) : null
+				}
+			>
 				{mountedWindows.current.assistant && (
 					<AIAssistantWindow
 						isOpen={aiAssistantOpen}
 						onClose={() => setAiAssistantOpen(false)}
 						opener={aiAssistantOpenerRef.current}
+						loadingShown={assistantLoadingShown}
 						lang={lang}
 					/>
 				)}
 			</Suspense>
-			<Suspense fallback={loadingStatus}>
+			<Suspense
+				fallback={
+					voiceReaderOpen ? (
+						<SmallWindowLoading
+							kind="reader"
+							lang={lang}
+							onClose={closeLoadingReader}
+							reducedMotion={prefersReduced}
+							onMount={() => (readerLoadingShown.current = true)}
+						/>
+					) : null
+				}
+			>
 				{mountedWindows.current.reader && (
 					<VoiceReaderWindow
 						isOpen={voiceReaderOpen}
 						onClose={() => setVoiceReaderOpen(false)}
 						opener={voiceReaderOpenerRef.current}
+						loadingShown={readerLoadingShown}
 						lang={lang}
 					/>
 				)}
