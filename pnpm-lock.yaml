@@ -88,6 +88,9 @@ importers:
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
+      fflate:
+        specifier: 0.8.2
+        version: 0.8.2
       fuse.js:
         specifier: ^7.4.2
         version: 7.4.2
