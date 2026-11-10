@@ -1,10 +1,10 @@
 ---
 title: "Cybersecurity Legislation and Issue Advocacy"
-description: "Immediately provide multi-year project budgets to address the shortfall in SME cybersecurity joint defense funding (averaging only 59 NTD per company annually), and establish a single complaint window with regular error rate disclosures to protect digital human rights from government anti-fraud measure overreach."
-date: 2025-11-25
+description: "Demand that MODA publish TLS certificate replacement progress for government websites and build cross-CA backup with automated short-lived certificate management; immediately provide multi-year project budgets to address the shortfall in SME cybersecurity joint defense funding (averaging only 59 NTD per company annually), and establish a single complaint window with regular error rate disclosures to protect digital human rights from government anti-fraud measure overreach."
+date: 2026-11-02
 newsTopicIds: ["bad2d5e5-13f3-42f8-bc22-f5720a67d0d1"]
 emoji: "🛡️"
-status: "Legislative Deliberation and Budget Advocacy"
+status: "Tracking the TWCA intermediate certificate revocation and demanding public replacement progress and cross-CA backup; cybersecurity budget and legislative advocacy continue"
 ---
 
 import Cards from "@/components/Cards.astro";
@@ -18,9 +18,13 @@ import { YouTube } from "@astro-community/astro-embed-youtube";
 
 # Cybersecurity Legislation and Issue Advocacy
 
-Cybersecurity reform is not only a technical issue. It is a shared defense for digital resilience, supply-chain security, and digital human rights. Legislator Ju-Chun Ko argues that government should strengthen SME cybersecurity budgets while preventing anti-fraud measures from harming citizens' digital rights.
+Cybersecurity reform is not only a technical issue. It is a shared defense for digital resilience, supply-chain security, and digital human rights. Legislator Ju-Chun Ko argues that government should strengthen SME cybersecurity budgets while preventing anti-fraud measures from harming citizens' digital rights and fixing the single point of failure behind repeated government website certificate incidents.
 
-<ActProgress label="Current progress" value={45} status="Legislative deliberation and budget advocacy underway." />
+<ActProgress
+	label="Current progress"
+	value={45}
+	status="TWCA intermediate certificates must be revoked before 2026/11/6, and MODA is asked to publish daily replacement progress; cybersecurity budget and legislative advocacy continue."
+/>
 
 ## The Silent War in Cyberspace
 
@@ -101,15 +105,61 @@ Aligning with international norms strengthens user protections and increases glo
 
 ---
 
+## Government Certificate Trust Crisis: From Chunghwa Telecom to TWCA
+
+### Last Year: Chrome Stops Trusting Chunghwa Telecom Certificates by Default
+
+On May 30, 2025, Google announced that starting in August, Chrome would no longer trust by default new website certificates issued by Chunghwa Telecom under specific root certificate hierarchies. The Ministry of Digital Affairs (MODA) insisted at the time that it had already ["deployed a dual-certificate mechanism in advance"](https://moda.gov.tw/press/press-releases/16348) and told the public there was "no need to worry."
+
+In July 2025, Legislator Ju-Chun Ko held a press conference and tested government websites live, showing that automatic dual-certificate failover had not actually been implemented at some agencies. Chunghwa Telecom's chairman personally responded, calling the findings ["misinformation"](https://www.setn.com/news/1685659), and promised to [regain default trust in Google Chrome by the end of March 2026](https://www.cardu.com.tw/news/detail.php?58073). In April 2026, a [Control Yuan investigation report](https://money.udn.com/money/story/7307/9441895) also found that MODA lacked risk awareness and that Chunghwa Telecom's compliance had failed.
+
+It is now November. Chunghwa Telecom reapplied at the end of last year, but there is still no public confirmation from Google that trust has been restored.
+
+### This Year: TWCA Intermediate Certificate Serial Numbers Fail Compliance, Forced Revocation
+
+After last year's incident, MODA switched to Taiwan-CA (TWCA) for government websites' TLS certificate services. In April 2026, TWCA announced that starting May 4 it would move its certificate chain to the [CYBER Root hierarchy](https://tls.nat.gov.tw/gtlsWeb/certApply/step1).
+
+Then, on October 30, a foreign researcher disclosed on [Mozilla's public bug tracker](https://bugzilla.mozilla.org/show_bug.cgi?id=2087236) that TWCA had 10 trusted, unrevoked CA certificates. Six were intermediate CA certificates capable of issuing TLS website certificates, and four of those were issued by CYBER Root. Their serial numbers appeared to contain at most 24 bits of randomness, short of the international requirement of at least 64 bits. That requirement took effect back in September 2016.
+
+On October 31, TWCA issued an urgent notice asking customers to replace the affected SSL certificates and full certificate chains, with the original intermediate certificates to be revoked before 00:00 on November 6. But the notice only said the change was "in response to international requirements," without fully explaining the root cause or the scope of impact.
+
+### Four Problems This Incident Exposes
+
+1. **The deadline is imminent, and government services may break**: If affected websites, apps, and cross-agency APIs do not replace certificates and update their full trust chains in time, HTTPS validation may fail. Which government websites are affected? How many have finished replacing certificates? MODA should publish this now, instead of letting the public discover at the last minute that a site won't load.
+2. **Over-concentrated dependence means one failure ripples everywhere**: Last year it was Chunghwa Telecom; this year it is TWCA. If critical services depend on the same intermediate CA without effective backup from a different CA, a single vendor problem puts large numbers of government systems at risk at once. Taiwan just went through a trust crisis last year. Why is it worrying about the same kind of outage again?
+3. **Years of noncompliance went undetected. Is auditing just for show?**: The researcher found that TWCA's CA certificate serial number generation pattern dates back to at least 2011 and stayed in use after the 2016 requirement took effect. TWCA did not disclose this itself; an outside researcher found it. Some annual WebTrust audit reports even listed these certificate serial numbers, yet the deficiency was never corrected in time. Only in August 2026 did the National Audit Office note that MODA's new contract with TWCA includes international compliance requirements, penalties, and the agency's right to conduct its own audits. The contract says so, but did anyone check? And if they checked, why did they miss it?
+4. **Cryptographic safeguards cannot be compromised**: International rules require certificate serial numbers to contain enough secure randomness, partly to prevent certificate forgery through certain hash-collision attacks. There is currently no evidence that TWCA's private keys leaked, that certificates were forged, or that HTTPS encryption was broken. But security cannot wait until after a breach to fix the fence. A basic requirement set ten years ago should not be exposed by an outside researcher only today.
+
+### Legislator Ko's Five Demands
+
+1. **Take inventory now and publish progress**: MODA should inventory affected government agencies, critical public services, state-owned enterprises, and cross-agency APIs, and before the November 6 revocation deadline publish daily certificate replacement progress, full-chain validation results, and outstanding risks.
+2. **Build cross-CA backup to avoid a single point of failure**: Critical government services should hold backup certificates issued by a different certificate authority and run regular failover drills. Claiming "dual certificates" means nothing without working automatic failover.
+3. **Move to short-lived certificates and automated management**: Under CA/Browser Forum rules, the maximum validity of newly issued public TLS website certificates was cut to 200 days starting March 2026 and will drop to 47 days by 2029. The government already has ACME automated renewal technology. It should publish each agency's actual adoption rate and build the capacity for automated issuance, renewal, deployment, private key rotation, anomaly monitoring, and emergency replacement of intermediate CA chains. Once automation and failure drills mature, it should gradually pilot certificates valid for 10 days or less, shrinking the window of damage from a key leak or misissuance.
+4. **Strengthen technical audits and enforce contract accountability**: TWCA should explain the root cause, affected scope, and remediation. MODA should disclose whether it has exercised its audit rights under the new contract, whether it has opened a contract-performance investigation, and why third-party audits failed to catch the problem. Going forward, automated compliance checks and independent technical reviews should replace blind trust in paper reports.
+5. **Use advanced AI for proactive cyber defense**: As an AI island, Taiwan should actively evaluate joining international advanced-model cyber defense programs, such as Anthropic's Cyber Verification Program (CVP, which incorporates the former Project Glasswing; Glasswing partners [found 129,000 vulnerabilities in six months](https://www.ithome.com.tw/news/179470)), and, with data security safeguarded, use AI to help with vulnerability detection, code analysis, and patch verification.
+
+Last year, Chunghwa Telecom forced a government-wide certificate swap. This year, TWCA has its own compliance problem. If every vendor failure ends with the government scrambling to tell agencies to swap certificates, that treats the symptom, not the cause. The government and the Legislative Yuan should drop the partisan sniping and prove improvement with concrete progress, public data, and real drills.
+
+---
+
 ## Recent Major Cybersecurity Alerts
+
+### 2026.10: A Two-Week Run of Security Incidents
+
+- **Critical PHP vulnerability**: Japanese Prime Minister Sanae Takaichi personally issued a warning; MODA said [nearly 300 Taiwanese government agencies and about 800 websites and systems were affected](https://www.ctee.com.tw/news/20261029700993-430104).
+- **Central Election Commission data leak**: The candidate asset declaration system [exposed the national ID numbers of 1,573 candidates](https://udn.com/news/story/124652/9841841) in its background data.
+- **Binance theft**: More than US$6 billion in virtual assets was stolen; the FBI pointed to North Korean hackers.
+- **Cursor extension marketplace**: A maliciously altered Claude Code extension appeared, attempting to plant an SSH backdoor.
+
+The causes differ, but every one of them is a reminder: cybersecurity cannot rely on cleanup after the fact. It requires preparation and proactive defense.
 
 ### 2025.03: CrazyHunter Ransomware Attacks
 
 CrazyHunter ransomware targeted medical centers in Taiwan, encrypting systems and demanding ransom payments. The Ministry of Health and Welfare called it a “systematic attack,” underscoring severe vulnerabilities in hospital cybersecurity infrastructure that threaten patient records and the continuity of medical services.
 
-### 2025.06: Chrome Distrusts Chunghwa Telecom Certificates
+### 2025.05: Chrome Distrusts Chunghwa Telecom Certificates
 
-Google announced Chrome would no longer trust newly issued commercial certificates from Chunghwa Telecom due to certificate management noncompliance with international standards. This undermined national telecom credibility and highlighted the urgency of aligning infrastructure with global security practices.
+Google announced that starting in August, Chrome would no longer trust by default newly issued website certificates from specific Chunghwa Telecom root hierarchies due to certificate management noncompliance with international standards. This undermined national telecom credibility and highlighted the urgency of aligning infrastructure with global security practices.
 
 ### 2024.03: AI Deepfake Video Warning
 
@@ -142,6 +192,30 @@ Cybersecurity is national security—digital human rights are not negotiable. Su
 ## Timeline
 
 <Timeline>
+	<TimelineItem date="2026.11.06" title="[Revocation Deadline] TWCA original intermediate certificates revoked">
+		TWCA's original intermediate certificates must be revoked before 00:00 on November 6. Legislator Ko demanded that MODA publish affected agencies, replacement progress, and full-chain validation results daily before the deadline.
+	</TimelineItem>
+	<TimelineItem date="2026.10.31" title="[Urgent Notice] TWCA asks customers to replace certificate chains">
+		TWCA asked customers to replace the affected SSL certificates and full certificate chains, but said only that it was "in response to international requirements," without fully explaining the root cause or scope.
+	</TimelineItem>
+	<TimelineItem date="2026.10.30" title="[External Disclosure] TWCA CA certificate serial numbers lack randomness">
+		A foreign researcher disclosed on Mozilla Bugzilla that 10 trusted TWCA CA certificates appeared to have serial numbers with at most 24 bits of randomness, short of the 64-bit requirement in force since September 2016; four were issued by CYBER Root.
+	</TimelineItem>
+	<TimelineItem date="2026.10" title="[Security Incidents] PHP vulnerability and CEC data leak">
+		A critical PHP vulnerability affected nearly 300 Taiwanese government agencies and about 800 websites and systems; the Central Election Commission's candidate asset declaration system exposed the national ID numbers of 1,573 candidates.
+	</TimelineItem>
+	<TimelineItem date="2026.08" title="[National Audit Office] New MODA-TWCA contract includes audit rights">
+		The National Audit Office noted that MODA's new contract with TWCA includes international compliance requirements, penalties, and the agency's right to conduct its own audits.
+	</TimelineItem>
+	<TimelineItem date="2026.05.04" title="[Chain Update] Government TLS certificates move to TWCA CYBER Root">
+		MODA switched government website TLS certificate services to TWCA, whose certificate chain moved to the CYBER Root hierarchy starting May 4.
+	</TimelineItem>
+	<TimelineItem date="2026.04.14" title="[Control Yuan] Report finds MODA lacked risk awareness">
+		The Control Yuan issued an investigation report on the Chunghwa Telecom certificate incident, finding that MODA lacked risk awareness and Chunghwa Telecom's compliance had failed.
+	</TimelineItem>
+	<TimelineItem date="2026.03" title="[International Rules] Public TLS certificate validity cut to 200 days">
+		Under CA/Browser Forum rules, the maximum validity of newly issued public TLS website certificates dropped to 200 days starting March 2026 and will fall to 47 days by 2029.
+	</TimelineItem>
 	<TimelineItem date="2025.11.25" title="[General Inquiry] Cybersecurity Budget and Digital Human Rights">
 		Legislator Ju-Chun Ko pointed out during the Legislative Yuan's general policy inquiry that SME cybersecurity budgets are severely insufficient, and government anti-fraud measures may infringe on digital human rights. He demanded the Executive Yuan increase cybersecurity budgets and establish a single complaint window.
 
@@ -150,8 +224,14 @@ Cybersecurity is national security—digital human rights are not negotiable. Su
     <TimelineItem date="2025.11" title="[Supply Chain Attack] Digital Marketing Company Hacked">
     	Taiwanese digital marketing companies were compromised long-term by Chinese hacking group APT24, affecting over 1,000 customer domains, exposing the extreme vulnerability of supply chain cybersecurity defenses.
     </TimelineItem>
-    <TimelineItem date="2025.06" title="[Trust Crisis] Chrome Stops Trusting Chunghwa Telecom Certificates">
-    	Google announced that Chrome browser would no longer trust newly-issued commercial certificates from Chunghwa Telecom, severely damaging the national telecom operator's cybersecurity credibility and affecting government agencies and financial institutions.
+    <TimelineItem date="2025.07.10" title="[Press Conference] Live tests show dual certificates not implemented">
+    	Legislator Ko held a press conference testing government websites live and showed that automatic dual-certificate failover was not implemented at some agencies. Chunghwa Telecom's chairman called it "misinformation" and promised to regain Chrome default trust by the end of March 2026.
+    </TimelineItem>
+    <TimelineItem date="2025.06.02" title="[MODA] Claims dual certificates were deployed in advance">
+    	MODA issued a press release saying it had deployed a dual-certificate mechanism in advance and that the public need not worry.
+    </TimelineItem>
+    <TimelineItem date="2025.05.30" title="[Trust Crisis] Chrome Stops Trusting Chunghwa Telecom Certificates">
+    	Google announced that starting in August, Chrome would no longer trust by default newly issued website certificates from specific Chunghwa Telecom root hierarchies, severely damaging the national telecom operator's cybersecurity credibility and affecting government agencies and financial institutions.
     </TimelineItem>
     <TimelineItem date="2025.03" title="[Healthcare Security] CrazyHunter Ransomware Rampage">
     	Ransomware specifically targeting Taiwan attacked MacKay Memorial Hospital and other medical centers. The Ministry of Health and Welfare characterized it as a "systematic attack," posing major threats to patient privacy and medical operations.
