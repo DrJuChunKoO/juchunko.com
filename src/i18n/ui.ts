@@ -249,7 +249,7 @@ export const ui = {
 		"cat.fragments": "網站資訊",
 		"home.title": "歡迎進入「科技立委葛如鈞．寶博士」宇宙",
 		"home.description":
-			"歡迎蒞臨科技立委葛如鈞．寶博士宇宙！這是中華民國第十一屆全國不分區立法委員葛如鈞（寶博士）的個人網站，在這片宇宙當中，您將探索寶博士的思維、興趣、品味，以及對法案行動、虛擬智慧法規調適和多元宇宙倡議的內容。",
+			"葛如鈞（寶博士）官方網站。中華民國第十一屆全國不分區立法委員，推動人工智慧基本法、虛擬資產服務法與數位民主，在這裡查看法案行動、問政動態與新聞報導。",
 		"home.legislatorActivity.title": "立法委員最新動態",
 		"home.legislatorActivity.subtitle": "掌握最新提案、連署與出席會議狀態。",
 		"home.legislatorActivity.section.propose": "提案",

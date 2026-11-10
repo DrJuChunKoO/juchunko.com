@@ -30,6 +30,7 @@ const {
 } = Astro.props;
 
 const BASE_URL = "https://juchunko.com";
+const PERSON_ID = `${BASE_URL}/#person`;
 const pathWithoutLocale = Astro.url.pathname.replace(/^\/(en|zh-TW)/, "") || "/";
 const hreflangZhTW = `${BASE_URL}/zh-TW${pathWithoutLocale}`;
 const hreflangEn = `${BASE_URL}/en${pathWithoutLocale}`;
@@ -38,35 +39,53 @@ const ogLocale = lang === "zh-TW" ? "zh_TW" : "en_US";
 // locale-aware keywords
 const keywords =
 	lang === "zh-TW"
-		? "立法委員, 科技立委, 葛如鈞, 寶博士, 人工智慧, AI 基本法, 法案, 核能, 區塊鏈, 自動駕駛, 臺灣"
+		? "立法委員, 科技立委, 葛如鈞, 葛如钧, 寶博士, 人工智慧, AI 基本法, 法案, 核能, 區塊鏈, 自動駕駛, 臺灣"
 		: "legislator, technology policy, Ju-Chun Ko, AI Basic Act, Taiwan, artificial intelligence, blockchain, nuclear energy, autonomous vehicles, digital policy";
 
 const personSchema = {
 	"@context": "https://schema.org",
 	"@type": "Person",
+	"@id": PERSON_ID,
 	name: "葛如鈞",
-	alternateName: ["寶博士", "Ju-Chun Ko", "JC Ko"],
-	url: "https://juchunko.com/zh-TW/",
-	image: "https://juchunko.com/favicon.png",
+	alternateName: ["寶博士", "寶博", "葛如钧", "Ju-Chun Ko", "JC Ko", "Dr. Ju-Chun Ko"],
+	url: `${BASE_URL}/zh-TW/`,
+	image: {
+		"@type": "ImageObject",
+		url: `${BASE_URL}/image/dAAAb8.jpg`,
+		width: 3469,
+		height: 3469,
+	},
 	jobTitle: lang === "zh-TW" ? "立法委員" : "Legislator at-large",
 	description:
 		lang === "zh-TW"
-			? "中華民國第十一屆全國不分區立法委員，專注科技政策、人工智慧法規、區塊鏈與數位民主。"
-			: "At-large legislator in Taiwan's 11th Legislative Yuan, focused on AI policy, blockchain governance, and digital democracy.",
+			? "中華民國第十一屆全國不分區立法委員，人稱寶博士，專注科技政策、人工智慧法規、區塊鏈與數位民主。"
+			: "At-large legislator in Taiwan's 11th Legislative Yuan, known as Dr. JC Ko, focused on AI policy, blockchain governance, and digital democracy.",
 	worksFor: {
 		"@type": "GovernmentOrganization",
 		name: lang === "zh-TW" ? "中華民國立法院" : "Legislative Yuan, Republic of China (Taiwan)",
 		url: "https://www.ly.gov.tw/",
 	},
+	affiliation: {
+		"@type": "PoliticalParty",
+		name: lang === "zh-TW" ? "中國國民黨" : "Kuomintang (KMT)",
+	},
+	birthDate: "1981-07-28",
+	alumniOf: [
+		{ "@type": "CollegeOrUniversity", name: lang === "zh-TW" ? "國立臺灣大學" : "National Taiwan University" },
+		{ "@type": "CollegeOrUniversity", name: lang === "zh-TW" ? "元智大學" : "Yuan Ze University" },
+		{ "@type": "CollegeOrUniversity", name: lang === "zh-TW" ? "淡江大學" : "Tamkang University" },
+	],
 	knowsAbout:
 		lang === "zh-TW"
 			? ["人工智慧", "區塊鏈", "數位民主", "核能政策", "資安", "自動駕駛", "衛星通訊"]
 			: ["Artificial Intelligence", "Blockchain", "Digital Democracy", "Nuclear Policy", "Cybersecurity", "Autonomous Vehicles"],
 	sameAs: [
+		"https://zh.wikipedia.org/wiki/%E8%91%9B%E5%A6%82%E9%88%9E",
+		"https://www.wikidata.org/wiki/Q22774447",
 		"https://x.com/dAAAb",
-		"https://twitter.com/dAAAb",
 		"https://www.facebook.com/JuChunKo",
 		"https://www.ly.gov.tw/Pages/Detail.aspx?nodeid=4489&pid=206873",
+		"https://podcasts.apple.com/tw/podcast/id1484923390",
 		"https://blog.juchunko.com/",
 		"https://transpal.juchunko.com/",
 	],
@@ -78,11 +97,8 @@ const websiteSchema = {
 	name: lang === "zh-TW" ? "科技立委葛如鈞．寶博士" : "Ju Chun Ko — Taiwan Technology Legislator",
 	url: "https://juchunko.com/",
 	inLanguage: ["zh-TW", "en"],
-	about: {
-		"@type": "Person",
-		name: "葛如鈞",
-		alternateName: "Ju-Chun Ko",
-	},
+	about: { "@id": PERSON_ID },
+	publisher: { "@id": PERSON_ID },
 	potentialAction: {
 		"@type": "SearchAction",
 		target: {
