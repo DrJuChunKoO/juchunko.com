@@ -10,6 +10,14 @@ html {
 @custom-variant dark (&:is(.dark *));
 :root {
 	--font-sans: "TikTok Sans", "Noto Sans TC", sans-serif;
+	color-scheme: light dark;
+
+	&:has(> head > meta[name="color-scheme"][content="dark"]) {
+		color-scheme: dark;
+	}
+	&:has(> head > meta[name="color-scheme"][content="light"]) {
+		color-scheme: light;
+	}
 }
 @theme inline {
 	--radius-sm: calc(var(--radius) - 4px);

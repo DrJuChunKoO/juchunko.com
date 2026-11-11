@@ -11,19 +11,31 @@ const currentPath = Astro.url.pathname;
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
+		<meta name="color-scheme" content="light dark" />
+		<meta name="theme-color" data-scheme="light" media="(prefers-color-scheme: light)" content="#ffffff" />
+		<meta name="theme-color" data-scheme="dark" media="(prefers-color-scheme: dark)" content="#0c0a09" />
 		<script is:inline>
-			const applyTheme = (doc = document) => {
-				let storedTheme = null;
+			// The override is "light", "dark", or null (follow the system preference).
+			const systemDark = window.matchMedia("(prefers-color-scheme: dark)");
 
+			const readOverride = () => {
 				try {
-					storedTheme = localStorage.getItem("theme");
+					const value = localStorage.getItem("theme");
+					return value === "light" || value === "dark" ? value : null;
 				} catch {
-					// Ignore storage failures and fall back to system preference.
+					return null;
 				}
+			};
 
-				const dark = storedTheme === "dark" || (storedTheme !== "light" && window.matchMedia("(prefers-color-scheme: dark)").matches);
-				doc.documentElement.classList.toggle("dark", dark);
-				doc.documentElement.style.colorScheme = dark ? "dark" : "light";
+			let override = readOverride();
+
+			const applyTheme = (doc = document) => {
+				doc.documentElement.classList.toggle("dark", override ? override === "dark" : systemDark.matches);
+				doc.querySelector('meta[name="color-scheme"]').content = override ?? "light dark";
+				for (const meta of doc.querySelectorAll('meta[name="theme-color"]')) {
+					const scheme = meta.dataset.scheme;
+					meta.media = override ? (scheme === override ? "all" : "not all") : `(prefers-color-scheme: ${scheme})`;
+				}
 			};
 
 			applyTheme();
@@ -32,26 +44,40 @@ const currentPath = Astro.url.pathname;
 				applyTheme(event.newDocument);
 			});
 
+			systemDark.addEventListener("change", () => applyTheme());
+
+			window.addEventListener("storage", (event) => {
+				if (event.key !== "theme" && event.key !== null) {
+					return;
+				}
+				override = readOverride();
+				applyTheme();
+			});
+
 			document.addEventListener("click", (event) => {
 				if (!(event.target instanceof Element) || !event.target.closest("[data-theme-toggle]")) {
 					return;
 				}
 
-				const html = document.documentElement;
-				const isDark = html.classList.toggle("dark");
-				html.style.colorScheme = isDark ? "dark" : "light";
+				// Switch to the opposite of what is rendered; landing back on the system scheme clears the override.
+				const target = document.documentElement.classList.contains("dark") ? "light" : "dark";
+				const system = systemDark.matches ? "dark" : "light";
+				override = target === system ? null : target;
+				applyTheme();
 
 				try {
-					localStorage.setItem("theme", isDark ? "dark" : "light");
+					if (override) {
+						localStorage.setItem("theme", override);
+					} else {
+						localStorage.removeItem("theme");
+					}
 				} catch {
-					// Ignore storage failures.
+					// The theme still applies for this page even when it cannot be persisted.
 				}
 			});
 		</script>
 		<link rel="icon" href="/favicon.png" />
 		<link rel="apple-touch-icon" sizes="180x180" href="/favicon.png" />
-		<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
-		<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0c0a09" />
 		<link rel="sitemap" href="/sitemap-index.xml" />
 		<link rel="help" type="text/plain" href="/llms.txt" />
 		<slot name="head" />
