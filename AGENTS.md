@@ -154,7 +154,7 @@ pnpm build
 
 ## Deploy And Safety Notes
 
-- Typical deploy flow is `pnpm build` followed by `wrangler publish`.
+- Deploy flow is `pnpm build` followed by `pnpm run deploy`, which runs `wrangler deploy` and then submits new or edited article URLs to IndexNow by diffing `dist/indexnow-manifest.json` against the live copy.
 - Use `wrangler dev` only when you specifically need local Worker behavior.
 - Prefer the smallest correct change.
 - Reuse existing helpers, components, and route patterns before adding new abstractions.

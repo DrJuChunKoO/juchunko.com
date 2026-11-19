@@ -6,6 +6,7 @@
 		"dev": "astro dev",
 		"build": "NODE_OPTIONS=--localstorage-file=/tmp/juchunko-node-localstorage astro build",
 		"preview": "astro preview",
+		"deploy": "tsx scripts/deploy.ts",
 		"test": "tsx --test \"src/**/*.test.ts\"",
 		"astro": "astro",
 		"lint": "prettier --check .",
